@@ -1,4 +1,14 @@
-FROM ubuntu:latest
-LABEL authors="cs"
+FROM golang:1.21-alpine3.19
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+
+ENV TERM xterm-256color
+ENV COLOR_OUTPUT true
+
+COPY . /app
+
+RUN PATH="$PATH:~/go/bin:/usr/local/go/bin:$GOPATH/bin"
+
+RUN go install
+
+ENTRYPOINT ["poke-cli"]
