@@ -20,7 +20,7 @@ func main() {
 		fmt.Println("\t", "poke-cli [flag]")
 		fmt.Println("\t", "poke-cli [pokemon name] [flag]")
 		fmt.Println("\t", "----------")
-		fmt.Println("\t", styleItalic.Render("Example:"), "poke-cli bulbasaur")
+		fmt.Println("\t", styleItalic.Render("Example:"), "poke-cli bulbasaur", styleItalic.Render("or"), "poke-cli flutter-mane --types")
 
 		fmt.Println(styleBold.Render("\nGLOBAL FLAGS:"))
 		fmt.Println("\t", "-h, --help", "\t", "Shows the help menu")
