@@ -33,3 +33,22 @@ docker run --rm -it digitalghostdev/poke-cli:1.0.0 [command] [flag]
 
 > [!NOTE]
 > Currently working on more ways to distribute the binary.
+
+## Usage
+By running `poke-cli --help`, it'll display information on how to use the tool. 
+```
+Welcome! This tool displays data about a selected Pokémon in the terminal!
+      
+USAGE:
+         poke-cli [flag]
+         poke-cli [pokemon name] [flag]
+         ----------
+         Example: poke-cli bulbasaur or poke-cli flutter-mane --types
+             
+GLOBAL FLAGS:
+         -h, --help      Shows the help menu
+
+POKEMON NAME FLAGS:
+         Add a flag after declaring a Pokémon's name for more details!
+        --types
+```
