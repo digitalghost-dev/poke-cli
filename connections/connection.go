@@ -22,7 +22,7 @@ func baseApiCall(url string, target interface{}) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-
+			log.Printf("Failed to close body: %v", err)
 		}
 	}(res.Body)
 
