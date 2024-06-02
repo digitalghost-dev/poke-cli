@@ -19,7 +19,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool) {
 func TypesFlag() error {
 	pokemonName := os.Args[1]
 
-	connections.TypeApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
+	connections.PokemonTypeApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
 
 	return nil
 }

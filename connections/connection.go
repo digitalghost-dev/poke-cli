@@ -19,7 +19,12 @@ func baseApiCall(url string, target interface{}) {
 	if err != nil {
 		log.Fatalf("Error making GET request: %v", err)
 	}
-	defer res.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(res.Body)
 
 	if res.StatusCode == http.StatusNotFound {
 		fmt.Println(errorColor.Render("Couldn't find that Pokémon... perhaps its named was misspelled?"))
@@ -36,7 +41,7 @@ func baseApiCall(url string, target interface{}) {
 	}
 }
 
-func NameApiCall(pokemonName string, baseURL string) string {
+func PokemonNameApiCall(pokemonName string, baseURL string) string {
 	type Pokemon struct {
 		Name string `json:"name"`
 	}
@@ -49,7 +54,7 @@ func NameApiCall(pokemonName string, baseURL string) string {
 	return pokemon.Name
 }
 
-func TypeApiCall(pokemonName string, baseURL string) {
+func PokemonTypeApiCall(pokemonName string, baseURL string) {
 	type Pokemon struct {
 		Types []struct {
 			Slot int `json:"slot"`

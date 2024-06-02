@@ -48,7 +48,7 @@ func PokemonCommand() {
 		os.Exit(1)
 	}
 
-	pokemonName := connections.NameApiCall(PokemonName, "https://pokeapi.co/api/v2/pokemon/")
+	pokemonName := connections.PokemonNameApiCall(PokemonName, "https://pokeapi.co/api/v2/pokemon/")
 	capitalizedString := cases.Title(language.English).String(pokemonName)
 
 	fmt.Printf("Selected Pokémon: %s\n", capitalizedString)
