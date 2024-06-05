@@ -1,14 +1,14 @@
-<p align="center">
-<img height="250" width="350" src="https://cdn.simpleicons.org/pokemon/FFCC00" alt="pokemon-logo"/>
-</p>
-
-<div align="center">
-    <h1>Pokémon CLI</h1>
-    <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.0.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+<div style="text-align: center;">
+  <img height="250" width="350" src="https://cdn.simpleicons.org/pokemon/FFCC00" alt="pokemon-logo"/>
 </div>
 
-<div align="center">
+<div style="text-align: center;">
+    <h1>Pokémon CLI</h1>
+    <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.1.1?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+</div>
+
+<div style="text-align: center;">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/go_test.yml?style=flat-square&logo=go&logoColor=00ADD8&label=Tests&labelColor=EEE&color=00ADD8" alt="tests-label">
     <img src="https://img.shields.io/github/go-mod/go-version/digitalghost-dev/poke-cli?style=flat-square&logo=Go&labelColor=EEE&color=00ADD8" alt="go-version">
 </div>
@@ -28,7 +28,7 @@ A CLI tool for viewing data about Pokémon from your terminal!
 ### Docker
 Use a Docker Image instead:
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:1.0.0 [command] [flag]
+docker run --rm -it digitalghostdev/poke-cli:0.1.1 [command] [flag]
 ```
 
 > [!NOTE]
