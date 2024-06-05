@@ -9,6 +9,17 @@ import (
 	"net/http"
 )
 
+type Pokemon struct {
+	Name  string `json:"name"`
+	Types []struct {
+		Slot int `json:"slot"`
+		Type struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"type"`
+	} `json:"types"`
+}
+
 var httpGet = http.Get
 var red = lipgloss.Color("#F2055C")
 var errorColor = lipgloss.NewStyle().Foreground(red)
@@ -42,35 +53,21 @@ func baseApiCall(url string, target interface{}) {
 }
 
 func PokemonNameApiCall(pokemonName string, baseURL string) string {
-	type Pokemon struct {
-		Name string `json:"name"`
-	}
 
 	url := baseURL + pokemonName
-	var pokemon Pokemon
+	var pokemonStruct Pokemon
 
-	baseApiCall(url, &pokemon)
+	baseApiCall(url, &pokemonStruct)
 
-	return pokemon.Name
+	return pokemonStruct.Name
 }
 
-func PokemonTypeApiCall(pokemonName string, baseURL string) {
-	type Pokemon struct {
-		Types []struct {
-			Slot int `json:"slot"`
-			Type struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			} `json:"type"`
-		} `json:"types"`
-	}
+func PokemonTypeApiCall(pokemonName string, baseURL string) Pokemon {
 
 	url := baseURL + pokemonName
-	var pokemon Pokemon
+	var pokemonStruct Pokemon
 
-	baseApiCall(url, &pokemon)
+	baseApiCall(url, &pokemonStruct)
 
-	for _, pokeType := range pokemon.Types {
-		fmt.Printf("Type %d: %s\n", pokeType.Slot, pokeType.Type.Name)
-	}
+	return pokemonStruct
 }
