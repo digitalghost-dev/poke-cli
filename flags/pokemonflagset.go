@@ -4,6 +4,7 @@ package flags
 
 import (
 	"flag"
+	"fmt"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"os"
 )
@@ -19,7 +20,11 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool) {
 func TypesFlag() error {
 	pokemonName := os.Args[1]
 
-	connections.PokemonTypeApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
+	pokemonStruct := connections.PokemonTypeApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
+
+	for _, pokeType := range pokemonStruct.Types {
+		fmt.Printf("Type %d: %s\n", pokeType.Slot, pokeType.Type.Name)
+	}
 
 	return nil
 }
