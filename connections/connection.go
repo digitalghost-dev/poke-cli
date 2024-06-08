@@ -11,6 +11,7 @@ import (
 
 type Pokemon struct {
 	Name  string `json:"name"`
+	ID    int    `json:"id"`
 	Types []struct {
 		Slot int `json:"slot"`
 		Type struct {
@@ -52,14 +53,14 @@ func baseApiCall(url string, target interface{}) {
 	}
 }
 
-func PokemonNameApiCall(pokemonName string, baseURL string) string {
+func PokemonNameApiCall(pokemonName string, baseURL string) (string, int) {
 
 	url := baseURL + pokemonName
 	var pokemonStruct Pokemon
 
 	baseApiCall(url, &pokemonStruct)
 
-	return pokemonStruct.Name
+	return pokemonStruct.Name, pokemonStruct.ID
 }
 
 func PokemonTypeApiCall(pokemonName string, baseURL string) Pokemon {
