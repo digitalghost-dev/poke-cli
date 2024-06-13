@@ -35,7 +35,7 @@ func PokemonCommand() {
 
 	args := os.Args
 
-	PokemonName := args[1]
+	PokemonName := strings.ToLower(args[1])
 
 	err := ValidateArgs(args)
 	if err != nil {
@@ -48,10 +48,17 @@ func PokemonCommand() {
 		os.Exit(1)
 	}
 
-	pokemonName := connections.PokemonNameApiCall(PokemonName, "https://pokeapi.co/api/v2/pokemon/")
+	pokemonName, pokemonID := connections.PokemonNameApiCall(PokemonName, "https://pokeapi.co/api/v2/pokemon/")
 	capitalizedString := cases.Title(language.English).String(pokemonName)
 
-	fmt.Printf("Selected Pokémon: %s\n", capitalizedString)
+	fmt.Printf("Your selected Pokémon: %s\nNational Pokédex #: %d\n", capitalizedString, pokemonID)
+
+	if !*typesFlag {
+		fmt.Println("\nYou can also use flags after declaring a Pokémon's name for more details!")
+		fmt.Println("Available Flags:")
+		fmt.Println("\t", "--types")
+		fmt.Println()
+	}
 
 	if *typesFlag {
 		if err := flags.TypesFlag(); err != nil {
