@@ -11,18 +11,37 @@ import (
 	"strings"
 )
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool) {
+var pokemonName = strings.ToLower(os.Args[1])
+
+func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
 	typesFlag := pokeFlags.Bool("types", false, "Print the declared Pokémon's typing")
+	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the declared Pokémon's abilities")
 
-	return pokeFlags, typesFlag
+	return pokeFlags, typesFlag, abilitiesFlag
+}
+
+func AbilitiesFlag() error {
+	pokemonStruct, _, _ := connections.PokemonApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
+
+	abilitiesHeaderBold := lipgloss.NewStyle().
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00")).
+		BorderTop(true).
+		Bold(true).
+		Render("Abilities")
+
+	fmt.Println(abilitiesHeaderBold)
+	for _, pokeAbility := range pokemonStruct.Abilities {
+		fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, pokeAbility.Ability.Name)
+	}
+
+	return nil
 }
 
 func TypesFlag() error {
-	pokemonName := strings.ToLower(os.Args[1])
-
-	pokemonStruct := connections.PokemonTypeApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
+	pokemonStruct, _, _ := connections.PokemonApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
 
 	colorMap := map[string]string{
 		"normal":   "#B7B7A9",
