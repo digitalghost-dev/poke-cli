@@ -7,7 +7,7 @@ import (
 
 func TestSetupPokemonFlagSet(t *testing.T) {
 	// Call the function to get the flag set and types flag
-	pokeFlags, typesFlag := SetupPokemonFlagSet()
+	pokeFlags, typesFlag, abilitiesFlag := SetupPokemonFlagSet()
 
 	// Assertions
 	assert.NotNil(t, pokeFlags, "Flag set should not be nil")
@@ -17,4 +17,8 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 	// Check types flag
 	assert.NotNil(t, typesFlag, "Types flag should not be nil")
 	assert.Equal(t, bool(false), *typesFlag, "Types flag name should be 'types'")
+
+	// Check abilities flag
+	assert.NotNil(t, abilitiesFlag, "Abilities flag should not be nil")
+	assert.Equal(t, bool(false), *abilitiesFlag, "Abilities flag name should be 'abilities'")
 }
