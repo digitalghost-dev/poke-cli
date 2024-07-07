@@ -19,6 +19,14 @@ type Pokemon struct {
 			URL  string `json:"url"`
 		} `json:"type"`
 	} `json:"types"`
+	Abilities []struct {
+		Ability struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"ability"`
+		Hidden bool `json:"hidden"`
+		Slot   int  `json:"slot"`
+	} `json:"abilities"`
 }
 
 var httpGet = http.Get
@@ -26,7 +34,7 @@ var red = lipgloss.Color("#F2055C")
 var errorColor = lipgloss.NewStyle().Foreground(red)
 
 // Helper function to handle API calls and JSON unmarshalling
-func baseApiCall(url string, target interface{}) {
+func ApiCallSetup(url string, target interface{}) {
 	res, err := httpGet(url)
 	if err != nil {
 		log.Fatalf("Error making GET request: %v", err)
@@ -53,22 +61,12 @@ func baseApiCall(url string, target interface{}) {
 	}
 }
 
-func PokemonNameApiCall(pokemonName string, baseURL string) (string, int) {
+func PokemonApiCall(pokemonName string, baseURL string) (Pokemon, string, int) {
 
 	url := baseURL + pokemonName
 	var pokemonStruct Pokemon
 
-	baseApiCall(url, &pokemonStruct)
+	ApiCallSetup(url, &pokemonStruct)
 
-	return pokemonStruct.Name, pokemonStruct.ID
-}
-
-func PokemonTypeApiCall(pokemonName string, baseURL string) Pokemon {
-
-	url := baseURL + pokemonName
-	var pokemonStruct Pokemon
-
-	baseApiCall(url, &pokemonStruct)
-
-	return pokemonStruct
+	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID
 }
