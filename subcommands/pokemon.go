@@ -22,7 +22,7 @@ func ValidateArgs(args []string) error {
 		return fmt.Errorf("error: only flags are allowed after declaring a Pokémon's name")
 	}
 
-	if len(args) > 3 {
+	if len(args) > 4 {
 		return fmt.Errorf("error: too many arguments")
 	}
 
@@ -31,7 +31,7 @@ func ValidateArgs(args []string) error {
 
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
-	pokeFlags, typesFlag := flags.SetupPokemonFlagSet()
+	pokeFlags, typesFlag, abilitiesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -48,20 +48,20 @@ func PokemonCommand() {
 		os.Exit(1)
 	}
 
-	pokemonName, pokemonID := connections.PokemonNameApiCall(PokemonName, "https://pokeapi.co/api/v2/pokemon/")
+	_, pokemonName, pokemonID := connections.PokemonApiCall(PokemonName, "https://pokeapi.co/api/v2/pokemon/")
 	capitalizedString := cases.Title(language.English).String(pokemonName)
 
 	fmt.Printf("Your selected Pokémon: %s\nNational Pokédex #: %d\n", capitalizedString, pokemonID)
 
-	if !*typesFlag {
-		fmt.Println("\nYou can also use flags after declaring a Pokémon's name for more details!")
-		fmt.Println("Available Flags:")
-		fmt.Println("\t", "--types")
-		fmt.Println()
-	}
-
 	if *typesFlag {
 		if err := flags.TypesFlag(); err != nil {
+			fmt.Printf("Error: %s\n", err)
+			os.Exit(1)
+		}
+	}
+
+	if *abilitiesFlag {
+		if err := flags.AbilitiesFlag(); err != nil {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}

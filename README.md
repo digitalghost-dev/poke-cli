@@ -25,7 +25,7 @@ A CLI tool for viewing data about Pokémon from your terminal!
 ### Docker
 Use a Docker Image instead:
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.2.0 [command] [flag]
+docker run --rm -it digitalghostdev/poke-cli:v0.3.0 [command] [flag]
 ```
 
 > [!NOTE]

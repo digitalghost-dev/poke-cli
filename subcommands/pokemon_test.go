@@ -9,6 +9,8 @@ func TestValidateArgs_ValidInput(t *testing.T) {
 	validInputs := [][]string{
 		{"pikachu"},
 		{"bulbasaur", "--types"},
+		{"cloyster", "--abilities"},
+		{"mewtwo", "--types", "--abilities"},
 	}
 
 	for _, input := range validInputs {

@@ -20,7 +20,7 @@ func TestBaseApiCallSuccess(t *testing.T) {
 
 	var target map[string]string
 
-	baseApiCall(ts.URL, &target)
+	ApiCallSetup(ts.URL, &target)
 
 	assert.Equal(t, expectedData, target)
 }
