@@ -17,19 +17,31 @@ A CLI tool for viewing data about Pokémon from your terminal!
 
 ### Go Build
 1. Make sure [Go is installed](https://go.dev/dl/) on your machine. This project uses `v1.21`.
-2. Clone the repository in a root directory: `git clone https://github.com/digitalghost-dev/poke-cli.git`
-3. Change directories into the `poke-cli` directory.
-4. Run `go build -o poke-cli`
+   * If on Windows, install [Git](https://git-scm.com/download/win) as well.
+2. Create a new directory. 
+   * For example, name the directory `poke-cli`. 
+   * Run `cd poke-cli` to move into that directory after creation.
+   * Run `git init` to initialize the repository/directory.
+3. Clone the repository in the previously initialized directory: 
+```bash
+git clone https://github.com/digitalghost-dev/poke-cli.git
+```
+4. Run `go build .`
 5. A binary will be created then the tool can be used! It can also be added to your path to run the binary from anywhere.
+   * Example usage:
+```bash
+# Windows
+.\poke-cli.exe charizard --types --abilities
+
+# Unix
+.\poke-cli vespiquen --types --abilities
+```
 
 ### Docker
 Use a Docker Image instead:
 ```bash
 docker run --rm -it digitalghostdev/poke-cli:v0.3.0 [command] [flag]
 ```
-
-> [!NOTE]
-> Currently working on more ways to distribute the binary.
 
 ## Usage
 By running `poke-cli --help`, it'll display information on how to use the tool. 
