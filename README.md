@@ -40,7 +40,7 @@ git clone https://github.com/digitalghost-dev/poke-cli.git
 ### Docker
 Use a Docker Image instead:
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.3.0 [command] [flag]
+docker run --rm -it digitalghostdev/poke-cli:v0.3.1 [command] [flag]
 ```
 
 ## Usage
@@ -60,4 +60,5 @@ GLOBAL FLAGS:
 POKEMON NAME FLAGS:
          Add a flag after declaring a Pokémon's name for more details!
         --types
+        --abilities
 ```
