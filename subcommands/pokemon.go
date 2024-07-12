@@ -11,19 +11,24 @@ import (
 	"strings"
 )
 
-const red = lipgloss.Color("#F2055C")
-
-var errorColor = lipgloss.NewStyle().Foreground(red)
-
 // ValidateArgs validates the command line arguments
-func ValidateArgs(args []string) error {
-
-	if len(args) > 2 && !strings.HasPrefix(args[2], "-") {
-		return fmt.Errorf("error: only flags are allowed after declaring a Pokémon's name")
-	}
-
+func ValidateArgs(args []string, errorColor lipgloss.Style) error {
 	if len(args) > 4 {
 		return fmt.Errorf("error: too many arguments")
+	}
+
+	if len(args) < 2 {
+		fmt.Println(errorColor.Render("Please declare a Pokémon's name after the CLI name"))
+		fmt.Println(errorColor.Render("Run 'poke-cli --help' for more details"))
+		return fmt.Errorf("error: insufficient arguments")
+	}
+
+	if len(args) > 2 {
+		for _, arg := range args[2:] {
+			if arg[0] != '-' {
+				return fmt.Errorf(errorColor.Render(fmt.Sprintf("Error: Invalid argument '%s'. Only flags are allowed after declaring a Pokémon's name\n", arg)))
+			}
+		}
 	}
 
 	return nil
@@ -31,37 +36,40 @@ func ValidateArgs(args []string) error {
 
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
+	const red = lipgloss.Color("#F2055C")
+	var errorColor = lipgloss.NewStyle().Foreground(red)
+
 	pokeFlags, typesFlag, abilitiesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
-	PokemonName := strings.ToLower(args[1])
-
-	err := ValidateArgs(args)
+	err := ValidateArgs(args, errorColor)
 	if err != nil {
 		fmt.Println(errorColor.Render(err.Error()))
 		os.Exit(1)
 	}
+
+	pokemonName := strings.ToLower(args[1])
 
 	if err := pokeFlags.Parse(args[2:]); err != nil {
 		fmt.Printf("error parsing flags: %v\n", err)
 		os.Exit(1)
 	}
 
-	_, pokemonName, pokemonID := connections.PokemonApiCall(PokemonName, "https://pokeapi.co/api/v2/pokemon/")
+	_, pokemonName, pokemonID := connections.PokemonApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
 	capitalizedString := cases.Title(language.English).String(pokemonName)
 
 	fmt.Printf("Your selected Pokémon: %s\nNational Pokédex #: %d\n", capitalizedString, pokemonID)
 
 	if *typesFlag {
-		if err := flags.TypesFlag(); err != nil {
+		if err := flags.TypesFlag(pokemonName); err != nil {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}
 	}
 
 	if *abilitiesFlag {
-		if err := flags.AbilitiesFlag(); err != nil {
+		if err := flags.AbilitiesFlag(pokemonName); err != nil {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}
