@@ -14,7 +14,7 @@ func TestCLI(t *testing.T) {
 	}{
 		{
 			args:           []string{},
-			expectedOutput: "Please declare a Pokémon's name after the CLI name\nRun 'poke-cli --help' for more details\n",
+			expectedOutput: "Please declare a Pokémon's name after the CLI name\nRun 'poke-cli --help' for more details\nerror: insufficient arguments\n",
 			expectedExit:   1,
 		},
 		{
@@ -34,12 +34,12 @@ func TestCLI(t *testing.T) {
 		},
 		{
 			args:           []string{"chimchar", "types"},
-			expectedOutput: "error: only flags are allowed after declaring a Pokémon's name\n",
+			expectedOutput: "Error: Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name\n",
 			expectedExit:   1,
 		},
 		{
 			args:           []string{"flutter-mane", "types"},
-			expectedOutput: "error: only flags are allowed after declaring a Pokémon's name\n",
+			expectedOutput: "Error: Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name\n",
 			expectedExit:   1,
 		},
 		{

@@ -30,7 +30,6 @@ func main() {
 		fmt.Println("\t", "--abilities", "\t\t", "Prints out the Pokémon's abilities.")
 		fmt.Println("\t", "--types", "\t\t", "Prints out the Pokémon's typing.")
 		fmt.Print("\n")
-
 	}
 
 	flag.Parse()

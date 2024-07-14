@@ -26,7 +26,8 @@ func ValidateArgs(args []string, errorColor lipgloss.Style) error {
 	if len(args) > 2 {
 		for _, arg := range args[2:] {
 			if arg[0] != '-' {
-				return fmt.Errorf(errorColor.Render(fmt.Sprintf("Error: Invalid argument '%s'. Only flags are allowed after declaring a Pokémon's name\n", arg)))
+				errorMsg := fmt.Sprintf("Error: Invalid argument '%s'. Only flags are allowed after declaring a Pokémon's name", arg)
+				return fmt.Errorf(errorColor.Render(strings.TrimSpace(errorMsg)))
 			}
 		}
 	}
