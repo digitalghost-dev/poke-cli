@@ -7,11 +7,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
-	"os"
-	"strings"
 )
-
-var pokemonName = strings.ToLower(os.Args[1])
 
 func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
@@ -22,7 +18,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool) {
 	return pokeFlags, typesFlag, abilitiesFlag
 }
 
-func AbilitiesFlag() error {
+func AbilitiesFlag(pokemonName string) error {
 	pokemonStruct, _, _ := connections.PokemonApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
 
 	abilitiesHeaderBold := lipgloss.NewStyle().
@@ -40,7 +36,7 @@ func AbilitiesFlag() error {
 	return nil
 }
 
-func TypesFlag() error {
+func TypesFlag(pokemonName string) error {
 	pokemonStruct, _, _ := connections.PokemonApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
 
 	colorMap := map[string]string{

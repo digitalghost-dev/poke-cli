@@ -7,7 +7,6 @@ import (
 )
 
 func TestCLI(t *testing.T) {
-
 	tests := []struct {
 		args           []string
 		expectedOutput string
@@ -15,32 +14,37 @@ func TestCLI(t *testing.T) {
 	}{
 		{
 			args:           []string{},
-			expectedOutput: "Please declare a Pokémon's name after the CLI name\nRun 'poke-cli --help' for more details\n",
+			expectedOutput: "Please declare a Pokémon's name after the CLI name\nRun 'poke-cli --help' for more details\nerror: insufficient arguments\n",
 			expectedExit:   1,
 		},
 		{
 			args:           []string{"bulbasaur"},
-			expectedOutput: "Selected Pokémon: Bulbasaur\n",
+			expectedOutput: "Your selected Pokémon: Bulbasaur\nNational Pokédex #: 1\n",
 			expectedExit:   0,
 		},
 		{
 			args:           []string{"mew", "--types"},
-			expectedOutput: "Selected Pokémon: Mew\nType 1: psychic\n",
+			expectedOutput: "Your selected Pokémon: Mew\nNational Pokédex #: 151\n──────\nTyping\nType 1: psychic\n",
 			expectedExit:   0,
 		},
 		{
 			args:           []string{"cacturne", "--types"},
-			expectedOutput: "Selected Pokémon: Cacturne\nType 1: grass\nType 2: dark\n",
+			expectedOutput: "Your selected Pokémon: Cacturne\nNational Pokédex #: 332\n──────\nTyping\nType 1: grass\nType 2: dark\n",
 			expectedExit:   0,
 		},
 		{
 			args:           []string{"chimchar", "types"},
-			expectedOutput: "error: only flags are allowed after declaring a Pokémon's name\n",
+			expectedOutput: "Error: Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name\n",
 			expectedExit:   1,
 		},
 		{
 			args:           []string{"flutter-mane", "types"},
-			expectedOutput: "Selected Pokémon: Flutter-Mane\nType 1: ghost\nType 2: fairy\n",
+			expectedOutput: "Error: Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name\n",
+			expectedExit:   1,
+		},
+		{
+			args:           []string{"AmPhaROs", "--types", "--abilities"},
+			expectedOutput: "Your selected Pokémon: Ampharos\nNational Pokédex #: 181\n──────\nTyping\nType 1: electric\n─────────\nAbilities\nAbility 1: static\nAbility 3: plus\n",
 			expectedExit:   0,
 		},
 	}
@@ -49,18 +53,23 @@ func TestCLI(t *testing.T) {
 		cmd := exec.Command("poke-cli", test.args...)
 		var out bytes.Buffer
 		cmd.Stdout = &out
+		cmd.Stderr = &out
 
 		err := cmd.Run()
+
 		if err != nil {
-			return
+			// If there's an error, but we expected a successful exit
+			if test.expectedExit == 0 {
+				t.Errorf("Unexpected error: %v", err)
+			}
 		}
 
 		if out.String() != test.expectedOutput {
-			t.Errorf("Expected output: %s, Got: %s", test.expectedOutput, out.String())
+			t.Errorf("Args: %v, Expected output: %q, Got: %q", test.args, test.expectedOutput, out.String())
 		}
 
 		if cmd.ProcessState.ExitCode() != test.expectedExit {
-			t.Errorf("Expected exit code: %d, Got: %d", test.expectedExit, cmd.ProcessState.ExitCode())
+			t.Errorf("Args: %v, Expected exit code: %d, Got: %d", test.args, test.expectedExit, cmd.ProcessState.ExitCode())
 		}
 	}
 }

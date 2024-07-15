@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/subcommands"
-	"os"
 )
 
 var styleBold = lipgloss.NewStyle().Bold(true)
@@ -28,16 +27,12 @@ func main() {
 
 		fmt.Println(styleBold.Render("POKEMON NAME FLAGS:"))
 		fmt.Println("\t", "Add a flag after declaring a Pokémon's name for more details!")
-		fmt.Print("\t", "--types", "\t\t", "Prints out the Pokémon's typing.\n\n")
+		fmt.Println("\t", "--abilities", "\t\t", "Prints out the Pokémon's abilities.")
+		fmt.Println("\t", "--types", "\t\t", "Prints out the Pokémon's typing.")
+		fmt.Print("\n")
 	}
 
 	flag.Parse()
-
-	if len(os.Args) < 2 {
-		fmt.Println("Please declare a Pokémon's name after the CLI name")
-		fmt.Println("Run 'poke-cli --help' for more details")
-		os.Exit(1)
-	}
 
 	subcommands.PokemonCommand()
 }
