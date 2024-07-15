@@ -50,7 +50,7 @@ func TestCLI(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		cmd := exec.Command("poke-cli", test.args...)
+		cmd := exec.Command("./poke-cli", test.args...)
 		var out bytes.Buffer
 		cmd.Stdout = &out
 		cmd.Stderr = &out
