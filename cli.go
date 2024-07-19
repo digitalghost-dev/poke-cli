@@ -27,8 +27,8 @@ func main() {
 
 		fmt.Println(styleBold.Render("POKEMON NAME FLAGS:"))
 		fmt.Println("\t", "Add a flag after declaring a Pokémon's name for more details!")
-		fmt.Println("\t", "--abilities", "\t\t", "Prints out the Pokémon's abilities.")
-		fmt.Println("\t", "--types", "\t\t", "Prints out the Pokémon's typing.")
+		fmt.Println("\t", "--abilities, -a", "\t\t", "Prints out the Pokémon's abilities.")
+		fmt.Println("\t", "--types, -t", "\t\t\t", "Prints out the Pokémon's typing.")
 		fmt.Print("\n")
 	}
 
