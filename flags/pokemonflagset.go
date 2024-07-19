@@ -9,13 +9,16 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 )
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool) {
+func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
 	typesFlag := pokeFlags.Bool("types", false, "Print the declared Pokémon's typing")
-	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the declared Pokémon's abilities")
+	shortTypesFlag := pokeFlags.Bool("t", false, "Prints the declared Pokémon's typing")
 
-	return pokeFlags, typesFlag, abilitiesFlag
+	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the declared Pokémon's abilities")
+	shortAbilitiesFlag := pokeFlags.Bool("a", false, "Print the declared Pokémon's abilities")
+
+	return pokeFlags, typesFlag, shortTypesFlag, abilitiesFlag, shortAbilitiesFlag
 }
 
 func AbilitiesFlag(pokemonName string) error {
@@ -30,7 +33,13 @@ func AbilitiesFlag(pokemonName string) error {
 
 	fmt.Println(abilitiesHeaderBold)
 	for _, pokeAbility := range pokemonStruct.Abilities {
-		fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, pokeAbility.Ability.Name)
+		if pokeAbility.Slot == 1 {
+			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, pokeAbility.Ability.Name)
+		} else if pokeAbility.Slot == 2 {
+			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, pokeAbility.Ability.Name)
+		} else {
+			fmt.Printf("Hidden Ability: %s\n", pokeAbility.Ability.Name)
+		}
 	}
 
 	return nil
