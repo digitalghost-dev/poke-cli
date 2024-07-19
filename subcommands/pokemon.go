@@ -40,7 +40,7 @@ func PokemonCommand() {
 	const red = lipgloss.Color("#F2055C")
 	var errorColor = lipgloss.NewStyle().Foreground(red)
 
-	pokeFlags, typesFlag, abilitiesFlag := flags.SetupPokemonFlagSet()
+	pokeFlags, typesFlag, shortTypesFlag, abilitiesFlag, shortAbilitiesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -62,14 +62,14 @@ func PokemonCommand() {
 
 	fmt.Printf("Your selected Pokémon: %s\nNational Pokédex #: %d\n", capitalizedString, pokemonID)
 
-	if *typesFlag {
+	if *typesFlag || *shortTypesFlag {
 		if err := flags.TypesFlag(pokemonName); err != nil {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}
 	}
 
-	if *abilitiesFlag {
+	if *abilitiesFlag || *shortAbilitiesFlag {
 		if err := flags.AbilitiesFlag(pokemonName); err != nil {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
