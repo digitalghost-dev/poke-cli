@@ -44,7 +44,12 @@ func TestCLI(t *testing.T) {
 		},
 		{
 			args:           []string{"AmPhaROs", "--types", "--abilities"},
-			expectedOutput: "Your selected Pokémon: Ampharos\nNational Pokédex #: 181\n──────\nTyping\nType 1: electric\n─────────\nAbilities\nAbility 1: static\nAbility 3: plus\n",
+			expectedOutput: "Your selected Pokémon: Ampharos\nNational Pokédex #: 181\n──────\nTyping\nType 1: electric\n─────────\nAbilities\nAbility 1: static\nHidden Ability: plus\n",
+			expectedExit:   0,
+		},
+		{
+			args:           []string{"CLOysTeR", "-t", "-a"},
+			expectedOutput: "Your selected Pokémon: Cloyster\nNational Pokédex #: 91\n──────\nTyping\nType 1: water\nType 2: ice\n─────────\nAbilities\nAbility 1: shell-armor\nAbility 2: skill-link\nHidden Ability: overcoat\n",
 			expectedExit:   0,
 		},
 	}
