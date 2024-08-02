@@ -40,7 +40,7 @@ git clone https://github.com/digitalghost-dev/poke-cli.git
 ### Docker
 Use a Docker Image instead:
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.3.2 [command] [flag]
+docker run --rm -it digitalghostdev/poke-cli:v0.4.0 [command] [flag]
 ```
 
 ## Usage
