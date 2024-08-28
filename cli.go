@@ -11,7 +11,6 @@ import (
 
 func main() {
 	var styleBold = lipgloss.NewStyle().Bold(true)
-	var styleItalic = lipgloss.NewStyle().Italic(true)
 
 	latestFlag := flag.Bool("latest", false, "Prints the program's latest Docker Image and Release versions.")
 	shortLatestFlag := flag.Bool("l", false, "Prints the program's latest Docker Image and Release versions.")
@@ -22,10 +21,8 @@ func main() {
 		// Usage section
 		fmt.Println(styleBold.Render("\nUSAGE:"))
 		fmt.Println("\t", "poke-cli [flag]")
+		fmt.Println("\t", "poke-cli [command] [flag]")
 		fmt.Println("\t", "poke-cli [command] [subcommand] [flag]")
-		fmt.Println("\t", "----------")
-		fmt.Println("\t", styleItalic.Render("Examples:"), "\t", "poke-cli pokemon bulbasaur")
-		fmt.Println("\t\t\t", "poke-cli pokemon flutter-mane --types")
 
 		// Flags section
 		fmt.Println(styleBold.Render("\nFLAGS:"))
