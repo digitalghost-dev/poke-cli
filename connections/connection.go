@@ -33,7 +33,7 @@ var httpGet = http.Get
 var red = lipgloss.Color("#F2055C")
 var errorColor = lipgloss.NewStyle().Foreground(red)
 
-// Helper function to handle API calls and JSON unmarshalling
+// ApiCallSetup Helper function to handle API calls and JSON unmarshalling
 func ApiCallSetup(url string, target interface{}) {
 	res, err := httpGet(url)
 	if err != nil {
@@ -47,7 +47,7 @@ func ApiCallSetup(url string, target interface{}) {
 	}(res.Body)
 
 	if res.StatusCode == http.StatusNotFound {
-		fmt.Println(errorColor.Render("Couldn't find that Pokémon... perhaps its named was misspelled?"))
+		fmt.Println(errorColor.Render("Page not found. 404 error."))
 	}
 
 	body, err := io.ReadAll(res.Body)
@@ -61,9 +61,9 @@ func ApiCallSetup(url string, target interface{}) {
 	}
 }
 
-func PokemonApiCall(pokemonName string, baseURL string) (Pokemon, string, int) {
+func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (Pokemon, string, int) {
 
-	url := baseURL + pokemonName
+	url := baseURL + endpoint + "/" + pokemonName
 	var pokemonStruct Pokemon
 
 	ApiCallSetup(url, &pokemonStruct)

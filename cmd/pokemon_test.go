@@ -1,4 +1,4 @@
-package subcommands
+package cmd
 
 import (
 	"github.com/charmbracelet/lipgloss"
@@ -12,10 +12,11 @@ var errorColor = lipgloss.NewStyle().Foreground(red)
 
 func TestValidateArgs_ValidInput(t *testing.T) {
 	validInputs := [][]string{
-		{"poke-cli", "pikachu"},
-		{"poke-cli", "bulbasaur", "--types"},
-		{"poke-cli", "cloyster", "--abilities"},
-		{"poke-cli", "mewtwo", "--types", "--abilities"},
+		{"poke-cli", "pokemon", "pikachu"},
+		{"poke-cli", "pokemon", "bulbasaur", "--types"},
+		{"poke-cli", "pokemon", "cloyster", "--abilities"},
+		{"poke-cli", "pokemon", "mewtwo", "--types", "--abilities"},
+		{"poke-cli", "pokemon", "BlaZiKen", "-a", "-t"},
 	}
 
 	for _, input := range validInputs {
@@ -26,8 +27,8 @@ func TestValidateArgs_ValidInput(t *testing.T) {
 
 func TestValidateArgs_InvalidFlag(t *testing.T) {
 	invalidInputs := [][]string{
-		{"poke-cli", "bulbasaur", "types"},
-		{"poke-cli", "mewtwo", "--types", "abilities"},
+		{"poke-cli", "pokemon", "bulbasaur", "types"},
+		{"poke-cli", "pokemon", "mewtwo", "--types", "abilities"},
 	}
 	expectedErrors := []string{
 		"Error: Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name",
