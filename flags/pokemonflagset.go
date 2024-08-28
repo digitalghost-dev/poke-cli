@@ -21,8 +21,9 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool) {
 	return pokeFlags, typesFlag, shortTypesFlag, abilitiesFlag, shortAbilitiesFlag
 }
 
-func AbilitiesFlag(pokemonName string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
+func AbilitiesFlag(endpoint string, pokemonName string) error {
+	baseURL := "https://pokeapi.co/api/v2/"
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	abilitiesHeaderBold := lipgloss.NewStyle().
 		BorderStyle(lipgloss.NormalBorder()).
@@ -45,8 +46,9 @@ func AbilitiesFlag(pokemonName string) error {
 	return nil
 }
 
-func TypesFlag(pokemonName string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(pokemonName, "https://pokeapi.co/api/v2/pokemon/")
+func TypesFlag(endpoint string, pokemonName string) error {
+	baseURL := "https://pokeapi.co/api/v2/"
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	colorMap := map[string]string{
 		"normal":   "#B7B7A9",
