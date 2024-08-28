@@ -31,34 +31,34 @@ git clone https://github.com/digitalghost-dev/poke-cli.git
    * Example usage:
 ```bash
 # Windows
-.\poke-cli.exe charizard --types --abilities
+.\poke-cli.exe pokemon charizard --types --abilities
 
 # Unix
-.\poke-cli vespiquen --types --abilities
+.\poke-cli pokemon vespiquen -t -a
 ```
 
 ### Docker
 Use a Docker Image instead:
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.4.0 [command] [flag]
+docker run --rm -it digitalghostdev/poke-cli:v0.4.1 [command] [subcommand] [flag]
 ```
 
 ## Usage
-By running `poke-cli --help`, it'll display information on how to use the tool. 
+By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
 ```
 Welcome! This tool displays data about a selected Pokémon in the terminal!
       
 USAGE:
          poke-cli [flag]
-         poke-cli [pokemon name] [flag]
-         ----------
-         Example: poke-cli bulbasaur or poke-cli flutter-mane --types
-             
-GLOBAL FLAGS:
-         -h, --help      Shows the help menu
+         poke-cli [command] [flag]
+         poke-cli [command] [subcommand] [flag]
+      
+FLAGS:
+         -h, --help              Shows the help menu
+         -l, --latest            Prints the latest version of the program
 
-POKEMON NAME FLAGS:
-         Add a flag after declaring a Pokémon's name for more details!
-        --types
-        --abilities
+        
+COMMANDS
+         pokemon                 Get details of a specific Pokémon
+
 ```
