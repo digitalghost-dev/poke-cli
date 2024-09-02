@@ -13,9 +13,14 @@ func TestCLI(t *testing.T) {
 		expectedExit   int
 	}{
 		{
-			args:           []string{"pokemon"},
-			expectedOutput: "Please declare a Pokémon's name after [pokemon] command\nRun 'poke-cli --help' for more details\nerror: insufficient arguments\n",
-			expectedExit:   1,
+			args: []string{"pokemon"},
+			expectedOutput: "╭────────────────────────────────────────────────────────────╮\n" +
+				"│Error!                                                      │\n" +
+				"│Please declare a Pokémon's name after the [pokemon] command │\n" +
+				"│Run 'poke-cli pokemon -h' for more details                  │\n" +
+				"│error: insufficient arguments                               │\n" +
+				"╰────────────────────────────────────────────────────────────╯\n",
+			expectedExit: 1,
 		},
 		{
 			args:           []string{"pokemon", "bulbasaur"},
@@ -33,14 +38,20 @@ func TestCLI(t *testing.T) {
 			expectedExit:   0,
 		},
 		{
-			args:           []string{"pokemon", "chimchar", "types"},
-			expectedOutput: "Error: Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name\n",
-			expectedExit:   1,
+			args: []string{"pokemon", "chimchar", "types"},
+			expectedOutput: "╭─────────────────────────────────────────────────────────────────────────────────╮\n" +
+				"│Error!                                                                           │\n" +
+				"│Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name│\n" +
+				"╰─────────────────────────────────────────────────────────────────────────────────╯\n",
+			expectedExit: 1,
 		},
 		{
-			args:           []string{"pokemon", "flutter-mane", "types"},
-			expectedOutput: "Error: Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name\n",
-			expectedExit:   1,
+			args: []string{"pokemon", "flutter-mane", "types"},
+			expectedOutput: "╭─────────────────────────────────────────────────────────────────────────────────╮\n" +
+				"│Error!                                                                           │\n" +
+				"│Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name│\n" +
+				"╰─────────────────────────────────────────────────────────────────────────────────╯\n",
+			expectedExit: 1,
 		},
 		{
 			args:           []string{"pokemon", "AmPhaROs", "--types", "--abilities"},
