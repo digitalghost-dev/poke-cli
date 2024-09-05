@@ -63,6 +63,17 @@ func TestCLI(t *testing.T) {
 			expectedOutput: "Your selected Pokémon: Cloyster\nNational Pokédex #: 91\n──────\nTyping\nType 1: water\nType 2: ice\n─────────\nAbilities\nAbility 1: shell-armor\nAbility 2: skill-link\nHidden Ability: overcoat\n",
 			expectedExit:   0,
 		},
+		{
+			args: []string{"pokemon", "gyarados", "--help"},
+			expectedOutput: "╭──────────────────────────────────────────────────────────────╮\n" +
+				"│poke-cli pokemon <pokemon-name> [flags]                       │\n" +
+				"│                                                              │\n" +
+				"│FLAGS:                                                        │\n" +
+				"│     -a, --abilities      Prints out the Pokémon's abilities. │\n" +
+				"│     -t, --types          Prints out the Pokémon's typing.    │\n" +
+				"╰──────────────────────────────────────────────────────────────╯\n",
+			expectedExit: 0,
+		},
 	}
 
 	for _, test := range tests {
