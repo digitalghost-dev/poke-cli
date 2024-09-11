@@ -9,6 +9,13 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 )
 
+var (
+	helpBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FFCC00"))
+	styleBold = lipgloss.NewStyle().Bold(true)
+)
+
 func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
@@ -17,6 +24,14 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool) {
 
 	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the declared Pokémon's abilities")
 	shortAbilitiesFlag := pokeFlags.Bool("a", false, "Print the declared Pokémon's abilities")
+
+	pokeFlags.Usage = func() {
+		fmt.Println(
+			helpBorder.Render("poke-cli pokemon <pokemon-name> [flags]",
+				styleBold.Render("\n\nFLAGS:"), "\n\t", "-a, --abilities", "\t", "Prints out the Pokémon's abilities.",
+				"\n\t", "-t, --types", "\t\t", "Prints out the Pokémon's typing."),
+		)
+	}
 
 	return pokeFlags, typesFlag, shortTypesFlag, abilitiesFlag, shortAbilitiesFlag
 }

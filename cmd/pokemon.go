@@ -12,26 +12,43 @@ import (
 	"strings"
 )
 
+var (
+	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
+	errorBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
+	helpBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FFCC00"))
+	styleBold   = lipgloss.NewStyle().Bold(true)
+	styleItalic = lipgloss.NewStyle().Italic(true)
+)
+
 // ValidateArgs validates the command line arguments
-func ValidateArgs(args []string, errorColor lipgloss.Style) error {
+func ValidateArgs(args []string) error {
 
 	if len(args) > 5 {
-		return fmt.Errorf("error: too many arguments")
+		return fmt.Errorf(errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments"))
 	}
 
 	if len(args) < 3 {
-		fmt.Println(errorColor.Render("Please declare a Pokémon's name after [pokemon] command"))
-		fmt.Println(errorColor.Render("Run 'poke-cli --help' for more details"))
-		return fmt.Errorf("error: insufficient arguments")
+		return fmt.Errorf(errorBorder.Render(errorColor.Render("Error!"), "\nPlease declare a Pokémon's name after the [pokemon] command", "\nRun 'poke-cli pokemon -h' for more details", "\nerror: insufficient arguments"))
 	}
 
 	if len(args) > 3 {
 		for _, arg := range args[3:] {
 			if arg[0] != '-' {
-				errorMsg := fmt.Sprintf("Error: Invalid argument '%s'. Only flags are allowed after declaring a Pokémon's name", arg)
-				return fmt.Errorf(errorColor.Render(strings.TrimSpace(errorMsg)))
+				errorTitle := errorColor.Render("Error!")
+				errorString := fmt.Sprintf("\nInvalid argument '%s'. Only flags are allowed after declaring a Pokémon's name", arg)
+				formattedString := errorTitle + errorString
+				return fmt.Errorf(errorBorder.Render(formattedString))
 			}
 		}
+	}
+
+	if args[2] == "-h" || args[2] == "--help" {
+		flag.Usage()
+		os.Exit(0)
 	}
 
 	return nil
@@ -39,27 +56,19 @@ func ValidateArgs(args []string, errorColor lipgloss.Style) error {
 
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
-	const red = lipgloss.Color("#F2055C")
-	var errorColor = lipgloss.NewStyle().Foreground(red)
-
-	var styleBold = lipgloss.NewStyle().Bold(true)
-	var styleItalic = lipgloss.NewStyle().Italic(true)
 
 	flag.Usage = func() {
-		// Usage section
-		fmt.Println(styleBold.Render("\nUSAGE:"))
-		fmt.Println("\t", "poke-cli", styleBold.Render("pokemon"), "[flag]")
-		fmt.Println("\t", "Get details about a specific Pokémon")
-		fmt.Println("\t", "----------")
-		fmt.Println("\t", styleItalic.Render("Examples:"), "\t", "poke-cli pokemon bulbasaur")
-		fmt.Println("\t\t\t", "poke-cli pokemon flutter-mane --types")
-		fmt.Println("\t\t\t", "poke-cli pokemon excadrill -t -a")
-
-		// Flags section
-		fmt.Println(styleBold.Render("\nFLAGS:"))
-		fmt.Println("\t", "-a, --abilities", "\t", "Prints out the Pokémon's abilities.")
-		fmt.Println("\t", "-t, --types", "\t\t", "Prints out the Pokémon's typing.")
-		fmt.Print("\n")
+		fmt.Println(
+			helpBorder.Render(styleBold.Render("USAGE:"), "\n\t", "poke-cli", styleBold.Render("pokemon"), "<pokemon-name>", "[flag]",
+				"\n\t", "Get details about a specific Pokémon",
+				"\n\t", "----------",
+				"\n\t", styleItalic.Render("Examples:"), "\t", "poke-cli pokemon bulbasaur",
+				"\n\t\t\t", "poke-cli pokemon flutter-mane --types",
+				"\n\t\t\t", "poke-cli pokemon excadrill -t -a",
+				"\n",
+				styleBold.Render("\nFLAGS:"), "\n\t", "-a, --abilities", "\t", "Prints out the Pokémon's abilities.",
+				"\n\t", "-t, --types", "\t\t", "Prints out the Pokémon's typing."),
+		)
 	}
 
 	flag.Parse()
@@ -68,22 +77,18 @@ func PokemonCommand() {
 
 	args := os.Args
 
-	err := ValidateArgs(args, errorColor)
+	err := ValidateArgs(args)
 	if err != nil {
-		fmt.Println(errorColor.Render(err.Error()))
+		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
-	if args[2] == "-h" || args[2] == "--help" {
-		flag.Usage()
-		os.Exit(0)
-	}
-
-	endpoint := os.Args[1]
+	endpoint := strings.ToLower(args[1])
 	pokemonName := strings.ToLower(args[2])
 
 	if err := pokeFlags.Parse(args[3:]); err != nil {
 		fmt.Printf("error parsing flags: %v\n", err)
+		pokeFlags.Usage()
 		os.Exit(1)
 	}
 

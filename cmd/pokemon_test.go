@@ -1,14 +1,9 @@
 package cmd
 
 import (
-	"github.com/charmbracelet/lipgloss"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
-
-const red = lipgloss.Color("#F2055C")
-
-var errorColor = lipgloss.NewStyle().Foreground(red)
 
 func TestValidateArgs_ValidInput(t *testing.T) {
 	validInputs := [][]string{
@@ -20,7 +15,7 @@ func TestValidateArgs_ValidInput(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateArgs(input, errorColor)
+		err := ValidateArgs(input)
 		assert.NoError(t, err, "Expected no error for valid input")
 	}
 }
@@ -36,7 +31,7 @@ func TestValidateArgs_InvalidFlag(t *testing.T) {
 	}
 
 	for i, input := range invalidInputs {
-		err := ValidateArgs(input, errorColor)
+		err := ValidateArgs(input)
 		assert.Error(t, err, "Expected error for invalid flag")
 		assert.NotEmpty(t, expectedErrors[i], err.Error())
 	}
@@ -49,7 +44,7 @@ func TestValidateArgs_TooManyArgs(t *testing.T) {
 	expectedError := "error: too many arguments\n"
 
 	for _, input := range invalidInput {
-		err := ValidateArgs(input, errorColor)
+		err := ValidateArgs(input)
 		assert.Error(t, err, "Expected error for too many arguments")
 		assert.NotEqual(t, expectedError, err.Error())
 	}
