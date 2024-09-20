@@ -74,6 +74,25 @@ func TestCLI(t *testing.T) {
 				"╰──────────────────────────────────────────────────────────────╯\n",
 			expectedExit: 0,
 		},
+		{
+			args: []string{"--help"},
+			expectedOutput: "╭─────────────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!         │\n" +
+				"│                                                             │\n" +
+				"│ USAGE:                                                      │\n" +
+				"│    poke-cli [flag]                                          │\n" +
+				"│    poke-cli [command] [flag]                                │\n" +
+				"│    poke-cli [command] [subcommand] [flag]                   │\n" +
+				"│                                                             │\n" +
+				"│ FLAGS:                                                      │\n" +
+				"│    -h, --help      Shows the help menu                      │\n" +
+				"│    -l, --latest    Prints the latest version of the program │\n" +
+				"│                                                             │\n" +
+				"│ AVAILABLE COMMANDS:                                         │\n" +
+				"│    pokemon         Get details of a specific Pokémon        │\n" +
+				"╰─────────────────────────────────────────────────────────────╯\n",
+			expectedExit: 0,
+		},
 	}
 
 	for _, test := range tests {
