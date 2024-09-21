@@ -9,31 +9,31 @@ import (
 	"os"
 )
 
-func main() {
-	var styleBold = lipgloss.NewStyle().Bold(true)
+var (
+	styleBold  = lipgloss.NewStyle().Bold(true)
+	helpBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FFCC00"))
+)
 
+func main() {
 	latestFlag := flag.Bool("latest", false, "Prints the program's latest Docker Image and Release versions.")
 	shortLatestFlag := flag.Bool("l", false, "Prints the program's latest Docker Image and Release versions.")
 
 	flag.Usage = func() {
-		fmt.Println("Welcome! This tool displays data about a selected Pokémon in the terminal!")
-
-		// Usage section
-		fmt.Println(styleBold.Render("\nUSAGE:"))
-		fmt.Println("\t", "poke-cli [flag]")
-		fmt.Println("\t", "poke-cli [command] [flag]")
-		fmt.Println("\t", "poke-cli [command] [subcommand] [flag]")
-
-		// Flags section
-		fmt.Println(styleBold.Render("\nFLAGS:"))
-		fmt.Println("\t", "-h, --help", "\t\t", "Shows the help menu")
-		fmt.Println("\t", "-l, --latest", "\t\t", "Prints the latest version of the program")
-		fmt.Print("\n")
-
-		// Commands section
-		fmt.Println(styleBold.Render("\nCOMMANDS"))
-		fmt.Println("\t", "pokemon", "\t\t", "Get details of a specific Pokémon")
-		fmt.Print("\n")
+		helpMessage := helpBorder.Render(
+			"Welcome! This tool displays data related to Pokémon!",
+			"\n\n", styleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%-15s %s", "poke-cli [flag]", ""),
+			fmt.Sprintf("\n\t%-15s %s", "poke-cli [command] [flag]", ""),
+			fmt.Sprintf("\n\t%-15s %s", "poke-cli [command] [subcommand] [flag]", ""),
+			"\n\n", styleBold.Render("FLAGS:"),
+			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Shows the help menu"),
+			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest version of the program"),
+			"\n\n", styleBold.Render("AVAILABLE COMMANDS:"),
+			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details of a specific Pokémon"),
+		)
+		fmt.Println(helpMessage)
 	}
 
 	flag.Parse()
