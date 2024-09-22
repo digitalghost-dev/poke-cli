@@ -40,13 +40,13 @@ git clone https://github.com/digitalghost-dev/poke-cli.git
 ### Docker
 Use a Docker Image instead:
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.4.2 [command] [subcommand] [flag]
+docker run --rm -it digitalghostdev/poke-cli:v0.4.3 [command] [subcommand] [flag]
 ```
 
 ## Usage
 By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
 ```
-Welcome! This tool displays data about a selected Pokémon in the terminal!
+Welcome! This tool displays data related to Pokémon!
       
 USAGE:
          poke-cli [flag]

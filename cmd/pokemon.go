@@ -58,17 +58,21 @@ func ValidateArgs(args []string) error {
 func PokemonCommand() {
 
 	flag.Usage = func() {
-		fmt.Println(
-			helpBorder.Render(styleBold.Render("USAGE:"), "\n\t", "poke-cli", styleBold.Render("pokemon"), "<pokemon-name>", "[flag]",
-				"\n\t", "Get details about a specific Pokémon",
-				"\n\t", "----------",
-				"\n\t", styleItalic.Render("Examples:"), "\t", "poke-cli pokemon bulbasaur",
-				"\n\t\t\t", "poke-cli pokemon flutter-mane --types",
-				"\n\t\t\t", "poke-cli pokemon excadrill -t -a",
-				"\n",
-				styleBold.Render("\nFLAGS:"), "\n\t", "-a, --abilities", "\t", "Prints out the Pokémon's abilities.",
-				"\n\t", "-t, --types", "\t\t", "Prints out the Pokémon's typing."),
+		helpMessage := helpBorder.Render(
+			styleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styleBold.Render("pokemon"), "<pokemon-name>", "[flag]"),
+			fmt.Sprintf("\n\t%-30s", "Get details about a specific Pokémon"),
+			fmt.Sprintf("\n\t%-30s", "----------"),
+			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Examples:\n")),
+			fmt.Sprintf("\n\t%-30s", "poke-cli pokemon bulbasaur"),
+			fmt.Sprintf("\n\t%-30s", "poke-cli pokemon flutter-mane --types"),
+			fmt.Sprintf("\n\t%-30s", "poke-cli pokemon excadrill -t -a"),
+			"\n\n",
+			styleBold.Render("FLAGS:"),
+			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints out the Pokémon's abilities."),
+			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints out the Pokémon's typing."),
 		)
+		fmt.Println(helpMessage)
 	}
 
 	flag.Parse()
