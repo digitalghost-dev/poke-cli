@@ -5,7 +5,11 @@ import (
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/digitalghost-dev/poke-cli/connections"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"os"
+	"strings"
 )
 
 var baseStyle = lipgloss.NewStyle().
@@ -40,7 +44,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.selectedOption != "" {
-		return fmt.Sprintf("Selected type: %s\n", m.selectedOption)
+		return ""
 	}
 	// Otherwise, display the table
 	return "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + baseStyle.Render(m.table.View()) + "\n"
@@ -91,8 +95,24 @@ func TypesCommand() {
 	t.SetStyles(s)
 
 	m := model{table: t}
-	if _, err := tea.NewProgram(m).Run(); err != nil {
+
+	// Run the program and capture the final state
+	programModel, err := tea.NewProgram(m).Run()
+	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
+	// Type assert to model and access the selected option
+	finalModel := programModel.(model)
+
+	// Convert the selected option to lowercase
+	typesName := strings.ToLower(finalModel.selectedOption)
+
+	// Use the TypesApiCall to fetch the details of the selected type
+	_, typeName, typeID := connections.TypesApiCall("type", typesName, "https://pokeapi.co/api/v2/")
+	capitalizedString := cases.Title(language.English).String(typeName)
+
+	// Display the result
+	fmt.Printf("You selected Type: %s\nType ID: %d\n", capitalizedString, typeID)
 }
