@@ -28,12 +28,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "enter":
 			selectedRow := m.table.SelectedRow()
-			if len(selectedRow) > 0 {
-				m.selectedOption = selectedRow[0]
-				return m, tea.Batch(
-					tea.Quit,
-				)
-			}
+			m.selectedOption = selectedRow[0]
+			return m, tea.Batch(
+				tea.Quit,
+			)
 		}
 	}
 	m.table, cmd = m.table.Update(msg)
@@ -42,7 +40,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.selectedOption != "" {
-		return fmt.Sprintf("Selected type: %s\n%s", m.selectedOption)
+		return fmt.Sprintf("Selected type: %s\n", m.selectedOption)
 	}
 	// Otherwise, display the table
 	return "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + baseStyle.Render(m.table.View()) + "\n"
