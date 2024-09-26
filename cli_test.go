@@ -90,6 +90,7 @@ func TestCLI(t *testing.T) {
 				"│                                                             │\n" +
 				"│ AVAILABLE COMMANDS:                                         │\n" +
 				"│    pokemon         Get details of a specific Pokémon        │\n" +
+				"│    types           Get details of a specific typing         │\n" +
 				"╰─────────────────────────────────────────────────────────────╯\n",
 			expectedExit: 0,
 		},
