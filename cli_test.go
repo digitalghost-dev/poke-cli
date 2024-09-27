@@ -13,6 +13,11 @@ func TestCLI(t *testing.T) {
 		expectedExit   int
 	}{
 		{
+			args:           []string{"pokemons"},
+			expectedOutput: "Unknown command\n",
+			expectedExit:   0,
+		},
+		{
 			args: []string{"pokemon"},
 			expectedOutput: "╭────────────────────────────────────────────────────────────╮\n" +
 				"│Error!                                                      │\n" +
