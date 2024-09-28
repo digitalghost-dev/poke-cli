@@ -26,13 +26,14 @@ func TestValidateTypesArgs(t *testing.T) {
 	// Test case: Help flag (-h)
 	args := []string{"poke-cli", "types", "-h"}
 	err := ValidateTypesArgs(args)
-	if err == nil || err.Error() != "" {
-		t.Errorf("Expected no error for help flag, got: %v", err)
+	if err != nil {
+		t.Errorf("Expected no error for help flag, but got: %v", err)
 	}
 
-	// Test case: Valid args
+	// Test case: Valid args (e.g., no subcommands or flags after 'types')
 	args = []string{"poke-cli", "types"}
 	err = ValidateTypesArgs(args)
+	// Ensure no error is returned for valid arguments
 	if err != nil {
 		t.Errorf("Expected no error for valid args, got: %v", err)
 	}
