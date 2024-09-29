@@ -41,7 +41,7 @@ func ValidateTypesArgs(args []string) error {
 		return fmt.Errorf(errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments"))
 	}
 
-	if len(args) == 3 && (args[2] == "-h" || args[2] == "--help") {
+	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
 		fmt.Println(errorBorder.Render("Error! The only currently available options\nafter [types] command is '-h' or '--help'"))
 		return nil
 	}
