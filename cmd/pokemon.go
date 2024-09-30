@@ -24,36 +24,6 @@ var (
 	styleItalic = lipgloss.NewStyle().Italic(true)
 )
 
-// ValidateArgs validates the command line arguments
-func ValidateArgs(args []string) error {
-
-	if len(args) > 5 {
-		return fmt.Errorf(errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments"))
-	}
-
-	if len(args) < 3 {
-		return fmt.Errorf(errorBorder.Render(errorColor.Render("Error!"), "\nPlease declare a Pokémon's name after the [pokemon] command", "\nRun 'poke-cli pokemon -h' for more details", "\nerror: insufficient arguments"))
-	}
-
-	if len(args) > 3 {
-		for _, arg := range args[3:] {
-			if arg[0] != '-' {
-				errorTitle := errorColor.Render("Error!")
-				errorString := fmt.Sprintf("\nInvalid argument '%s'. Only flags are allowed after declaring a Pokémon's name", arg)
-				formattedString := errorTitle + errorString
-				return fmt.Errorf(errorBorder.Render(formattedString))
-			}
-		}
-	}
-
-	if args[2] == "-h" || args[2] == "--help" {
-		flag.Usage()
-		os.Exit(0)
-	}
-
-	return nil
-}
-
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
 
@@ -81,7 +51,7 @@ func PokemonCommand() {
 
 	args := os.Args
 
-	err := ValidateArgs(args)
+	err := ValidatePokemonArgs(args)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
