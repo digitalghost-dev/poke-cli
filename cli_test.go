@@ -101,11 +101,11 @@ func TestCLI(t *testing.T) {
 			expectedExit: 0,
 		},
 		{
-			args: []string{"types", "ground"},
-			expectedOutput: "╭───────────────────────────────────────────╮\n" +
-				"│Error! The only currently available options│\n" +
-				"│after [types] command is '-h' or '--help'  │\n" +
-				"╰───────────────────────────────────────────╯\n",
+			args: []string{"types", "ground", "all"},
+			expectedOutput: "╭──────────────────╮\n" +
+				"│Error!            │\n" +
+				"│Too many arguments│\n" +
+				"╰──────────────────╯\n",
 			expectedExit: 1,
 		},
 	}
