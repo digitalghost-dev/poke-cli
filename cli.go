@@ -29,9 +29,11 @@ func main() {
 			fmt.Sprintf("\n\t%-15s %s", "poke-cli [command] [subcommand] [flag]", ""),
 			"\n\n", styleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Shows the help menu"),
-			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest version of the program"),
+			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest available"),
+			fmt.Sprintf("\n\t%-15s %s", "", "version of the program"),
 			"\n\n", styleBold.Render("AVAILABLE COMMANDS:"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details of a specific Pokémon"),
+			fmt.Sprintf("\n\t%-15s %s", "types", "Get details of a specific typing"),
 		)
 		fmt.Println(helpMessage)
 	}
