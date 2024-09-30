@@ -43,11 +43,14 @@ func main() {
 		"types":   cmd.TypesCommand,
 	}
 
-	if *latestFlag || *shortLatestFlag {
+	if len(os.Args) < 2 {
+		flag.Usage()
+	} else if *latestFlag || *shortLatestFlag {
 		flags.LatestFlag()
 	} else if cmdFunc, exists := commands[os.Args[1]]; exists {
 		cmdFunc()
 	} else {
+		//flag.Usage()
 		fmt.Println("Unknown command")
 	}
 }
