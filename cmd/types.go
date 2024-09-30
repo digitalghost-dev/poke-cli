@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"flag"
 	"fmt"
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -46,11 +47,38 @@ func (m model) View() string {
 	if m.selectedOption != "" {
 		return ""
 	}
-	// Otherwise, display the table
 	return "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + baseStyle.Render(m.table.View()) + "\n"
 }
 
 func TypesCommand() {
+	flag.Usage = func() {
+		helpMessage := helpBorder.Render(
+			styleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styleBold.Render("types"), "[flag]"),
+			fmt.Sprintf("\n\t%-30s", "Get details about a specific typing"),
+			fmt.Sprintf("\n\t%-30s", "----------"),
+			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Examples:")),
+			fmt.Sprintf("\n\t%-30s", "poke-cli types"),
+			fmt.Sprintf("\n\t%-30s", "A table will then display with the option to select a type."),
+		)
+		fmt.Println(helpMessage)
+	}
+
+	flag.Parse()
+
+	args := os.Args
+
+	err := ValidateTypesArgs(args)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	if len(args) == 3 && (args[2] == "-h" || args[2] == "--help") {
+		flag.Usage()
+		return
+	}
+
 	columns := []table.Column{
 		{Title: "Type", Width: 16},
 	}
@@ -106,13 +134,13 @@ func TypesCommand() {
 	// Type assert to model and access the selected option
 	finalModel := programModel.(model)
 
-	// Convert the selected option to lowercase
+	endpoint := strings.ToLower(args[1])[0:4]
 	typesName := strings.ToLower(finalModel.selectedOption)
 
-	// Use the TypesApiCall to fetch the details of the selected type
-	_, typeName, typeID := connections.TypesApiCall("type", typesName, "https://pokeapi.co/api/v2/")
+	typeResponse, typeName, _ := connections.TypesApiCall(endpoint, typesName, "https://pokeapi.co/api/v2/")
 	capitalizedString := cases.Title(language.English).String(typeName)
 
-	// Display the result
-	fmt.Printf("You selected Type: %s\nType ID: %d\n", capitalizedString, typeID)
+	pokemonCount := len(typeResponse.Pokemon)
+
+	fmt.Printf("You selected Type: %s\nNumber of Pokémon with type: %d\n", capitalizedString, pokemonCount)
 }
