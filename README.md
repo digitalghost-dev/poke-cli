@@ -2,7 +2,7 @@
     <img height="250" width="350" src="https://cdn.simpleicons.org/pokemon/FFCC00" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.2.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.6.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
 </div>
 
 <div align="center">
@@ -32,33 +32,37 @@ git clone https://github.com/digitalghost-dev/poke-cli.git
 ```bash
 # Windows
 .\poke-cli.exe pokemon charizard --types --abilities
+.\poke-cli.exe types
 
 # Unix
 .\poke-cli pokemon vespiquen -t -a
+.\poke-cli types
 ```
 
 ### Docker
 Use a Docker Image instead:
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.4.3 [command] [subcommand] [flag]
+docker run --rm -it digitalghostdev/poke-cli:v0.6.0 [command] [subcommand] [flag]
 ```
 
 ## Usage
 By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
 ```
-Welcome! This tool displays data related to Pokémon!
-      
-USAGE:
-         poke-cli [flag]
-         poke-cli [command] [flag]
-         poke-cli [command] [subcommand] [flag]
-      
-FLAGS:
-         -h, --help              Shows the help menu
-         -l, --latest            Prints the latest version of the program
-
-        
-COMMANDS
-         pokemon                 Get details of a specific Pokémon
-
+╭──────────────────────────────────────────────────────╮
+│Welcome! This tool displays data related to Pokémon!  │
+│                                                      │
+│ USAGE:                                               │
+│    poke-cli [flag]                                   │
+│    poke-cli [command] [flag]                         │
+│    poke-cli [command] [subcommand] [flag]            │
+│                                                      │
+│ FLAGS:                                               │
+│    -h, --help      Shows the help menu               │
+│    -l, --latest    Prints the latest available       │
+│                    version of the program            │
+│                                                      │
+│ AVAILABLE COMMANDS:                                  │
+│    pokemon         Get details of a specific Pokémon │
+│    types           Get details of a specific typing  │
+╰──────────────────────────────────────────────────────╯
 ```
