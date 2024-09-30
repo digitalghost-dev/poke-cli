@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestValidateArgs_ValidInput(t *testing.T) {
+func TestValidatePokemonArgs_ValidInput(t *testing.T) {
 	validInputs := [][]string{
 		{"poke-cli", "pokemon", "pikachu"},
 		{"poke-cli", "pokemon", "bulbasaur", "--types"},
@@ -20,7 +20,7 @@ func TestValidateArgs_ValidInput(t *testing.T) {
 	}
 }
 
-func TestValidateArgs_InvalidFlag(t *testing.T) {
+func TestValidatePokemonArgs_InvalidFlag(t *testing.T) {
 	invalidInputs := [][]string{
 		{"poke-cli", "pokemon", "bulbasaur", "types"},
 		{"poke-cli", "pokemon", "mewtwo", "--types", "abilities"},
@@ -37,7 +37,7 @@ func TestValidateArgs_InvalidFlag(t *testing.T) {
 	}
 }
 
-func TestValidateArgs_TooManyArgs(t *testing.T) {
+func TestValidatePokemonArgs_TooManyArgs(t *testing.T) {
 	invalidInput := [][]string{
 		{"poke-cli", "pikachu", "--types", "all", "normal"},
 	}
