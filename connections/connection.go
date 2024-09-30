@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-type Pokemon struct {
+type PokemonJSONStruct struct {
 	Name  string `json:"name"`
 	ID    int    `json:"id"`
 	Types []struct {
@@ -27,6 +27,18 @@ type Pokemon struct {
 		Hidden bool `json:"hidden"`
 		Slot   int  `json:"slot"`
 	} `json:"abilities"`
+}
+
+type TypesJSONStruct struct {
+	Name    string `json:"name"`
+	ID      int    `json:"id"`
+	Pokemon []struct {
+		Pokemon struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"pokemon"`
+		Slot int `json:"slot"`
+	} `json:"pokemon"`
 }
 
 var httpGet = http.Get
@@ -61,12 +73,22 @@ func ApiCallSetup(url string, target interface{}) {
 	}
 }
 
-func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (Pokemon, string, int) {
+func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int) {
 
 	url := baseURL + endpoint + "/" + pokemonName
-	var pokemonStruct Pokemon
+	var pokemonStruct PokemonJSONStruct
 
 	ApiCallSetup(url, &pokemonStruct)
 
 	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID
+}
+
+func TypesApiCall(endpoint string, typesName string, baseURL string) (TypesJSONStruct, string, int) {
+
+	url := baseURL + endpoint + "/" + typesName
+	var typesStruct TypesJSONStruct
+
+	ApiCallSetup(url, &typesStruct)
+
+	return typesStruct, typesStruct.Name, typesStruct.ID
 }
