@@ -13,6 +13,9 @@
 ## Overview
 A CLI tool for viewing data about Pokémon from your terminal!
 
+## Demo
+![demo](https://pokemon-objects.nyc3.digitaloceanspaces.com/demo.gif)
+
 ## Install
 
 ### Go Build
