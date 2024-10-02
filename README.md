@@ -18,35 +18,48 @@ A CLI tool for viewing data about Pokémon from your terminal!
 
 ## Install
 
-### Go Build
-1. Make sure [Go is installed](https://go.dev/dl/) on your machine. This project uses `v1.21`.
-   * If on Windows, install [Git](https://git-scm.com/download/win) as well.
-2. Create a new directory. 
-   * For example, name the directory `poke-cli`. 
-   * Run `cd poke-cli` to move into that directory after creation.
-   * Run `git init` to initialize the repository/directory.
-3. Clone the repository in the previously initialized directory: 
-```bash
-git clone https://github.com/digitalghost-dev/poke-cli.git
-```
-4. Run `go build .`
-5. A binary will be created then the tool can be used! It can also be added to your path to run the binary from anywhere.
-   * Example usage:
-```bash
-# Windows
-.\poke-cli.exe pokemon charizard --types --abilities
-.\poke-cli.exe types
+### Taskfile
+_Taskfile can build the executable for you_
 
-# Unix
-.\poke-cli pokemon vespiquen -t -a
-.\poke-cli types
-```
+1. Install [Taskfile](https://taskfile.dev/installation/).
+2. Once installed, clone the repository and `cd` into it.
+3. Then, simply run `task build` and an executable for your machine type will be created. 
+    * Example usage:
+   ```bash
+   # Windows
+   .\poke-cli.exe pokemon charizard --types --abilities
+   
+   # Unix
+   .\poke-cli pokemon vespiquen -t -a
+   ```
+
 
 ### Docker
-Use a Docker Image instead:
+_Use a Docker Image_
+
 ```bash
 docker run --rm -it digitalghostdev/poke-cli:v0.6.0 [command] [subcommand] [flag]
 ```
+
+### Go Build
+_Build the executable yourself_
+
+1. Install [Golang](https://go.dev/dl/).
+2. Once installed, clone the repository and `cd` into it.
+3. Run `go build .` or `go install` to build the executable.
+    * Keep in mind that `go install` will place the executable in your `$GOPATH/bin` directory. [Read More](https://www.golang.company/blog/what-is-the-difference-between-go-run-go-build-and-go-install-commands).
+4. An executable will be created then the tool can be used! It can also be added to your path to run the binary from anywhere.
+   * Example usage:
+   ```bash
+   # Windows
+   .\poke-cli.exe pokemon charizard --types --abilities
+   
+   # Unix
+   .\poke-cli pokemon vespiquen -t -a
+   
+   # If built with go install
+   poke-cli pokemon slugma -t
+   ```
 
 ## Usage
 By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
