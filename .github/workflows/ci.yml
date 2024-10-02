@@ -2,6 +2,12 @@ name: Docker Image CI
 
 on:
   push:
+    paths-ignore:
+      - 'README.md'
+      - '.github/**'
+      - 'demo**'
+      - 'go.mod'
+      - 'go.sum'
     branches:
       - main
 env:
