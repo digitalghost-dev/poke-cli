@@ -50,6 +50,19 @@ func (m model) View() string {
 	return "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + baseStyle.Render(m.table.View()) + "\n"
 }
 
+func selectionResult(endpoint, typesName string) error {
+	baseURL := "https://pokeapi.co/api/v2/"
+
+	typeResponse, typeName, _ := connections.TypesApiCall(endpoint, typesName, baseURL)
+
+	capitalizedString := cases.Title(language.English).String(typeName)
+
+	pokemonCount := len(typeResponse.Pokemon)
+
+	fmt.Printf("You selected Type: %s\nNumber of Pokémon with type: %d\n", capitalizedString, pokemonCount)
+	return nil
+}
+
 func TypesCommand() {
 	flag.Usage = func() {
 		helpMessage := helpBorder.Render(
@@ -123,8 +136,6 @@ func TypesCommand() {
 	t.SetStyles(s)
 
 	m := model{table: t}
-
-	// Run the program and capture the final state
 	programModel, err := tea.NewProgram(m).Run()
 	if err != nil {
 		fmt.Println("Error running program:", err)
@@ -133,14 +144,14 @@ func TypesCommand() {
 
 	// Type assert to model and access the selected option
 	finalModel := programModel.(model)
-
-	endpoint := strings.ToLower(args[1])[0:4]
 	typesName := strings.ToLower(finalModel.selectedOption)
 
-	typeResponse, typeName, _ := connections.TypesApiCall(endpoint, typesName, "https://pokeapi.co/api/v2/")
-	capitalizedString := cases.Title(language.English).String(typeName)
+	// Extract the first 4 characters of the endpoint from the argument
+	endpoint := strings.ToLower(args[1])[0:4]
 
-	pokemonCount := len(typeResponse.Pokemon)
-
-	fmt.Printf("You selected Type: %s\nNumber of Pokémon with type: %d\n", capitalizedString, pokemonCount)
+	// Call the selectionTable function with the selected type and endpoint
+	if err := selectionResult(endpoint, typesName); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 }
