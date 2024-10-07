@@ -87,11 +87,6 @@ func TypesCommand() {
 		os.Exit(1)
 	}
 
-	if len(args) == 3 && (args[2] == "-h" || args[2] == "--help") {
-		flag.Usage()
-		return
-	}
-
 	columns := []table.Column{
 		{Title: "Type", Width: 16},
 	}
