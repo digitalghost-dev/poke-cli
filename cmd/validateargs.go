@@ -3,6 +3,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"os"
 )
 
 // ValidatePokemonArgs validates the command line arguments
@@ -23,8 +24,8 @@ func ValidatePokemonArgs(args []string) error {
 			if arg[0] != '-' {
 				errorTitle := errorColor.Render("Error!")
 				errorString := fmt.Sprintf("\nInvalid argument '%s'. Only flags are allowed after declaring a Pokémon's name", arg)
-				formattedString := errorTitle + errorString
-				renderedError := errorBorder.Render(formattedString)
+				finalErrorMessage := errorTitle + errorString
+				renderedError := errorBorder.Render(finalErrorMessage)
 				return fmt.Errorf("%s", renderedError)
 			}
 		}
@@ -45,10 +46,24 @@ func ValidateTypesArgs(args []string) error {
 		return fmt.Errorf("%s", errMessage)
 	}
 
+	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
+	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
 	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
-		errMessage := errorBorder.Render("Error! The only currently available options\nafter [types] command is '-h' or '--help'")
-		return fmt.Errorf("%s", errMessage)
-	}
+		errorTitle := errorColor.Render("Error!")
+		errorString := "\nThe only currently available options\nafter [types] command are '-h' or '--help'"
+		finalErrorMessage := errorTitle + errorString
+		renderedError := errorBorder.Render(finalErrorMessage)
+		return fmt.Errorf("%s", renderedError)
 
+		// Check if there are exactly 3 arguments and the third argument is either '-h' or '--help'
+		// If true, display the usage information
+	} else if len(args) == 3 && (args[2] == "-h" || args[2] == "--help") {
+		flag.Usage()
+
+		// Only call os.Exit if not in test mode
+		if flag.Lookup("test.v") == nil {
+			os.Exit(0)
+		}
+	}
 	return nil
 }
