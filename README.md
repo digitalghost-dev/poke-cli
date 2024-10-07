@@ -2,7 +2,7 @@
     <img height="250" width="350" src="https://cdn.simpleicons.org/pokemon/FFCC00" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.6.1?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.6.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
 </div>
 
 <div align="center">
@@ -38,7 +38,7 @@ _Taskfile can build the executable for you_
 _Use a Docker Image_
 
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.6.0 [command] [subcommand] [flag]
+docker run --rm -it digitalghostdev/poke-cli:v0.6.2 [command] [subcommand] [flag]
 ```
 
 ### Go Build
