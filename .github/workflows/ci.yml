@@ -65,7 +65,7 @@ jobs:
       - name: Prepare Docker Build Context
         run: |
           mkdir docker-context
-          cp -r . docker-context/
+          rsync -av --exclude=docker-context . docker-context/
 
       - name: Build and Export
         uses: 'docker/build-push-action@v5.0.0'
