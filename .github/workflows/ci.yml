@@ -111,7 +111,9 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           image: poke-cli:${{ env.VERSION_NUMBER }}
+          format: spdx-json
           artifact-name: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          output-file: /tmp/poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
           upload-artifact: true
 
   grype:
@@ -126,9 +128,10 @@ jobs:
 
     steps:
       - name: Download SBOM
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          path: /tmp
 
       - name: Scan SBOM
         uses: anchore/scan-action@v3
