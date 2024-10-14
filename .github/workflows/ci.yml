@@ -1,6 +1,16 @@
 name: Docker Image CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+
   push:
     paths-ignore:
       - 'README.md'
@@ -15,8 +25,129 @@ env:
   REGISTRY_NAME: digitalghostdev/poke-cli
 
 jobs:
+  snyk:
+    runs-on: ubuntu-22.04
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Snyk
+        uses: snyk/actions/golang@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif --skip-unresolved=true
+
+      - name: Upload Result to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: snyk.sarif
+
+  build-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [snyk]
+    if: needs.snyk.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v3.0.0'
+
+      - name: Prepare Docker Build Context
+        run: |
+          mkdir docker-context
+          cp -r . docker-context/
+
+      - name: Build and Export
+        uses: 'docker/build-push-action@v5.0.0'
+        with:
+          context: ./docker-context
+          tags: poke-cli:${{ env.VERSION_NUMBER }}
+          outputs: type=docker,dest=/tmp/poke-cli.tar
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: poke-cli
+          path: /tmp/poke-cli.tar
+
+  syft:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    runs-on: ubuntu-22.04
+    needs: [build-docker-image]
+    if: needs.build-docker-image.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v3.0.0'
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: poke-cli
+          path: /tmp
+
+      - name: Load Image
+        run: |
+          docker load --input /tmp/poke-cli.tar
+          docker image ls -a
+
+      - name: Create and Upload SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: poke-cli:${{ env.VERSION_NUMBER }}
+          artifact-name: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          upload-artifact: true
+
+  grype:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    runs-on: ubuntu-22.04
+    needs: [syft]
+    if: needs.syft.result == 'success'
+
+    steps:
+      - name: Download SBOM
+        uses: actions/download-artifact@v3
+        with:
+          name: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+
+      - name: Scan SBOM
+        uses: anchore/scan-action@v3
+        id: scan
+        with:
+          sbom: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          fail-build: false
+          output-format: sarif
+          severity-cutoff: critical
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+
   architecture-build:
     runs-on: ubuntu-22.04
+    needs: [snyk]
+    if: needs.snyk.result == 'success'
 
     strategy:
       fail-fast: false
@@ -24,7 +155,6 @@ jobs:
         platform: [linux/amd64, linux/arm64]
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -81,11 +211,9 @@ jobs:
 
   create-manifest-and-push:
     runs-on: ubuntu-22.04
-    needs:
-      - architecture-build
+    needs: [architecture-build]
 
     steps:
-
       - name: Download Digests
         uses: actions/download-artifact@v4
         with:
