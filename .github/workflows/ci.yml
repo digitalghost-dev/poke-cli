@@ -134,7 +134,7 @@ jobs:
           path: /tmp
 
       - name: Scan SBOM
-        uses: anchore/scan-action@v3
+        uses: anchore/scan-action@v5
         id: scan
         with:
           sbom: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
