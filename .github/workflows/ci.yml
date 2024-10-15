@@ -137,7 +137,7 @@ jobs:
         uses: anchore/scan-action@v5
         id: scan
         with:
-          sbom: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          sbom: /tmp/poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
           fail-build: false
           output-format: sarif
           severity-cutoff: critical
