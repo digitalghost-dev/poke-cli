@@ -108,6 +108,18 @@ func TestCLI(t *testing.T) {
 				"╰──────────────────╯\n",
 			expectedExit: 1,
 		},
+		{
+			args: []string{"types", "--help"},
+			expectedOutput: "┌───────────────────────────────────────────────────────────────┐\n" +
+				"│USAGE:                                                         │\n" +
+				"│    poke-cli types [flag]                                      │\n" +
+				"│    Get details about a specific typing.                       │\n" + // Added period here
+				"│    Examples:                                                  │\n" +
+				"│    poke-cli types                                             │\n" +
+				"│    A table will then display with the option to select a type.│\n" +
+				"└───────────────────────────────────────────────────────────────┘\n", // Updated bottom border to "└"
+			expectedExit: 0,
+		},
 	}
 
 	for _, test := range tests {
