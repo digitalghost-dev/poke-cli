@@ -3,25 +3,12 @@ package cmd
 import (
 	"flag"
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"os"
 	"strings"
-)
-
-var (
-	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
-	errorBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#F2055C"))
-	helpBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFCC00"))
-	styleBold   = lipgloss.NewStyle().Bold(true)
-	styleItalic = lipgloss.NewStyle().Italic(true)
 )
 
 // PokemonCommand processes the Pokémon command
