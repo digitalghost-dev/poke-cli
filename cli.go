@@ -14,6 +14,10 @@ var (
 	helpBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#FFCC00"))
+	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
+	errorBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
 )
 
 func main() {
@@ -52,7 +56,13 @@ func main() {
 	} else if cmdFunc, exists := commands[os.Args[1]]; exists {
 		cmdFunc()
 	} else {
-		//flag.Usage()
-		fmt.Println("Unknown command")
+		errMessage := errorBorder.Render(
+			errorColor.Render("Error!"),
+			styleBold.Render("\nAvailable Commands:"),
+			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details of a specific Pokémon"),
+			fmt.Sprintf("\n\t%-15s %s", "types", "Get details of a specific typing\n"),
+			fmt.Sprintf("\nAlso run %s for more info!", styleBold.Render("[poke-cli -h]")),
+		)
+		fmt.Printf("%s\n", errMessage)
 	}
 }
