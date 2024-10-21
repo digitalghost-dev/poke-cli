@@ -21,7 +21,7 @@ func TestValidateTypesArgs_TooManyArgs(t *testing.T) {
 	invalidInputs := [][]string{
 		{"poke-cli", "types", "ground"},
 	}
-	expectedError := "error, too many arguemnts\n"
+	expectedError := "error, too many arguments\n"
 
 	for _, input := range invalidInputs {
 		err := ValidateTypesArgs(input)

@@ -13,9 +13,16 @@ func TestCLI(t *testing.T) {
 		expectedExit   int
 	}{
 		{
-			args:           []string{"pokemons"},
-			expectedOutput: "Unknown command\n",
-			expectedExit:   0,
+			args: []string{"pokemons"},
+			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
+				"│Error!                                                │\n" +
+				"│Available Commands:                                   │\n" +
+				"│    pokemon         Get details of a specific Pokémon │\n" +
+				"│    types           Get details of a specific typing  │\n" +
+				"│                                                      │\n" +
+				"│Also run [poke-cli -h] for more info!                 │\n" +
+				"╰──────────────────────────────────────────────────────╯\n",
+			expectedExit: 0,
 		},
 		{
 			args: []string{"pokemon"},
@@ -59,14 +66,36 @@ func TestCLI(t *testing.T) {
 			expectedExit: 1,
 		},
 		{
-			args:           []string{"pokemon", "AmPhaROs", "--types", "--abilities"},
-			expectedOutput: "Your selected Pokémon: Ampharos\nNational Pokédex #: 181\n──────\nTyping\nType 1: electric\n─────────\nAbilities\nAbility 1: static\nHidden Ability: plus\n",
-			expectedExit:   0,
+			args: []string{
+				"pokemon", "AmPhaROs", "--types", "--abilities",
+			},
+			expectedOutput: "Your selected Pokémon: Ampharos\n" +
+				"National Pokédex #: 181\n" +
+				"──────\n" +
+				"Typing\n" +
+				"Type 1: electric\n" +
+				"─────────\n" +
+				"Abilities\n" +
+				"Ability 1: static\n" +
+				"Hidden Ability: plus\n",
+			expectedExit: 0,
 		},
 		{
-			args:           []string{"pokemon", "CLOysTeR", "-t", "-a"},
-			expectedOutput: "Your selected Pokémon: Cloyster\nNational Pokédex #: 91\n──────\nTyping\nType 1: water\nType 2: ice\n─────────\nAbilities\nAbility 1: shell-armor\nAbility 2: skill-link\nHidden Ability: overcoat\n",
-			expectedExit:   0,
+			args: []string{
+				"pokemon", "CLOysTeR", "-t", "-a",
+			},
+			expectedOutput: "Your selected Pokémon: Cloyster\n" +
+				"National Pokédex #: 91\n" +
+				"──────\n" +
+				"Typing\n" +
+				"Type 1: water\n" +
+				"Type 2: ice\n" +
+				"─────────\n" +
+				"Abilities\n" +
+				"Ability 1: shell-armor\n" +
+				"Ability 2: skill-link\n" +
+				"Hidden Ability: overcoat\n",
+			expectedExit: 0,
 		},
 		{
 			args: []string{"pokemon", "gyarados", "--help"},
@@ -107,6 +136,19 @@ func TestCLI(t *testing.T) {
 				"│Too many arguments│\n" +
 				"╰──────────────────╯\n",
 			expectedExit: 1,
+		},
+		{
+			args: []string{"types", "--help"},
+			expectedOutput: "╭───────────────────────────────────────────────────────────────╮\n" +
+				"│USAGE:                                                         │\n" +
+				"│    poke-cli types [flag]                                      │\n" +
+				"│    Get details about a specific typing                        │\n" +
+				"│    ----------                                                 │\n" +
+				"│    Examples:                                                  │\n" +
+				"│    poke-cli types                                             │\n" +
+				"│    A table will then display with the option to select a type.│\n" +
+				"╰───────────────────────────────────────────────────────────────╯\n",
+			expectedExit: 0,
 		},
 	}
 
