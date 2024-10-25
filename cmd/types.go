@@ -122,11 +122,15 @@ func tableGeneration(endpoint string) table.Model {
 	baseURL := "https://pokeapi.co/api/v2/"
 	typeResponse, typeName, _ := connections.TypesApiCall(endpoint, typesName, baseURL)
 
-	capitalizedString := cases.Title(language.English).String(typeName)
+	selectedType := cases.Title(language.English).String(typeName)
 
 	pokemonCount := len(typeResponse.Pokemon)
 
-	fmt.Printf("You selected Type: %s\nNumber of Pokémon with type: %d\n", capitalizedString, pokemonCount)
+	// Picking the type's color from the colorMap map in cmd/styles.go:
+	coloredStyle := lipgloss.NewStyle().Foreground(lipgloss.Color(colorMap[typeName]))
+	coloredType := coloredStyle.Render(selectedType)
+
+	fmt.Printf("You selected Type: %s\nNumber of Pokémon with type: %d\n", coloredType, pokemonCount)
 	return t
 }
 
