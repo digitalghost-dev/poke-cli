@@ -17,4 +17,24 @@ var (
 				BorderForeground(lipgloss.Color("#FFCC00"))
 	styleBold   = lipgloss.NewStyle().Bold(true)
 	styleItalic = lipgloss.NewStyle().Italic(true)
+	colorMap    = map[string]string{
+		"normal":   "#B7B7A9",
+		"fire":     "#FF4422",
+		"water":    "#3499FF",
+		"electric": "#FFCC33",
+		"grass":    "#77CC55",
+		"ice":      "#66CCFF",
+		"fighting": "#BB5544",
+		"poison":   "#AA5699",
+		"ground":   "#DEBB55",
+		"flying":   "#889AFF",
+		"psychic":  "#FF5599",
+		"bug":      "#AABC22",
+		"rock":     "#BBAA66",
+		"ghost":    "#6666BB",
+		"dragon":   "#7766EE",
+		"dark":     "#775544",
+		"steel":    "#AAAABB",
+		"fairy":    "#EE99EE",
+	}
 )
