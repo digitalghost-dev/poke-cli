@@ -16,17 +16,17 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 
 	// Check types flag
 	assert.NotNil(t, typesFlag, "Types flag should not be nil")
-	assert.Equal(t, bool(false), *typesFlag, "Types flag name should be 'types'")
+	assert.Equal(t, false, *typesFlag, "Types flag name should be 'types'")
 
 	// Check short types flag
-	assert.NotNil(t, shortTypesFlag, "Types flag should not be nil")
-	assert.Equal(t, bool(false), *shortTypesFlag, "Types flag name should be 't'")
+	assert.NotNil(t, shortTypesFlag, "Short types flag should not be nil")
+	assert.Equal(t, false, *shortTypesFlag, "Short types flag name should be 't'")
 
 	// Check abilities flag
 	assert.NotNil(t, abilitiesFlag, "Abilities flag should not be nil")
-	assert.Equal(t, bool(false), *abilitiesFlag, "Abilities flag name should be 'abilities'")
+	assert.Equal(t, false, *abilitiesFlag, "Abilities flag name should be 'abilities'")
 
 	// Check short abilities flag
-	assert.NotNil(t, shortAbilitiesFlag, "Abilities flag should not be nil")
-	assert.Equal(t, bool(false), *shortAbilitiesFlag, "Abilities flag name should be 'a'")
+	assert.NotNil(t, shortAbilitiesFlag, "Short abilities flag should not be nil")
+	assert.Equal(t, false, *shortAbilitiesFlag, "Short abilities flag name should be 'a'")
 }

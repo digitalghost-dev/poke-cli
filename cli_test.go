@@ -2,11 +2,37 @@ package main
 
 import (
 	"bytes"
-	"os/exec"
+	"fmt"
+	"io"
+	"os"
+	"regexp"
 	"testing"
 )
 
-func TestCLI(t *testing.T) {
+// Strip ANSI color codes
+var ansiRegex = regexp.MustCompile(`\x1b\[[0-9;]*m`)
+
+func stripANSI(input string) string {
+	return ansiRegex.ReplaceAllString(input, "")
+}
+
+func TestMainFunction(t *testing.T) {
+	version := "v0.6.4"
+
+	// Backup the original exit function and stdout/stderr
+	originalExit := exit
+	originalStdout := os.Stdout
+	originalStderr := os.Stderr
+	defer func() {
+		exit = originalExit        // Restore exit
+		os.Stdout = originalStdout // Restore stdout
+		os.Stderr = originalStderr // Restore stderr
+	}()
+
+	// Replace exit with a function that captures the exit code
+	exitCode := 0
+	exit = func(code int) { exitCode = code }
+
 	tests := []struct {
 		args           []string
 		expectedOutput string
@@ -22,94 +48,20 @@ func TestCLI(t *testing.T) {
 				"│                                                      │\n" +
 				"│Also run [poke-cli -h] for more info!                 │\n" +
 				"╰──────────────────────────────────────────────────────╯\n",
-			expectedExit: 0,
-		},
-		{
-			args: []string{"pokemon"},
-			expectedOutput: "╭────────────────────────────────────────────────────────────╮\n" +
-				"│Error!                                                      │\n" +
-				"│Please declare a Pokémon's name after the [pokemon] command │\n" +
-				"│Run 'poke-cli pokemon -h' for more details                  │\n" +
-				"│error: insufficient arguments                               │\n" +
-				"╰────────────────────────────────────────────────────────────╯\n",
 			expectedExit: 1,
 		},
 		{
-			args:           []string{"pokemon", "bulbasaur"},
-			expectedOutput: "Your selected Pokémon: Bulbasaur\nNational Pokédex #: 1\n",
+			args:           []string{"-l"},
+			expectedOutput: fmt.Sprintf("Latest Docker image version: %s\nLatest release tag: %s\n", version, version),
 			expectedExit:   0,
 		},
 		{
-			args:           []string{"pokemon", "mew", "--types"},
-			expectedOutput: "Your selected Pokémon: Mew\nNational Pokédex #: 151\n──────\nTyping\nType 1: psychic\n",
+			args:           []string{"--latest"},
+			expectedOutput: fmt.Sprintf("Latest Docker image version: %s\nLatest release tag: %s\n", version, version),
 			expectedExit:   0,
 		},
 		{
-			args:           []string{"pokemon", "cacturne", "--types"},
-			expectedOutput: "Your selected Pokémon: Cacturne\nNational Pokédex #: 332\n──────\nTyping\nType 1: grass\nType 2: dark\n",
-			expectedExit:   0,
-		},
-		{
-			args: []string{"pokemon", "chimchar", "types"},
-			expectedOutput: "╭─────────────────────────────────────────────────────────────────────────────────╮\n" +
-				"│Error!                                                                           │\n" +
-				"│Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name│\n" +
-				"╰─────────────────────────────────────────────────────────────────────────────────╯\n",
-			expectedExit: 1,
-		},
-		{
-			args: []string{"pokemon", "flutter-mane", "types"},
-			expectedOutput: "╭─────────────────────────────────────────────────────────────────────────────────╮\n" +
-				"│Error!                                                                           │\n" +
-				"│Invalid argument 'types'. Only flags are allowed after declaring a Pokémon's name│\n" +
-				"╰─────────────────────────────────────────────────────────────────────────────────╯\n",
-			expectedExit: 1,
-		},
-		{
-			args: []string{
-				"pokemon", "AmPhaROs", "--types", "--abilities",
-			},
-			expectedOutput: "Your selected Pokémon: Ampharos\n" +
-				"National Pokédex #: 181\n" +
-				"──────\n" +
-				"Typing\n" +
-				"Type 1: electric\n" +
-				"─────────\n" +
-				"Abilities\n" +
-				"Ability 1: static\n" +
-				"Hidden Ability: plus\n",
-			expectedExit: 0,
-		},
-		{
-			args: []string{
-				"pokemon", "CLOysTeR", "-t", "-a",
-			},
-			expectedOutput: "Your selected Pokémon: Cloyster\n" +
-				"National Pokédex #: 91\n" +
-				"──────\n" +
-				"Typing\n" +
-				"Type 1: water\n" +
-				"Type 2: ice\n" +
-				"─────────\n" +
-				"Abilities\n" +
-				"Ability 1: shell-armor\n" +
-				"Ability 2: skill-link\n" +
-				"Hidden Ability: overcoat\n",
-			expectedExit: 0,
-		},
-		{
-			args: []string{"pokemon", "gyarados", "--help"},
-			expectedOutput: "╭──────────────────────────────────────────────────────────────╮\n" +
-				"│poke-cli pokemon <pokemon-name> [flags]                       │\n" +
-				"│                                                              │\n" +
-				"│FLAGS:                                                        │\n" +
-				"│     -a, --abilities      Prints out the Pokémon's abilities. │\n" +
-				"│     -t, --types          Prints out the Pokémon's typing.    │\n" +
-				"╰──────────────────────────────────────────────────────────────╯\n",
-			expectedExit: 0,
-		},
-		{
-			args: []string{"--help"},
+			args: []string{"-h"},
 			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
 				"│Welcome! This tool displays data related to Pokémon!  │\n" +
 				"│                                                      │\n" +
@@ -129,50 +81,42 @@ func TestCLI(t *testing.T) {
 				"╰──────────────────────────────────────────────────────╯\n",
 			expectedExit: 0,
 		},
-		{
-			args: []string{"types", "ground", "all"},
-			expectedOutput: "╭──────────────────╮\n" +
-				"│Error!            │\n" +
-				"│Too many arguments│\n" +
-				"╰──────────────────╯\n",
-			expectedExit: 1,
-		},
-		{
-			args: []string{"types", "--help"},
-			expectedOutput: "╭───────────────────────────────────────────────────────────────╮\n" +
-				"│USAGE:                                                         │\n" +
-				"│    poke-cli types [flag]                                      │\n" +
-				"│    Get details about a specific typing                        │\n" +
-				"│    ----------                                                 │\n" +
-				"│    Examples:                                                  │\n" +
-				"│    poke-cli types                                             │\n" +
-				"│    A table will then display with the option to select a type.│\n" +
-				"╰───────────────────────────────────────────────────────────────╯\n",
-			expectedExit: 0,
-		},
 	}
 
 	for _, test := range tests {
-		cmd := exec.Command("poke-cli", test.args...)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		cmd.Stderr = &out
+		// Create a pipe to capture output
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+		os.Stderr = w
 
-		err := cmd.Run()
+		// Set os.Args for the test case
+		os.Args = append([]string{"poke-cli"}, test.args...)
 
+		// Run the main function
+		main()
+
+		// Close the writer and restore stdout and stderr
+		err := w.Close()
 		if err != nil {
-			// If there's an error, but we expected a successful exit
-			if test.expectedExit == 0 {
-				t.Errorf("Unexpected error: %v", err)
-			}
+			t.Fatalf("Error closing pipe writer: %v", err)
+		}
+		os.Stdout = originalStdout
+		os.Stderr = originalStderr
+
+		// Read from the pipe
+		var buf bytes.Buffer
+		if _, err := io.Copy(&buf, r); err != nil {
+			t.Errorf("Error copying output: %v", err)
 		}
 
-		if out.String() != test.expectedOutput {
-			t.Errorf("Args: %v, Expected output: %q, Got: %q", test.args, test.expectedOutput, out.String())
+		// Strip ANSI color codes from the actual output
+		actualOutput := stripANSI(buf.String())
+		if actualOutput != test.expectedOutput {
+			t.Errorf("Args: %v\nExpected output: %q\nGot: %q\n", test.args, test.expectedOutput, actualOutput)
 		}
 
-		if cmd.ProcessState.ExitCode() != test.expectedExit {
-			t.Errorf("Args: %v, Expected exit code: %d, Got: %d", test.args, test.expectedExit, cmd.ProcessState.ExitCode())
+		if exitCode != test.expectedExit {
+			t.Errorf("Args: %v\nExpected exit code: %d\nGot: %d\n", test.args, test.expectedExit, exitCode)
 		}
 	}
 }

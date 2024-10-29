@@ -20,11 +20,12 @@ var (
 			BorderForeground(lipgloss.Color("#F2055C"))
 )
 
-func main() {
-	latestFlag := flag.Bool("latest", false, "Prints the program's latest Docker Image and Release versions.")
-	shortLatestFlag := flag.Bool("l", false, "Prints the program's latest Docker Image and Release versions.")
+func runCLI(args []string) int {
+	mainFlagSet := flag.NewFlagSet("poke-cli", flag.ContinueOnError)
+	latestFlag := mainFlagSet.Bool("latest", false, "Prints the program's latest Docker Image and Release versions.")
+	shortLatestFlag := mainFlagSet.Bool("l", false, "Prints the program's latest Docker Image and Release versions.")
 
-	flag.Usage = func() {
+	mainFlagSet.Usage = func() {
 		helpMessage := helpBorder.Render(
 			"Welcome! This tool displays data related to Pokémon!",
 			"\n\n", styleBold.Render("USAGE:"),
@@ -42,7 +43,18 @@ func main() {
 		fmt.Println(helpMessage)
 	}
 
-	flag.Parse()
+	// Check for help flag manually
+	for _, arg := range args {
+		if arg == "-h" || arg == "--help" {
+			mainFlagSet.Usage()
+			return 0
+		}
+	}
+
+	err := mainFlagSet.Parse(args)
+	if err != nil {
+		return 2
+	}
 
 	commands := map[string]func(){
 		"pokemon": cmd.PokemonCommand,
@@ -50,11 +62,14 @@ func main() {
 	}
 
 	if len(os.Args) < 2 {
-		flag.Usage()
+		mainFlagSet.Usage()
+		return 1
 	} else if *latestFlag || *shortLatestFlag {
 		flags.LatestFlag()
+		return 0
 	} else if cmdFunc, exists := commands[os.Args[1]]; exists {
 		cmdFunc()
+		return 0
 	} else {
 		errMessage := errorBorder.Render(
 			errorColor.Render("Error!"),
@@ -64,5 +79,12 @@ func main() {
 			fmt.Sprintf("\nAlso run %s for more info!", styleBold.Render("[poke-cli -h]")),
 		)
 		fmt.Printf("%s\n", errMessage)
+		return 1
 	}
+}
+
+var exit = os.Exit // Default to os.Exit, but you can override this in tests
+
+func main() {
+	exit(runCLI(os.Args[1:]))
 }
