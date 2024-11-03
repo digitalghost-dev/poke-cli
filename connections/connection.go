@@ -76,11 +76,7 @@ func ApiCallSetup(url string, target interface{}) error {
 	if err != nil {
 		return fmt.Errorf("error making GET request: %w", err)
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-		}
-	}(res.Body)
+	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound {
 		fmt.Println(errorColor.Render("Page not found. 404 error."))
