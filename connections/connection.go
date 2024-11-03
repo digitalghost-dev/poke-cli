@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -72,31 +71,33 @@ var red = lipgloss.Color("#F2055C")
 var errorColor = lipgloss.NewStyle().Foreground(red)
 
 // ApiCallSetup Helper function to handle API calls and JSON unmarshalling
-func ApiCallSetup(url string, target interface{}) {
+func ApiCallSetup(url string, target interface{}) error {
 	res, err := httpGet(url)
 	if err != nil {
-		log.Fatalf("Error making GET request: %v", err)
+		return fmt.Errorf("error making GET request: %w", err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Printf("Failed to close body: %v", err)
 		}
 	}(res.Body)
 
 	if res.StatusCode == http.StatusNotFound {
 		fmt.Println(errorColor.Render("Page not found. 404 error."))
+		return fmt.Errorf("page not found: 404 error")
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		log.Fatalf("Error reading response body: %v", err)
+		return fmt.Errorf("error reading response body: %w", err)
 	}
 
 	err = json.Unmarshal(body, target)
 	if err != nil {
-		log.Fatalf("Error unmarshalling JSON: %v", err)
+		return fmt.Errorf("error unmarshalling JSON: %w", err)
 	}
+
+	return nil
 }
 
 func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int) {
@@ -104,7 +105,10 @@ func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (Pokemo
 	url := baseURL + endpoint + "/" + pokemonName
 	var pokemonStruct PokemonJSONStruct
 
-	ApiCallSetup(url, &pokemonStruct)
+	err := ApiCallSetup(url, &pokemonStruct)
+	if err != nil {
+		return PokemonJSONStruct{}, "", 0
+	}
 
 	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID
 }
@@ -114,7 +118,10 @@ func TypesApiCall(endpoint string, typesName string, baseURL string) (TypesJSONS
 	url := baseURL + endpoint + "/" + typesName
 	var typesStruct TypesJSONStruct
 
-	ApiCallSetup(url, &typesStruct)
+	err := ApiCallSetup(url, &typesStruct)
+	if err != nil {
+		return TypesJSONStruct{}, "", 0
+	}
 
 	return typesStruct, typesStruct.Name, typesStruct.ID
 }
