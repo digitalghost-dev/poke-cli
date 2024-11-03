@@ -17,7 +17,7 @@ func stripANSI(input string) string {
 }
 
 func TestMainFunction(t *testing.T) {
-	version := "v0.6.4"
+	version := "v0.6.5"
 
 	// Backup the original exit function and stdout/stderr
 	originalExit := exit
@@ -80,6 +80,26 @@ func TestMainFunction(t *testing.T) {
 				"│    types           Get details of a specific typing  │\n" +
 				"╰──────────────────────────────────────────────────────╯\n",
 			expectedExit: 0,
+		},
+		{
+			args:           []string{"pokemon", "kingambit"},
+			expectedOutput: "Your selected Pokémon: Kingambit\nNational Pokédex #: 983\n",
+			expectedExit:   0,
+		},
+		{
+			args:           []string{"pokemon", "cradily", "--types"},
+			expectedOutput: "Your selected Pokémon: Cradily\nNational Pokédex #: 346\n──────\nTyping\nType 1: rock\nType 2: grass\n",
+			expectedExit:   0,
+		},
+		{
+			args:           []string{"pokemon", "giratina-altered", "--abilities"},
+			expectedOutput: "Your selected Pokémon: Giratina-Altered\nNational Pokédex #: 487\n─────────\nAbilities\nAbility 1: pressure\nHidden Ability: telepathy\n",
+			expectedExit:   0,
+		},
+		{
+			args:           []string{"pokemon", "coPPeraJAH", "-t", "-a"},
+			expectedOutput: "Your selected Pokémon: Copperajah\nNational Pokédex #: 879\n──────\nTyping\nType 1: steel\n─────────\nAbilities\nAbility 1: sheer-force\nHidden Ability: heavy-metal\n",
+			expectedExit:   0,
 		},
 	}
 
