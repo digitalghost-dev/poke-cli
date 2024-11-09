@@ -21,14 +21,12 @@ func latestDockerImage() {
 	fmt.Print("Latest Docker image version: ", string(output))
 }
 
-func latestRelease() {
+func latestRelease(githubAPIURL string) {
 	type Release struct {
 		TagName string `json:"tag_name"`
 	}
 
-	url := "https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest"
-
-	response, err := http.Get(url)
+	response, err := http.Get(githubAPIURL)
 	if err != nil {
 		fmt.Println("Error fetching data:", err)
 		return
@@ -58,5 +56,5 @@ func latestRelease() {
 func LatestFlag() {
 	// cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
 	latestDockerImage()
-	latestRelease()
+	latestRelease("https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest")
 }
