@@ -17,7 +17,7 @@ func stripANSI(input string) string {
 }
 
 func TestMainFunction(t *testing.T) {
-	version := "v0.6.5"
+	version := "v0.7.0"
 
 	// Backup the original exit function and stdout/stderr
 	originalExit := exit
@@ -42,6 +42,8 @@ func TestMainFunction(t *testing.T) {
 			args: []string{"pokemons"},
 			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
 				"│Error!                                                │\n" +
+				"│    'pokemons' is not a valid command.                │\n" +
+				"│                                                      │\n" +
 				"│Available Commands:                                   │\n" +
 				"│    pokemon         Get details of a specific Pokémon │\n" +
 				"│    types           Get details of a specific typing  │\n" +
@@ -67,8 +69,8 @@ func TestMainFunction(t *testing.T) {
 				"│                                                      │\n" +
 				"│ USAGE:                                               │\n" +
 				"│    poke-cli [flag]                                   │\n" +
-				"│    poke-cli [command] [flag]                         │\n" +
-				"│    poke-cli [command] [subcommand] [flag]            │\n" +
+				"│    poke-cli <command> [flag]                         │\n" +
+				"│    poke-cli <command> <subcommand> [flag]            │\n" +
 				"│                                                      │\n" +
 				"│ FLAGS:                                               │\n" +
 				"│    -h, --help      Shows the help menu               │\n" +

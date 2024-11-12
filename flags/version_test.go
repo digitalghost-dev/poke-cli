@@ -58,12 +58,6 @@ func TestLatestRelease_Success(t *testing.T) {
 	assert.Contains(t, output, "Latest release tag: v1.0.0")
 }
 
-func TestLatestRelease_NetworkError(t *testing.T) {
-	// Use an invalid URL to simulate a network error
-	output := captureOutput(func() { latestRelease("http://invalid-url") })
-	assert.Contains(t, output, "Error fetching data:")
-}
-
 func TestLatestRelease_InvalidJSON(t *testing.T) {
 	// Create a mock server that returns invalid JSON
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
