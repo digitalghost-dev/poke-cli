@@ -30,8 +30,8 @@ func runCLI(args []string) int {
 			"Welcome! This tool displays data related to Pokémon!",
 			"\n\n", styleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%-15s %s", "poke-cli [flag]", ""),
-			fmt.Sprintf("\n\t%-15s %s", "poke-cli [command] [flag]", ""),
-			fmt.Sprintf("\n\t%-15s %s", "poke-cli [command] [subcommand] [flag]", ""),
+			fmt.Sprintf("\n\t%-15s %s", "poke-cli <command> [flag]", ""),
+			fmt.Sprintf("\n\t%-15s %s", "poke-cli <command> <subcommand> [flag]", ""),
 			"\n\n", styleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Shows the help menu"),
 			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest available"),
@@ -43,9 +43,12 @@ func runCLI(args []string) int {
 		fmt.Println(helpMessage)
 	}
 
-	// Check for help flag manually
-	for _, arg := range args {
-		if arg == "-h" || arg == "--help" {
+	switch {
+	case len(args) == 0:
+		mainFlagSet.Usage()
+		return 0
+	case len(args) > 0:
+		if args[0] == "-h" || args[0] == "--help" {
 			mainFlagSet.Usage()
 			return 0
 		}
@@ -71,8 +74,10 @@ func runCLI(args []string) int {
 		cmdFunc()
 		return 0
 	} else {
+		command := os.Args[1]
 		errMessage := errorBorder.Render(
 			errorColor.Render("Error!"),
+			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", command)),
 			styleBold.Render("\nAvailable Commands:"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details of a specific Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details of a specific typing\n"),
@@ -83,7 +88,7 @@ func runCLI(args []string) int {
 	}
 }
 
-var exit = os.Exit // Default to os.Exit, but you can override this in tests
+var exit = os.Exit
 
 func main() {
 	exit(runCLI(os.Args[1:]))
