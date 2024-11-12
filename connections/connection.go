@@ -2,10 +2,12 @@ package connections
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"io"
 	"net/http"
+	"os"
 )
 
 type PokemonJSONStruct struct {
@@ -79,8 +81,13 @@ func ApiCallSetup(url string, target interface{}) error {
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound {
-		fmt.Println(errorColor.Render("Page not found. 404 error."))
-		return fmt.Errorf("page not found: 404 error")
+		fmt.Println(errorColor.Render("Pokémon not found. Perhaps a typo in the name?"))
+
+		if flag.Lookup("test.v") != nil {
+			return fmt.Errorf("page not found: 404 error")
+		} else {
+			os.Exit(1)
+		}
 	}
 
 	body, err := io.ReadAll(res.Body)

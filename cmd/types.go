@@ -193,13 +193,12 @@ func TypesCommand() {
 
 	flag.Usage = func() {
 		helpMessage := helpBorder.Render(
+			"Get details about a specific typing.\n\n",
 			styleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styleBold.Render("types"), "[flag]"),
-			fmt.Sprintf("\n\t%-30s", "Get details about a specific typing"),
-			fmt.Sprintf("\n\t%-30s", "----------"),
-			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Examples:")),
-			fmt.Sprintf("\n\t%-30s", "poke-cli types"),
-			fmt.Sprintf("\n\t%-30s", "A table will then display with the option to select a type."),
+			"\n\n",
+			styleBold.Render("FLAGS:"),
+			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu."),
 		)
 		fmt.Println(helpMessage)
 	}

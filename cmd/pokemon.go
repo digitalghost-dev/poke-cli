@@ -16,18 +16,15 @@ func PokemonCommand() {
 
 	flag.Usage = func() {
 		helpMessage := helpBorder.Render(
+			"Get details about a specific Pokémon.\n\n",
 			styleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styleBold.Render("pokemon"), "<pokemon-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", "Get details about a specific Pokémon"),
-			fmt.Sprintf("\n\t%-30s", "----------"),
-			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Examples:\n")),
-			fmt.Sprintf("\n\t%-30s", "poke-cli pokemon bulbasaur"),
-			fmt.Sprintf("\n\t%-30s", "poke-cli pokemon flutter-mane --types"),
-			fmt.Sprintf("\n\t%-30s", "poke-cli pokemon excadrill -t -a"),
+			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Use a hyphen when typing a name with a space.")),
 			"\n\n",
 			styleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints out the Pokémon's abilities."),
 			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints out the Pokémon's typing."),
+			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu."),
 		)
 		fmt.Println(helpMessage)
 	}
