@@ -193,7 +193,7 @@ func TypesCommand() {
 
 	flag.Usage = func() {
 		helpMessage := helpBorder.Render(
-			fmt.Sprintf("Get details about a specific typing.\n\n"),
+			"Get details about a specific typing.\n\n",
 			styleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styleBold.Render("types"), "[flag]"),
 			"\n\n",

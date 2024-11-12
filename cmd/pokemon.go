@@ -16,7 +16,7 @@ func PokemonCommand() {
 
 	flag.Usage = func() {
 		helpMessage := helpBorder.Render(
-			fmt.Sprintf("Get details about a specific Pokémon.\n\n"),
+			"Get details about a specific Pokémon.\n\n",
 			styleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styleBold.Render("pokemon"), "<pokemon-name>", "[flag]"),
 			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Use a hyphen when typing a name with a space.")),
