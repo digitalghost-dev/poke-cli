@@ -51,13 +51,6 @@ func (m model) View() string {
 	return "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + typesTableBorder.Render(m.table.View()) + "\n"
 }
 
-// Helper function to get color for a given type name from colorMap
-func getTypeColor(typeName string) string {
-	color := colorMap[typeName]
-
-	return color
-}
-
 // Function to display type details after a type is selected
 func displayTypeDetails(typesName string, endpoint string) {
 
