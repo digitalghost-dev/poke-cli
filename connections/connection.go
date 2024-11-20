@@ -68,13 +68,12 @@ type TypesJSONStruct struct {
 	} `json:"damage_relations"`
 }
 
-var httpGet = http.Get
 var red = lipgloss.Color("#F2055C")
 var errorColor = lipgloss.NewStyle().Foreground(red)
 
 // ApiCallSetup Helper function to handle API calls and JSON unmarshalling
 func ApiCallSetup(url string, target interface{}) error {
-	res, err := httpGet(url)
+	res, err := http.Get(url)
 	if err != nil {
 		return fmt.Errorf("error making GET request: %w", err)
 	}
