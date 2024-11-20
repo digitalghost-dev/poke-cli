@@ -3,8 +3,11 @@ package main
 import (
 	"bytes"
 	"os"
+	"regexp"
 	"testing"
 )
+
+var ansiRegex = regexp.MustCompile(`\x1b\[[0-9;]*m`)
 
 func captureOutput(f func()) string {
 	var buf bytes.Buffer
@@ -19,6 +22,10 @@ func captureOutput(f func()) string {
 	_, _ = buf.ReadFrom(r)
 
 	return buf.String()
+}
+
+func stripANSI(input string) string {
+	return ansiRegex.ReplaceAllString(input, "")
 }
 
 func TestRunCLI(t *testing.T) {
@@ -117,6 +124,8 @@ func TestRunCLI(t *testing.T) {
 					t.Errorf("Expected exit code %d, got %d", tt.expectedCode, code)
 				}
 			})
+
+			output = stripANSI(output)
 
 			if !bytes.Contains([]byte(output), []byte(tt.expectedOutput)) {
 				t.Errorf("Expected output to contain %q, got %q", tt.expectedOutput, output)
