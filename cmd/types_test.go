@@ -29,3 +29,27 @@ func TestValidateTypesArgs_TooManyArgs(t *testing.T) {
 		assert.NotEqual(t, expectedError, err.Error())
 	}
 }
+
+func TestModelInit(t *testing.T) {
+	m := model{}
+	result := m.Init()
+
+	assert.Nil(t, result, "Expected Init() to return nil")
+}
+
+func TestModelView_SelectedOption(t *testing.T) {
+	m := model{selectedOption: "someOption"}
+
+	output := m.View()
+
+	assert.Equal(t, "", output, "Expected output to be an empty string when selectedOption is set")
+}
+
+func TestModelView_DisplayTable(t *testing.T) {
+	m := model{selectedOption: ""}
+	expectedOutput := "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + typesTableBorder.Render(m.table.View()) + "\n"
+
+	output := m.View()
+
+	assert.Equal(t, expectedOutput, output, "Expected View output to include table view")
+}
