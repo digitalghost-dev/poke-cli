@@ -18,6 +18,7 @@ on:
       - 'demo**'
       - 'go.mod'
       - 'go.sum'
+      - '.goreleaser.yaml'
     branches:
       - main
 env:
