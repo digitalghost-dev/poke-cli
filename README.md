@@ -13,56 +13,44 @@
 </div>
 
 ## Overview
-A CLI tool for viewing data about Pokémon from your terminal!
+A CLI tool for viewing data about Pokémon from your terminal! I am new to writing Go and taking my time in building this 
+project. 
 
+My aim is to have four commands finished for `v1.0.0`. Read more in the [Roadmap](#roadmap) section.
+
+---
 ## Demo
 ![demo](https://pokemon-objects.nyc3.digitaloceanspaces.com/demo_0.7.1.gif)
 
+---
 ## Install
 
-### Taskfile
-_Taskfile can build the executable for you_
-
-1. Install [Taskfile](https://taskfile.dev/installation/).
-2. Once installed, clone the repository and `cd` into it.
-3. Then, simply run `task build` and an executable for your machine type will be created. 
-    * Example usage:
-   ```bash
-   # Windows
-   .\poke-cli.exe pokemon charizard --types --abilities
-   
-   # Unix
-   .\poke-cli pokemon vespiquen -t -a
-   ```
-
-
-### Docker
+### Docker Image
 _Use a Docker Image_
 
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+2. Once installed, use the command below to pull the image and run the container!
+   * `--rm`: Automatically remove the container when it exits. 
+     * Optional.
+   * `-i`: Interactive mode, keeps STDIN open for input.
+     * Necessary.
+   * `-t`: Allocates a terminal (TTY) for a terminal-like session.
+     * Necessary.
+
 ```bash
-docker run --rm -it digitalghostdev/poke-cli:v0.7.2 [command] [subcommand] [flag]
+docker run --rm -i -t digitalghostdev/poke-cli:v0.7.2 <command> [subcommand] flag]
 ```
 
-### Go Build
-_Build the executable yourself_
+### Go Install
+_Install the executable yourself_
 
 1. Install [Golang](https://go.dev/dl/).
-2. Once installed, clone the repository and `cd` into it.
-3. Run `go build .` or `go install` to build the executable.
-    * Keep in mind that `go install` will place the executable in your `$GOPATH/bin` directory. [Read More](https://www.golang.company/blog/what-is-the-difference-between-go-run-go-build-and-go-install-commands).
-4. An executable will be created then the tool can be used! It can also be added to your path to run the binary from anywhere.
-   * Example usage:
+2. Once installed, run the following command:
    ```bash
-   # Windows
-   .\poke-cli.exe pokemon charizard --types --abilities
-   
-   # Unix
-   .\poke-cli pokemon vespiquen -t -a
-   
-   # If built with go install
-   poke-cli pokemon slugma -t
+   go install github.com/digitalghost-dev/poke-cli@v0
    ```
-
+3. The tool is ready to use!
+---
 ## Usage
 By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
 ```
@@ -84,3 +72,18 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │    types           Get details of a specific typing  │
 ╰──────────────────────────────────────────────────────╯
 ```
+
+---
+## Roadmap
+The architecture behind how the tool works is straight forward.
+1. Commands indicate which data endpoint to focus on.
+2. Flags provide more information and can be all stacked together or chosen.
+
+### Planned for Version 1.0.0
+- [ ] `pokemon`: get data about a specific Pokémon.
+   - [x] `--abilities | -a`: display the Pokémon's abilities.
+   - [x] `--types | -t`: display the Pokémon's typing.
+   - [ ] `--stats | -s`: 
+- [x] `types`: get data about a specific typing.
+- [ ] `ability`: get data about a specific ability.
+- [ ] `move`: get data about a specific move.
