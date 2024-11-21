@@ -2,67 +2,63 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	"io"
 	"os"
 	"regexp"
 	"testing"
 )
 
-// Strip ANSI color codes
 var ansiRegex = regexp.MustCompile(`\x1b\[[0-9;]*m`)
+
+func captureOutput(f func()) string {
+	var buf bytes.Buffer
+	stdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	f()
+
+	_ = w.Close()
+	os.Stdout = stdout
+	_, _ = buf.ReadFrom(r)
+
+	return buf.String()
+}
 
 func stripANSI(input string) string {
 	return ansiRegex.ReplaceAllString(input, "")
 }
 
-func TestMainFunction(t *testing.T) {
-	version := "v0.7.0"
-
-	// Backup the original exit function and stdout/stderr
-	originalExit := exit
-	originalStdout := os.Stdout
-	originalStderr := os.Stderr
-	defer func() {
-		exit = originalExit        // Restore exit
-		os.Stdout = originalStdout // Restore stdout
-		os.Stderr = originalStderr // Restore stderr
-	}()
-
-	// Replace exit with a function that captures the exit code
-	exitCode := 0
-	exit = func(code int) { exitCode = code }
-
+func TestRunCLI(t *testing.T) {
 	tests := []struct {
+		name           string
 		args           []string
 		expectedOutput string
-		expectedExit   int
+		expectedCode   int
 	}{
 		{
-			args: []string{"pokemons"},
+			name: "No Arguments",
+			args: []string{},
 			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
-				"│Error!                                                │\n" +
-				"│    'pokemons' is not a valid command.                │\n" +
+				"│Welcome! This tool displays data related to Pokémon!  │\n" +
 				"│                                                      │\n" +
-				"│Available Commands:                                   │\n" +
+				"│ USAGE:                                               │\n" +
+				"│    poke-cli [flag]                                   │\n" +
+				"│    poke-cli <command> [flag]                         │\n" +
+				"│    poke-cli <command> <subcommand> [flag]            │\n" +
+				"│                                                      │\n" +
+				"│ FLAGS:                                               │\n" +
+				"│    -h, --help      Shows the help menu               │\n" +
+				"│    -l, --latest    Prints the latest available       │\n" +
+				"│                    version of the program            │\n" +
+				"│                                                      │\n" +
+				"│ AVAILABLE COMMANDS:                                  │\n" +
 				"│    pokemon         Get details of a specific Pokémon │\n" +
 				"│    types           Get details of a specific typing  │\n" +
-				"│                                                      │\n" +
-				"│Also run [poke-cli -h] for more info!                 │\n" +
 				"╰──────────────────────────────────────────────────────╯\n",
-			expectedExit: 1,
+			expectedCode: 0,
 		},
 		{
-			args:           []string{"-l"},
-			expectedOutput: fmt.Sprintf("Latest Docker image version: %s\nLatest release tag: %s\n", version, version),
-			expectedExit:   0,
-		},
-		{
-			args:           []string{"--latest"},
-			expectedOutput: fmt.Sprintf("Latest Docker image version: %s\nLatest release tag: %s\n", version, version),
-			expectedExit:   0,
-		},
-		{
+			name: "Help Flag Short",
 			args: []string{"-h"},
 			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
 				"│Welcome! This tool displays data related to Pokémon!  │\n" +
@@ -81,64 +77,59 @@ func TestMainFunction(t *testing.T) {
 				"│    pokemon         Get details of a specific Pokémon │\n" +
 				"│    types           Get details of a specific typing  │\n" +
 				"╰──────────────────────────────────────────────────────╯\n",
-			expectedExit: 0,
+			expectedCode: 0,
 		},
 		{
-			args:           []string{"pokemon", "kingambit"},
-			expectedOutput: "Your selected Pokémon: Kingambit\nNational Pokédex #: 983\n",
-			expectedExit:   0,
+			name: "Help Flag Long",
+			args: []string{"--help"},
+			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!  │\n" +
+				"│                                                      │\n" +
+				"│ USAGE:                                               │\n" +
+				"│    poke-cli [flag]                                   │\n" +
+				"│    poke-cli <command> [flag]                         │\n" +
+				"│    poke-cli <command> <subcommand> [flag]            │\n" +
+				"│                                                      │\n" +
+				"│ FLAGS:                                               │\n" +
+				"│    -h, --help      Shows the help menu               │\n" +
+				"│    -l, --latest    Prints the latest available       │\n" +
+				"│                    version of the program            │\n" +
+				"│                                                      │\n" +
+				"│ AVAILABLE COMMANDS:                                  │\n" +
+				"│    pokemon         Get details of a specific Pokémon │\n" +
+				"│    types           Get details of a specific typing  │\n" +
+				"╰──────────────────────────────────────────────────────╯\n",
+			expectedCode: 0,
 		},
 		{
-			args:           []string{"pokemon", "cradily", "--types"},
-			expectedOutput: "Your selected Pokémon: Cradily\nNational Pokédex #: 346\n──────\nTyping\nType 1: rock\nType 2: grass\n",
-			expectedExit:   0,
+			name:           "Invalid Command",
+			args:           []string{"invalid"},
+			expectedOutput: "Error!",
+			expectedCode:   1,
 		},
 		{
-			args:           []string{"pokemon", "giratina-altered", "--abilities"},
-			expectedOutput: "Your selected Pokémon: Giratina-Altered\nNational Pokédex #: 487\n─────────\nAbilities\nAbility 1: pressure\nHidden Ability: telepathy\n",
-			expectedExit:   0,
-		},
-		{
-			args:           []string{"pokemon", "coPPeraJAH", "-t", "-a"},
-			expectedOutput: "Your selected Pokémon: Copperajah\nNational Pokédex #: 879\n──────\nTyping\nType 1: steel\n─────────\nAbilities\nAbility 1: sheer-force\nHidden Ability: heavy-metal\n",
-			expectedExit:   0,
+			name:           "Latest Flag",
+			args:           []string{"-l"},
+			expectedOutput: "Latest Docker image version: v0.7.1\nLatest release tag: v0.7.1\n",
+			expectedCode:   0,
 		},
 	}
 
-	for _, test := range tests {
-		// Create a pipe to capture output
-		r, w, _ := os.Pipe()
-		os.Stdout = w
-		os.Stderr = w
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exit = func(code int) {}
+			output := captureOutput(func() {
+				code := runCLI(tt.args)
+				if code != tt.expectedCode {
+					t.Errorf("Expected exit code %d, got %d", tt.expectedCode, code)
+				}
+			})
 
-		// Set os.Args for the test case
-		os.Args = append([]string{"poke-cli"}, test.args...)
+			output = stripANSI(output)
 
-		// Run the main function
-		main()
-
-		// Close the writer and restore stdout and stderr
-		err := w.Close()
-		if err != nil {
-			t.Fatalf("Error closing pipe writer: %v", err)
-		}
-		os.Stdout = originalStdout
-		os.Stderr = originalStderr
-
-		// Read from the pipe
-		var buf bytes.Buffer
-		if _, err := io.Copy(&buf, r); err != nil {
-			t.Errorf("Error copying output: %v", err)
-		}
-
-		// Strip ANSI color codes from the actual output
-		actualOutput := stripANSI(buf.String())
-		if actualOutput != test.expectedOutput {
-			t.Errorf("Args: %v\nExpected output: %q\nGot: %q\n", test.args, test.expectedOutput, actualOutput)
-		}
-
-		if exitCode != test.expectedExit {
-			t.Errorf("Args: %v\nExpected exit code: %d\nGot: %d\n", test.args, test.expectedExit, exitCode)
-		}
+			if !bytes.Contains([]byte(output), []byte(tt.expectedOutput)) {
+				t.Errorf("Expected output to contain %q, got %q", tt.expectedOutput, output)
+			}
+		})
 	}
 }

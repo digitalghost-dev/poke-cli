@@ -38,3 +38,10 @@ var (
 		"fairy":    "#EE99EE",
 	}
 )
+
+// Helper function to get color for a given type name from colorMap
+func getTypeColor(typeName string) string {
+	color := colorMap[typeName]
+
+	return color
+}

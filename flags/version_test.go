@@ -22,7 +22,10 @@ func captureOutput(f func()) string {
 	f()
 
 	// Restore the original stdout and close the writer
-	w.Close()
+	err := w.Close()
+	if err != nil {
+		return fmt.Sprintf("error closing writer: %v", err)
+	}
 	os.Stdout = oldStdout
 
 	// Read the captured output
@@ -32,10 +35,15 @@ func captureOutput(f func()) string {
 }
 
 func TestLatestDockerImage(t *testing.T) {
-	output := captureOutput(latestDockerImage)
-
-	// Modify this assertion as needed based on expected output
+	// Test normal execution with a valid command
+	validCommand := `curl -s https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`
+	output := captureOutput(func() { latestDockerImage(validCommand) })
 	assert.Contains(t, output, "Latest Docker image version:")
+
+	// Test command failure with an invalid command
+	invalidCommand := "invalidcommand"
+	output = captureOutput(func() { latestDockerImage(invalidCommand) })
+	assert.Contains(t, output, "error running command:")
 }
 
 func TestLatestRelease(t *testing.T) {
@@ -48,7 +56,11 @@ func TestLatestRelease(t *testing.T) {
 func TestLatestRelease_Success(t *testing.T) {
 	// Create a mock server that simulates a successful response
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, `{"tag_name": "v1.0.0"}`)
+		_, err := fmt.Fprintln(w, `{"tag_name": "v1.0.0"}`)
+		if err != nil {
+			t.Errorf("failed to write response: %v", err)
+			return
+		}
 	})
 	server := httptest.NewServer(handler)
 	defer server.Close()
@@ -61,7 +73,11 @@ func TestLatestRelease_Success(t *testing.T) {
 func TestLatestRelease_InvalidJSON(t *testing.T) {
 	// Create a mock server that returns invalid JSON
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, `invalid-json`)
+		_, err := fmt.Fprintln(w, `invalid-json`)
+		if err != nil {
+			t.Errorf("failed to write response: %v", err)
+			return
+		}
 	})
 	server := httptest.NewServer(handler)
 	defer server.Close()
