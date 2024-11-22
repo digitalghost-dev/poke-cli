@@ -3,7 +3,7 @@
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
     <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.7.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
-    <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00">
+    <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 
 <div align="center">
@@ -28,9 +28,9 @@ My aim is to have four commands finished for `v1.0.0`. Read more in the [Roadmap
 ### Binary
 _Download a pre-built binary_
 
-1. Head to the [releases](https://github.com/digitalghost-dev/poke-cli) page of the project.
+1. Head to the [releases](https://github.com/digitalghost-dev/poke-cli/releases) page of the project.
 2. Choose a version to download. The latest is best.
-3. Choose an operating system and click on the file. The zipped folder will download.
+3. Choose an operating system and click on the matching zipped folder to start the download.
 4. Extract the folder. The tool is ready to use.
 5. Either change directories into the extracted folder or move the binary to a chosen directory.
 6. Run the tool!
@@ -110,4 +110,4 @@ _Not 100% up-to-date, may add or remove some of these choices_
 - [ ] `types`: get data about a specific typing.
   - [ ] `--chart | -c`: display the type's damage chart. Undecided.
 - [ ] `ability`: get data about a specific ability.
-- [ ] `move`: get data about a specific move.
+- [ ] `moves`: get data about a specific move.
