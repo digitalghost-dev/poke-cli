@@ -20,7 +20,7 @@ My aim is to have four commands finished for `v1.0.0`. Read more in the [Roadmap
 
 ---
 ## Demo
-![demo](https://pokemon-objects.nyc3.digitaloceanspaces.com/demo_0.7.1.gif)
+![demo](https://pokemon-objects.nyc3.digitaloceanspaces.com/demo_0.7.2.gif)
 
 ---
 ## Install
