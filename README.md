@@ -25,6 +25,25 @@ My aim is to have four commands finished for `v1.0.0`. Read more in the [Roadmap
 ---
 ## Install
 
+### Binary
+_Download a pre-built binary_
+
+1. Head to the [releases](https://github.com/digitalghost-dev/poke-cli) page of the project.
+2. Choose a version to download. The latest is best.
+3. Choose an operating system and click on the file. The zipped folder will download.
+4. Extract the folder. The tool is ready to use.
+5. Either change directories into the extracted folder or move the binary to a chosen directory.
+6. Run the tool!
+
+* Example usage:
+  ```bash
+  # Windows
+  .\poke-cli.exe pokemon charizard --types --abilities
+   
+  # Unix
+  .\poke-cli pokemon vespiquen -t -a
+  ```
+
 ### Docker Image
 _Use a Docker Image_
 
@@ -80,10 +99,15 @@ The architecture behind how the tool works is straight forward.
 2. Flags provide more information and can be all stacked together or chosen.
 
 ### Planned for Version 1.0.0
+
+_Not 100% up-to-date, may add or remove some of these choices_
+
 - [ ] `pokemon`: get data about a specific Pokémon.
    - [x] `--abilities | -a`: display the Pokémon's abilities.
    - [x] `--types | -t`: display the Pokémon's typing.
-   - [ ] `--stats | -s`: 
-- [x] `types`: get data about a specific typing.
+   - [ ] `--stats | -s`: display the Pokémon's base stats. 
+   - [ ] `--metrics | -m`: display the Pokémon's metrics. (height, weight, etc.)
+- [ ] `types`: get data about a specific typing.
+  - [ ] `--chart | -c`: display the type's damage chart. Undecided.
 - [ ] `ability`: get data about a specific ability.
 - [ ] `move`: get data about a specific move.
