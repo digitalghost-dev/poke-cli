@@ -1,6 +1,3 @@
-# Virtual environments
-venv/
-
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -9,6 +6,7 @@ venv/
 *.dylib
 *.DS_Store
 *.idea
+.dccache
 
 # Test binary, built with `go test -c`
 *.test
