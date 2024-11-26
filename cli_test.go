@@ -110,7 +110,7 @@ func TestRunCLI(t *testing.T) {
 		{
 			name:           "Latest Flag",
 			args:           []string{"-l"},
-			expectedOutput: "Latest Docker image version: v0.7.1\nLatest release tag: v0.7.1\n",
+			expectedOutput: "Latest Docker image version: v0.7.2\nLatest release tag: v0.7.2\n",
 			expectedCode:   0,
 		},
 	}

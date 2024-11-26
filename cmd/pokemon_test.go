@@ -76,13 +76,6 @@ func TestPokemonCommand(t *testing.T) {
 		t.Fatalf("Failed to read from pipe: %v", readErr)
 	}
 
-	// Define expected output based on actual API response
-	expectedName := "Bulbasaur"
-	expectedID := "1"
-
 	// Assert output contains expected Pokémon details
-	assert.Contains(t, output.String(), "Your selected Pokémon:", "Output should contain Pokémon details header")
-	assert.Contains(t, output.String(), expectedName, "Output should contain the Pokémon name")
-	assert.Contains(t, output.String(), "National Pokédex #:", "Output should contain Pokémon ID header")
-	assert.Contains(t, output.String(), expectedID, "Output should contain the Pokémon ID")
+	assert.Equal(t, output.String(), "Your selected Pokémon: Bulbasaur\nNational Pokédex #: 1\nWeight: 6.9kg (15.2 lbs)\nHeight: 2.3m (2′04″)\n")
 }

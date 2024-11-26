@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-// TestBaseApiCallSuccess - Test for the ApiCallSetup function
-func TestBaseApiCallSuccess(t *testing.T) {
+// TestBaseApiCall - Test for the ApiCallSetup function
+func TestBaseApiCall(t *testing.T) {
 	expectedData := map[string]string{"key": "value"}
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -30,11 +30,13 @@ func TestBaseApiCallSuccess(t *testing.T) {
 	assert.Equal(t, expectedData, target)
 }
 
-// TestPokemonApiCallSuccess - Test for the PokemonApiCall function
-func TestPokemonApiCallSuccess(t *testing.T) {
+// TestPokemonApiCall - Test for the PokemonApiCall function
+func TestPokemonApiCall(t *testing.T) {
 	expectedPokemon := PokemonJSONStruct{
-		Name: "pikachu",
-		ID:   25,
+		Name:   "pikachu",
+		ID:     25,
+		Weight: 60,
+		Height: 4,
 		Types: []struct {
 			Slot int `json:"slot"`
 			Type struct {
@@ -56,15 +58,17 @@ func TestPokemonApiCallSuccess(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	pokemon, name, id := PokemonApiCall("/pokemon", "pikachu", ts.URL)
+	pokemon, name, id, weight, height := PokemonApiCall("/pokemon", "pikachu", ts.URL)
 
 	assert.Equal(t, expectedPokemon, pokemon)
 	assert.Equal(t, "pikachu", name)
 	assert.Equal(t, 25, id)
+	assert.Equal(t, 60, weight)
+	assert.Equal(t, 4, height)
 }
 
-// TestTypesApiCallSuccess - Test for the TypesApiCall function
-func TestTypesApiCallSuccess(t *testing.T) {
+// TestTypesApiCall - Test for the TypesApiCall function
+func TestTypesApiCall(t *testing.T) {
 	expectedTypes := TypesJSONStruct{
 		Name: "electric",
 		ID:   13,
