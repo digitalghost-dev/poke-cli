@@ -11,15 +11,10 @@ import (
 )
 
 type PokemonJSONStruct struct {
-	Name  string `json:"name"`
-	ID    int    `json:"id"`
-	Types []struct {
-		Slot int `json:"slot"`
-		Type struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"type"`
-	} `json:"types"`
+	Name      string `json:"name"`
+	ID        int    `json:"id"`
+	Weight    int    `json:"weight"`
+	Height    int    `json:"height"`
 	Abilities []struct {
 		Ability struct {
 			Name string `json:"name"`
@@ -28,6 +23,19 @@ type PokemonJSONStruct struct {
 		Hidden bool `json:"hidden"`
 		Slot   int  `json:"slot"`
 	} `json:"abilities"`
+	Types []struct {
+		Slot int `json:"slot"`
+		Type struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"type"`
+	} `json:"types"`
+	Stats []struct {
+		BaseStat int `json:"base_stat"`
+		Stat     struct {
+			Name string `json:"name"`
+		} `json:"stat"`
+	} `json:"stats"`
 }
 
 type TypesJSONStruct struct {
@@ -102,17 +110,17 @@ func ApiCallSetup(url string, target interface{}) error {
 	return nil
 }
 
-func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int) {
+func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int, int, int) {
 
 	url := baseURL + endpoint + "/" + pokemonName
 	var pokemonStruct PokemonJSONStruct
 
 	err := ApiCallSetup(url, &pokemonStruct)
 	if err != nil {
-		return PokemonJSONStruct{}, "", 0
+		return PokemonJSONStruct{}, "", 0, 0, 0
 	}
 
-	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID
+	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID, pokemonStruct.Weight, pokemonStruct.Height
 }
 
 func TypesApiCall(endpoint string, typesName string, baseURL string) (TypesJSONStruct, string, int) {

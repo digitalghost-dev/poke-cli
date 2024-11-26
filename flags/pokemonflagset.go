@@ -54,7 +54,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *bool, *b
 
 func AbilitiesFlag(endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	header("Abilities")
 
@@ -73,7 +73,7 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 
 func StatsFlag(endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	header("Base Stats")
 
@@ -152,7 +152,7 @@ func StatsFlag(endpoint string, pokemonName string) error {
 
 func TypesFlag(endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	colorMap := map[string]string{
 		"normal":   "#B7B7A9",
