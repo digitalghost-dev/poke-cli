@@ -114,10 +114,10 @@ The architecture behind how the tool works is straight forward.
 _Not 100% up-to-date, may add or remove some of these choices_
 
 - [ ] `pokemon`: get data about a specific Pokémon.
-   - [x] `--abilities | -a`: display the Pokémon's abilities.
-   - [x] `--types | -t`: display the Pokémon's typing.
-   - [ ] `--stats | -s`: display the Pokémon's base stats.
-- [ ] `types`: get data about a specific typing.
-  - [ ] `--chart | -c`: display the type's damage chart. Undecided to be a flag or not.
+   - [x] `-a | --abilities`: display the Pokémon's abilities.
+   - [x] `-s | --stats`: display the Pokémon's base stats.
+   - [x] `-t | --types`: display the Pokémon's typing.
+   - [ ] `-m | --moves`: display learnable moves.
+- [x] `types`: get data about a specific typing.
 - [ ] `ability`: get data about a specific ability.
 - [ ] `move`: get data about a specific move.
