@@ -7,6 +7,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"math"
 	"os"
 	"strings"
 )
@@ -22,16 +23,17 @@ func PokemonCommand() {
 			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Use a hyphen when typing a name with a space.")),
 			"\n\n",
 			styleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints out the Pokémon's abilities."),
-			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints out the Pokémon's typing."),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu."),
+			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
+			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
+			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
+			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
 		fmt.Println(helpMessage)
 	}
 
 	flag.Parse()
 
-	pokeFlags, typesFlag, shortTypesFlag, abilitiesFlag, shortAbilitiesFlag := flags.SetupPokemonFlagSet()
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -50,10 +52,36 @@ func PokemonCommand() {
 		os.Exit(1)
 	}
 
-	_, pokemonName, pokemonID := connections.PokemonApiCall(endpoint, pokemonName, "https://pokeapi.co/api/v2/")
+	_, pokemonName, pokemonID, pokemonWeight, pokemonHeight := connections.PokemonApiCall(endpoint, pokemonName, "https://pokeapi.co/api/v2/")
 	capitalizedString := cases.Title(language.English).String(pokemonName)
 
-	fmt.Printf("Your selected Pokémon: %s\nNational Pokédex #: %d\n", capitalizedString, pokemonID)
+	// Weight calculation
+	weightKilograms := float64(pokemonWeight) / 10
+	weightPounds := float64(weightKilograms) * 2.20462
+
+	// Height calculation
+	heightMeters := float64(pokemonHeight) / 10
+	heightFeet := heightMeters * 3.28084
+	feet := int(heightFeet)
+	inches := int(math.Round((heightFeet - float64(feet)) * 12)) // Use math.Round to avoid truncation
+
+	// Adjust for rounding to 12 inches (carry over to the next foot)
+	if inches == 12 {
+		feet++
+		inches = 0
+	}
+
+	fmt.Printf(
+		"Your selected Pokémon: %s\nNational Pokédex #: %d\nWeight: %.1fkg (%.1f lbs)\nHeight: %.1fm (%d′%02d″)\n",
+		capitalizedString, pokemonID, weightKilograms, weightPounds, heightFeet, feet, inches,
+	)
+
+	if *abilitiesFlag || *shortAbilitiesFlag {
+		if err := flags.AbilitiesFlag(endpoint, pokemonName); err != nil {
+			fmt.Printf("Error: %s\n", err)
+			os.Exit(1)
+		}
+	}
 
 	if *typesFlag || *shortTypesFlag {
 		if err := flags.TypesFlag(endpoint, pokemonName); err != nil {
@@ -62,8 +90,8 @@ func PokemonCommand() {
 		}
 	}
 
-	if *abilitiesFlag || *shortAbilitiesFlag {
-		if err := flags.AbilitiesFlag(endpoint, pokemonName); err != nil {
+	if *statsFlag || *shortStatsFlag {
+		if err := flags.StatsFlag(endpoint, pokemonName); err != nil {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}

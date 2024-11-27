@@ -2,14 +2,13 @@
     <img height="250" width="350" src="https://cdn.simpleicons.org/pokemon/FFCC00" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.7.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.8.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
-
 <div align="center">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/go_test.yml?style=flat-square&logo=go&logoColor=00ADD8&label=Tests&labelColor=EEE&color=00ADD8" alt="tests-label">
     <img src="https://img.shields.io/github/go-mod/go-version/digitalghost-dev/poke-cli?style=flat-square&logo=Go&labelColor=EEE&color=00ADD8" alt="go-version">
-   
+
 </div>
 
 ## Overview
@@ -20,7 +19,7 @@ My aim is to have four commands finished for `v1.0.0`. Read more in the [Roadmap
 
 ---
 ## Demo
-![demo](https://pokemon-objects.nyc3.digitaloceanspaces.com/demo_0.7.2.gif)
+![demo](https://pokemon-objects.nyc3.digitaloceanspaces.com/demo-v0.8.0.gif)
 
 ---
 ## Install
@@ -35,7 +34,19 @@ _Download a pre-built binary_
 5. Either change directories into the extracted folder or move the binary to a chosen directory.
 6. Run the tool!
 
-* Example usage:
+> [!IMPORTANT]
+> For macOS, you may have to allow the executable to run as it is not signed. Head to System Settings > Privacy & Security > scroll down and allow executable to run.
+
+<details>
+
+<summary>View Image of Settings</summary>
+
+![settings](https://pokemon-objects.nyc3.digitaloceanspaces.com/macos_settings.png)
+
+</details>
+
+
+ #### Example usage
   ```bash
   # Windows
   .\poke-cli.exe pokemon charizard --types --abilities
@@ -57,7 +68,7 @@ _Use a Docker Image_
      * Necessary.
 
 ```bash
-docker run --rm -i -t digitalghostdev/poke-cli:v0.7.2 <command> [subcommand] flag]
+docker run --rm -i -t digitalghostdev/poke-cli:v0.8.0 <command> [subcommand] flag]
 ```
 
 ### Go Install
@@ -103,11 +114,10 @@ The architecture behind how the tool works is straight forward.
 _Not 100% up-to-date, may add or remove some of these choices_
 
 - [ ] `pokemon`: get data about a specific Pokémon.
-   - [x] `--abilities | -a`: display the Pokémon's abilities.
-   - [x] `--types | -t`: display the Pokémon's typing.
-   - [ ] `--stats | -s`: display the Pokémon's base stats. 
-   - [ ] `--metrics | -m`: display the Pokémon's metrics. (height, weight, etc.)
-- [ ] `types`: get data about a specific typing.
-  - [ ] `--chart | -c`: display the type's damage chart. Undecided.
+   - [x] `-a | --abilities`: display the Pokémon's abilities.
+   - [x] `-s | --stats`: display the Pokémon's base stats.
+   - [x] `-t | --types`: display the Pokémon's typing.
+   - [ ] `-m | --moves`: display learnable moves.
+- [x] `types`: get data about a specific typing.
 - [ ] `ability`: get data about a specific ability.
-- [ ] `moves`: get data about a specific move.
+- [ ] `move`: get data about a specific move.

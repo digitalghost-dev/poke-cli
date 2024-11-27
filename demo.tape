@@ -62,9 +62,9 @@ Require echo
 Set Shell "bash"
 Set FontSize 32
 Set Width 2100
-Set Height 825
+Set Height 1100
 
-Type "poke-cli pokemon charizard --types --abilities"
+Type "poke-cli pokemon charizard --abilities --stats --types"
 
 Sleep 1s
 

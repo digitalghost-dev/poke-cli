@@ -22,7 +22,7 @@ on:
     branches:
       - main
 env:
-  VERSION_NUMBER: 'v0.7.2'
+  VERSION_NUMBER: 'v0.8.0'
   REGISTRY_NAME: digitalghostdev/poke-cli
 
 jobs:
