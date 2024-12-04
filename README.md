@@ -19,7 +19,7 @@ My aim is to have four commands finished for `v1.0.0`. Read more in the [Roadmap
 
 ---
 ## Demo
-![demo](https://pokemon-objects.nyc3.digitaloceanspaces.com/demo-v0.8.0.gif)
+![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo.gif)
 
 ---
 ## Install
