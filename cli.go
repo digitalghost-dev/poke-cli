@@ -13,35 +13,45 @@ import (
 var (
 	styleBold  = lipgloss.NewStyle().Bold(true)
 	helpBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00"))
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FFCC00"))
 	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	errorBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#F2055C"))
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
 )
 
 var version = "(devel)"
 
 func currentVersion() {
+	if version != "(devel)" {
+		// Use version injected by -ldflags
+		fmt.Printf("Version: %s\n", version)
+		return
+	}
+
+	// Fallback to build info when version is not set
 	buildInfo, ok := debug.ReadBuildInfo()
 	if !ok {
-		fmt.Println("Unable to determine version information.")
+		fmt.Println("Version: unknown (unable to read build info)")
 		return
 	}
 
 	if buildInfo.Main.Version != "" {
 		fmt.Printf("Version: %s\n", buildInfo.Main.Version)
 	} else {
-		fmt.Println("Version: unknown")
+		fmt.Println("Version: (devel)")
 	}
 }
 
 func runCLI(args []string) int {
 	mainFlagSet := flag.NewFlagSet("poke-cli", flag.ContinueOnError)
-	latestFlag := mainFlagSet.Bool("latest", false, "Prints the program's latest Docker Image and Release versions.")
-	shortLatestFlag := mainFlagSet.Bool("l", false, "Prints the program's latest Docker Image and Release versions.")
 
+	// -l, --latest flag retrieves the latest Docker image and GitHub release versions available
+	latestFlag := mainFlagSet.Bool("latest", false, "Prints the program's latest Docker image and release versions.")
+	shortLatestFlag := mainFlagSet.Bool("l", false, "Prints the program's latest Docker image and release versions.")
+
+	// -v, --version flag retrives the currently installed version
 	currentVersionFlag := mainFlagSet.Bool("version", false, "Prints the current version")
 	shortCurrentVersionFlag := mainFlagSet.Bool("v", false, "Prints the current version")
 
