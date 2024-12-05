@@ -2,7 +2,7 @@
     <img height="250" width="350" src="https://cdn.simpleicons.org/pokemon/FFCC00" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.8.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.9.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -68,18 +68,17 @@ _Use a Docker Image_
      * Necessary.
 
 ```bash
-docker run --rm -i -t digitalghostdev/poke-cli:v0.8.0 <command> [subcommand] flag]
+docker run --rm -i -t digitalghostdev/poke-cli:v0.9.0 <command> [subcommand] flag]
 ```
 
 ### Go Install
-_Install the executable yourself_
+_If you have Go already, install the executable yourself_
 
-1. Install [Golang](https://go.dev/dl/).
-2. Once installed, run the following command:
+1. Run the following command:
    ```bash
    go install github.com/digitalghost-dev/poke-cli@v0
    ```
-3. The tool is ready to use!
+2. The tool is ready to use!
 ---
 ## Usage
 By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
