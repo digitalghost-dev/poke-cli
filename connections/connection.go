@@ -2,11 +2,13 @@ package connections
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -80,8 +82,19 @@ var red = lipgloss.Color("#F2055C")
 var errorColor = lipgloss.NewStyle().Foreground(red)
 
 // ApiCallSetup Helper function to handle API calls and JSON unmarshalling
-func ApiCallSetup(url string, target interface{}) error {
-	res, err := http.Get(url)
+func ApiCallSetup(rawURL string, target interface{}) error {
+	// Parse and validate the URL
+	parsedURL, err := url.Parse(rawURL)
+	if err != nil {
+		return fmt.Errorf("invalid URL provided: %w", err)
+	}
+
+	// Check the scheme to ensure it's HTTPS
+	if parsedURL.Scheme != "https" {
+		return errors.New("only HTTPS URLs are allowed for security reasons")
+	}
+
+	res, err := http.Get(parsedURL.String())
 	if err != nil {
 		return fmt.Errorf("error making GET request: %w", err)
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os/exec"
 )
 
@@ -24,7 +25,25 @@ func latestRelease(githubAPIURL string) {
 		TagName string `json:"tag_name"`
 	}
 
-	response, err := http.Get(githubAPIURL)
+	// Parse and validate the URL
+	parsedURL, err := url.Parse(githubAPIURL)
+	if err != nil {
+		fmt.Println("Invalid URL:", err)
+		return
+	}
+
+	// Enforce HTTPS and a specific host (e.g., api.github.com)
+	if parsedURL.Scheme != "https" {
+		fmt.Println("Only HTTPS URLs are allowed for security reasons")
+		return
+	}
+	if parsedURL.Host != "api.github.com" {
+		fmt.Println("URL host is not allowed")
+		return
+	}
+
+	// Make the HTTP GET request
+	response, err := http.Get(parsedURL.String())
 	if err != nil {
 		fmt.Println("Error fetching data:", err)
 		return
