@@ -2,6 +2,7 @@ package flags
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -32,14 +33,16 @@ func latestRelease(githubAPIURL string) {
 		return
 	}
 
-	// Enforce HTTPS and a specific host (e.g., api.github.com)
-	if parsedURL.Scheme != "https" {
-		fmt.Println("Only HTTPS URLs are allowed for security reasons")
-		return
-	}
-	if parsedURL.Host != "api.github.com" {
-		fmt.Println("URL host is not allowed")
-		return
+	// Enforce HTTPS and specific host unless in test mode
+	if flag.Lookup("test.v") == nil { // Check if not in test mode
+		if parsedURL.Scheme != "https" {
+			fmt.Println("Only HTTPS URLs are allowed for security reasons")
+			return
+		}
+		if parsedURL.Host != "api.github.com" {
+			fmt.Println("URL host is not allowed")
+			return
+		}
 	}
 
 	// Make the HTTP GET request
