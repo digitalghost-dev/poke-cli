@@ -1,13 +1,18 @@
 package cmd
 
 import (
+	"regexp"
+	"strings"
 	"testing"
 )
 
+func stripANSI(input string) string {
+	ansiEscape := regexp.MustCompile(`\x1b\[[0-9;]*m`)
+	return ansiEscape.ReplaceAllString(input, "")
+}
+
 // TestValidatePokemonArgs tests the ValidatePokemonArgs function
 func TestValidatePokemonArgs(t *testing.T) {
-
-	// Test case: Too few arguments
 	args := []string{"poke-cli", "pokemon"}
 	expectedError := "╭────────────────────────────────────────────────────────────╮\n" +
 		"│Error!                                                      │\n" +
@@ -16,8 +21,17 @@ func TestValidatePokemonArgs(t *testing.T) {
 		"│error: insufficient arguments                               │\n" +
 		"╰────────────────────────────────────────────────────────────╯"
 	err := ValidatePokemonArgs(args)
-	if err == nil || err.Error() != expectedError {
-		t.Errorf("Expected error for too few arguments, got: %v", err)
+	if err == nil {
+		t.Errorf("Expected error for too few arguments, got nil")
+		return
+	}
+
+	// Strip ANSI codes for comparison
+	actualError := stripANSI(err.Error())
+	expectedError = strings.TrimSpace(expectedError)
+
+	if actualError != expectedError {
+		t.Errorf("Expected error:\n%s\nGot:\n%s", expectedError, actualError)
 	}
 }
 
