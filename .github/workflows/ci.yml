@@ -15,6 +15,8 @@ on:
     paths-ignore:
       - 'README.md'
       - '.github/**'
+      - '.dockerignore'
+      - '.gitignore'
       - 'demo**'
       - 'go.mod'
       - 'go.sum'
@@ -22,11 +24,12 @@ on:
     branches:
       - main
 env:
-  VERSION_NUMBER: 'v0.8.0'
-  REGISTRY_NAME: digitalghostdev/poke-cli
+  VERSION_NUMBER: 'v0.9.0'
+  DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
+  AWS_REGION: 'us-west-2'
 
 jobs:
-  snyk:
+  gosec:
     runs-on: ubuntu-22.04
 
     permissions:
@@ -38,23 +41,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Snyk
-        uses: snyk/actions/golang@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
         with:
-          args: --sarif-file-output=snyk.sarif --skip-unresolved=true
+          args: '-no-fail -fmt sarif -out results.sarif ./...'
 
-      - name: Upload Result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: snyk.sarif
+          sarif_file: results.sarif
 
   build-docker-image:
     runs-on: ubuntu-22.04
-    needs: [snyk]
-    if: needs.snyk.result == 'success'
+    needs: [gosec]
+    if: needs.gosec.result == 'success'
 
     steps:
       - name: Checkout
@@ -80,6 +80,33 @@ jobs:
         with:
           name: poke-cli
           path: /tmp/poke-cli.tar
+
+  # Uploading to Elastic Container Registry has a backup method.
+  upload-to-ecr:
+    runs-on: ubuntu-22.04
+    needs: [build-docker-image]
+    if: needs.build-docker-image.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        run : |
+          docker build -t poke-cli:${{ env.VERSION_NUMBER }} .
+          docker tag poke-cli:${{ env.VERSION_NUMBER }} ${{ secrets.AWS_ECR_NAME }}:${{ env.VERSION_NUMBER }}
+          docker push ${{ secrets.AWS_ECR_NAME }}:${{ env.VERSION_NUMBER }}
 
   syft:
     permissions:
@@ -150,8 +177,8 @@ jobs:
 
   architecture-build:
     runs-on: ubuntu-22.04
-    needs: [snyk]
-    if: needs.snyk.result == 'success'
+    needs: [gosec]
+    if: needs.gosec.result == 'success'
 
     strategy:
       fail-fast: false
@@ -166,7 +193,7 @@ jobs:
         id: meta
         uses: 'docker/metadata-action@v5.0.0'
         with:
-          images: ${{ env.REGISTRY_NAME }}
+          images: ${{ env.DOCKERHUB_REGISTRY_NAME }}
 
       - name: Set up QEMU
         uses: 'docker/setup-qemu-action@v3'
@@ -187,7 +214,7 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY_NAME }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.DOCKERHUB_REGISTRY_NAME }},push-by-digest=true,name-canonical=true,push=true
 
       - name: Export Digest
         run: |
@@ -232,7 +259,7 @@ jobs:
         id: meta
         uses: 'docker/metadata-action@v5.0.0'
         with:
-          images: ${{ env.REGISTRY_NAME }}
+          images: ${{ env.DOCKERHUB_REGISTRY_NAME }}
           tags: ${{ env.VERSION_NUMBER }}
 
       - name: Login to Docker Hub
@@ -245,8 +272,8 @@ jobs:
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.REGISTRY_NAME }}@sha256:%s ' *)
+            $(printf '${{ env.DOCKERHUB_REGISTRY_NAME }}@sha256:%s ' *)
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY_NAME }}:${{ steps.meta.outputs.version }}
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_REGISTRY_NAME }}:${{ steps.meta.outputs.version }}

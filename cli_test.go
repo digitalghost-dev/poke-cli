@@ -38,67 +38,67 @@ func TestRunCLI(t *testing.T) {
 		{
 			name: "No Arguments",
 			args: []string{},
-			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!  │\n" +
-				"│                                                      │\n" +
-				"│ USAGE:                                               │\n" +
-				"│    poke-cli [flag]                                   │\n" +
-				"│    poke-cli <command> [flag]                         │\n" +
-				"│    poke-cli <command> <subcommand> [flag]            │\n" +
-				"│                                                      │\n" +
-				"│ FLAGS:                                               │\n" +
-				"│    -h, --help      Shows the help menu               │\n" +
-				"│    -l, --latest    Prints the latest available       │\n" +
-				"│                    version of the program            │\n" +
-				"│                                                      │\n" +
-				"│ AVAILABLE COMMANDS:                                  │\n" +
-				"│    pokemon         Get details of a specific Pokémon │\n" +
-				"│    types           Get details of a specific typing  │\n" +
-				"╰──────────────────────────────────────────────────────╯\n",
+			expectedOutput: "╭────────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!    │\n" +
+				"│                                                        │\n" +
+				"│ USAGE:                                                 │\n" +
+				"│    poke-cli [flag]                                     │\n" +
+				"│    poke-cli <command> [flag]                           │\n" +
+				"│    poke-cli <command> <subcommand> [flag]              │\n" +
+				"│                                                        │\n" +
+				"│ FLAGS:                                                 │\n" +
+				"│    -h, --help      Shows the help menu                 │\n" +
+				"│    -l, --latest    Prints the latest version available │\n" +
+				"│    -v, --version   Prints the current version          │\n" +
+				"│                                                        │\n" +
+				"│ AVAILABLE COMMANDS:                                    │\n" +
+				"│    pokemon         Get details of a specific Pokémon   │\n" +
+				"│    types           Get details of a specific typing    │\n" +
+				"╰────────────────────────────────────────────────────────╯\n",
 			expectedCode: 0,
 		},
 		{
 			name: "Help Flag Short",
 			args: []string{"-h"},
-			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!  │\n" +
-				"│                                                      │\n" +
-				"│ USAGE:                                               │\n" +
-				"│    poke-cli [flag]                                   │\n" +
-				"│    poke-cli <command> [flag]                         │\n" +
-				"│    poke-cli <command> <subcommand> [flag]            │\n" +
-				"│                                                      │\n" +
-				"│ FLAGS:                                               │\n" +
-				"│    -h, --help      Shows the help menu               │\n" +
-				"│    -l, --latest    Prints the latest available       │\n" +
-				"│                    version of the program            │\n" +
-				"│                                                      │\n" +
-				"│ AVAILABLE COMMANDS:                                  │\n" +
-				"│    pokemon         Get details of a specific Pokémon │\n" +
-				"│    types           Get details of a specific typing  │\n" +
-				"╰──────────────────────────────────────────────────────╯\n",
+			expectedOutput: "╭────────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!    │\n" +
+				"│                                                        │\n" +
+				"│ USAGE:                                                 │\n" +
+				"│    poke-cli [flag]                                     │\n" +
+				"│    poke-cli <command> [flag]                           │\n" +
+				"│    poke-cli <command> <subcommand> [flag]              │\n" +
+				"│                                                        │\n" +
+				"│ FLAGS:                                                 │\n" +
+				"│    -h, --help      Shows the help menu                 │\n" +
+				"│    -l, --latest    Prints the latest version available │\n" +
+				"│    -v, --version   Prints the current version          │\n" +
+				"│                                                        │\n" +
+				"│ AVAILABLE COMMANDS:                                    │\n" +
+				"│    pokemon         Get details of a specific Pokémon   │\n" +
+				"│    types           Get details of a specific typing    │\n" +
+				"╰────────────────────────────────────────────────────────╯\n",
 			expectedCode: 0,
 		},
 		{
 			name: "Help Flag Long",
 			args: []string{"--help"},
-			expectedOutput: "╭──────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!  │\n" +
-				"│                                                      │\n" +
-				"│ USAGE:                                               │\n" +
-				"│    poke-cli [flag]                                   │\n" +
-				"│    poke-cli <command> [flag]                         │\n" +
-				"│    poke-cli <command> <subcommand> [flag]            │\n" +
-				"│                                                      │\n" +
-				"│ FLAGS:                                               │\n" +
-				"│    -h, --help      Shows the help menu               │\n" +
-				"│    -l, --latest    Prints the latest available       │\n" +
-				"│                    version of the program            │\n" +
-				"│                                                      │\n" +
-				"│ AVAILABLE COMMANDS:                                  │\n" +
-				"│    pokemon         Get details of a specific Pokémon │\n" +
-				"│    types           Get details of a specific typing  │\n" +
-				"╰──────────────────────────────────────────────────────╯\n",
+			expectedOutput: "╭────────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!    │\n" +
+				"│                                                        │\n" +
+				"│ USAGE:                                                 │\n" +
+				"│    poke-cli [flag]                                     │\n" +
+				"│    poke-cli <command> [flag]                           │\n" +
+				"│    poke-cli <command> <subcommand> [flag]              │\n" +
+				"│                                                        │\n" +
+				"│ FLAGS:                                                 │\n" +
+				"│    -h, --help      Shows the help menu                 │\n" +
+				"│    -l, --latest    Prints the latest version available │\n" +
+				"│    -v, --version   Prints the current version          │\n" +
+				"│                                                        │\n" +
+				"│ AVAILABLE COMMANDS:                                    │\n" +
+				"│    pokemon         Get details of a specific Pokémon   │\n" +
+				"│    types           Get details of a specific typing    │\n" +
+				"╰────────────────────────────────────────────────────────╯\n",
 			expectedCode: 0,
 		},
 		{
@@ -110,7 +110,7 @@ func TestRunCLI(t *testing.T) {
 		{
 			name:           "Latest Flag",
 			args:           []string{"-l"},
-			expectedOutput: "Latest Docker image version: v0.7.2\nLatest release tag: v0.7.2\n",
+			expectedOutput: "Latest Docker image version: v0.8.0\nLatest release tag: v0.8.0\n",
 			expectedCode:   0,
 		},
 	}

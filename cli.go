@@ -7,6 +7,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"os"
+	"runtime/debug"
 )
 
 var (
@@ -20,10 +21,39 @@ var (
 			BorderForeground(lipgloss.Color("#F2055C"))
 )
 
+var version = "(devel)"
+
+func currentVersion() {
+	if version != "(devel)" {
+		// Use version injected by -ldflags
+		fmt.Printf("Version: %s\n", version)
+		return
+	}
+
+	// Fallback to build info when version is not set
+	buildInfo, ok := debug.ReadBuildInfo()
+	if !ok {
+		fmt.Println("Version: unknown (unable to read build info)")
+		return
+	}
+
+	if buildInfo.Main.Version != "" {
+		fmt.Printf("Version: %s\n", buildInfo.Main.Version)
+	} else {
+		fmt.Println("Version: (devel)")
+	}
+}
+
 func runCLI(args []string) int {
 	mainFlagSet := flag.NewFlagSet("poke-cli", flag.ContinueOnError)
-	latestFlag := mainFlagSet.Bool("latest", false, "Prints the program's latest Docker Image and Release versions.")
-	shortLatestFlag := mainFlagSet.Bool("l", false, "Prints the program's latest Docker Image and Release versions.")
+
+	// -l, --latest flag retrieves the latest Docker image and GitHub release versions available
+	latestFlag := mainFlagSet.Bool("latest", false, "Prints the program's latest Docker image and release versions.")
+	shortLatestFlag := mainFlagSet.Bool("l", false, "Prints the program's latest Docker image and release versions.")
+
+	// -v, --version flag retrives the currently installed version
+	currentVersionFlag := mainFlagSet.Bool("version", false, "Prints the current version")
+	shortCurrentVersionFlag := mainFlagSet.Bool("v", false, "Prints the current version")
 
 	mainFlagSet.Usage = func() {
 		helpMessage := helpBorder.Render(
@@ -34,8 +64,8 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "poke-cli <command> <subcommand> [flag]", ""),
 			"\n\n", styleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Shows the help menu"),
-			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest available"),
-			fmt.Sprintf("\n\t%-15s %s", "", "version of the program"),
+			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest version available"),
+			fmt.Sprintf("\n\t%-15s %s", "-v, --version", "Prints the current version"),
 			"\n\n", styleBold.Render("AVAILABLE COMMANDS:"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details of a specific Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details of a specific typing"),
@@ -69,6 +99,9 @@ func runCLI(args []string) int {
 		return 1
 	} else if *latestFlag || *shortLatestFlag {
 		flags.LatestFlag()
+		return 0
+	} else if *currentVersionFlag || *shortCurrentVersionFlag {
+		currentVersion()
 		return 0
 	} else if cmdFunc, exists := commands[os.Args[1]]; exists {
 		cmdFunc()

@@ -13,6 +13,8 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X main.version=v0.9.0
 
 archives:
   - format: tar.gz
