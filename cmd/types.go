@@ -69,7 +69,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 	selectedType := cases.Title(language.English).String(typeName)
 	coloredType := lipgloss.NewStyle().Foreground(lipgloss.Color(getTypeColor(typeName))).Render(selectedType)
 
-	fmt.Printf("You selected the %s type.\nNumber of Pokémon with type: %d\n", coloredType, len(typesStruct.Pokemon))
+	fmt.Printf("You selected the %s type.\nNumber of Pokémon with type: %d\nNumber of moves with type: %d\n", coloredType, len(typesStruct.Pokemon), len(typesStruct.Moves))
 	fmt.Println("----------")
 	fmt.Println(styleBold.Render("Damage Chart:"))
 

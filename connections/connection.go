@@ -41,8 +41,12 @@ type PokemonJSONStruct struct {
 }
 
 type TypesJSONStruct struct {
-	Name    string `json:"name"`
-	ID      int    `json:"id"`
+	Name  string `json:"name"`
+	ID    int    `json:"id"`
+	Moves []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"moves"`
 	Pokemon []struct {
 		Pokemon struct {
 			Name string `json:"name"`
