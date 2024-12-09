@@ -1,4 +1,4 @@
-name: Test
+name: Coverage Report
 
 on:
   pull_request:
@@ -20,5 +20,10 @@ jobs:
         run: |
           go install .
 
-      - name: Run tests
-        run: go test -v ./...
+      - name: Run coverage
+        run: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_ORG_TOKEN }}

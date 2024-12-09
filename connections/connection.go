@@ -12,6 +12,10 @@ import (
 	"os"
 )
 
+var errorBorder = lipgloss.NewStyle().
+	BorderStyle(lipgloss.RoundedBorder()).
+	BorderForeground(lipgloss.Color("#F2055C"))
+
 type PokemonJSONStruct struct {
 	Name      string `json:"name"`
 	ID        int    `json:"id"`
@@ -108,7 +112,11 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound {
-		fmt.Println(errorColor.Render("Pokémon not found. Perhaps a typo in the name?"))
+		errMessage := errorBorder.Render(
+			errorColor.Render("Error!"),
+			"\nPokémon not found. Perhaps a typo in the name?",
+		)
+		fmt.Println(errMessage)
 
 		if flag.Lookup("test.v") != nil {
 			return fmt.Errorf("page not found: 404 error")
