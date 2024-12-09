@@ -18,9 +18,9 @@ func handleHelpFlag(args []string) {
 
 // ValidatePokemonArgs validates the command line arguments
 func ValidatePokemonArgs(args []string) error {
-
 	handleHelpFlag(args)
 
+	// Check if the number of arguments is less than 3
 	if len(args) < 3 {
 		errMessage := errorBorder.Render(
 			errorColor.Render("Error!"),
@@ -31,21 +31,51 @@ func ValidatePokemonArgs(args []string) error {
 		return fmt.Errorf("%s", errMessage)
 	}
 
+	// Check if there are too many arguments
 	if len(args) > 6 {
-		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments")
+		errMessage := errorBorder.Render(
+			errorColor.Render("Error!"),
+			"\nToo many arguments",
+		)
 		return fmt.Errorf("%s", errMessage)
 	}
 
+	// Validate each argument after the Pokémon's name
 	if len(args) > 3 {
 		for _, arg := range args[3:] {
+			// Check for single `-` or `--` which are invalid
+			if arg == "-" || arg == "--" {
+				errorTitle := errorColor.Render("Error!")
+				errorString := fmt.Sprintf(
+					"\nInvalid argument '%s'. Single '-' or '--' is not allowed.\nPlease use valid flags.",
+					arg,
+				)
+				finalErrorMessage := errorTitle + errorString
+				renderedError := errorBorder.Render(finalErrorMessage)
+				return fmt.Errorf("%s", renderedError)
+			}
+
+			// Check if the argument starts with a flag prefix but is invalid
 			if arg[0] != '-' {
 				errorTitle := errorColor.Render("Error!")
-				errorString := fmt.Sprintf("\nInvalid argument '%s'. Only flags are allowed after declaring a Pokémon's name", arg)
+				errorString := fmt.Sprintf(
+					"\nInvalid argument '%s'.\nOnly flags are allowed after declaring a Pokémon's name",
+					arg,
+				)
 				finalErrorMessage := errorTitle + errorString
 				renderedError := errorBorder.Render(finalErrorMessage)
 				return fmt.Errorf("%s", renderedError)
 			}
 		}
+	}
+
+	// Add a check for invalid Pokémon names (e.g., names starting with `-`)
+	if len(args[2]) > 0 && args[2][0] == '-' {
+		errMessage := errorBorder.Render(
+			errorColor.Render("Error!"),
+			"\nPokémon not found. Perhaps a typo in the name?",
+		)
+		return fmt.Errorf("%s", errMessage)
 	}
 
 	return nil
