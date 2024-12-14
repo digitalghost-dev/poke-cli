@@ -74,8 +74,8 @@ func TestAbilitiesFlag(t *testing.T) {
 	// Define the expected output based on the API response
 	expectedOutput := `─────────
 Abilities
-Ability 1: overgrow
-Hidden Ability: chlorophyll
+Ability 1: Overgrow
+Hidden Ability: Chlorophyll
 `
 
 	// Assert the actual output matches the expected output
@@ -153,8 +153,8 @@ func TestTypesFlag(t *testing.T) {
 	// Define expected output components
 	expectedOutput := `──────
 Typing
-Type 1: grass
-Type 2: poison
+Type 1: Grass
+Type 2: Poison
 `
 
 	// Assert output contains the expected header and typing information
