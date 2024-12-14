@@ -51,7 +51,7 @@ func runCLI(args []string) int {
 	latestFlag := mainFlagSet.Bool("latest", false, "Prints the program's latest Docker image and release versions.")
 	shortLatestFlag := mainFlagSet.Bool("l", false, "Prints the program's latest Docker image and release versions.")
 
-	// -v, --version flag retrives the currently installed version
+	// -v, --version flag retrieves the currently installed version
 	currentVersionFlag := mainFlagSet.Bool("version", false, "Prints the current version")
 	shortCurrentVersionFlag := mainFlagSet.Bool("v", false, "Prints the current version")
 
