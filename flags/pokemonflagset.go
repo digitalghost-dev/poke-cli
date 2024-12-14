@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"strings"
 )
 
@@ -58,13 +60,38 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 
 	header("Abilities")
 
+	// Anonymous function to format ability names
+	formatAbilityName := func(name string) string {
+		exceptions := map[string]bool{
+			"of":  true,
+			"the": true,
+			"to":  true,
+			"as":  true,
+		}
+
+		name = strings.Replace(name, "-", " ", -1)
+		words := strings.Split(name, " ")
+		titleCaser := cases.Title(language.English)
+
+		// Process each word
+		for i, word := range words {
+			if _, found := exceptions[strings.ToLower(word)]; found && i != 0 {
+				words[i] = strings.ToLower(word)
+			} else {
+				words[i] = titleCaser.String(word)
+			}
+		}
+		return strings.Join(words, " ")
+	}
+
 	for _, pokeAbility := range pokemonStruct.Abilities {
+		formattedName := formatAbilityName(pokeAbility.Ability.Name)
 		if pokeAbility.Slot == 1 {
-			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, pokeAbility.Ability.Name)
+			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, formattedName)
 		} else if pokeAbility.Slot == 2 {
-			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, pokeAbility.Ability.Name)
+			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, formattedName)
 		} else {
-			fmt.Printf("Hidden Ability: %s\n", pokeAbility.Ability.Name)
+			fmt.Printf("Hidden Ability: %s\n", formattedName)
 		}
 	}
 
@@ -181,9 +208,11 @@ func TypesFlag(endpoint string, pokemonName string) error {
 		colorHex, exists := colorMap[pokeType.Type.Name]
 		if exists {
 			color := lipgloss.Color(colorHex)
-			fmt.Printf("Type %d: %s\n", pokeType.Slot, lipgloss.NewStyle().Bold(true).Foreground(color).Render(pokeType.Type.Name))
+			style := lipgloss.NewStyle().Bold(true).Foreground(color)
+			styledName := style.Render(cases.Title(language.English).String(pokeType.Type.Name)) // Apply styling here
+			fmt.Printf("Type %d: %s\n", pokeType.Slot, styledName)                               // Interpolate styled text
 		} else {
-			fmt.Printf("Type %d: %s\n", pokeType.Slot, pokeType.Type.Name)
+			fmt.Printf("Type %d: %s\n", pokeType.Slot, cases.Title(language.English).String(pokeType.Type.Name))
 		}
 	}
 
