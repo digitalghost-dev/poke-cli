@@ -23,8 +23,9 @@ on:
       - '.goreleaser.yaml'
     branches:
       - main
+
 env:
-  VERSION_NUMBER: 'v0.9.1'
+  VERSION_NUMBER: 'v0.9.2'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
