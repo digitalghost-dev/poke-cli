@@ -55,9 +55,9 @@ func (m model) View() string {
 func displayTypeDetails(typesName string, endpoint string) {
 
 	// Setting up variables to style the list
-	var columnWidth = 13
+	var columnWidth int = 11
 	var subtle = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
-	var list = lipgloss.NewStyle().Border(lipgloss.NormalBorder(), false, true, false, false).BorderForeground(subtle).MarginRight(2).Height(8).Width(columnWidth + 1)
+	var list = lipgloss.NewStyle().Border(lipgloss.NormalBorder(), false, true, false, false).BorderForeground(subtle).MarginRight(2).Height(8)
 	var listHeader = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderBottom(true).BorderForeground(subtle).MarginRight(2).Render
 	var listItem = lipgloss.NewStyle().Render
 	var docStyle = lipgloss.NewStyle().Padding(1, 1, 1, 1)
@@ -90,7 +90,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 
 	// Render lists based on Damage Relations
 	lists := lipgloss.JoinHorizontal(lipgloss.Top,
-		list.Render(
+		list.Width(columnWidth).Render(
 			lipgloss.JoinVertical(lipgloss.Left,
 				listHeader("Weakness"),
 				buildListItems([]struct{ Name, URL string }(typesStruct.DamageRelations.DoubleDamageFrom)),
@@ -98,7 +98,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 		),
 		list.Width(columnWidth).Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				listHeader("x2 Damage"),
+				listHeader("x2 Dmg"),
 				buildListItems([]struct{ Name, URL string }(typesStruct.DamageRelations.DoubleDamageTo)),
 			),
 		),
@@ -110,7 +110,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 		),
 		list.Width(columnWidth).Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				listHeader("x0.5 Damage"),
+				listHeader("x0.5 Dmg"),
 				buildListItems([]struct{ Name, URL string }(typesStruct.DamageRelations.HalfDamageTo)),
 			),
 		),
@@ -122,7 +122,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 		),
 		list.Width(columnWidth).Render(
 			lipgloss.JoinVertical(lipgloss.Left,
-				listHeader("x0 Damage"),
+				listHeader("x0 Dmg"),
 				buildListItems([]struct{ Name, URL string }(typesStruct.DamageRelations.NoDamageTo)),
 			),
 		),
