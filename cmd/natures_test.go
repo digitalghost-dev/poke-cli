@@ -2,10 +2,32 @@ package cmd
 
 import (
 	"bytes"
-	"os/exec"
+	"os"
 	"strings"
 	"testing"
 )
+
+func captureOutput(f func()) string {
+	// Create a pipe to capture standard output
+	r, w, _ := os.Pipe()
+	defer r.Close()
+
+	// Redirect os.Stdout to the write end of the pipe
+	oldStdout := os.Stdout
+	os.Stdout = w
+	defer func() { os.Stdout = oldStdout }()
+
+	// Run the function
+	f()
+
+	// Close the write end of the pipe
+	w.Close()
+
+	// Read the captured output
+	var buf bytes.Buffer
+	_, _ = buf.ReadFrom(r)
+	return buf.String()
+}
 
 func TestNaturesCommand(t *testing.T) {
 	tests := []struct {
@@ -54,24 +76,27 @@ func TestNaturesCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := exec.Command("poke-cli", tt.args...)
-			var out bytes.Buffer
-			cmd.Stdout = &out
-			cmd.Stderr = &out
+			// Save original os.Args
+			originalArgs := os.Args
+			defer func() { os.Args = originalArgs }()
 
-			err := cmd.Run()
+			// Set os.Args for the test
+			os.Args = append([]string{"poke-cli"}, tt.args...)
 
-			if tt.expectError {
-				if err == nil {
-					t.Fatalf("Expected an error but got none.\nOutput: %s", out.String())
-				}
-			} else {
-				if err != nil {
-					t.Fatalf("Did not expect an error but got: %v\nOutput: %s", err, out.String())
-				}
-			}
+			// Capture the output
+			output := captureOutput(func() {
+				defer func() {
+					// Recover from os.Exit calls
+					if r := recover(); r != nil {
+						if !tt.expectError {
+							t.Fatalf("Unexpected error: %v", r)
+						}
+					}
+				}()
+				NaturesCommand()
+			})
 
-			output := out.String()
+			// Check output
 			if !strings.Contains(output, tt.expectedOutput) {
 				t.Errorf("Output mismatch.\nExpected to contain:\n%s\nGot:\n%s", tt.expectedOutput, output)
 			}

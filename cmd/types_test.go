@@ -47,7 +47,12 @@ func TestModelView_SelectedOption(t *testing.T) {
 
 func TestModelView_DisplayTable(t *testing.T) {
 	m := model{selectedOption: ""}
-	expectedOutput := "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + typesTableBorder.Render(m.table.View()) + "\n"
+
+	// Construct the expected output exactly as `View()` should render it
+	expectedOutput := "Select a type!\n" +
+		typesTableBorder.Render(m.table.View()) +
+		"\n" +
+		keyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
 
 	output := m.View()
 

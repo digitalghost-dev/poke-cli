@@ -1,15 +1,9 @@
 package cmd
 
 import (
-	"regexp"
 	"strings"
 	"testing"
 )
-
-func stripANSI(input string) string {
-	ansiEscape := regexp.MustCompile(`\x1b\[[0-9;]*m`)
-	return ansiEscape.ReplaceAllString(input, "")
-}
 
 // TestValidatePokemonArgs tests the ValidatePokemonArgs function
 func TestValidatePokemonArgs(t *testing.T) {
