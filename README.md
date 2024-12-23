@@ -19,7 +19,7 @@ My aim is to have five commands finished for `v1.0.0`. Read more in the [Roadmap
 
 ---
 ## Demo
-![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v0.9.3.gif)
+![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v0.10.0.gif)
 
 ---
 ## Install
