@@ -25,7 +25,7 @@ on:
       - main
 
 env:
-  VERSION_NUMBER: 'v0.9.3'
+  VERSION_NUMBER: 'v0.10.0'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
