@@ -63,7 +63,7 @@ Set Shell "bash"
 Set FontSize 32
 Set Width 2100
 Set Height 1100
-Set TypingSpeed 100ms
+Set TypingSpeed 85ms
 
 Type "poke-cli pokemon charizard --abilities --stats --types"
 
@@ -86,6 +86,16 @@ Enter
 Sleep 1s
 
 Down@500ms 4
+
+Enter
+
+Sleep 5s
+
+Type clear
+
+Enter
+
+Type "poke-cli natures"
 
 Enter
 
