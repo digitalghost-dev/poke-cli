@@ -26,8 +26,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "ctrl+c":
-			// Quit the program when in selection mode
+		case "q", "esc", "ctrl+c":
 			m.selectedOption = "quit"
 			return m, tea.Quit
 		case "enter":
@@ -48,7 +47,10 @@ func (m model) View() string {
 		return ""
 	}
 	// Otherwise, display the table
-	return "Select a type! Hit 'Q' or 'CTRL-C' to quit.\n" + typesTableBorder.Render(m.table.View()) + "\n"
+	return "Select a type!\n" +
+		typesTableBorder.Render(m.table.View()) +
+		"\n" +
+		keyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
 }
 
 // Function to display type details after a type is selected
