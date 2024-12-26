@@ -1,10 +1,17 @@
 package cmd
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+	"regexp"
+)
 
 // This file holds all lipgloss stylization variables in one spot since they
 // are used throughout the package and don't need to be redeclared.
 var (
+	green       = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
+	red         = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
+	gray        = lipgloss.Color("#777777")
+	keyMenu     = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
 	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	errorBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
@@ -44,4 +51,10 @@ func getTypeColor(typeName string) string {
 	color := colorMap[typeName]
 
 	return color
+}
+
+// stripANSI function is used in tests to strip ANSI for plain text processing
+func stripANSI(input string) string {
+	ansiRegex := regexp.MustCompile(`\x1b\[[0-9;]*m`)
+	return ansiRegex.ReplaceAllString(input, "")
 }
