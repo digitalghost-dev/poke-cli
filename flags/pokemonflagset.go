@@ -174,6 +174,13 @@ func StatsFlag(endpoint string, pokemonName string) error {
 		printBar(customName, stat.BaseStat, maxWidth, maxValue, style)
 	}
 
+	totalBaseStats := 0
+	for _, stat := range pokemonStruct.Stats {
+		totalBaseStats += stat.BaseStat
+	}
+
+	fmt.Printf("%-10s %d\n", "Total", totalBaseStats)
+
 	return nil
 }
 
