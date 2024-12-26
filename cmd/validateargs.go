@@ -16,6 +16,28 @@ func handleHelpFlag(args []string) {
 	}
 }
 
+// ValidateNaturesArgs validates the command line arguments
+func ValidateNaturesArgs(args []string) error {
+	handleHelpFlag(args)
+
+	if len(args) > 3 {
+		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
+	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
+	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
+		errorTitle := errorColor.Render("Error!")
+		errorString := "\nThe only currently available options\nafter [natures] command are '-h' or '--help'"
+		finalErrorMessage := errorTitle + errorString
+		renderedError := errorBorder.Render(finalErrorMessage)
+		return fmt.Errorf("%s", renderedError)
+	}
+
+	return nil
+}
+
 // ValidatePokemonArgs validates the command line arguments
 func ValidatePokemonArgs(args []string) error {
 	handleHelpFlag(args)
