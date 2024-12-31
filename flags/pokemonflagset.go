@@ -7,15 +7,20 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/disintegration/imaging"
+	"github.com/lucasb-eyer/go-colorful"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"image"
+	"net/http"
+	"os"
 	"strings"
 )
 
 var (
 	helpBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFCC00"))
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00"))
 	styleBold = lipgloss.NewStyle().Bold(true)
 )
 
@@ -30,11 +35,14 @@ func header(header string) {
 	fmt.Println(HeaderBold)
 }
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *bool, *bool) {
+func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *bool, *bool, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
 	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the Pokémon's abilities")
 	shortAbilitiesFlag := pokeFlags.Bool("a", false, "Print the Pokémon's abilities")
+
+	imageFlag := pokeFlags.Bool("image", false, "Print the Pokémon's default sprite")
+	shortImageFlag := pokeFlags.Bool("i", false, "Print the Pokémon's default sprite")
 
 	statsFlag := pokeFlags.Bool("stats", false, "Print the Pokémon's base stats")
 	shortStatsFlag := pokeFlags.Bool("s", false, "Print the Pokémon's base stats")
@@ -51,7 +59,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *bool, *b
 		)
 	}
 
-	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
+	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
 }
 
 func AbilitiesFlag(endpoint string, pokemonName string) error {
@@ -98,13 +106,77 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 	return nil
 }
 
+func ImageFlag(endpoint string, pokemonName string) error {
+	baseURL := "https://pokeapi.co/api/v2/"
+	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+
+	header("Image")
+
+	// Anonymous function to transform the image to a string
+	// ToString generates an ASCII representation of the image with color
+	ToString := func(width int, height int, img image.Image) string {
+		// Resize the image to the specified width, preserving aspect ratio
+		img = imaging.Resize(img, width, height, imaging.NearestNeighbor)
+		b := img.Bounds()
+		imageWidth := b.Max.X - 2 // Adjust width to exclude margins
+		h := b.Max.Y - 4          // Adjust height to exclude margins
+		str := strings.Builder{}
+
+		// Loop through the image pixels, two rows at a time
+		for heightCounter := 2; heightCounter < h; heightCounter += 2 {
+			for x := 1; x < imageWidth; x++ {
+				// Get the color of the current and next row's pixels
+				c1, _ := colorful.MakeColor(img.At(x, heightCounter))
+				color1 := lipgloss.Color(c1.Hex())
+				c2, _ := colorful.MakeColor(img.At(x, heightCounter+1))
+				color2 := lipgloss.Color(c2.Hex())
+
+				// Render the half-block character with the two colors
+				str.WriteString(lipgloss.NewStyle().
+					Foreground(color1).
+					Background(color2).
+					Render("▀"))
+			}
+
+			// Add a newline after each row
+			str.WriteString("\n")
+		}
+
+		return str.String()
+	}
+
+	imageResp, err := http.Get(pokemonStruct.Sprites.FrontDefault)
+	if err != nil {
+		fmt.Println("Error downloading sprite image:", err)
+		os.Exit(1)
+	}
+	defer imageResp.Body.Close()
+
+	img, err := imaging.Decode(imageResp.Body)
+	if err != nil {
+		fmt.Println("Error decoding image:", err)
+		os.Exit(1)
+	}
+
+	// TODO: add an option to change the pixel size based on user input
+	// TODO: for example: --image=lg | --image=md | --image=sm
+	// 120 = large
+	// 90 = medium
+	// 55 = small
+
+	imgStr := ToString(60, 60, img) // Width set to 50 characters
+	fmt.Println(imgStr)
+
+	return nil
+}
+
 func StatsFlag(endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	header("Base Stats")
 
-	// Helper function to map stat values to categories
+	// Anonymous function to map stat values to categories
 	getStatCategory := func(value int) string {
 		switch {
 		case value < 20:

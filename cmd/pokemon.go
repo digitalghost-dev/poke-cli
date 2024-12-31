@@ -33,7 +33,7 @@ func PokemonCommand() {
 
 	flag.Parse()
 
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -78,6 +78,13 @@ func PokemonCommand() {
 
 	if *abilitiesFlag || *shortAbilitiesFlag {
 		if err := flags.AbilitiesFlag(endpoint, pokemonName); err != nil {
+			fmt.Printf("Error: %s\n", err)
+			os.Exit(1)
+		}
+	}
+
+	if *imageFlag || *shortImageFlag {
+		if err := flags.ImageFlag(endpoint, pokemonName); err != nil {
 			fmt.Printf("Error: %s\n", err)
 			os.Exit(1)
 		}
