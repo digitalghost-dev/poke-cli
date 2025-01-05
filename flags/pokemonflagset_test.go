@@ -2,9 +2,12 @@ package flags
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"reflect"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -14,37 +17,34 @@ func stripANSI(input string) string {
 }
 
 func TestSetupPokemonFlagSet(t *testing.T) {
-	// Call the function to get the flag set and types flag
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := SetupPokemonFlagSet()
+	// Call the function to get the flag set and flags
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := SetupPokemonFlagSet()
 
-	// Assertions
+	// Check flag set properties
 	assert.NotNil(t, pokeFlags, "Flag set should not be nil")
 	assert.Equal(t, "pokeFlags", pokeFlags.Name(), "Flag set name should be 'pokeFlags'")
-	//assert.Equal(t, flag.ExitOnError, pokeFlags.NFlag(), "Flag set should have ExitOnError behavior")
 
-	// Check abilities flag
-	assert.NotNil(t, abilitiesFlag, "Abilities flag should not be nil")
-	assert.Equal(t, false, *abilitiesFlag, "Abilities flag name should be 'abilities'")
+	// Define test cases for flag assertions
+	flagTests := []struct {
+		flag     interface{} // Pointer to the flag variable
+		expected interface{} // Expected default value
+		name     string      // Descriptive name for the assertion
+	}{
+		{abilitiesFlag, false, "Abilities flag should be 'abilities'"},
+		{shortAbilitiesFlag, false, "Short abilities flag should be 'a'"},
+		{imageFlag, "", "Image flag default value should be 'md'"},
+		{shortImageFlag, "", "Short image flag default value should be 'md'"},
+		{typesFlag, false, "Types flag should be 'types'"},
+		{shortTypesFlag, false, "Short types flag should be 't'"},
+		{statsFlag, false, "Stats flag should be 'stats'"},
+		{shortStatsFlag, false, "Short stats flag should be 's'"},
+	}
 
-	// Check short abilities flag
-	assert.NotNil(t, shortAbilitiesFlag, "Short abilities flag should not be nil")
-	assert.Equal(t, false, *shortAbilitiesFlag, "Short abilities flag name should be 'a'")
-
-	// Check types flag
-	assert.NotNil(t, typesFlag, "Types flag should not be nil")
-	assert.Equal(t, false, *typesFlag, "Types flag name should be 'types'")
-
-	// Check short types flag
-	assert.NotNil(t, shortTypesFlag, "Short types flag should not be nil")
-	assert.Equal(t, false, *shortTypesFlag, "Short types flag name should be 't'")
-
-	// Check abilities flag
-	assert.NotNil(t, statsFlag, "Stats flag should not be nil")
-	assert.Equal(t, false, *statsFlag, "Stats flag name should be 'abilities'")
-
-	// Check short abilities flag
-	assert.NotNil(t, shortStatsFlag, "Short stats flag should not be nil")
-	assert.Equal(t, false, *shortStatsFlag, "Short stats flag name should be 'a'")
+	// Run assertions for all flags
+	for _, tt := range flagTests {
+		assert.NotNil(t, tt.flag, tt.name)
+		assert.Equal(t, tt.expected, reflect.ValueOf(tt.flag).Elem().Interface(), tt.name)
+	}
 }
 
 func TestAbilitiesFlag(t *testing.T) {
@@ -82,6 +82,59 @@ Hidden Ability: Chlorophyll
 	actualOutput := stripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the abilities flag")
+}
+
+func TestImageFlag(t *testing.T) {
+	// Capture standard output
+	var output bytes.Buffer
+	stdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	// Call the function with a known Pokémon (e.g., bulbasaur)
+	err := ImageFlag("pokemon", "bulbasaur", "sm")
+
+	// Close and restore stdout
+	if closeErr := w.Close(); closeErr != nil {
+		t.Fatalf("Failed to close pipe writer: %v", closeErr)
+	}
+	os.Stdout = stdout
+
+	_, readErr := output.ReadFrom(r)
+	if readErr != nil {
+		t.Fatalf("Failed to read from pipe: %v", readErr)
+	}
+
+	// Assert no errors occurred during execution
+	assert.NoError(t, err)
+
+	// Validate that the output contains some expected patterns
+	actualOutput := stripANSI(output.String())
+
+	// Since the output is an ASCII image, we can't hardcode the expected output,
+	// but we can check that it contains some general expected structure
+	if !strings.Contains(actualOutput, "▀") {
+		t.Errorf("Output does not contain the expected ASCII art characters.")
+	}
+
+	if len(actualOutput) == 0 {
+		t.Errorf("Output is empty; expected ASCII art representation of the Pokémon image.")
+	}
+}
+
+func TestImageFlagOptions(t *testing.T) {
+	validOptions := map[string]bool{
+		"lg": true,
+		"md": true,
+		"sm": true,
+	}
+
+	for option := range validOptions {
+		t.Run(fmt.Sprintf("ValidOption_%s", option), func(t *testing.T) {
+			err := ImageFlag("pokemon", "bulbasaur", option)
+			assert.NoError(t, err, fmt.Sprintf("ImageFlag should not return an error for valid option '%s'", option))
+		})
+	}
 }
 
 func TestStatsFlag(t *testing.T) {
