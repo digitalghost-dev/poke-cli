@@ -14,6 +14,7 @@ func TestValidatePokemonArgs_ValidInput(t *testing.T) {
 		{"poke-cli", "pokemon", "cloyster", "--abilities"},
 		{"poke-cli", "pokemon", "mewtwo", "--types", "--abilities"},
 		{"poke-cli", "pokemon", "BlaZiKen", "-a", "-t"},
+		{"poke-cli", "pokemon", "gengar", "--image=md"},
 	}
 
 	for _, input := range validInputs {
