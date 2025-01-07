@@ -19,9 +19,14 @@ import (
 
 var (
 	helpBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00"))
-	styleBold = lipgloss.NewStyle().Bold(true)
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FFCC00"))
+	styleBold   = lipgloss.NewStyle().Bold(true)
+	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
+	errorBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
+	styleItalic = lipgloss.NewStyle().Italic(true)
 )
 
 func header(header string) {
@@ -35,14 +40,14 @@ func header(header string) {
 	fmt.Println(HeaderBold)
 }
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *bool, *bool, *bool, *bool) {
+func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
 	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the Pokémon's abilities")
 	shortAbilitiesFlag := pokeFlags.Bool("a", false, "Print the Pokémon's abilities")
 
-	imageFlag := pokeFlags.Bool("image", false, "Print the Pokémon's default sprite")
-	shortImageFlag := pokeFlags.Bool("i", false, "Print the Pokémon's default sprite")
+	imageFlag := pokeFlags.String("image", "", "Print the Pokémon's default sprite")
+	shortImageFlag := pokeFlags.String("i", "", "Print the Pokémon's default sprite")
 
 	statsFlag := pokeFlags.Bool("stats", false, "Print the Pokémon's base stats")
 	shortStatsFlag := pokeFlags.Bool("s", false, "Print the Pokémon's base stats")
@@ -50,13 +55,18 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *bool, *b
 	typesFlag := pokeFlags.Bool("types", false, "Print the Pokémon's typing")
 	shortTypesFlag := pokeFlags.Bool("t", false, "Prints the Pokémon's typing")
 
+	hintMessage := styleItalic.Render("options: [sm, md, lg]")
+
 	pokeFlags.Usage = func() {
-		fmt.Println(
-			helpBorder.Render("poke-cli pokemon <pokemon-name> [flags]",
-				styleBold.Render("\n\nFLAGS:"), "\n\t", "-a, --abilities", "\t", "Prints out the Pokémon's abilities.",
-				"\n\t", "-t, --types", "\t\t", "Prints out the Pokémon's typing.", "\n\t", "-s, --stats", "\t\t",
-				"Prints out the Pokémon's base stats."),
+		helpMessage := helpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
+			styleBold.Render("FLAGS:"),
+			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
+			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
+			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
+			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
+			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
+		fmt.Println(helpMessage)
 	}
 
 	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
@@ -106,7 +116,7 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 	return nil
 }
 
-func ImageFlag(endpoint string, pokemonName string) error {
+func ImageFlag(endpoint string, pokemonName string, size string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
@@ -158,13 +168,21 @@ func ImageFlag(endpoint string, pokemonName string) error {
 		os.Exit(1)
 	}
 
-	// TODO: add an option to change the pixel size based on user input
-	// TODO: for example: --image=lg | --image=md | --image=sm
-	// 120 = large
-	// 90 = medium
-	// 55 = small
+	// Define size map
+	sizeMap := map[string][2]int{
+		"lg": {120, 120},
+		"md": {90, 90},
+		"sm": {55, 55},
+	}
 
-	imgStr := ToString(60, 60, img) // Width set to 50 characters
+	// Validate size
+	dimensions, exists := sizeMap[strings.ToLower(size)]
+	if !exists {
+		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nInvalid image size. Valid sizes are: lg, md, sm")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	imgStr := ToString(dimensions[0], dimensions[1], img)
 	fmt.Println(imgStr)
 
 	return nil
