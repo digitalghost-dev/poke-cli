@@ -36,6 +36,9 @@ type PokemonJSONStruct struct {
 			URL  string `json:"url"`
 		} `json:"type"`
 	} `json:"types"`
+	Sprites struct {
+		FrontDefault string `json:"front_default"`
+	} `json:"sprites"`
 	Stats []struct {
 		BaseStat int `json:"base_stat"`
 		Stat     struct {

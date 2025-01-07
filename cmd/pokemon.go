@@ -15,6 +15,8 @@ import (
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
 
+	hintMessage := styleItalic.Render("options: [sm, md, lg]")
+
 	flag.Usage = func() {
 		helpMessage := helpBorder.Render(
 			"Get details about a specific Pokémon.\n\n",
@@ -24,6 +26,8 @@ func PokemonCommand() {
 			"\n\n",
 			styleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
+			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
+			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
 			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
 			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
@@ -33,7 +37,7 @@ func PokemonCommand() {
 
 	flag.Parse()
 
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -75,6 +79,20 @@ func PokemonCommand() {
 		"Your selected Pokémon: %s\nNational Pokédex #: %d\nWeight: %.1fkg (%.1f lbs)\nHeight: %.1fm (%d′%02d″)\n",
 		capitalizedString, pokemonID, weightKilograms, weightPounds, heightFeet, feet, inches,
 	)
+
+	if *imageFlag != "" || *shortImageFlag != "" {
+		// Determine the size based on the provided flags
+		size := *imageFlag
+		if *shortImageFlag != "" {
+			size = *shortImageFlag
+		}
+
+		// Call the ImageFlag function with the specified size
+		if err := flags.ImageFlag(endpoint, pokemonName, size); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
 
 	if *abilitiesFlag || *shortAbilitiesFlag {
 		if err := flags.AbilitiesFlag(endpoint, pokemonName); err != nil {

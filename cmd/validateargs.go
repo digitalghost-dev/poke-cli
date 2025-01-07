@@ -54,7 +54,7 @@ func ValidatePokemonArgs(args []string) error {
 	}
 
 	// Check if there are too many arguments
-	if len(args) > 6 {
+	if len(args) > 7 {
 		errMessage := errorBorder.Render(
 			errorColor.Render("Error!"),
 			"\nToo many arguments",
