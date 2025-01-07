@@ -19,13 +19,13 @@ import (
 
 var (
 	helpBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFCC00"))
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00"))
 	styleBold   = lipgloss.NewStyle().Bold(true)
 	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	errorBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#F2055C"))
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#F2055C"))
 	styleItalic = lipgloss.NewStyle().Italic(true)
 )
 
@@ -63,6 +63,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
+			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
 			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
@@ -178,7 +179,7 @@ func ImageFlag(endpoint string, pokemonName string, size string) error {
 	// Validate size
 	dimensions, exists := sizeMap[strings.ToLower(size)]
 	if !exists {
-		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nInvalid image size. Valid sizes are: lg, md, sm")
+		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nInvalid image size.\nValid sizes are: lg, md, sm")
 		return fmt.Errorf("%s", errMessage)
 	}
 
