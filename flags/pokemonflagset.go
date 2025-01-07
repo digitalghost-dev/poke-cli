@@ -19,13 +19,13 @@ import (
 
 var (
 	helpBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00"))
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FFCC00"))
 	styleBold   = lipgloss.NewStyle().Bold(true)
 	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	errorBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#F2055C"))
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
 	styleItalic = lipgloss.NewStyle().Italic(true)
 )
 
