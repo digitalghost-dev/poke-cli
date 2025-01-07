@@ -123,16 +123,25 @@ func TestImageFlag(t *testing.T) {
 }
 
 func TestImageFlagOptions(t *testing.T) {
-	validOptions := map[string]bool{
-		"lg": true,
-		"md": true,
-		"sm": true,
-	}
+	// Define valid options as a slice
+	validOptions := []string{"lg", "md", "sm"}
 
-	for option := range validOptions {
+	// Test valid options
+	for _, option := range validOptions {
 		t.Run(fmt.Sprintf("ValidOption_%s", option), func(t *testing.T) {
 			err := ImageFlag("pokemon", "bulbasaur", option)
 			assert.NoError(t, err, fmt.Sprintf("ImageFlag should not return an error for valid option '%s'", option))
+		})
+	}
+
+	// Define invalid options as a slice
+	invalidOptions := []string{"s", "med", "large"}
+
+	// Test invalid options
+	for _, option := range invalidOptions {
+		t.Run(fmt.Sprintf("InvalidOption_%s", option), func(t *testing.T) {
+			err := ImageFlag("pokemon", "bulbasaur", option)
+			assert.Error(t, err, fmt.Sprintf("ImageFlag should return an error for invalid option '%s'", option))
 		})
 	}
 }
