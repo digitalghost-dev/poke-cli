@@ -21,6 +21,7 @@ on:
       - 'go.mod'
       - 'go.sum'
       - '.goreleaser.yaml'
+      - 'pokemon.svg'
     branches:
       - main
 
