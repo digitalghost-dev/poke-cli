@@ -19,7 +19,7 @@ My aim is to have five commands finished for `v1.0.0`. Read more in the [Roadmap
 
 ---
 ## Demo
-![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v0.10.0.gif)
+![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v0.11.1.gif)
 
 ---
 ## Install
@@ -121,7 +121,7 @@ _Not 100% up-to-date, may add or remove some of these choices_
 - [x] `natures`: get data about natures.
 - [ ] `pokemon`: get data about a specific Pokémon.
    - [x] `-a | --abilities`: display the Pokémon's abilities.
-   - [ ] `-i | --image`: display a pixel image of the Pokémon.
+   - [x] `-i | --image`: display a pixel image of the Pokémon.
    - [x] `-s | --stats`: display the Pokémon's base stats.
    - [x] `-t | --types`: display the Pokémon's typing.
    - [ ] `-m | --moves`: display learnable moves.

@@ -62,10 +62,22 @@ Require echo
 Set Shell "bash"
 Set FontSize 32
 Set Width 2100
-Set Height 1100
+Set Height 1300
 Set TypingSpeed 85ms
 
 Type "poke-cli pokemon charizard --abilities --stats --types"
+
+Sleep 3s
+
+Enter
+
+Sleep 5s
+
+Type clear
+
+Enter
+
+Type "poke-cli pokemon tyranitar --image=sm"
 
 Sleep 3s
 
