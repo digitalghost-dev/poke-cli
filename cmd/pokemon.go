@@ -35,11 +35,27 @@ func PokemonCommand() {
 		fmt.Println(helpMessage)
 	}
 
-	flag.Parse()
-
 	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
+
+	// Pre-parse validation for empty image flag values
+	for _, arg := range args {
+		if strings.HasPrefix(arg, "-i=") && len(arg) == 3 {
+			fmt.Println(errorBorder.Render(errorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
+			os.Exit(1)
+		}
+		if strings.HasPrefix(arg, "--image=") && len(arg) == 8 {
+			fmt.Println(errorBorder.Render(errorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
+			os.Exit(1)
+		}
+		if strings.HasPrefix(arg, "-image=") && len(arg) == 7 {
+			fmt.Println(errorBorder.Render(errorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
+			os.Exit(1)
+		}
+	}
+
+	flag.Parse()
 
 	err := ValidatePokemonArgs(args)
 	if err != nil {
