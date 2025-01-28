@@ -16,6 +16,36 @@ var errorBorder = lipgloss.NewStyle().
 	BorderStyle(lipgloss.RoundedBorder()).
 	BorderForeground(lipgloss.Color("#F2055C"))
 
+type AbilitiesJSONStruct struct {
+	Name          string `json:"name"`
+	EffectEntries []struct {
+		Effect   string `json:"effect"`
+		Language struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		ShortEffect string `json:"short_effect"`
+	} `json:"effect_entries"`
+	FlavorTextEntries []struct {
+		FlavorText string `json:"flavor_text"`
+		Language   struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		VersionGroup struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version_group"`
+	} `json:"flavor_text_entries"`
+	Pokemon []struct {
+		Hidden      bool `json:"hidden"`
+		PokemonName struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"pokemon_name"`
+	} `json:"pokemon"`
+}
+
 type PokemonJSONStruct struct {
 	Name      string `json:"name"`
 	ID        int    `json:"id"`
@@ -117,7 +147,7 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 	if res.StatusCode == http.StatusNotFound {
 		errMessage := errorBorder.Render(
 			errorColor.Render("Error!"),
-			"\nPokémon not found. Perhaps a typo in the name?",
+			"\nPokémon or ability not found.\nPerhaps a typo in the name?",
 		)
 		fmt.Println(errMessage)
 
@@ -139,6 +169,18 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 	}
 
 	return nil
+}
+
+func AbilityApiCall(endpoint string, abilityName string, baseURL string) (AbilitiesJSONStruct, string, error) {
+	fullURL := baseURL + endpoint + "/" + abilityName
+
+	var abilityStruct AbilitiesJSONStruct
+	err := ApiCallSetup(fullURL, &abilityStruct, false)
+	if err != nil {
+		return AbilitiesJSONStruct{}, "", fmt.Errorf("error fetching ability %s: %w", abilityName, err)
+	}
+
+	return abilityStruct, abilityStruct.Name, nil
 }
 
 func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int, int, int) {
