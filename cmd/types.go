@@ -65,7 +65,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 	var docStyle = lipgloss.NewStyle().Padding(1, 1, 1, 1)
 
 	baseURL := "https://pokeapi.co/api/v2/"
-	typesStruct, typeName, _ := connections.TypesApiCall(endpoint, typesName, baseURL)
+	typesStruct, typeName, _, _ := connections.TypesApiCall(endpoint, typesName, baseURL)
 
 	// Format selected type
 	selectedType := cases.Title(language.English).String(typeName)

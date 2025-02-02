@@ -42,7 +42,7 @@ type AbilitiesJSONStruct struct {
 		PokemonName struct {
 			Name string `json:"name"`
 			URL  string `json:"url"`
-		} `json:"pokemon_name"`
+		} `json:"pokemon"`
 	} `json:"pokemon"`
 }
 
@@ -183,28 +183,28 @@ func AbilityApiCall(endpoint string, abilityName string, baseURL string) (Abilit
 	return abilityStruct, abilityStruct.Name, nil
 }
 
-func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int, int, int) {
+func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int, int, int, error) {
 	fullURL := baseURL + endpoint + "/" + pokemonName
 
 	var pokemonStruct PokemonJSONStruct
 	err := ApiCallSetup(fullURL, &pokemonStruct, false)
 	if err != nil {
-		fmt.Printf("Error in ApiCallSetup: %v\n", err) // Debugging
-		return PokemonJSONStruct{}, "", 0, 0, 0
+		fmt.Printf("Error fetching Pokémon: %v\n", err) // Debugging
+		return PokemonJSONStruct{}, "", 0, 0, 0, fmt.Errorf("error fetching pokemon: %w", err)
 	}
 
-	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID, pokemonStruct.Weight, pokemonStruct.Height
+	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID, pokemonStruct.Weight, pokemonStruct.Height, nil
 }
 
-func TypesApiCall(endpoint string, typesName string, baseURL string) (TypesJSONStruct, string, int) {
+func TypesApiCall(endpoint string, typesName string, baseURL string) (TypesJSONStruct, string, int, error) {
 
 	fullURL := baseURL + endpoint + "/" + typesName
 	var typesStruct TypesJSONStruct
 
 	err := ApiCallSetup(fullURL, &typesStruct, false)
 	if err != nil {
-		return TypesJSONStruct{}, "", 0
+		return TypesJSONStruct{}, "", 0, fmt.Errorf("error fetching types: %w", err)
 	}
 
-	return typesStruct, typesStruct.Name, typesStruct.ID
+	return typesStruct, typesStruct.Name, typesStruct.ID, nil
 }
