@@ -50,8 +50,15 @@ func TestPokemonFlag(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	expectedOutput := "\nPokémon with Stench\n\n"
+	expectedOutput := `
+Pokemon with Stench
+
+ 1. Gloom                       2. Grimer                      3. Muk                        
+ 4. Koffing                     5. Weezing                     6. Stunky                     
+ 7. Skuntank                    8. Trubbish                    9. Garbodor                   
+10. Garbodor-Gmax              
+`
 	actualOutput := stripANSI(output.String())
 
-	assert.True(t, strings.Contains(actualOutput, expectedOutput), "Output should contain expected ability description")
+	assert.True(t, strings.Contains(actualOutput, expectedOutput), "Output should contain Pokémon with the ability")
 }
