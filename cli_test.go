@@ -109,6 +109,7 @@ func TestRunCLI(t *testing.T) {
 				"│    -v, --version   Prints the current version           │\n" +
 				"│                                                         │\n" +
 				"│ COMMANDS:                                               │\n" +
+				"│    ability         Get details about an ability         │\n" +
 				"│    natures         Get details about Pokémon natures    │\n" +
 				"│    pokemon         Get details about a specific Pokémon │\n" +
 				"│    types           Get details about a specific typing  │\n" +
@@ -132,6 +133,7 @@ func TestRunCLI(t *testing.T) {
 				"│    -v, --version   Prints the current version           │\n" +
 				"│                                                         │\n" +
 				"│ COMMANDS:                                               │\n" +
+				"│    ability         Get details about an ability         │\n" +
 				"│    natures         Get details about Pokémon natures    │\n" +
 				"│    pokemon         Get details about a specific Pokémon │\n" +
 				"│    types           Get details about a specific typing  │\n" +
@@ -155,6 +157,7 @@ func TestRunCLI(t *testing.T) {
 				"│    -v, --version   Prints the current version           │\n" +
 				"│                                                         │\n" +
 				"│ COMMANDS:                                               │\n" +
+				"│    ability         Get details about an ability         │\n" +
 				"│    natures         Get details about Pokémon natures    │\n" +
 				"│    pokemon         Get details about a specific Pokémon │\n" +
 				"│    types           Get details about a specific typing  │\n" +
@@ -170,7 +173,7 @@ func TestRunCLI(t *testing.T) {
 		{
 			name:           "Latest Flag",
 			args:           []string{"-l"},
-			expectedOutput: "Latest Docker image version: v0.11.0\nLatest release tag: v0.11.0\n",
+			expectedOutput: "Latest Docker image version: v0.11.1\nLatest release tag: v0.11.1\n",
 			expectedCode:   0,
 		},
 	}
