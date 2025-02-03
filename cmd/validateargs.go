@@ -20,7 +20,7 @@ func handleHelpFlag(args []string) {
 func ValidateAbilityArgs(args []string) error {
 	handleHelpFlag(args)
 
-	if len(args) > 3 {
+	if len(args) > 4 {
 		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments")
 		return fmt.Errorf("%s", errMessage)
 	}
