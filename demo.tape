@@ -71,7 +71,7 @@ Sleep 3s
 
 Enter
 
-Sleep 5s
+Sleep 6s
 
 Type clear
 
@@ -83,7 +83,7 @@ Sleep 3s
 
 Enter
 
-Sleep 5s
+Sleep 6s
 
 Type clear
 
@@ -101,7 +101,7 @@ Down@500ms 4
 
 Enter
 
-Sleep 5s
+Sleep 6s
 
 Type clear
 
@@ -111,4 +111,14 @@ Type "poke-cli natures"
 
 Enter
 
-Sleep 5s
+Sleep 6s
+
+Type clear
+
+Enter
+
+Type "poke-cli ability stench --pokemon"
+
+Enter
+
+Sleep 6s
