@@ -13,12 +13,12 @@ import (
 
 var (
 	errorBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#F2055C"))
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
 	errorColor = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 )
 
-type AbilitiesJSONStruct struct {
+type AbilityJSONStruct struct {
 	Name          string `json:"name"`
 	EffectEntries []struct {
 		Effect   string `json:"effect"`
@@ -28,17 +28,6 @@ type AbilitiesJSONStruct struct {
 		} `json:"language"`
 		ShortEffect string `json:"short_effect"`
 	} `json:"effect_entries"`
-	FlavorTextEntries []struct {
-		FlavorText string `json:"flavor_text"`
-		Language   struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"language"`
-		VersionGroup struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"version_group"`
-	} `json:"flavor_text_entries"`
 	Pokemon []struct {
 		Hidden      bool `json:"hidden"`
 		PokemonName struct {
@@ -155,10 +144,10 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 	return nil
 }
 
-func AbilityApiCall(endpoint string, abilityName string, baseURL string) (AbilitiesJSONStruct, string, error) {
+func AbilityApiCall(endpoint string, abilityName string, baseURL string) (AbilityJSONStruct, string, error) {
 	fullURL := baseURL + endpoint + "/" + abilityName
 
-	var abilityStruct AbilitiesJSONStruct
+	var abilityStruct AbilityJSONStruct
 	err := ApiCallSetup(fullURL, &abilityStruct, false)
 
 	if err != nil {
@@ -166,7 +155,7 @@ func AbilityApiCall(endpoint string, abilityName string, baseURL string) (Abilit
 			errorColor.Render("Error!"),
 			"\nAbility not found.\nPerhaps a typo?",
 		)
-		return AbilitiesJSONStruct{}, "", fmt.Errorf("%s", errMessage)
+		return AbilityJSONStruct{}, "", fmt.Errorf("%s", errMessage)
 	}
 
 	return abilityStruct, abilityStruct.Name, nil
