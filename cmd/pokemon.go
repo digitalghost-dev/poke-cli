@@ -72,7 +72,11 @@ func PokemonCommand() {
 		os.Exit(1)
 	}
 
-	_, pokemonName, pokemonID, pokemonWeight, pokemonHeight, _ := connections.PokemonApiCall(endpoint, pokemonName, "https://pokeapi.co/api/v2/")
+	_, pokemonName, pokemonID, pokemonWeight, pokemonHeight, err := connections.PokemonApiCall(endpoint, pokemonName, "https://pokeapi.co/api/v2/")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	capitalizedString := cases.Title(language.English).String(strings.Replace(pokemonName, "-", " ", -1))
 
 	// Weight calculation

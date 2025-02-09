@@ -17,18 +17,6 @@ import (
 	"strings"
 )
 
-var (
-	helpBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFCC00"))
-	styleBold   = lipgloss.NewStyle().Bold(true)
-	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
-	errorBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#F2055C"))
-	styleItalic = lipgloss.NewStyle().Italic(true)
-)
-
 func header(header string) {
 	HeaderBold := lipgloss.NewStyle().
 		BorderStyle(lipgloss.NormalBorder()).
@@ -75,7 +63,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 
 func AbilitiesFlag(endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	header("Abilities")
 
@@ -119,7 +107,7 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 
 func ImageFlag(endpoint string, pokemonName string, size string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	header("Image")
 
@@ -191,7 +179,7 @@ func ImageFlag(endpoint string, pokemonName string, size string) error {
 
 func StatsFlag(endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	header("Base Stats")
 
@@ -277,7 +265,7 @@ func StatsFlag(endpoint string, pokemonName string) error {
 
 func TypesFlag(endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	colorMap := map[string]string{
 		"normal":   "#B7B7A9",
