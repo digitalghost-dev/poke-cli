@@ -2,15 +2,21 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
 )
 
-func captureOutput(f func()) string {
+func captureNaturesOutput(f func()) string {
 	// Create a pipe to capture standard output
 	r, w, _ := os.Pipe()
-	defer r.Close()
+	defer func(r *os.File) {
+		err := r.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(r)
 
 	// Redirect os.Stdout to the write end of the pipe
 	oldStdout := os.Stdout
@@ -21,7 +27,10 @@ func captureOutput(f func()) string {
 	f()
 
 	// Close the write end of the pipe
-	w.Close()
+	err := w.Close()
+	if err != nil {
+		return ""
+	}
 
 	// Read the captured output
 	var buf bytes.Buffer
@@ -84,7 +93,7 @@ func TestNaturesCommand(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 
 			// Capture the output
-			output := captureOutput(func() {
+			output := captureNaturesOutput(func() {
 				defer func() {
 					// Recover from os.Exit calls
 					if r := recover(); r != nil {

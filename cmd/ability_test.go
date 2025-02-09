@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -41,7 +42,7 @@ func TestAbilityCommand(t *testing.T) {
 	defer func() {
 		err := os.Unsetenv("GO_TESTING")
 		if err != nil {
-
+			fmt.Println(err)
 		}
 	}()
 
