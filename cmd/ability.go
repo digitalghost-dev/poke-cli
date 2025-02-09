@@ -35,7 +35,9 @@ func AbilityCommand() {
 
 	if err := ValidateAbilityArgs(args); err != nil {
 		fmt.Println(err.Error())
-		os.Exit(1)
+		if os.Getenv("GO_TESTING") != "1" {
+			os.Exit(1)
+		}
 	}
 
 	endpoint := strings.ToLower(args[1])
@@ -44,13 +46,17 @@ func AbilityCommand() {
 	if err := abilityFlags.Parse(args[3:]); err != nil {
 		fmt.Printf("error parsing flags: %v\n", err)
 		abilityFlags.Usage()
-		os.Exit(1)
+		if os.Getenv("GO_TESTING") != "1" {
+			os.Exit(1)
+		}
 	}
 
 	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, "https://pokeapi.co/api/v2/")
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		if os.Getenv("GO_TESTING") != "1" {
+			os.Exit(1)
+		}
 	}
 
 	// Extract English short_effect
