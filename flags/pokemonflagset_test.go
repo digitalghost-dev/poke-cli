@@ -6,15 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"reflect"
-	"regexp"
 	"strings"
 	"testing"
 )
-
-func stripANSI(input string) string {
-	ansiRegex := regexp.MustCompile(`\x1b\[[0-9;]*[a-zA-Z]`)
-	return ansiRegex.ReplaceAllString(input, "")
-}
 
 func TestSetupPokemonFlagSet(t *testing.T) {
 	// Call the function to get the flag set and flags
@@ -26,9 +20,9 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 
 	// Define test cases for flag assertions
 	flagTests := []struct {
-		flag     interface{} // Pointer to the flag variable
-		expected interface{} // Expected default value
-		name     string      // Descriptive name for the assertion
+		flag     interface{}
+		expected interface{}
+		name     string
 	}{
 		{abilitiesFlag, false, "Abilities flag should be 'abilities'"},
 		{shortAbilitiesFlag, false, "Short abilities flag should be 'a'"},

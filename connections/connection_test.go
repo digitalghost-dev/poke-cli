@@ -29,6 +29,23 @@ func TestApiCallSetup(t *testing.T) {
 	assert.Equal(t, expectedData, target, "Expected data does not match the response")
 }
 
+func TestAbilityApiCall(t *testing.T) {
+	expectedAbility := AbilityJSONStruct{
+		Name: "Unaware",
+	}
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		err := json.NewEncoder(w).Encode(expectedAbility)
+		assert.Nil(t, err, "Expected no error for skipHTTPSCheck")
+	}))
+	defer ts.Close()
+
+	_, name, _ := AbilityApiCall("/ability", "unaware", ts.URL)
+
+	assert.Equal(t, "Unaware", name, "Expected name does not match the response")
+}
+
 func TestPokemonApiCall(t *testing.T) {
 	expectedPokemon := PokemonJSONStruct{
 		Name:   "pikachu",
@@ -52,13 +69,13 @@ func TestPokemonApiCall(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode(expectedPokemon)
-		assert.Nil(t, err, "failed to encode mock response")
+		assert.Nil(t, err, "Expected no error for skipHTTPSCheck")
 	}))
 	defer ts.Close()
 
-	pokemon, name, id, weight, height := PokemonApiCall("/pokemon", "pikachu", ts.URL)
+	pokemonStruct, name, id, weight, height, _ := PokemonApiCall("/pokemon", "pikachu", ts.URL)
 
-	assert.Equal(t, expectedPokemon, pokemon, "Expected Pokémon struct does not match")
+	assert.Equal(t, expectedPokemon, pokemonStruct, "Expected Pokémon struct does not match")
 	assert.Equal(t, "pikachu", name, "Expected name does not match")
 	assert.Equal(t, 25, id, "Expected ID does not match")
 	assert.Equal(t, 60, weight, "Expected weight does not match")
@@ -88,13 +105,13 @@ func TestTypesApiCall(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode(expectedTypes)
-		assert.Nil(t, err)
+		assert.Nil(t, err, "Expected no error for skipHTTPSCheck")
 	}))
 	defer ts.Close()
 
-	types, name, id := TypesApiCall("/type", "electric", ts.URL)
+	typesStruct, name, id, _ := TypesApiCall("/type", "electric", ts.URL)
 
-	assert.Equal(t, expectedTypes, types)
+	assert.Equal(t, expectedTypes, typesStruct)
 	assert.Equal(t, "electric", name)
 	assert.Equal(t, 13, id)
 }

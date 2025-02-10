@@ -67,6 +67,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest version available"),
 			fmt.Sprintf("\n\t%-15s %s", "-v, --version", "Prints the current version"),
 			"\n\n", styleBold.Render("COMMANDS:"),
+			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about Pokémon natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a specific Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a specific typing"),
@@ -91,8 +92,9 @@ func runCLI(args []string) int {
 	}
 
 	commands := map[string]func(){
-		"pokemon": cmd.PokemonCommand,
+		"ability": cmd.AbilityCommand,
 		"natures": cmd.NaturesCommand,
+		"pokemon": cmd.PokemonCommand,
 		"types":   cmd.TypesCommand,
 	}
 
@@ -114,6 +116,7 @@ func runCLI(args []string) int {
 			errorColor.Render("Error!"),
 			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", command)),
 			styleBold.Render("\nCommands:"),
+			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about Pokémon natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a specific Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a specific typing"),

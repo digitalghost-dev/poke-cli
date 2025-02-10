@@ -9,12 +9,33 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 )
 
-var errorBorder = lipgloss.NewStyle().
-	BorderStyle(lipgloss.RoundedBorder()).
-	BorderForeground(lipgloss.Color("#F2055C"))
+var (
+	errorBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
+	errorColor = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
+)
+
+type AbilityJSONStruct struct {
+	Name          string `json:"name"`
+	EffectEntries []struct {
+		Effect   string `json:"effect"`
+		Language struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		ShortEffect string `json:"short_effect"`
+	} `json:"effect_entries"`
+	Pokemon []struct {
+		Hidden      bool `json:"hidden"`
+		PokemonName struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"pokemon"`
+	} `json:"pokemon"`
+}
 
 type PokemonJSONStruct struct {
 	Name      string `json:"name"`
@@ -89,9 +110,6 @@ type TypesJSONStruct struct {
 	} `json:"damage_relations"`
 }
 
-var red = lipgloss.Color("#F2055C")
-var errorColor = lipgloss.NewStyle().Foreground(red)
-
 // ApiCallSetup Helper function to handle API calls and JSON unmarshalling
 func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error {
 	parsedURL, err := url.Parse(rawURL)
@@ -113,21 +131,6 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		return fmt.Errorf("error making GET request: %w", err)
 	}
 	defer res.Body.Close()
-
-	if res.StatusCode == http.StatusNotFound {
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
-			"\nPokémon not found. Perhaps a typo in the name?",
-		)
-		fmt.Println(errMessage)
-
-		if flag.Lookup("test.v") != nil {
-			return fmt.Errorf("page not found: 404 error")
-		} else {
-			os.Exit(1)
-		}
-	}
-
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return fmt.Errorf("error reading response body: %w", err)
@@ -141,28 +144,53 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 	return nil
 }
 
-func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int, int, int) {
+func AbilityApiCall(endpoint string, abilityName string, baseURL string) (AbilityJSONStruct, string, error) {
+	fullURL := baseURL + endpoint + "/" + abilityName
+
+	var abilityStruct AbilityJSONStruct
+	err := ApiCallSetup(fullURL, &abilityStruct, false)
+
+	if err != nil {
+		errMessage := errorBorder.Render(
+			errorColor.Render("Error!"),
+			"\nAbility not found.\nPerhaps a typo?",
+		)
+		return AbilityJSONStruct{}, "", fmt.Errorf("%s", errMessage)
+	}
+
+	return abilityStruct, abilityStruct.Name, nil
+}
+
+func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (PokemonJSONStruct, string, int, int, int, error) {
 	fullURL := baseURL + endpoint + "/" + pokemonName
 
 	var pokemonStruct PokemonJSONStruct
 	err := ApiCallSetup(fullURL, &pokemonStruct, false)
+
 	if err != nil {
-		fmt.Printf("Error in ApiCallSetup: %v\n", err) // Debugging
-		return PokemonJSONStruct{}, "", 0, 0, 0
+		errMessage := errorBorder.Render(
+			errorColor.Render("Error!"),
+			"\nPokémon not found.\nPerhaps a typo?",
+		)
+		return PokemonJSONStruct{}, "", 0, 0, 0, fmt.Errorf("%s", errMessage)
 	}
 
-	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID, pokemonStruct.Weight, pokemonStruct.Height
+	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID, pokemonStruct.Weight, pokemonStruct.Height, nil
 }
 
-func TypesApiCall(endpoint string, typesName string, baseURL string) (TypesJSONStruct, string, int) {
-
+func TypesApiCall(endpoint string, typesName string, baseURL string) (TypesJSONStruct, string, int, error) {
 	fullURL := baseURL + endpoint + "/" + typesName
 	var typesStruct TypesJSONStruct
 
 	err := ApiCallSetup(fullURL, &typesStruct, false)
+
 	if err != nil {
-		return TypesJSONStruct{}, "", 0
+		errMessage := errorBorder.Render(
+			errorColor.Render("Error!"),
+			"\nType not found.\nPerhaps a typo?",
+		)
+		return TypesJSONStruct{}, "", 0, fmt.Errorf("%s", errMessage)
 	}
 
-	return typesStruct, typesStruct.Name, typesStruct.ID
+	return typesStruct, typesStruct.Name, typesStruct.ID, nil
 }

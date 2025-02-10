@@ -16,6 +16,18 @@ func handleHelpFlag(args []string) {
 	}
 }
 
+// ValidateAbilityArgs validates the command line arguments
+func ValidateAbilityArgs(args []string) error {
+	handleHelpFlag(args)
+
+	if len(args) > 4 {
+		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	return nil
+}
+
 // ValidateNaturesArgs validates the command line arguments
 func ValidateNaturesArgs(args []string) error {
 	handleHelpFlag(args)
