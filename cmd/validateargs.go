@@ -25,6 +25,11 @@ func ValidateAbilityArgs(args []string) error {
 		return fmt.Errorf("%s", errMessage)
 	}
 
+	if len(args) == 2 {
+		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nPlease specify an ability")
+		return fmt.Errorf("%s", errMessage)
+	}
+
 	return nil
 }
 
