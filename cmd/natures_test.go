@@ -48,15 +48,12 @@ func TestNaturesCommand(t *testing.T) {
 		{
 			name: "Help flag",
 			args: []string{"natures", "-h"},
-			expectedOutput: "╭────────────────────────────────────────────────────────────╮\n" +
-				"│Get details about Pokémon natures.                          │\n" +
-				"│                                                            │\n" +
-				"│ USAGE:                                                     │\n" +
-				"│    poke-cli natures [flag]                                 │\n" +
-				"│                                                            │\n" +
-				"│ FLAGS:                                                     │\n" +
-				"│    -h, --help                     Prints out the help menu.│\n" +
-				"╰────────────────────────────────────────────────────────────╯\n",
+			expectedOutput: "╭──────────────────────────────╮\n" +
+				"│Get details about all natures.│\n" +
+				"│                              │\n" +
+				"│ USAGE:                       │\n" +
+				"│    poke-cli natures          │\n" +
+				"╰──────────────────────────────╯\n",
 			expectError: false,
 		},
 		{
