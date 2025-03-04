@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v0.12.0" -o poke-cli .
+RUN go build -ldflags "-X main.version=v0.12.1" -o poke-cli .
 
 # build 2
 FROM gcr.io/distroless/static-debian12:nonroot
