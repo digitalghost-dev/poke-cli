@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"log"
 	"os"
 	"strings"
@@ -61,7 +62,7 @@ func TestAbilityCommand(t *testing.T) {
 		{
 			name:           "Valid Execution",
 			args:           []string{"ability", "stench"},
-			expectedOutput: stripANSI("Stench\nEffect: Has a 10% chance of making target Pokémon flinch with each hit."),
+			expectedOutput: styling.StripANSI("Stench\nEffect: Has a 10% chance of making target Pokémon flinch with each hit."),
 			expectError:    false,
 		},
 	}

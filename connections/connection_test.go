@@ -2,6 +2,7 @@ package connections
 
 import (
 	"encoding/json"
+	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -30,7 +31,7 @@ func TestApiCallSetup(t *testing.T) {
 }
 
 func TestAbilityApiCall(t *testing.T) {
-	expectedAbility := AbilityJSONStruct{
+	expectedAbility := structs.AbilityJSONStruct{
 		Name: "Unaware",
 	}
 
@@ -47,7 +48,7 @@ func TestAbilityApiCall(t *testing.T) {
 }
 
 func TestPokemonApiCall(t *testing.T) {
-	expectedPokemon := PokemonJSONStruct{
+	expectedPokemon := structs.PokemonJSONStruct{
 		Name:   "pikachu",
 		ID:     25,
 		Weight: 60,
@@ -84,7 +85,7 @@ func TestPokemonApiCall(t *testing.T) {
 
 // TestTypesApiCall - Test for the TypesApiCall function
 func TestTypesApiCall(t *testing.T) {
-	expectedTypes := TypesJSONStruct{
+	expectedTypes := structs.TypesJSONStruct{
 		Name: "electric",
 		ID:   13,
 		Pokemon: []struct {

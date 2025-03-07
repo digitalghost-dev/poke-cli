@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"strings"
 	"testing"
 )
@@ -21,7 +22,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 	}
 
 	// Strip ANSI codes for comparison
-	actualError := stripANSI(err.Error())
+	actualError := styling.StripANSI(err.Error())
 	expectedError = strings.TrimSpace(expectedError)
 
 	if actualError != expectedError {
