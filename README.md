@@ -12,7 +12,7 @@
 </div>
 
 ## Overview
-`poke-cli` is a hybrid classic CLI and modern TUI tool for viewing data about Pokémon! I am new to writing Go and taking my time in building this 
+`poke-cli` is a hybrid of a classic CLI and modern TUI tool for viewing data about Pokémon! I am new to writing Go and taking my time in building this 
 project. 
 
 My aim is to have eight commands finished for `v1.0.0`. Read more in the [Roadmap](#roadmap) section.
