@@ -115,15 +115,20 @@ The architecture behind how the tool works is straight forward.
 
 _Not 100% up-to-date, may add or remove some of these choices_
 
+Below are the commands and flags that are planned for `v1.0.0`
+
 - [x] `ability`: get data about a specific ability.
     - [x] `-p | --pokemon`: display Pokémon that learn this ability.
+- [ ] `berry`: get data about a specific berry.
 - [ ] `move`: get data about a specific move.
     - [ ] `-p | --pokemon`: display Pokémon that learn this move.
 - [x] `natures`: get data about natures.
 - [ ] `pokemon`: get data about a specific Pokémon.
-   - [x] `-a | --abilities`: display the Pokémon's abilities.
-   - [x] `-i | --image`: display a pixel image of the Pokémon.
-   - [x] `-s | --stats`: display the Pokémon's base stats.
-   - [x] `-t | --types`: display the Pokémon's typing.
-   - [ ] `-m | --moves`: display learnable moves.
+    - [x] `-a | --abilities`: display the Pokémon's abilities.
+    - [x] `-i | --image`: display a pixel image of the Pokémon.
+    - [x] `-s | --stats`: display the Pokémon's base stats.
+    - [x] `-t | --types`: display the Pokémon's typing.
+    - [ ] `-m | --moves`: display learnable moves.
+- [ ] `search`: search for a resource (`ability`, `berry`, `pokemon`, `move`)
+- [ ] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.
