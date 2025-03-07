@@ -3,6 +3,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 )
 
@@ -21,12 +22,12 @@ func ValidateAbilityArgs(args []string) error {
 	handleHelpFlag(args)
 
 	if len(args) > 4 {
-		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
 		return fmt.Errorf("%s", errMessage)
 	}
 
 	if len(args) == 2 {
-		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nPlease specify an ability")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify an ability")
 		return fmt.Errorf("%s", errMessage)
 	}
 
@@ -38,17 +39,17 @@ func ValidateNaturesArgs(args []string) error {
 	handleHelpFlag(args)
 
 	if len(args) > 3 {
-		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
 		return fmt.Errorf("%s", errMessage)
 	}
 
 	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
 	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
 	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
-		errorTitle := errorColor.Render("Error!")
+		errorTitle := styling.ErrorColor.Render("Error!")
 		errorString := "\nThe only currently available options\nafter [natures] command are '-h' or '--help'"
 		finalErrorMessage := errorTitle + errorString
-		renderedError := errorBorder.Render(finalErrorMessage)
+		renderedError := styling.ErrorBorder.Render(finalErrorMessage)
 		return fmt.Errorf("%s", renderedError)
 	}
 
@@ -61,8 +62,8 @@ func ValidatePokemonArgs(args []string) error {
 
 	// Check if the number of arguments is less than 3
 	if len(args) < 3 {
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!"),
 			"\nPlease declare a Pokémon's name after the [pokemon] command",
 			"\nRun 'poke-cli pokemon -h' for more details",
 			"\nerror: insufficient arguments",
@@ -72,8 +73,8 @@ func ValidatePokemonArgs(args []string) error {
 
 	// Check if there are too many arguments
 	if len(args) > 7 {
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!"),
 			"\nToo many arguments",
 		)
 		return fmt.Errorf("%s", errMessage)
@@ -84,25 +85,25 @@ func ValidatePokemonArgs(args []string) error {
 		for _, arg := range args[3:] {
 			// Check for single `-` or `--` which are invalid
 			if arg == "-" || arg == "--" {
-				errorTitle := errorColor.Render("Error!")
+				errorTitle := styling.ErrorColor.Render("Error!")
 				errorString := fmt.Sprintf(
 					"\nInvalid argument '%s'. Single '-' or '--' is not allowed.\nPlease use valid flags.",
 					arg,
 				)
 				finalErrorMessage := errorTitle + errorString
-				renderedError := errorBorder.Render(finalErrorMessage)
+				renderedError := styling.ErrorBorder.Render(finalErrorMessage)
 				return fmt.Errorf("%s", renderedError)
 			}
 
 			// Check if the argument starts with a flag prefix but is invalid
 			if arg[0] != '-' {
-				errorTitle := errorColor.Render("Error!")
+				errorTitle := styling.ErrorColor.Render("Error!")
 				errorString := fmt.Sprintf(
 					"\nInvalid argument '%s'.\nOnly flags are allowed after declaring a Pokémon's name",
 					arg,
 				)
 				finalErrorMessage := errorTitle + errorString
-				renderedError := errorBorder.Render(finalErrorMessage)
+				renderedError := styling.ErrorBorder.Render(finalErrorMessage)
 				return fmt.Errorf("%s", renderedError)
 			}
 		}
@@ -110,8 +111,8 @@ func ValidatePokemonArgs(args []string) error {
 
 	// Add a check for invalid Pokémon names (e.g., names starting with `-`)
 	if len(args[2]) > 0 && args[2][0] == '-' {
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!"),
 			"\nPokémon not found. Perhaps a typo in the name?",
 		)
 		return fmt.Errorf("%s", errMessage)
@@ -126,17 +127,17 @@ func ValidateTypesArgs(args []string) error {
 	handleHelpFlag(args)
 
 	if len(args) > 3 {
-		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nToo many arguments")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
 		return fmt.Errorf("%s", errMessage)
 	}
 
 	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
 	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
 	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
-		errorTitle := errorColor.Render("Error!")
+		errorTitle := styling.ErrorColor.Render("Error!")
 		errorString := "\nThe only currently available options\nafter [types] command are '-h' or '--help'"
 		finalErrorMessage := errorTitle + errorString
-		renderedError := errorBorder.Render(finalErrorMessage)
+		renderedError := styling.ErrorBorder.Render(finalErrorMessage)
 		return fmt.Errorf("%s", renderedError)
 	}
 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
 	"github.com/lucasb-eyer/go-colorful"
 	"golang.org/x/text/cases"
@@ -43,11 +44,11 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 	typesFlag := pokeFlags.Bool("types", false, "Print the Pokémon's typing")
 	shortTypesFlag := pokeFlags.Bool("t", false, "Prints the Pokémon's typing")
 
-	hintMessage := styleItalic.Render("options: [sm, md, lg]")
+	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
 	pokeFlags.Usage = func() {
-		helpMessage := helpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
-			styleBold.Render("FLAGS:"),
+		helpMessage := styling.HelpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
+			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
@@ -167,7 +168,7 @@ func ImageFlag(endpoint string, pokemonName string, size string) error {
 	// Validate size
 	dimensions, exists := sizeMap[strings.ToLower(size)]
 	if !exists {
-		errMessage := errorBorder.Render(errorColor.Render("Error!"), "\nInvalid image size.\nValid sizes are: lg, md, sm")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nInvalid image size.\nValid sizes are: lg, md, sm")
 		return fmt.Errorf("%s", errMessage)
 	}
 

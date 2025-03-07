@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"os"
@@ -14,13 +15,13 @@ import (
 func AbilityCommand() {
 
 	flag.Usage = func() {
-		helpMessage := helpBorder.Render(
+		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific ability.\n\n",
-			styleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styleBold.Render("ability"), "<ability-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Use a hyphen when typing a name with a space.")),
+			styling.StyleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("ability"), "<ability-name>", "[flag]"),
+			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
 			"\n\n",
-			styleBold.Render("FLAGS:"),
+			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-p, --pokemon", "Prints Pokémon that learn this ability."),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
@@ -69,7 +70,7 @@ func AbilityCommand() {
 	}
 
 	capitalizedEffect := cases.Title(language.English).String(strings.Replace(abilityName, "-", " ", -1))
-	fmt.Println(styleBold.Render(capitalizedEffect))
+	fmt.Println(styling.StyleBold.Render(capitalizedEffect))
 	fmt.Println("Effect:", englishShortEffect)
 
 	if *pokemonFlag || *shortPokemonFlag {

@@ -5,19 +5,17 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 )
 
 func NaturesCommand() {
 
 	flag.Usage = func() {
-		helpMessage := helpBorder.Render(
-			"Get details about Pokémon natures.\n\n",
-			styleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styleBold.Render("natures"), "[flag]"),
-			"\n\n",
-			styleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu."),
+		helpMessage := styling.HelpBorder.Render(
+			"Get details about all natures.\n\n",
+			styling.StyleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s", "poke-cli", styling.StyleBold.Render("natures")),
 		)
 		fmt.Println(helpMessage)
 	}
@@ -32,20 +30,20 @@ func NaturesCommand() {
 	fmt.Println("Natures affect the growth of a Pokémon.\n" +
 		"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
 		"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
-		styleBold.Render("Nature Chart:"))
+		styling.StyleBold.Render("Nature Chart:"))
 
 	chart := [][]string{
-		{" ", red.Render("-Attack"), red.Render("-Defense"), red.Render("-Sp. Atk"), red.Render("-Sp. Def"), red.Render("Speed")},
-		{green.Render("+Attack"), "Hardy", "Lonely", "Adamant", "Naughty", "Brave"},
-		{green.Render("+Defense"), "Bold", "Docile", "Impish", "Lax", "Relaxed"},
-		{green.Render("+Sp. Atk"), "Modest", "Mild", "Bashful", "Rash", "Quiet"},
-		{green.Render("+Sp. Def"), "Calm", "Gentle", "Careful", "Quirky", "Sassy"},
-		{green.Render("Speed"), "Timid", "Hasty", "Jolly", "Naive", "Serious"},
+		{" ", styling.Red.Render("-Attack"), styling.Red.Render("-Defense"), styling.Red.Render("-Sp. Atk"), styling.Red.Render("-Sp. Def"), styling.Red.Render("Speed")},
+		{styling.Green.Render("+Attack"), "Hardy", "Lonely", "Adamant", "Naughty", "Brave"},
+		{styling.Green.Render("+Defense"), "Bold", "Docile", "Impish", "Lax", "Relaxed"},
+		{styling.Green.Render("+Sp. Atk"), "Modest", "Mild", "Bashful", "Rash", "Quiet"},
+		{styling.Green.Render("+Sp. Def"), "Calm", "Gentle", "Careful", "Quirky", "Sassy"},
+		{styling.Green.Render("Speed"), "Timid", "Hasty", "Jolly", "Naive", "Serious"},
 	}
 
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
-		BorderStyle(lipgloss.NewStyle().Foreground(gray)).
+		BorderStyle(lipgloss.NewStyle().Foreground(styling.Gray)).
 		BorderRow(true).
 		BorderColumn(true).
 		Rows(chart...).
