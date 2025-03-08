@@ -3,6 +3,7 @@ package flags
 import (
 	"bytes"
 	"fmt"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"reflect"
@@ -73,7 +74,7 @@ Hidden Ability: Chlorophyll
 `
 
 	// Assert the actual output matches the expected output
-	actualOutput := stripANSI(output.String())
+	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the abilities flag")
 }
@@ -103,7 +104,7 @@ func TestImageFlag(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Validate that the output contains some expected patterns
-	actualOutput := stripANSI(output.String())
+	actualOutput := styling.StripANSI(output.String())
 
 	// Since the output is an ASCII image, we can't hardcode the expected output,
 	// but we can check that it contains some general expected structure
@@ -177,7 +178,7 @@ Total      318
 `
 
 	// Assert output contains the expected header and typing information
-	actualOutput := stripANSI(output.String())
+	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the stats flag")
 
@@ -215,7 +216,7 @@ Type 2: Poison
 `
 
 	// Assert output contains the expected header and typing information
-	actualOutput := stripANSI(output.String())
+	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the types flag")
 }

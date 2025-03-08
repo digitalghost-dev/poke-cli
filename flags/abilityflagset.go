@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"strings"
@@ -16,8 +17,8 @@ func SetupAbilityFlagSet() (*flag.FlagSet, *bool, *bool) {
 	shortPokemonFlag := abilityFlags.Bool("p", false, "List all Pokémon with chosen ability")
 
 	abilityFlags.Usage = func() {
-		helpMessage := helpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
-			styleBold.Render("FLAGS:"),
+		helpMessage := styling.HelpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
+			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-p, --pokemon", "List all Pokémon with chosen ability."),
 		)
 		fmt.Println(helpMessage)
@@ -31,7 +32,7 @@ func PokemonFlag(endpoint string, abilityName string) error {
 
 	capitalizedEffect := cases.Title(language.English).String(strings.Replace(abilityName, "-", " ", -1))
 
-	fmt.Printf("\n%s\n\n", styleUnderline.Render(fmt.Sprintf("Pokemon with %s", capitalizedEffect)))
+	fmt.Printf("\n%s\n\n", styling.StyleUnderline.Render(fmt.Sprintf("Pokemon with %s", capitalizedEffect)))
 
 	// Extract Pokémon names and capitalize them
 	var pokemonNames []string

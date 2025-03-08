@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -50,9 +51,9 @@ func TestModelView_DisplayTable(t *testing.T) {
 
 	// Construct the expected output exactly as `View()` should render it
 	expectedOutput := "Select a type!\n" +
-		typesTableBorder.Render(m.table.View()) +
+		styling.TypesTableBorder.Render(m.table.View()) +
 		"\n" +
-		keyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
 
 	output := m.View()
 

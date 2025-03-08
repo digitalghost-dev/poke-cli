@@ -2,6 +2,7 @@ package flags
 
 import (
 	"bytes"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"reflect"
@@ -58,7 +59,7 @@ Pokemon with Stench
  7. Skuntank                    8. Trubbish                    9. Garbodor                   
 10. Garbodor-Gmax              
 `
-	actualOutput := stripANSI(output.String())
+	actualOutput := styling.StripANSI(output.String())
 
 	assert.True(t, strings.Contains(actualOutput, expectedOutput), "Output should contain Pokémon with the ability")
 }

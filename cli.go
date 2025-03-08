@@ -3,22 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/cmd"
 	"github.com/digitalghost-dev/poke-cli/flags"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 	"runtime/debug"
-)
-
-var (
-	styleBold  = lipgloss.NewStyle().Bold(true)
-	helpBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFCC00"))
-	errorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
-	errorBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#F2055C"))
 )
 
 var version = "(devel)"
@@ -56,21 +45,21 @@ func runCLI(args []string) int {
 	shortCurrentVersionFlag := mainFlagSet.Bool("v", false, "Prints the current version")
 
 	mainFlagSet.Usage = func() {
-		helpMessage := helpBorder.Render(
+		helpMessage := styling.HelpBorder.Render(
 			"Welcome! This tool displays data related to Pokémon!",
-			"\n\n", styleBold.Render("USAGE:"),
+			"\n\n", styling.StyleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%-15s %s", "poke-cli [flag]", ""),
 			fmt.Sprintf("\n\t%-15s %s", "poke-cli <command> [flag]", ""),
 			fmt.Sprintf("\n\t%-15s %s", "poke-cli <command> <subcommand> [flag]", ""),
-			"\n\n", styleBold.Render("FLAGS:"),
+			"\n\n", styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Shows the help menu"),
 			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest version available"),
 			fmt.Sprintf("\n\t%-15s %s", "-v, --version", "Prints the current version"),
-			"\n\n", styleBold.Render("COMMANDS:"),
+			"\n\n", styling.StyleBold.Render("COMMANDS:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
-			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about Pokémon natures"),
-			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a specific Pokémon"),
-			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a specific typing"),
+			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
+			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
+			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
 		)
 		fmt.Println(helpMessage)
 	}
@@ -112,15 +101,15 @@ func runCLI(args []string) int {
 		return 0
 	} else {
 		command := os.Args[1]
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!"),
 			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", command)),
-			styleBold.Render("\nCommands:"),
+			styling.StyleBold.Render("\nCommands:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
-			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about Pokémon natures"),
-			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a specific Pokémon"),
-			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a specific typing"),
-			fmt.Sprintf("\n\nAlso run %s for more info!", styleBold.Render("poke-cli -h")),
+			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
+			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
+			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
+			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h")),
 		)
 		fmt.Printf("%s\n", errMessage)
 		return 1

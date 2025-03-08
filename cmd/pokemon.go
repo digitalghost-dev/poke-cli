@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"math"
@@ -15,16 +16,16 @@ import (
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
 
-	hintMessage := styleItalic.Render("options: [sm, md, lg]")
+	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
 	flag.Usage = func() {
-		helpMessage := helpBorder.Render(
+		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific Pokémon.\n\n",
-			styleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styleBold.Render("pokemon"), "<pokemon-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styleItalic.Render("Use a hyphen when typing a name with a space.")),
+			styling.StyleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("pokemon"), "<pokemon-name>", "[flag]"),
+			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
 			"\n\n",
-			styleBold.Render("FLAGS:"),
+			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
@@ -42,15 +43,15 @@ func PokemonCommand() {
 	// Pre-parse validation for empty image flag values
 	for _, arg := range args {
 		if strings.HasPrefix(arg, "-i=") && len(arg) == 3 {
-			fmt.Println(errorBorder.Render(errorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
+			fmt.Println(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
 			os.Exit(1)
 		}
 		if strings.HasPrefix(arg, "--image=") && len(arg) == 8 {
-			fmt.Println(errorBorder.Render(errorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
+			fmt.Println(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
 			os.Exit(1)
 		}
 		if strings.HasPrefix(arg, "-image=") && len(arg) == 7 {
-			fmt.Println(errorBorder.Render(errorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
+			fmt.Println(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
 			os.Exit(1)
 		}
 	}

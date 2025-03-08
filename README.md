@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.12.1?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.12.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -12,10 +12,10 @@
 </div>
 
 ## Overview
-A CLI tool for viewing data about Pokémon from your terminal! I am new to writing Go and taking my time in building this 
+`poke-cli` is a hybrid of a classic CLI and modern TUI tool for viewing data about Pokémon! I am new to writing Go and taking my time in building this 
 project. 
 
-My aim is to have five commands finished for `v1.0.0`. Read more in the [Roadmap](#roadmap) section.
+My aim is to have eight commands finished for `v1.0.0`. Read more in the [Roadmap](#roadmap) section.
 
 ---
 ## Demo
@@ -68,7 +68,7 @@ _Use a Docker Image_
      * Necessary.
 
 ```bash
-docker run --rm -i -t digitalghostdev/poke-cli:v0.12.1 <command> [subcommand] flag]
+docker run --rm -i -t digitalghostdev/poke-cli:v0.12.2 <command> [subcommand] flag]
 ```
 
 ### Go Install
@@ -115,15 +115,20 @@ The architecture behind how the tool works is straight forward.
 
 _Not 100% up-to-date, may add or remove some of these choices_
 
+Below are the commands and flags that are planned for `v1.0.0`
+
 - [x] `ability`: get data about a specific ability.
     - [x] `-p | --pokemon`: display Pokémon that learn this ability.
+- [ ] `berry`: get data about a specific berry.
 - [ ] `move`: get data about a specific move.
     - [ ] `-p | --pokemon`: display Pokémon that learn this move.
 - [x] `natures`: get data about natures.
 - [ ] `pokemon`: get data about a specific Pokémon.
-   - [x] `-a | --abilities`: display the Pokémon's abilities.
-   - [x] `-i | --image`: display a pixel image of the Pokémon.
-   - [x] `-s | --stats`: display the Pokémon's base stats.
-   - [x] `-t | --types`: display the Pokémon's typing.
-   - [ ] `-m | --moves`: display learnable moves.
+    - [x] `-a | --abilities`: display the Pokémon's abilities.
+    - [x] `-i | --image`: display a pixel image of the Pokémon.
+    - [x] `-s | --stats`: display the Pokémon's base stats.
+    - [x] `-t | --types`: display the Pokémon's typing.
+    - [ ] `-m | --moves`: display learnable moves.
+- [ ] `search`: search for a resource (`ability`, `berry`, `pokemon`, `move`)
+- [ ] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.

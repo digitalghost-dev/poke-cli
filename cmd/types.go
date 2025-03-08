@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"os"
@@ -48,9 +49,9 @@ func (m model) View() string {
 	}
 	// Otherwise, display the table
 	return "Select a type!\n" +
-		typesTableBorder.Render(m.table.View()) +
+		styling.TypesTableBorder.Render(m.table.View()) +
 		"\n" +
-		keyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
 }
 
 // Function to display type details after a type is selected
@@ -69,11 +70,11 @@ func displayTypeDetails(typesName string, endpoint string) {
 
 	// Format selected type
 	selectedType := cases.Title(language.English).String(typeName)
-	coloredType := lipgloss.NewStyle().Foreground(lipgloss.Color(getTypeColor(typeName))).Render(selectedType)
+	coloredType := lipgloss.NewStyle().Foreground(lipgloss.Color(styling.GetTypeColor(typeName))).Render(selectedType)
 
 	fmt.Printf("You selected the %s type.\nNumber of Pokémon with type: %d\nNumber of moves with type: %d\n", coloredType, len(typesStruct.Pokemon), len(typesStruct.Moves))
 	fmt.Println("----------")
-	fmt.Println(styleBold.Render("Damage Chart:"))
+	fmt.Println(styling.StyleBold.Render("Damage Chart:"))
 
 	physicalWidth, _, _ := term.GetSize(uintptr(int(os.Stdout.Fd())))
 	doc := strings.Builder{}
@@ -82,7 +83,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 	buildListItems := func(items []struct{ Name, URL string }) string {
 		var itemList []string
 		for _, item := range items {
-			color := getTypeColor(item.Name)
+			color := styling.GetTypeColor(item.Name)
 			coloredStyle := lipgloss.NewStyle().Foreground(lipgloss.Color(color))
 			coloredItem := coloredStyle.Render(cases.Title(language.English).String(item.Name))
 			itemList = append(itemList, listItem(coloredItem))
@@ -187,12 +188,12 @@ func tableGeneration(endpoint string) table.Model {
 func TypesCommand() {
 
 	flag.Usage = func() {
-		helpMessage := helpBorder.Render(
+		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific typing.\n\n",
-			styleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styleBold.Render("types"), "[flag]"),
+			styling.StyleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("types"), "[flag]"),
 			"\n\n",
-			styleBold.Render("FLAGS:"),
+			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu."),
 		)
 		fmt.Println(helpMessage)
