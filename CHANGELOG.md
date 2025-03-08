@@ -4,6 +4,7 @@ This change log provides version history for tags prior to `v1.0.0`
 Due to the lack of control over dates when creating a release, I've decided to move the change history per tag prior to `v1.0.0` to a `CHANGELOG.md` file.
 
 Some previous releases had their dates screwed up and without a way to backdate a release like [GitLab](https://docs.gitlab.com/api/releases/#update-a-release), the release history is out of date.
+If GitHub allows backdating in the future, I will recreate these releases with their tag date.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -23,6 +24,7 @@ _March 7th, 2024_
 ### Details
 * **Commit Change Log:** [v0.12.1 > v0.12.2](https://github.com/digitalghost-dev/poke-cli/compare/v0.12.1...v0.12.2)
 * **Associated PRs:** [#107](https://github.com/digitalghost-dev/poke-cli/pull/107)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.12.2)
 
 ---
 
@@ -38,6 +40,7 @@ _March 4th, 2025_
 ### Details
 * **Commit Change Log:** [v0.12.0 > v0.12.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.12.0...v0.12.1)
 * **Associated PRs:** [#105](https://github.com/digitalghost-dev/poke-cli/pull/105)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.12.1)
 
 ---
 
@@ -77,6 +80,7 @@ _February 2nd, 2025_
 ### Details
 * **Commit Change Log:** [v0.11.1 > v0.12.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.11.1...v0.12.0)
 * **Associated PRs:** [#102](https://github.com/digitalghost-dev/poke-cli/pull/102)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.12.0)
 
 ---
 
@@ -90,6 +94,7 @@ _January 13th, 2024_
 ### Details
 * **Commit Change Log:** [v0.11.0 > v0.11.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.11.0...v0.11.1)
 * **Associated PRs:** [#97](https://github.com/digitalghost-dev/poke-cli/pull/97)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.11.1)
 
 ---
 
@@ -103,6 +108,7 @@ _January 6th, 2024_
 ### Details
 * **Commit Change Log:** [v0.10.0 > v0.11.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.10.0...v0.11.0)
 * **Associated PRs:** [#94](https://github.com/digitalghost-dev/poke-cli/pull/94)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.11.0)
 
 **Contributions**
 * @ancientcatz - replaced simpleicons image with local `.svg` file.
@@ -120,6 +126,7 @@ _December 26th, 2024_
 ### Details
 * **Commit Change Log:** [v0.9.3 > v0.10.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.9.3...v0.10.0)
 * **Associated PRs:** [#92](https://github.com/digitalghost-dev/poke-cli/pull/92)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.10.0)
 
 ---
 
@@ -132,7 +139,7 @@ _December 16th, 2024_
 ### Details
 * **Commit Change Log:** [v0.9.2 > v0.9.3](https://github.com/digitalghost-dev/poke-cli/compare/v0.9.2...v0.9.3)
 * **Associated PRs:** [#89]((https://github.com/digitalghost-dev/poke-cli/pull/89)
-
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.9.3)
 
 ---
 
@@ -145,6 +152,7 @@ _December 14th, 2024_
 ### Details
 * **Commit Change Log:** [v0.9.1 > v0.9.2](https://github.com/digitalghost-dev/poke-cli/compare/v0.9.1...v0.9.2)
 * **Associated PRs:** [#86](https://github.com/digitalghost-dev/poke-cli/pull/86)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.9.2)
 
 ---
 
@@ -157,6 +165,7 @@ _December 8th, 2024_
 ### Details
 * **Commit Change Log:** [v0.9.0 > v0.9.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.9.0...v0.9.1)
 * **Associated PRs:** [#84](https://github.com/digitalghost-dev/poke-cli/pull/84)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.9.1)
 
 ---
 
@@ -173,6 +182,7 @@ _December 6th, 2024_
 ### Details
 * **Commit Change Log:** [v0.8.0 > v0.9.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.8.0...v0.9.0)
 * **Associated PRs:** [#81](https://github.com/digitalghost-dev/poke-cli/pull/81)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.9.0)
 
 ---
 
@@ -187,6 +197,7 @@ _November 27th, 2024_
 ### Details
 * **Commit Change Log:** [v0.7.2 > v0.8.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.7.2...v0.8.0)
 * **Associated PRs:** [#77](https://github.com/digitalghost-dev/poke-cli/pull/77)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.8.0)
 
 ---
 
@@ -203,6 +214,7 @@ _November 21st, 2024_
 ### Details
 * **Commit Change Log:** [v0.7.1 > v0.7.2](https://github.com/digitalghost-dev/poke-cli/compare/v0.7.1...v0.7.2)
 * **Associated PRs:** [#73](https://github.com/digitalghost-dev/poke-cli/pull/73)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.7.2)
 
 ---
 
@@ -223,6 +235,7 @@ _November 12th, 2024_
 ### Details
 * **Commit Change Log:** [v0.7.0 > v0.7.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.7.0...v0.7.1)
 * **Associated PRs:** [#70](https://github.com/digitalghost-dev/poke-cli/pull/70)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.7.1)
 
 ---
 
@@ -238,6 +251,7 @@ _November 2nd, 2024_
 ### Details
 * **Commit Change Log:** [v0.6.5 > v0.7.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.6.5...v0.7.0)
 * **Associated PRs:** [#63](https://github.com/digitalghost-dev/poke-cli/pull/63)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.7.0)
 
 ---
 
@@ -253,6 +267,7 @@ _October 29th, 2024_
 ### Details
 * **Commit Change Log:** [v0.6.4 > v0.6.5](https://github.com/digitalghost-dev/poke-cli/compare/v0.6.4...v0.6.5)
 * **Associated PRs:** [#59](https://github.com/digitalghost-dev/poke-cli/pull/59)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.6.5)
 
 ---
 
@@ -265,6 +280,7 @@ _October 26th, 2024_
 ### Details
 * **Commit Change Log:** [v0.6.3 > v0.6.4](https://github.com/digitalghost-dev/poke-cli/compare/v0.6.3...v0.6.4)
 * **Associated PRs:** [#56](https://github.com/digitalghost-dev/poke-cli/pull/55)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.6.4)
 
 ---
 
@@ -280,6 +296,7 @@ _October 20th, 2024_
 ### Details
 * **Commit Change Log:** [v0.6.2 > v0.6.3](https://github.com/digitalghost-dev/poke-cli/compare/v0.6.2...v0.6.3)
 * **Associated PRs:** [#54](https://github.com/digitalghost-dev/poke-cli/pull/54)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.6.3)
 
 ---
 
@@ -296,6 +313,7 @@ _October 7th, 2024_
 ### Details
 * **Commit Change Log:** [v0.6.1 > v0.6.2](https://github.com/digitalghost-dev/poke-cli/compare/v0.6.1...v0.6.2)
 * **Associated PRs:** [#50](https://github.com/digitalghost-dev/poke-cli/pull/50)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.6.2)
 
 ---
 
@@ -325,6 +343,7 @@ _October 5th, 2024_
 ### Details
 * **Commit Change Log:** [v0.6.0 > v0.6.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.6.0...v0.6.1)
 * **Associated PRs:** [#47](https://github.com/digitalghost-dev/poke-cli/pull/47)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.6.1)
 
 ---
 
@@ -349,6 +368,7 @@ _September 30th, 2024_
 ### Details
 * **Commit Change Log:** [v0.5.2 > v0.6.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.5.2...v0.6.0)
 * **Associated PRs:** [#40](https://github.com/digitalghost-dev/poke-cli/pull/40)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.6.0)
 
 ---
 
@@ -364,6 +384,7 @@ _September 21st, 2024_
 ### Details
 * **Commit Change Log:** [v0.5.1 > v0.5.2](https://github.com/digitalghost-dev/poke-cli/compare/v0.5.1...v0.5.2)
 * **Associated PRs:** [#36](https://github.com/digitalghost-dev/poke-cli/pull/36)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.5.2)
 
 ___
 
@@ -389,6 +410,7 @@ Output:
 ### Details
 * **Commit Change Log:** [v0.5.0 > v0.5.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.5.0...v0.5.1)
 * **Associated PRs:** [#33](https://github.com/digitalghost-dev/poke-cli/pull/33)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.5.1)
 
 ---
 
@@ -410,6 +432,7 @@ $ poke-cli types
 ### Details
 * **Commit Change Log:** [v0.4.0 > v0.5.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.4.0...v0.5.0)
 * **Associated PRs:** [#30](https://github.com/digitalghost-dev/poke-cli/pull/30)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.5.0)
 
 ---
 
@@ -430,6 +453,7 @@ Latest release tag: v0.4.0
 ### Details
 * **Commit Change Log:** [v0.3.2 > v0.4.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.3.2...v0.4.0)
 * **Associated PRs:** [#25](https://github.com/digitalghost-dev/poke-cli/pull/25)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.4.0)
 
 ---
 
@@ -447,6 +471,7 @@ _July 18th, 2024_
 ### Details
 * **Commit Change Log:** [v0.3.1 > v0.3.2](https://github.com/digitalghost-dev/poke-cli/compare/v0.3.1...v0.3.2)
 * **Associated PRs:** [#22](https://github.com/digitalghost-dev/poke-cli/pull/22)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.3.2)
 
 ---
 
@@ -463,6 +488,7 @@ _July 12th, 2024_
 ### Details
 * **Commit Change Log:** [v0.3.0 > v0.3.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.3.0...v0.3.1)
 * **Associated PRs:** [#18](https://github.com/digitalghost-dev/poke-cli/pull/18)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.3.1)
 
 ---
 
@@ -484,6 +510,7 @@ output:
 ### Details
 * **Commit Change Log:** [v0.2.0 > v0.3.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.2.0...v0.3.0)
 * **Associated PRs:** [#14](https://github.com/digitalghost-dev/poke-cli/pull/14)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.3.0)
 
 ---
 
@@ -499,6 +526,7 @@ _June 8th, 2024_
 ### Details
 * **Commit Change Log:** [v0.1.1 > v0.2.0](https://github.com/digitalghost-dev/poke-cli/compare/v0.1.1...v0.2.0)
 * **Associated PRs:** [#12](https://github.com/digitalghost-dev/poke-cli/pull/12)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.2.0)
 
 ---
 
@@ -512,7 +540,8 @@ _June 4th, 2024_
 ### Details
 * **Commit Change Log:** [v0.1.0. > v0.1.1](https://github.com/digitalghost-dev/poke-cli/compare/v0.1.0...v0.1.1)
 * **Associated PRs:** [#7](https://github.com/digitalghost-dev/poke-cli/pull/7)
-
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.1.1)
+* 
 ---
 
 ## v0.1.0
@@ -535,3 +564,4 @@ _June 1st, 2024_
 ### Details
 * [Full Changelog](https://github.com/digitalghost-dev/poke-cli/commits/v0.1.0)
 * **Associated PRs:** [#4](https://github.com/digitalghost-dev/poke-cli/pull/4)
+* [Tag](https://github.com/digitalghost-dev/poke-cli/releases/tag/v0.1.0)
