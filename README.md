@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v0.12.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.0.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -12,10 +12,14 @@
 </div>
 
 ## Overview
-`poke-cli` is a hybrid of a classic CLI and modern TUI tool for viewing data about Pokémon! I am new to writing Go and taking my time in building this 
-project. 
+`poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing data about Pokémon! This is my first Go project.
 
-My aim is to have eight commands finished for `v1.0.0`. Read more in the [Roadmap](#roadmap) section.
+The architecture behind how the tool works is straight forward:
+1. Each command indicates which [API](https://pokeapi.co/) endpoint to use.
+2. Flags provide more information and can be stacked together or used individually.
+3. Each command has a `-h | --help` flag that is built-in with Golang's `flag` package.
+
+View future plans in the [Roadmap](#roadmap) section.
 
 ---
 ## Demo
@@ -102,20 +106,11 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │    pokemon         Get details about a specific Pokémon │
 │    types           Get details about a specific typing  │
 ╰─────────────────────────────────────────────────────────╯
-
 ```
 
 ---
 ## Roadmap
-The architecture behind how the tool works is straight forward.
-1. Commands indicate which data endpoint to focus on.
-2. Flags provide more information and can be all stacked together or chosen.
-
-### Planned for Version 1.0.0
-
-_Not 100% up-to-date, may add or remove some of these choices_
-
-Below are the commands and flags that are planned for `v1.0.0`
+Below is a list of the planned/completed commands and flags:
 
 - [x] `ability`: get data about a specific ability.
     - [x] `-p | --pokemon`: display Pokémon that learn this ability.
