@@ -1,5 +1,5 @@
 # build 1
-FROM golang:1.23-alpine3.19 AS build
+FROM golang:1.23.6-alpine3.21 AS build
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v1.0.0" -o poke-cli .
+RUN go build -ldflags "-X main.version=v1.0.1" -o poke-cli .
 
 # build 2
 FROM gcr.io/distroless/static-debian12:nonroot
