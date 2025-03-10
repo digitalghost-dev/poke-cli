@@ -87,25 +87,29 @@ _If you have Go already, install the executable yourself_
 ## Usage
 By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
 ```
-╭─────────────────────────────────────────────────────────╮
-│Welcome! This tool displays data related to Pokémon!     │
-│                                                         │
-│ USAGE:                                                  │
-│    poke-cli [flag]                                      │
-│    poke-cli <command> [flag]                            │
-│    poke-cli <command> <subcommand> [flag]               │
-│                                                         │
-│ FLAGS:                                                  │
-│    -h, --help      Shows the help menu                  │
-│    -l, --latest    Prints the latest version available  │
-│    -v, --version   Prints the current version           │
-│                                                         │
-│ COMMANDS:                                               │
-│    ability         Get details about an ability         │
-│    natures         Get details about Pokémon natures    │
-│    pokemon         Get details about a specific Pokémon │
-│    types           Get details about a specific typing  │
-╰─────────────────────────────────────────────────────────╯
+╭──────────────────────────────────────────────────────────╮
+│Welcome! This tool displays data related to Pokémon!      │
+│                                                          │
+│ USAGE:                                                   │
+│    poke-cli [flag]                                       │
+│    poke-cli <command> [flag]                             │
+│    poke-cli <command> <subcommand> [flag]                │
+│                                                          │
+│ FLAGS:                                                   │
+│    -h, --help      Shows the help menu                   │
+│    -l, --latest    Prints the latest version available   │
+│    -v, --version   Prints the current version            │
+│                                                          │
+│ COMMANDS:                                                │
+│    ability         Get details about an ability          │
+│    natures         Get details about all natures         │
+│    pokemon         Get details about a Pokémon           │
+│    types           Get details about a typing            │
+│                                                          │
+│ hint: when calling a resource with a space, use a hyphen │
+│ example: poke-cli ability strong-jaw                     │
+│ example: poke-cli pokemon flutter-mane                   │
+╰──────────────────────────────────────────────────────────╯
 ```
 
 ---
