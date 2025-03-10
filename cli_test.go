@@ -116,6 +116,7 @@ func TestRunCLI(t *testing.T) {
 				"│                                                          │\n" +
 				"│ hint: when calling a resource with a space, use a hyphen │\n" +
 				"│ example: poke-cli ability strong-jaw                     │\n" +
+				"│ example: poke-cli pokemon flutter-mane -s                │\n" +
 				"╰──────────────────────────────────────────────────────────╯",
 			expectedCode: 0,
 		},
@@ -143,6 +144,7 @@ func TestRunCLI(t *testing.T) {
 				"│                                                          │\n" +
 				"│ hint: when calling a resource with a space, use a hyphen │\n" +
 				"│ example: poke-cli ability strong-jaw                     │\n" +
+				"│ example: poke-cli pokemon flutter-mane -s                │\n" +
 				"╰──────────────────────────────────────────────────────────╯",
 			expectedCode: 0,
 		},
@@ -170,6 +172,7 @@ func TestRunCLI(t *testing.T) {
 				"│                                                          │\n" +
 				"│ hint: when calling a resource with a space, use a hyphen │\n" +
 				"│ example: poke-cli ability strong-jaw                     │\n" +
+				"│ example: poke-cli pokemon flutter-mane -s                │\n" +
 				"╰──────────────────────────────────────────────────────────╯",
 
 			expectedCode: 0,
