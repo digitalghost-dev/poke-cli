@@ -95,73 +95,83 @@ func TestRunCLI(t *testing.T) {
 		{
 			name: "No Arguments",
 			args: []string{},
-			expectedOutput: "╭────────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!    │\n" +
-				"│                                                        │\n" +
-				"│ USAGE:                                                 │\n" +
-				"│    poke-cli [flag]                                     │\n" +
-				"│    poke-cli <command> [flag]                           │\n" +
-				"│    poke-cli <command> <subcommand> [flag]              │\n" +
-				"│                                                        │\n" +
-				"│ FLAGS:                                                 │\n" +
-				"│    -h, --help      Shows the help menu                 │\n" +
-				"│    -l, --latest    Prints the latest version available │\n" +
-				"│    -v, --version   Prints the current version          │\n" +
-				"│                                                        │\n" +
-				"│ COMMANDS:                                              │\n" +
-				"│    ability         Get details about an ability        │\n" +
-				"│    natures         Get details about all natures       │\n" +
-				"│    pokemon         Get details about a Pokémon         │\n" +
-				"│    types           Get details about a typing          │\n" +
-				"╰────────────────────────────────────────────────────────╯\n",
+			expectedOutput: "╭──────────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!      │\n" +
+				"│                                                          │\n" +
+				"│ USAGE:                                                   │\n" +
+				"│    poke-cli [flag]                                       │\n" +
+				"│    poke-cli <command> [flag]                             │\n" +
+				"│    poke-cli <command> <subcommand> [flag]                │\n" +
+				"│                                                          │\n" +
+				"│ FLAGS:                                                   │\n" +
+				"│    -h, --help      Shows the help menu                   │\n" +
+				"│    -l, --latest    Prints the latest version available   │\n" +
+				"│    -v, --version   Prints the current version            │\n" +
+				"│                                                          │\n" +
+				"│ COMMANDS:                                                │\n" +
+				"│    ability         Get details about an ability          │\n" +
+				"│    natures         Get details about all natures         │\n" +
+				"│    pokemon         Get details about a Pokémon           │\n" +
+				"│    types           Get details about a typing            │\n" +
+				"│                                                          │\n" +
+				"│ hint: when calling a resource with a space, use a hyphen │\n" +
+				"│ example: poke-cli ability strong-jaw                     │\n" +
+				"╰──────────────────────────────────────────────────────────╯",
 			expectedCode: 0,
 		},
 		{
 			name: "Help Flag Short",
 			args: []string{"-h"},
-			expectedOutput: "╭────────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!    │\n" +
-				"│                                                        │\n" +
-				"│ USAGE:                                                 │\n" +
-				"│    poke-cli [flag]                                     │\n" +
-				"│    poke-cli <command> [flag]                           │\n" +
-				"│    poke-cli <command> <subcommand> [flag]              │\n" +
-				"│                                                        │\n" +
-				"│ FLAGS:                                                 │\n" +
-				"│    -h, --help      Shows the help menu                 │\n" +
-				"│    -l, --latest    Prints the latest version available │\n" +
-				"│    -v, --version   Prints the current version          │\n" +
-				"│                                                        │\n" +
-				"│ COMMANDS:                                              │\n" +
-				"│    ability         Get details about an ability        │\n" +
-				"│    natures         Get details about all natures       │\n" +
-				"│    pokemon         Get details about a Pokémon         │\n" +
-				"│    types           Get details about a typing          │\n" +
-				"╰────────────────────────────────────────────────────────╯\n",
+			expectedOutput: "╭──────────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!      │\n" +
+				"│                                                          │\n" +
+				"│ USAGE:                                                   │\n" +
+				"│    poke-cli [flag]                                       │\n" +
+				"│    poke-cli <command> [flag]                             │\n" +
+				"│    poke-cli <command> <subcommand> [flag]                │\n" +
+				"│                                                          │\n" +
+				"│ FLAGS:                                                   │\n" +
+				"│    -h, --help      Shows the help menu                   │\n" +
+				"│    -l, --latest    Prints the latest version available   │\n" +
+				"│    -v, --version   Prints the current version            │\n" +
+				"│                                                          │\n" +
+				"│ COMMANDS:                                                │\n" +
+				"│    ability         Get details about an ability          │\n" +
+				"│    natures         Get details about all natures         │\n" +
+				"│    pokemon         Get details about a Pokémon           │\n" +
+				"│    types           Get details about a typing            │\n" +
+				"│                                                          │\n" +
+				"│ hint: when calling a resource with a space, use a hyphen │\n" +
+				"│ example: poke-cli ability strong-jaw                     │\n" +
+				"╰──────────────────────────────────────────────────────────╯",
 			expectedCode: 0,
 		},
 		{
 			name: "Help Flag Long",
 			args: []string{"--help"},
-			expectedOutput: "╭────────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!    │\n" +
-				"│                                                        │\n" +
-				"│ USAGE:                                                 │\n" +
-				"│    poke-cli [flag]                                     │\n" +
-				"│    poke-cli <command> [flag]                           │\n" +
-				"│    poke-cli <command> <subcommand> [flag]              │\n" +
-				"│                                                        │\n" +
-				"│ FLAGS:                                                 │\n" +
-				"│    -h, --help      Shows the help menu                 │\n" +
-				"│    -l, --latest    Prints the latest version available │\n" +
-				"│    -v, --version   Prints the current version          │\n" +
-				"│                                                        │\n" +
-				"│ COMMANDS:                                              │\n" +
-				"│    ability         Get details about an ability        │\n" +
-				"│    natures         Get details about all natures       │\n" +
-				"│    pokemon         Get details about a Pokémon         │\n" +
-				"│    types           Get details about a typing          │\n" +
-				"╰────────────────────────────────────────────────────────╯\n",
+			expectedOutput: "╭──────────────────────────────────────────────────────────╮\n" +
+				"│Welcome! This tool displays data related to Pokémon!      │\n" +
+				"│                                                          │\n" +
+				"│ USAGE:                                                   │\n" +
+				"│    poke-cli [flag]                                       │\n" +
+				"│    poke-cli <command> [flag]                             │\n" +
+				"│    poke-cli <command> <subcommand> [flag]                │\n" +
+				"│                                                          │\n" +
+				"│ FLAGS:                                                   │\n" +
+				"│    -h, --help      Shows the help menu                   │\n" +
+				"│    -l, --latest    Prints the latest version available   │\n" +
+				"│    -v, --version   Prints the current version            │\n" +
+				"│                                                          │\n" +
+				"│ COMMANDS:                                                │\n" +
+				"│    ability         Get details about an ability          │\n" +
+				"│    natures         Get details about all natures         │\n" +
+				"│    pokemon         Get details about a Pokémon           │\n" +
+				"│    types           Get details about a typing            │\n" +
+				"│                                                          │\n" +
+				"│ hint: when calling a resource with a space, use a hyphen │\n" +
+				"│ example: poke-cli ability strong-jaw                     │\n" +
+				"╰──────────────────────────────────────────────────────────╯",
+
 			expectedCode: 0,
 		},
 		{
@@ -173,7 +183,7 @@ func TestRunCLI(t *testing.T) {
 		{
 			name:           "Latest Flag",
 			args:           []string{"-l"},
-			expectedOutput: "Latest Docker image version: v0.12.2\nLatest release tag: v0.12.2\n",
+			expectedOutput: "Latest Docker image version: v1.0.0\nLatest release tag: v1.0.0\n",
 			expectedCode:   0,
 		},
 	}
