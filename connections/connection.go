@@ -62,7 +62,7 @@ func AbilityApiCall(endpoint string, abilityName string, baseURL string) (struct
 	if err != nil {
 		errMessage := errorBorder.Render(
 			errorColor.Render("Error!"),
-			"\nAbility not found.\nPerhaps a typo?",
+			"\nAbility not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.AbilityJSONStruct{}, "", fmt.Errorf("%s", errMessage)
 	}
@@ -79,7 +79,7 @@ func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (struct
 	if err != nil {
 		errMessage := errorBorder.Render(
 			errorColor.Render("Error!"),
-			"\nPokémon not found.\nPerhaps a typo?",
+			"\nPokémon not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.PokemonJSONStruct{}, "", 0, 0, 0, fmt.Errorf("%s", errMessage)
 	}
