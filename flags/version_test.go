@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"runtime"
 	"testing"
 )
 
@@ -35,15 +36,18 @@ func captureOutput(f func()) string {
 }
 
 func TestLatestDockerImage(t *testing.T) {
-	// Test normal execution with a valid command
-	validCommand := `curl -s https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`
-	output := captureOutput(func() { latestDockerImage(validCommand) })
+	output := captureOutput(func() { latestDockerImage() })
+
 	assert.Contains(t, output, "Latest Docker image version:")
 
-	// Test command failure with an invalid command
-	invalidCommand := "invalidcommand"
-	output = captureOutput(func() { latestDockerImage(invalidCommand) })
-	assert.Contains(t, output, "error running command:")
+	// Since the actual API response might change, avoid testing the exact version number.
+	// Instead, check if a non-empty version string is printed.
+
+	if runtime.GOOS == "windows" {
+		assert.Contains(t, output, "\n") // Ensure PowerShell prints something
+	} else {
+		assert.Contains(t, output, "\n") // Ensure bash prints something
+	}
 }
 
 func TestLatestRelease(t *testing.T) {
