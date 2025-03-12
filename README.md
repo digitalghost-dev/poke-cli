@@ -26,7 +26,7 @@ View future plans in the [Roadmap](#roadmap) section.
 ![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v0.12.0.gif)
 
 ---
-## Install
+## Installation
 
 ### Binary
 _Download a pre-built binary_
@@ -83,7 +83,7 @@ _Use a Docker Image_
     ```
 
 ### Go Install
-_If you have Go already, install the executable yourself_
+_If you have Go already, install the executable yourself._
 
 1. Run the following command:
    ```bash
@@ -120,6 +120,7 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 ```
 
 ---
+
 ## Roadmap
 Below is a list of the planned/completed commands and flags:
 
@@ -138,3 +139,13 @@ Below is a list of the planned/completed commands and flags:
 - [ ] `search`: search for a resource (`ability`, `berry`, `pokemon`, `move`)
 - [ ] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.
+
+---
+## Tested Terminals
+| OS      | Terminal           | Status | Issues                        |
+|---------|--------------------|:------:|-------------------------------|
+| macOS   | Ghostty            |   ✅    | None                          | 
+| macOS   | Alacritty          |   ✅    | None                          |
+| macOS   | macOS Terminal     |   ⚠️   | Images do not render properly |
+| Windows | Windows Terminal   |   ✅    | None                          |
+| Ubuntu  | Standard Terminal  |   ✅    | None                          |
