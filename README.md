@@ -45,7 +45,7 @@ _Download a pre-built binary_
 
 <summary>View Image of Settings</summary>
 
-![settings](https://pokemon-objects.nyc3.digitaloceanspaces.com/macos_settings.png)
+![settings](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/macos_privacy_settings.png)
 
 </details>
 
@@ -70,10 +70,17 @@ _Use a Docker Image_
      * Necessary.
    * `-t`: Allocates a terminal (TTY) for a terminal-like session.
      * Necessary.
-
-```bash
-docker run --rm -i -t digitalghostdev/poke-cli:v1.0.2 <command> [subcommand] flag]
-```
+3. Choose how to interact with the container:
+   * Run a single command and exit:
+    ```bash
+    docker run --rm -it digitalghostdev/poke-cli:v1.0.2 <command> [subcommand] flag]
+    ```
+   * Enter the container and use its shell:
+    ```bash
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh poke-cli:v1.0.1 -c "cd /app && exec sh"
+   # placed into the /app directory, run the program with './poke-cli'
+   # example: ./poke-cli ability swift-swim
+    ```
 
 ### Go Install
 _If you have Go already, install the executable yourself_
