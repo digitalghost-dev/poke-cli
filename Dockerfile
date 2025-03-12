@@ -11,7 +11,7 @@ COPY . .
 RUN go build -ldflags "-X main.version=v1.0.2" -o poke-cli .
 
 # build 2
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM --platform=$BUILDPLATFORM alpine:latest
 
 COPY --from=build /app/poke-cli /app/poke-cli
 
