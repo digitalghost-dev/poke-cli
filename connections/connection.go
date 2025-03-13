@@ -5,18 +5,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/structs"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"io"
 	"net/http"
 	"net/url"
-)
-
-var (
-	errorBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#F2055C"))
-	errorColor = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 )
 
 // ApiCallSetup Helper function to handle API calls and JSON unmarshalling
@@ -53,6 +46,7 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 	return nil
 }
 
+// AbilityApiCall function for calling the ability endpoint of the pokeAPI
 func AbilityApiCall(endpoint string, abilityName string, baseURL string) (structs.AbilityJSONStruct, string, error) {
 	fullURL := baseURL + endpoint + "/" + abilityName
 
@@ -60,8 +54,8 @@ func AbilityApiCall(endpoint string, abilityName string, baseURL string) (struct
 	err := ApiCallSetup(fullURL, &abilityStruct, false)
 
 	if err != nil {
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!"),
 			"\nAbility not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.AbilityJSONStruct{}, "", fmt.Errorf("%s", errMessage)
@@ -70,6 +64,7 @@ func AbilityApiCall(endpoint string, abilityName string, baseURL string) (struct
 	return abilityStruct, abilityStruct.Name, nil
 }
 
+// PokemonApiCall function for calling the pokemon endpoint of the pokeAPI
 func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (structs.PokemonJSONStruct, string, int, int, int, error) {
 	fullURL := baseURL + endpoint + "/" + pokemonName
 
@@ -77,8 +72,8 @@ func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (struct
 	err := ApiCallSetup(fullURL, &pokemonStruct, false)
 
 	if err != nil {
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!"),
 			"\nPokémon not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.PokemonJSONStruct{}, "", 0, 0, 0, fmt.Errorf("%s", errMessage)
@@ -87,19 +82,17 @@ func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (struct
 	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID, pokemonStruct.Weight, pokemonStruct.Height, nil
 }
 
-func TypesApiCall(endpoint string, typesName string, baseURL string) (structs.TypesJSONStruct, string, int, error) {
+// TypesApiCall function for calling the type endpoint of the pokeAPI
+func TypesApiCall(endpoint string, typesName string, baseURL string) (structs.TypesJSONStruct, string, int) {
 	fullURL := baseURL + endpoint + "/" + typesName
 	var typesStruct structs.TypesJSONStruct
 
 	err := ApiCallSetup(fullURL, &typesStruct, false)
 
 	if err != nil {
-		errMessage := errorBorder.Render(
-			errorColor.Render("Error!"),
-			"\nType not found.\nPerhaps a typo?",
-		)
-		return structs.TypesJSONStruct{}, "", 0, fmt.Errorf("%s", errMessage)
+		fmt.Println(err)
+		return structs.TypesJSONStruct{}, "", 0
 	}
 
-	return typesStruct, typesStruct.Name, typesStruct.ID, nil
+	return typesStruct, typesStruct.Name, typesStruct.ID
 }
