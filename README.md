@@ -77,7 +77,7 @@ _Use a Docker Image_
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh poke-cli:v1.0.2 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.0.2 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
