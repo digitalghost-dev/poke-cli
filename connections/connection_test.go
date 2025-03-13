@@ -110,7 +110,7 @@ func TestTypesApiCall(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	typesStruct, name, id, _ := TypesApiCall("/type", "electric", ts.URL)
+	typesStruct, name, id := TypesApiCall("/type", "electric", ts.URL)
 
 	assert.Equal(t, expectedTypes, typesStruct)
 	assert.Equal(t, "electric", name)

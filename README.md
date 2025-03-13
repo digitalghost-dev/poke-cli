@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.0.1?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.0.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -26,7 +26,7 @@ View future plans in the [Roadmap](#roadmap) section.
 ![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v0.12.0.gif)
 
 ---
-## Install
+## Installation
 
 ### Binary
 _Download a pre-built binary_
@@ -45,7 +45,7 @@ _Download a pre-built binary_
 
 <summary>View Image of Settings</summary>
 
-![settings](https://pokemon-objects.nyc3.digitaloceanspaces.com/macos_settings.png)
+![settings](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/macos_privacy_settings.png)
 
 </details>
 
@@ -70,13 +70,20 @@ _Use a Docker Image_
      * Necessary.
    * `-t`: Allocates a terminal (TTY) for a terminal-like session.
      * Necessary.
-
-```bash
-docker run --rm -i -t digitalghostdev/poke-cli:v1.0.1 <command> [subcommand] flag]
-```
+3. Choose how to interact with the container:
+   * Run a single command and exit:
+    ```bash
+    docker run --rm -it digitalghostdev/poke-cli:v1.0.2 <command> [subcommand] flag]
+    ```
+   * Enter the container and use its shell:
+    ```bash
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.0.2 -c "cd /app && exec sh"
+   # placed into the /app directory, run the program with './poke-cli'
+   # example: ./poke-cli ability swift-swim
+    ```
 
 ### Go Install
-_If you have Go already, install the executable yourself_
+_If you have Go already, install the executable yourself._
 
 1. Run the following command:
    ```bash
@@ -113,6 +120,7 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 ```
 
 ---
+
 ## Roadmap
 Below is a list of the planned/completed commands and flags:
 
@@ -131,3 +139,13 @@ Below is a list of the planned/completed commands and flags:
 - [ ] `search`: search for a resource (`ability`, `berry`, `pokemon`, `move`)
 - [ ] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.
+
+---
+## Tested Terminals
+| OS      | Terminal           | Status | Issues                        |
+|---------|--------------------|:------:|-------------------------------|
+| macOS   | Ghostty            |   ✅    | None                          | 
+| macOS   | Alacritty          |   ✅    | None                          |
+| macOS   | macOS Terminal     |   ⚠️   | Images do not render properly |
+| Windows | Windows Terminal   |   ✅    | None                          |
+| Ubuntu  | Standard Terminal  |   ✅    | None                          |

@@ -58,7 +58,7 @@ func (m model) View() string {
 func displayTypeDetails(typesName string, endpoint string) {
 
 	// Setting up variables to style the list
-	var columnWidth int = 11
+	var columnWidth = 11
 	var subtle = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
 	var list = lipgloss.NewStyle().Border(lipgloss.NormalBorder(), false, true, false, false).BorderForeground(subtle).MarginRight(2).Height(8)
 	var listHeader = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderBottom(true).BorderForeground(subtle).MarginRight(2).Render
@@ -66,7 +66,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 	var docStyle = lipgloss.NewStyle().Padding(1, 1, 1, 1)
 
 	baseURL := "https://pokeapi.co/api/v2/"
-	typesStruct, typeName, _, _ := connections.TypesApiCall(endpoint, typesName, baseURL)
+	typesStruct, typeName, _ := connections.TypesApiCall(endpoint, typesName, baseURL)
 
 	// Format selected type
 	selectedType := cases.Title(language.English).String(typeName)
