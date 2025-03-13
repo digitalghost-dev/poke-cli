@@ -8,17 +8,37 @@ import (
 	"net/http"
 	"net/url"
 	"os/exec"
+	"runtime"
 )
 
-func latestDockerImage(fullCommand string) {
-	cmd := exec.Command("bash", "-c", fullCommand)
+func latestDockerImage() {
+	var cmd *exec.Cmd
+
+	if runtime.GOOS == "windows" {
+		// Windows PowerShell equivalent
+		cmd = exec.Command("powershell", "-Command", `
+			$tags = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1";
+			$tags.results[0].name
+		`)
+	} else {
+		// Check if curl is available
+		_, err := exec.LookPath("curl")
+		if err == nil {
+			// Use curl if available
+			cmd = exec.Command("sh", "-c", `curl -s https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
+		} else {
+			// Use wget as a fallback
+			cmd = exec.Command("sh", "-c", `wget -qO- https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
+		}
+	}
+
 	output, err := cmd.Output()
 	if err != nil {
-		fmt.Printf("error running command: %v\n", err)
+		fmt.Printf("Error running command: %v\n", err)
 		return
 	}
 
-	fmt.Print("Latest Docker image version: ", string(output))
+	fmt.Printf("Latest Docker image version: %s", string(output))
 }
 
 func latestRelease(githubAPIURL string) {
@@ -75,6 +95,6 @@ func latestRelease(githubAPIURL string) {
 
 func LatestFlag() {
 	// cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
-	latestDockerImage(`curl -s https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
+	latestDockerImage()
 	latestRelease("https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest")
 }
