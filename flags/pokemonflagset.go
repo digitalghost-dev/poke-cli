@@ -9,7 +9,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
-	"github.com/lucasb-eyer/go-colorful"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"image"
@@ -126,9 +125,9 @@ func ImageFlag(endpoint string, pokemonName string, size string) error {
 		for heightCounter := 2; heightCounter < h; heightCounter += 2 {
 			for x := 1; x < imageWidth; x++ {
 				// Get the color of the current and next row's pixels
-				c1, _ := colorful.MakeColor(img.At(x, heightCounter))
+				c1, _ := styling.MakeColor(img.At(x, heightCounter))
 				color1 := lipgloss.Color(c1.Hex())
-				c2, _ := colorful.MakeColor(img.At(x, heightCounter+1))
+				c2, _ := styling.MakeColor(img.At(x, heightCounter+1))
 				color2 := lipgloss.Color(c2.Hex())
 
 				// Render the half-block character with the two colors
