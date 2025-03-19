@@ -64,7 +64,7 @@ func ValidatePokemonArgs(args []string) error {
 	if len(args) < 3 {
 		errMessage := styling.ErrorBorder.Render(
 			styling.ErrorColor.Render("Error!"),
-			"\nPlease declare a Pokémon's name after the [pokemon] command",
+			"\nPlease declare a Pokémon's name after the <pokemon> command",
 			"\nRun 'poke-cli pokemon -h' for more details",
 			"\nerror: insufficient arguments",
 		)
@@ -109,21 +109,11 @@ func ValidatePokemonArgs(args []string) error {
 		}
 	}
 
-	// Add a check for invalid Pokémon names (e.g., names starting with `-`)
-	if len(args[2]) > 0 && args[2][0] == '-' {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("Error!"),
-			"\nPokémon not found. Perhaps a typo in the name?",
-		)
-		return fmt.Errorf("%s", errMessage)
-	}
-
 	return nil
 }
 
 // ValidateTypesArgs validates the command line arguments
 func ValidateTypesArgs(args []string) error {
-
 	handleHelpFlag(args)
 
 	if len(args) > 3 {

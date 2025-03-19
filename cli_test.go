@@ -15,8 +15,8 @@ func TestCurrentVersion(t *testing.T) {
 	}{
 		{
 			name:           "Version set by ldflags",
-			version:        "v1.0.0",
-			expectedOutput: "Version: v1.0.0\n",
+			version:        "v1.0.2",
+			expectedOutput: "Version: v1.0.2\n",
 		},
 		{
 			name:           "Version set to (devel)",
@@ -186,7 +186,7 @@ func TestRunCLI(t *testing.T) {
 		{
 			name:           "Latest Flag",
 			args:           []string{"-l"},
-			expectedOutput: "Latest Docker image version: v1.0.1\nLatest release tag: v1.0.1\n",
+			expectedOutput: "Latest Docker image version: v1.0.2\nLatest release tag: v1.0.2\n",
 			expectedCode:   0,
 		},
 	}

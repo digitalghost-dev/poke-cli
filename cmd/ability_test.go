@@ -62,8 +62,26 @@ func TestAbilityCommand(t *testing.T) {
 		{
 			name:           "Valid Execution",
 			args:           []string{"ability", "stench"},
-			expectedOutput: styling.StripANSI("Stench\nEffect: Has a 10% chance of making target Pokémon flinch with each hit."),
+			expectedOutput: styling.StripANSI("Stench\nEffect: Has a 10% chance of making target Pokémon flinch with each hit.\nGeneration: III"),
 			expectError:    false,
+		},
+		{
+			name:           "Valid Execution",
+			args:           []string{"ability", "poison-puppeteer", "--pokemon"},
+			expectedOutput: styling.StripANSI("Poison Puppeteer\nEffect: Pokémon poisoned by Pecharunt's moves will also become confused.\nGeneration: IX\n\nPokemon with Poison Puppeteer\n\n 1. Pecharunt"),
+			expectError:    false,
+		},
+		{
+			name: "Valid Execution",
+			args: []string{"ability", "corrosion", "-p"},
+			expectedOutput: styling.StripANSI(fmt.Sprintf(
+				"Corrosion\nEffect: This Pokémon can inflict poison on Poison and Steel Pokémon.\nGeneration: VII\n\nPokemon with Corrosion\n\n"+
+					"%2d. %-30s%2d. %-30s%2d. %-30s\n"+
+					"%2d. %-30s%2d. %-30s",
+				1, "Salandit", 2, "Salazzle", 3, "Glimmet",
+				4, "Glimmora", 5, "Salazzle-Totem",
+			)),
+			expectError: false,
 		},
 	}
 

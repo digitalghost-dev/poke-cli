@@ -1,49 +1,172 @@
 package cmd
 
 import (
-	"github.com/digitalghost-dev/poke-cli/styling"
-	"strings"
+	"flag"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-// TestValidatePokemonArgs tests the ValidatePokemonArgs function
-func TestValidatePokemonArgs(t *testing.T) {
-	args := []string{"poke-cli", "pokemon"}
-	expectedError := "╭────────────────────────────────────────────────────────────╮\n" +
-		"│Error!                                                      │\n" +
-		"│Please declare a Pokémon's name after the [pokemon] command │\n" +
-		"│Run 'poke-cli pokemon -h' for more details                  │\n" +
-		"│error: insufficient arguments                               │\n" +
-		"╰────────────────────────────────────────────────────────────╯"
-	err := ValidatePokemonArgs(args)
-	if err == nil {
-		t.Errorf("Expected error for too few arguments, got nil")
-		return
+func TestHandleHelpFlag(t *testing.T) {
+	// Mock flag.Usage to avoid actual printing
+	flag.Usage = func() {}
+
+	// Test cases
+	tests := []struct {
+		name string
+		args []string
+	}{
+		{"Valid short help flag", []string{"cmd", "subcmd", "-h"}},
+		{"Valid long help flag", []string{"cmd", "subcmd", "--help"}},
+		{"Invalid case (no flag)", []string{"cmd", "subcmd"}},
 	}
 
-	// Strip ANSI codes for comparison
-	actualError := styling.StripANSI(err.Error())
-	expectedError = strings.TrimSpace(expectedError)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			handleHelpFlag(tc.args)
+		})
+	}
+}
 
-	if actualError != expectedError {
-		t.Errorf("Expected error:\n%s\nGot:\n%s", expectedError, actualError)
+func TestValidateAbilityArgs(t *testing.T) {
+	// Testing valid arguments
+	validInputs := [][]string{
+		{"poke-cli", "ability", "--help"},
+		{"poke-cli", "ability", "inner-focus"},
+		{"poke-cli", "ability", "unaware", "-h"},
+		{"poke-cli", "ability", "technician", "--pokemon"},
+	}
+
+	for _, input := range validInputs {
+		err := ValidateAbilityArgs(input)
+		assert.NoError(t, err, "Expected no error for valid input")
+	}
+
+	// Testing invalid arguments
+	invalidInputs := [][]string{
+		{"poke-cli", "abilities"},
+	}
+
+	for _, input := range invalidInputs {
+		err := ValidateAbilityArgs(input)
+		assert.Error(t, err, "Expected error for invalid input")
+	}
+
+	// Testing too many arguments
+	tooManyArgs := [][]string{
+		{"poke-cli", "ability", "strong-jaw", "all", "pokemon"},
+	}
+
+	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+
+	for _, input := range tooManyArgs {
+		err := ValidateAbilityArgs(input)
+		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+	}
+}
+
+func TestValidateNaturesArgs(t *testing.T) {
+	// Testing valid arguments
+	validInputs := [][]string{
+		{"poke-cli", "natures"},
+		{"poke-cli", "natures", "--help"},
+	}
+
+	for _, input := range validInputs {
+		err := ValidateNaturesArgs(input)
+		assert.NoError(t, err, "Expected no error for valid input")
+	}
+
+	// Testing invalid arguments
+	invalidInputs := [][]string{
+		{"poke-cli", "natures", "docile"},
+		{"poke-cli", "natures", "brave", "--help"},
+	}
+
+	for _, input := range invalidInputs {
+		err := ValidateNaturesArgs(input)
+		assert.Error(t, err, "Expected error for invalid input")
+	}
+}
+
+// TestValidatePokemonArgs tests the ValidatePokemonArgs function
+func TestValidatePokemonArgs(t *testing.T) {
+	// Testing valid arguments
+	validInputs := [][]string{
+		{"poke-cli", "pokemon", "--help"},
+		{"poke-cli", "pokemon", "mankey"},
+		{"poke-cli", "pokemon", "talonflame", "--stats", "--types"},
+		{"poke-cli", "pokemon", "passimian", "--abilities", "-t"},
+		{"poke-cli", "pokemon", "dodrio", "-a", "-s", "-t"},
+		{"poke-cli", "pokemon", "dragalge", "-a", "-s", "-t", "--image=sm"},
+		{"poke-cli", "pokemon", "squirtle", "-a", "-s"},
+		{"poke-cli", "pokemon", "squirtle", "-s", "-a"},
+	}
+
+	for _, input := range validInputs {
+		err := ValidatePokemonArgs(input)
+		assert.NoError(t, err, "Expected no error for valid input")
+	}
+
+	// Testing invalid arguments
+	invalidInputs := [][]string{
+		{"poke-cli"},
+		{"poke-cli", "pokemon"},
+		{"poke-cli", "pokemons"},
+		{"poke-cli", "pokemon", "mewtwo", "--"},
+		{"poke-cli", "pokemon", "baxcalibur", "-"},
+		{"poke-cli", "pokemon", "charizard", "extraArg"},
+	}
+
+	for _, input := range invalidInputs {
+		err := ValidatePokemonArgs(input)
+		assert.Error(t, err, "Expected error for invalid input")
+	}
+
+	// Testing too many arguments
+	tooManyArgs := [][]string{
+		{"poke-cli", "pokemon", "hypno", "--abilities", "-s", "--types", "--image=sm", "-m"},
+	}
+
+	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+
+	for _, input := range tooManyArgs {
+		err := ValidatePokemonArgs(input)
+		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
 	}
 }
 
 // TestValidateTypesArgs tests the ValidateTypesArgs function
 func TestValidateTypesArgs(t *testing.T) {
-	// Test case: Help flag (-h)
-	args := []string{"poke-cli", "types", "-h"}
-	err := ValidateTypesArgs(args)
-	if err != nil {
-		t.Errorf("Expected no error for help flag, but got: %v", err)
+	// Testing valid arguments
+	validInputs := [][]string{
+		{"poke-cli", "types"},
+		{"poke-cli", "types", "--help"},
 	}
 
-	// Test case: Valid args (e.g., no subcommands or flags after 'types')
-	args = []string{"poke-cli", "types"}
-	err = ValidateTypesArgs(args)
-	// Ensure no error is returned for valid arguments
-	if err != nil {
-		t.Errorf("Expected no error for valid args, got: %v", err)
+	for _, input := range validInputs {
+		err := ValidateTypesArgs(input)
+		assert.NoError(t, err, "Expected no error for valid input")
+	}
+
+	// Testing invalid arguments
+	invalidInputs := [][]string{
+		{"poke-cli", "types", "rock"},
+	}
+
+	for _, input := range invalidInputs {
+		err := ValidateTypesArgs(input)
+		assert.Error(t, err, "Expected error for invalid input")
+	}
+
+	// Testing too many arguments
+	tooManyArgs := [][]string{
+		{"poke-cli", "types", "rock", "pokemon"},
+	}
+
+	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+
+	for _, input := range tooManyArgs {
+		err := ValidateTypesArgs(input)
+		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
 	}
 }

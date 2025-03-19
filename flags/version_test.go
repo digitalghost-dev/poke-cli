@@ -44,9 +44,9 @@ func TestLatestDockerImage(t *testing.T) {
 	// Instead, check if a non-empty version string is printed.
 
 	if runtime.GOOS == "windows" {
-		assert.Contains(t, output, "\n") // Ensure PowerShell prints something
+		assert.Contains(t, output, "\n")
 	} else {
-		assert.Contains(t, output, "\n") // Ensure bash prints something
+		assert.Contains(t, output, "\n")
 	}
 }
 

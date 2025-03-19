@@ -10,6 +10,21 @@ type AbilityJSONStruct struct {
 		} `json:"language"`
 		ShortEffect string `json:"short_effect"`
 	} `json:"effect_entries"`
+	FlavorEntries []struct {
+		FlavorText string `json:"flavor_text"`
+		Language   struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		VersionGroup struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version_group"`
+	} `json:"flavor_text_entries"`
+	Generation struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"generation"`
 	Pokemon []struct {
 		Hidden      bool `json:"hidden"`
 		PokemonName struct {

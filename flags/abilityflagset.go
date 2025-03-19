@@ -17,7 +17,7 @@ func SetupAbilityFlagSet() (*flag.FlagSet, *bool, *bool) {
 	shortPokemonFlag := abilityFlags.Bool("p", false, "List all Pokémon with chosen ability")
 
 	abilityFlags.Usage = func() {
-		helpMessage := styling.HelpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
+		helpMessage := styling.HelpBorder.Render("poke-cli ability <ability-name> [flags]\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-p, --pokemon", "List all Pokémon with chosen ability."),
 		)
@@ -42,10 +42,9 @@ func PokemonFlag(endpoint string, abilityName string) error {
 
 	// Print names in a grid format
 	const cols = 3
-	maxWidth := 32
 
 	for i, name := range pokemonNames {
-		entry := fmt.Sprintf("%2d. %-*s", i+1, maxWidth-5, name) // Numbered entry with padding
+		entry := fmt.Sprintf("%2d. %-30s", i+1, name) // Numbered entry with padding
 		fmt.Print(entry)
 		if (i+1)%cols == 0 {
 			fmt.Println()

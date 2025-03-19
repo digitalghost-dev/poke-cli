@@ -78,5 +78,5 @@ func TestPokemonCommand(t *testing.T) {
 	}
 
 	// Assert output contains expected Pokémon details
-	assert.Equal(t, output.String(), "Your selected Pokémon: Bulbasaur\nNational Pokédex #: 1\nWeight: 6.9kg (15.2 lbs)\nHeight: 2.3m (2′04″)\n")
+	assert.Equal(t, output.String(), "Your selected Pokémon: Bulbasaur\n• National Pokédex #: 1\n• Weight: 6.9kg (15.2 lbs)\n• Height: 2.3m (2′04″)\n")
 }

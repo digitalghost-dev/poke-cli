@@ -69,9 +69,34 @@ func AbilityCommand() {
 		}
 	}
 
-	capitalizedEffect := cases.Title(language.English).String(strings.Replace(abilityName, "-", " ", -1))
-	fmt.Println(styling.StyleBold.Render(capitalizedEffect))
-	fmt.Println("Effect:", englishShortEffect)
+	// Extract English flavor_text_entries
+	var englishFlavorEntry string
+	for _, entry := range abilitiesStruct.FlavorEntries {
+		if entry.Language.Name == "en" {
+			englishFlavorEntry = entry.FlavorText
+			break
+		}
+	}
+
+	capitalizedAbility := cases.Title(language.English).String(strings.Replace(abilityName, "-", " ", -1))
+	fmt.Println(styling.StyleBold.Render(capitalizedAbility))
+
+	// API is missing some data for the short_effect for abilities from Generation 9.
+	// If short_effect is empty, fallback to the move's flavor_text_entry.
+	if englishShortEffect == "" {
+		fmt.Println("Effect:", englishFlavorEntry)
+	} else {
+		fmt.Println("Effect:", englishShortEffect)
+	}
+
+	// Print the generation where the move was first introduced.
+	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")
+	if len(generationParts) > 1 {
+		generationUpper := strings.ToUpper(generationParts[1])
+		fmt.Println("Generation:", generationUpper)
+	} else {
+		fmt.Println("Generation: Unknown")
+	}
 
 	if *pokemonFlag || *shortPokemonFlag {
 		if err := flags.PokemonFlag(endpoint, abilityName); err != nil {
