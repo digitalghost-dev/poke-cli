@@ -3,6 +3,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -96,9 +97,13 @@ func PokemonCommand() {
 		inches = 0
 	}
 
+	coloredBullet := lipgloss.NewStyle().
+		SetString("•").
+		Foreground(lipgloss.Color("#FFCC00"))
+
 	fmt.Printf(
-		"Your selected Pokémon: %s\nNational Pokédex #: %d\nWeight: %.1fkg (%.1f lbs)\nHeight: %.1fm (%d′%02d″)\n",
-		capitalizedString, pokemonID, weightKilograms, weightPounds, heightFeet, feet, inches,
+		"Your selected Pokémon: %s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
+		capitalizedString, coloredBullet, pokemonID, coloredBullet, weightKilograms, weightPounds, coloredBullet, heightFeet, feet, inches,
 	)
 
 	if *imageFlag != "" || *shortImageFlag != "" {
