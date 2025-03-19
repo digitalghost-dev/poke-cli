@@ -36,3 +36,12 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+brews:
+  - repository:
+      owner: digitalghost-dev
+      name: homebrew-poke-cli
+      token: "{{.Env.GITHUB_TOKEN}}"
+    homepage: "https://github.com/digitalghost-dev/poke-cli"
+    description: "A CLI tool written in Go that allows you to view data about Pokémon from the terminal."
+    license: "Apache License 2.0"
