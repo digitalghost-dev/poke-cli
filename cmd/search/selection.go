@@ -8,36 +8,20 @@ package search
 
 import (
 	"fmt"
-	"math"
 	"strconv"
-	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/fogleman/ease"
-	"github.com/lucasb-eyer/go-colorful"
-)
-
-const (
-	progressBarWidth  = 71
-	progressFullChar  = "█"
-	progressEmptyChar = "░"
-	dotChar           = " • "
 )
 
 // General stuff for styling the view
 var (
 	keywordStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("211"))
-	subtleStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("241"))
 	ticksStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("79"))
 	checkboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
-	progressEmpty = subtleStyle.Render(progressEmptyChar)
-	dotStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("236")).Render(dotChar)
 	mainStyle     = lipgloss.NewStyle().MarginLeft(2)
-
-	// Gradient colors we'll use for the progress bar
-	ramp = makeRampStyles("#B14FFF", "#00FFA3", progressBarWidth)
 )
 
 func SearchCommand() {
@@ -184,10 +168,6 @@ func choicesView(m model) string {
 
 	tpl := "What to do today?\n\n"
 	tpl += "%s\n\n"
-	tpl += "Program quits in %s seconds\n\n"
-	tpl += subtleStyle.Render("j/k, up/down: select") + dotStyle +
-		subtleStyle.Render("enter: choose") + dotStyle +
-		subtleStyle.Render("q, esc: quit")
 
 	choices := fmt.Sprintf(
 		"%s\n%s",
@@ -209,12 +189,7 @@ func chosenView(m model) string {
 		msg = fmt.Sprintf("It’s always good to see friends.\n\nFetching %s and %s...", keywordStyle.Render("social-skills"), keywordStyle.Render("conversationutils"))
 	}
 
-	label := "Downloading..."
-	if m.Loaded {
-		label = fmt.Sprintf("Downloaded. Exiting in %s seconds...", ticksStyle.Render(strconv.Itoa(m.Ticks)))
-	}
-
-	return msg + "\n\n" + label + "\n" + progressbar(m.Progress) + "%"
+	return msg
 }
 
 func checkbox(label string, checked bool) string {
@@ -222,48 +197,4 @@ func checkbox(label string, checked bool) string {
 		return checkboxStyle.Render("[x] " + label)
 	}
 	return fmt.Sprintf("[ ] %s", label)
-}
-
-func progressbar(percent float64) string {
-	w := float64(progressBarWidth)
-
-	fullSize := int(math.Round(w * percent))
-	var fullCells string
-	for i := 0; i < fullSize; i++ {
-		fullCells += ramp[i].Render(progressFullChar)
-	}
-
-	emptySize := int(w) - fullSize
-	emptyCells := strings.Repeat(progressEmpty, emptySize)
-
-	return fmt.Sprintf("%s%s %3.0f", fullCells, emptyCells, math.Round(percent*100))
-}
-
-// Utils
-
-// Generate a blend of colors.
-func makeRampStyles(colorA, colorB string, steps float64) (s []lipgloss.Style) {
-	cA, _ := colorful.Hex(colorA)
-	cB, _ := colorful.Hex(colorB)
-
-	for i := 0.0; i < steps; i++ {
-		c := cA.BlendLuv(cB, i/steps)
-		s = append(s, lipgloss.NewStyle().Foreground(lipgloss.Color(colorToHex(c))))
-	}
-	return
-}
-
-// Convert a colorful.Color to a hexadecimal format.
-func colorToHex(c colorful.Color) string {
-	return fmt.Sprintf("#%s%s%s", colorFloatToHex(c.R), colorFloatToHex(c.G), colorFloatToHex(c.B))
-}
-
-// Helper function for converting colors to hex. Assumes a value between 0 and
-// 1.
-func colorFloatToHex(f float64) (s string) {
-	s = strconv.FormatInt(int64(f*255), 16)
-	if len(s) == 1 {
-		s = "0" + s
-	}
-	return
 }
