@@ -1,7 +1,9 @@
 package styling
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"image/color"
 	"testing"
 )
 
@@ -61,5 +63,43 @@ func TestStripANSI(t *testing.T) {
 				t.Errorf("StripANSI(%q) = %q; want %q", tt.input, output, tt.expected)
 			}
 		})
+	}
+}
+
+func TestColor_RGBA(t *testing.T) {
+	col := Color{R: 1.0, G: 0.5, B: 0.0}
+	r, g, b, a := col.RGBA()
+	if r != 65535 || g != 32768 || b != 0 || a != 65535 {
+		t.Errorf("Unexpected RGBA values: got (%d, %d, %d, %d)", r, g, b, a)
+	}
+}
+
+func TestMakeColor(t *testing.T) {
+	// color.RGBA uses 8-bit values, which are multiplied by 0x101 in RGBA() to get 16-bit range.
+	c := color.RGBA{R: 255, G: 128, B: 0, A: 255}
+	col, ok := MakeColor(c)
+	if !ok {
+		t.Fatal("Expected color to be valid (alpha != 0)")
+	}
+
+	// Allowing small float tolerance due to conversion
+	if diff := func(a, b float64) bool { return fmt.Sprintf("%.2f", a) != fmt.Sprintf("%.2f", b) }; diff(col.R, 1.0) || diff(col.G, 0.5) || diff(col.B, 0.0) {
+		t.Errorf("Unexpected color values: got %+v", col)
+	}
+
+	// Test alpha = 0 case
+	cTransparent := color.RGBA{0, 0, 0, 0}
+	_, ok = MakeColor(cTransparent)
+	if ok {
+		t.Error("Expected MakeColor to return false for fully transparent color")
+	}
+}
+
+func TestColor_Hex(t *testing.T) {
+	col := Color{R: 1.0, G: 0.0, B: 0.5}
+	hex := col.Hex()
+	expected := "#ff0080"
+	if hex != expected {
+		t.Errorf("Expected %s, got %s", expected, hex)
 	}
 }
