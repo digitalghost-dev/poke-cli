@@ -112,6 +112,28 @@ func ValidatePokemonArgs(args []string) error {
 	return nil
 }
 
+// ValidateSearchArgs validates the command line arguments
+func ValidateSearchArgs(args []string) error {
+	handleHelpFlag(args)
+
+	if len(args) > 3 {
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
+	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
+	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
+		errorTitle := styling.ErrorColor.Render("Error!")
+		errorString := "\nThe only currently available options\nafter [search] command are '-h' or '--help'"
+		finalErrorMessage := errorTitle + errorString
+		renderedError := styling.ErrorBorder.Render(finalErrorMessage)
+		return fmt.Errorf("%s", renderedError)
+	}
+
+	return nil
+}
+
 // ValidateTypesArgs validates the command line arguments
 func ValidateTypesArgs(args []string) error {
 	handleHelpFlag(args)

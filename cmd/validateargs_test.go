@@ -135,6 +135,39 @@ func TestValidatePokemonArgs(t *testing.T) {
 	}
 }
 
+// TestValidateSearchArgs tests the ValidateSearchArgs function
+func TestValidateSearchArgs(t *testing.T) {
+	validInputs := [][]string{
+		{"poke-cli", "search"},
+		{"poke-cli", "search", "--help"},
+	}
+
+	for _, input := range validInputs {
+		err := ValidateSearchArgs(input)
+		assert.NoError(t, err, "Expected no error for valid input")
+	}
+
+	invalidInputs := [][]string{
+		{"poke-cli", "search", "pokemon"},
+	}
+
+	for _, input := range invalidInputs {
+		err := ValidateSearchArgs(input)
+		assert.Error(t, err, "Expected error for invalid input")
+	}
+
+	tooManyArgs := [][]string{
+		{"poke-cli", "search", "pokemon", "meowscarada"},
+	}
+
+	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+
+	for _, input := range tooManyArgs {
+		err := ValidateTypesArgs(input)
+		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+	}
+}
+
 // TestValidateTypesArgs tests the ValidateTypesArgs function
 func TestValidateTypesArgs(t *testing.T) {
 	// Testing valid arguments
