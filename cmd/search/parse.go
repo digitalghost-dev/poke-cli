@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/connections"
-	"io/ioutil"
-	"log"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -24,25 +23,36 @@ type Result struct {
 	URL  string `json:"url"`
 }
 
-func do(endpoint string, obj interface{}) error {
-	req, err := http.NewRequest(http.MethodGet, connections.APIURL+endpoint, nil)
+func callAPI(endpoint string, obj interface{}) error {
+	url := connections.APIURL + endpoint
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create request: %w", err)
 	}
-	client := &http.Client{Timeout: 10 * time.Second}
+	req.Header.Set("User-Agent", "poke-cli/1.0")
 
+	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("request to %s failed: %w", url, err)
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if resp.StatusCode != http.StatusOK {
+		bodyBytes, _ := io.ReadAll(resp.Body) // error intentionally ignored here
+		return fmt.Errorf("API returned status %d (%s): %s", resp.StatusCode, http.StatusText(resp.StatusCode), string(bodyBytes))
 	}
 
-	return json.Unmarshal(body, &obj)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	if err := json.Unmarshal(body, &obj); err != nil {
+		return fmt.Errorf("failed to unmarshal JSON: %w\nResponse body: %s", err, string(body))
+	}
+
+	return nil
 }
 
 func parseSearch(results []Result, search string) []Result {
@@ -55,7 +65,7 @@ func parseSearch(results []Result, search string) []Result {
 			if len(substr) > len(result.Name) {
 				continue
 			}
-			if (result.Name[0:len(substr)]) != (substr) {
+			if result.Name[0:len(substr)] != substr {
 				continue
 			}
 		} else {
@@ -72,23 +82,8 @@ func parseSearch(results []Result, search string) []Result {
 // Search returns resources list, filtered by resources term.
 func query(endpoint string, search string) (result Resource,
 	err error) {
-	err = do(fmt.Sprintf("%s?offset=0&limit=9999", endpoint), &result)
+	err = callAPI(fmt.Sprintf("%s?offset=0&limit=9999", endpoint), &result)
 	result.Results = parseSearch(result.Results, search)
 	result.Count = len(result.Results)
 	return
-}
-
-func SearchResults() {
-	endpoint := "pokemon"
-	searchTerm := "zac"
-
-	result, err := query(endpoint, searchTerm) // Using the Search function from resources
-	if err != nil {
-		log.Fatalf("Error fetching search results: %v", err)
-	}
-
-	fmt.Println("Search Results:")
-	for _, r := range result.Results {
-		fmt.Println("-", r.Name)
-	}
 }
