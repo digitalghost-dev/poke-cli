@@ -1,20 +1,48 @@
 package search
 
 import (
+	"flag"
 	"fmt"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/digitalghost-dev/poke-cli/cmd"
+	"github.com/digitalghost-dev/poke-cli/styling"
+	"os"
 )
 
-// MainExecution is the main function for the "search" command.
-func MainExecution() {
+// SearchCommand is the main function for the "search" command.
+func SearchCommand() {
+	// Define your custom usage function first
+	flag.Usage = func() {
+		helpMessage := styling.HelpBorder.Render(
+			"Search for a resource by name or partial match.\n\n",
+			styling.StyleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("search"), "[flag]"),
+			"\n\n",
+			styling.StyleBold.Render("FLAGS:"),
+			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Prints out the help menu.\n\n"),
+			styling.StyleItalic.Render("Supports prefix matching using ^ (example: ^char → charizard)"),
+		)
+		fmt.Println(helpMessage)
+	}
+
+	// Parse CLI flags first
+	flag.Parse()
+
+	// Validate arguments before doing anything else
+	if err := cmd.ValidateSearchArgs(os.Args); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	// Only start the TUI if flags/args are valid
 	initialModel := Model{
 		Choice:    0,
 		Chosen:    false,
 		Quitting:  false,
 		TextInput: textinput.New(),
 	}
-	initialModel.TextInput.Placeholder = "type here"
+	initialModel.TextInput.Placeholder = "type name..."
 	initialModel.TextInput.CharLimit = 20
 	initialModel.TextInput.Width = 20
 
