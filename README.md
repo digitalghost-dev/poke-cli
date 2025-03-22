@@ -28,10 +28,10 @@ View future plans in the [Roadmap](#roadmap) section.
 ---
 ## Installation
 
-* [Binary](binary)
-* [Docker Image](docker-image)
-* [Homebrew](homebrew)
-* [Source](source)
+* [Binary](#binary)
+* [Docker Image](#docker-image)
+* [Homebrew](#homebrew)
+* [Source](#source)
 
 ### Binary
 
