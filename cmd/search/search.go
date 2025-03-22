@@ -14,7 +14,7 @@ func MainExecution() {
 		Quitting:  false,
 		TextInput: textinput.New(),
 	}
-	initialModel.TextInput.Placeholder = "Enter name..."
+	initialModel.TextInput.Placeholder = "type here"
 	initialModel.TextInput.CharLimit = 20
 	initialModel.TextInput.Width = 20
 
@@ -26,12 +26,13 @@ func MainExecution() {
 
 // Model structure
 type Model struct {
-	Choice        int
-	Chosen        bool
-	Quitting      bool
-	TextInput     textinput.Model
-	ShowResults   bool   // New: Controls whether we show search results
-	SearchResults string // New: Stores search results text
+	Choice         int             // Index of the selected search category (e.g., 0 = Pokémon, 1 = Ability)
+	Chosen         bool            // Whether a category has been chosen yet
+	Quitting       bool            // Flag to indicate if the program is quitting
+	TextInput      textinput.Model // The text input field used for search input
+	ShowResults    bool            // Whether to display the search results screen
+	SearchResults  string          // The formatted search results to be displayed
+	WarningMessage string          // A warning message to show (e.g., empty input)
 }
 
 // Init initializes the program.
@@ -58,7 +59,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 // View renders the correct UI screen.
 func (m Model) View() string {
 	if m.Quitting {
-		return "\n  See you later!\n\n"
+		return "\n  Quitting search...\n\n"
 	}
 	if m.ShowResults {
 		resultsView, _ := RenderInput(m) // Fetch results view
