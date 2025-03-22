@@ -46,7 +46,7 @@ func RenderSelection(m Model) string {
 		checkbox("Pokémon", c == 0),
 		checkbox("Ability", c == 1),
 	)
-	help := styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
+	help := styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)")
 
 	// ✅ Concatenation method
 	return greeting + "\n\nWhat would you like to search?\n\n" + choices + "\n\n" + help + "\n"
