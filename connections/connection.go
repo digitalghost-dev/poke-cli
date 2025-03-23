@@ -12,6 +12,8 @@ import (
 	"net/url"
 )
 
+const APIURL = "https://pokeapi.co/api/v2/"
+
 // ApiCallSetup Helper function to handle API calls and JSON unmarshalling
 func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error {
 	parsedURL, err := url.Parse(rawURL)
