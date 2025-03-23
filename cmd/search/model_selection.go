@@ -42,7 +42,6 @@ func RenderSelection(m Model) string {
 	)
 	help := styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)")
 
-	// ✅ Concatenation method
 	return greeting + "\n\nWhat would you like to search?\n\n" + choices + "\n\n" + help + "\n"
 }
 
