@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/cmd"
+	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
@@ -59,6 +60,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
+			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
 			"\n\n", styling.StyleItalic.Render("hint: when calling a resource with a space, use a hyphen"),
 			"\n", styling.StyleItalic.Render("example: poke-cli ability strong-jaw"),
@@ -88,6 +90,7 @@ func runCLI(args []string) int {
 		"natures": cmd.NaturesCommand,
 		"pokemon": cmd.PokemonCommand,
 		"types":   cmd.TypesCommand,
+		"search":  search.SearchCommand,
 	}
 
 	if len(os.Args) < 2 {
@@ -111,6 +114,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
+			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
 			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h")),
 		)
