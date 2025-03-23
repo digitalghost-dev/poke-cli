@@ -4,13 +4,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/styling"
-)
-
-// Styling
-var (
-	checkboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFCC00"))
 )
 
 // UpdateSelection handles navigation in the selection menu.
@@ -55,7 +49,7 @@ func RenderSelection(m Model) string {
 // checkbox renders checkboxes for the selection menu.
 func checkbox(label string, checked bool) string {
 	if checked {
-		return checkboxStyle.Render("[x] " + label)
+		return styling.CheckboxStyle.Render("> " + label)
 	}
-	return fmt.Sprintf("[ ] %s", label)
+	return fmt.Sprintf("%s", label)
 }
