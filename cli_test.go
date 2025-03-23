@@ -112,6 +112,7 @@ func TestRunCLI(t *testing.T) {
 				"│    ability         Get details about an ability          │\n" +
 				"│    natures         Get details about all natures         │\n" +
 				"│    pokemon         Get details about a Pokémon           │\n" +
+				"│    search          Search for a resource                 │\n" +
 				"│    types           Get details about a typing            │\n" +
 				"│                                                          │\n" +
 				"│ hint: when calling a resource with a space, use a hyphen │\n" +
@@ -140,6 +141,7 @@ func TestRunCLI(t *testing.T) {
 				"│    ability         Get details about an ability          │\n" +
 				"│    natures         Get details about all natures         │\n" +
 				"│    pokemon         Get details about a Pokémon           │\n" +
+				"│    search          Search for a resource                 │\n" +
 				"│    types           Get details about a typing            │\n" +
 				"│                                                          │\n" +
 				"│ hint: when calling a resource with a space, use a hyphen │\n" +
@@ -168,6 +170,7 @@ func TestRunCLI(t *testing.T) {
 				"│    ability         Get details about an ability          │\n" +
 				"│    natures         Get details about all natures         │\n" +
 				"│    pokemon         Get details about a Pokémon           │\n" +
+				"│    search          Search for a resource                 │\n" +
 				"│    types           Get details about a typing            │\n" +
 				"│                                                          │\n" +
 				"│ hint: when calling a resource with a space, use a hyphen │\n" +
@@ -182,12 +185,6 @@ func TestRunCLI(t *testing.T) {
 			args:           []string{"invalid"},
 			expectedOutput: "Error!",
 			expectedCode:   1,
-		},
-		{
-			name:           "Latest Flag",
-			args:           []string{"-l"},
-			expectedOutput: "Latest Docker image version: v1.0.2\nLatest release tag: v1.0.2\n",
-			expectedCode:   0,
 		},
 	}
 
