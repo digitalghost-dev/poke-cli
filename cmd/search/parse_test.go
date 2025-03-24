@@ -51,3 +51,36 @@ func TestParseSearch(t *testing.T) {
 		})
 	}
 }
+
+func TestQuery(t *testing.T) {
+	// Save and restore original apiCall
+	original := apiCall
+	defer func() { apiCall = original }()
+
+	// Mock API response
+	apiCall = func(url string, result interface{}, _ bool) error {
+		res := result.(*Resource)
+		res.Results = []Result{
+			{Name: "pikachu"},
+			{Name: "raichu"},
+			{Name: "sandshrew"},
+		}
+		return nil
+	}
+
+	// Now call the query
+	res, err := query("pokemon", "chu")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if len(res.Results) != 2 {
+		t.Fatalf("expected 2 results, got %d", len(res.Results))
+	}
+	expected := []string{"pikachu", "raichu"}
+	for i, r := range res.Results {
+		if r.Name != expected[i] {
+			t.Errorf("expected result %s, got %s", expected[i], r.Name)
+		}
+	}
+}
