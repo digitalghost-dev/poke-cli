@@ -52,7 +52,7 @@ func AbilityCommand() {
 		}
 	}
 
-	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, "https://pokeapi.co/api/v2/")
+	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
 	if err != nil {
 		fmt.Println(err)
 		if os.Getenv("GO_TESTING") != "1" {
