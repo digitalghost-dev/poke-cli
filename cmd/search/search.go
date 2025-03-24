@@ -35,18 +35,7 @@ func SearchCommand() {
 		os.Exit(1)
 	}
 
-	// Only start the TUI if flags/args are valid
-	initialModel := Model{
-		Choice:    0,
-		Chosen:    false,
-		Quitting:  false,
-		TextInput: textinput.New(),
-	}
-	initialModel.TextInput.Placeholder = "type name..."
-	initialModel.TextInput.CharLimit = 20
-	initialModel.TextInput.Width = 20
-
-	p := tea.NewProgram(initialModel)
+	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		fmt.Println("could not start program:", err)
 	}
@@ -61,6 +50,17 @@ type Model struct {
 	ShowResults    bool            // Whether to display the search results screen
 	SearchResults  string          // The formatted search results to be displayed
 	WarningMessage string          // A warning message to show (e.g., empty input)
+}
+
+func initialModel() Model {
+	ti := textinput.New()
+	ti.Placeholder = "type name..."
+	ti.CharLimit = 20
+	ti.Width = 20
+
+	return Model{
+		TextInput: ti,
+	}
 }
 
 // Init initializes the program.
