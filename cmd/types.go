@@ -51,7 +51,7 @@ func (m model) View() string {
 	return "Select a type!\n" +
 		styling.TypesTableBorder.Render(m.table.View()) +
 		"\n" +
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)")
 }
 
 // Function to display type details after a type is selected
@@ -65,8 +65,7 @@ func displayTypeDetails(typesName string, endpoint string) {
 	var listItem = lipgloss.NewStyle().Render
 	var docStyle = lipgloss.NewStyle().Padding(1, 1, 1, 1)
 
-	baseURL := "https://pokeapi.co/api/v2/"
-	typesStruct, typeName, _ := connections.TypesApiCall(endpoint, typesName, baseURL)
+	typesStruct, typeName, _ := connections.TypesApiCall(endpoint, typesName, connections.APIURL)
 
 	// Format selected type
 	selectedType := cases.Title(language.English).String(typeName)
