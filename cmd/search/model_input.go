@@ -2,9 +2,11 @@ package search
 
 import (
 	"fmt"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"log"
+	"strings"
 )
 
 // UpdateInput handles text input updates.
@@ -12,29 +14,44 @@ func UpdateInput(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyEnter: // User presses enter after input
-			searchTerm := m.TextInput.Value()
-			_, endpoint := RenderInput(m) // Get endpoint from RenderInput()
-
-			// Call PokéAPI with the search term
-			result, err := query(endpoint, searchTerm)
-			if err != nil {
-				log.Printf("Error fetching search results: %v", err)
-				m.Quitting = true
-				return m, tea.Quit
+		if m.ShowResults {
+			// If results are shown, pressing 'b' resets to search view
+			if msg.String() == "b" {
+				m.ShowResults = false
+				m.TextInput.Reset()
+				m.TextInput.Focus()
+				return m, textinput.Blink
 			}
+		} else {
+			switch msg.Type {
+			case tea.KeyEnter:
+				searchTerm := m.TextInput.Value()
+				_, endpoint := RenderInput(m)
 
-			// Format results
-			var resultsDisplay string
-			for _, r := range result.Results {
-				resultsDisplay += fmt.Sprintf("- %s\n", r.Name)
+				// checking for blank queries
+				if strings.TrimSpace(searchTerm) == "" {
+					errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nNo blank queries")
+					m.WarningMessage = errMessage
+					return m, nil
+				}
+
+				// Call PokéAPI
+				result, err := query(endpoint, searchTerm)
+				if err != nil {
+					fmt.Printf("Error fetching search results: %v", err)
+					return m, nil
+				}
+
+				// Format results
+				var resultsDisplay string
+				for _, r := range result.Results {
+					resultsDisplay += fmt.Sprintf("%s %s\n", styling.ColoredBullet, r.Name)
+				}
+
+				m.SearchResults = resultsDisplay
+				m.ShowResults = true
+				return m, nil
 			}
-
-			// Store results in the model (so they can be rendered)
-			m.SearchResults = resultsDisplay
-			m.ShowResults = true // Switch to results view
-			return m, nil
 		}
 	}
 
@@ -59,16 +76,26 @@ func RenderInput(m Model) (string, string) {
 	}
 
 	if m.ShowResults {
-		help := styling.KeyMenu.Render("\nctrl+c | esc (quit)")
-		// Show the search results instead of the input field
-		return fmt.Sprintf("Search Results:\n\n%s\n%s", m.SearchResults, help), endpoint
+		return fmt.Sprintf(
+			"Search Results:\n\n%s\n\n%s",
+			m.SearchResults,
+			styling.KeyMenu.Render("Press 'b' to search again\nenter (select) • ctrl+c | esc (quit)"),
+		), endpoint
+	}
+
+	// Warning message rendered if present
+	warning := ""
+	if m.WarningMessage != "" {
+		warning = "\n\n" + lipgloss.NewStyle().
+			Foreground(lipgloss.Color("9")).
+			Render(m.WarningMessage)
 	}
 
 	return fmt.Sprintf(
-			"%s\n\n%s\n\n%s",
-			msg,
-			m.TextInput.View(),
-			styling.KeyMenu.Render("Press Enter to confirm"),
-		),
-		endpoint
+		"%s\n\n%s\n\n%s%s",
+		msg,
+		m.TextInput.View(),
+		styling.KeyMenu.Render("Press Enter to confirm\nctrl+c | esc (quit)"),
+		warning,
+	), endpoint
 }
