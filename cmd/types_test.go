@@ -53,7 +53,7 @@ func TestModelView_DisplayTable(t *testing.T) {
 	expectedOutput := "Select a type!\n" +
 		styling.TypesTableBorder.Render(m.table.View()) +
 		"\n" +
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)")
 
 	output := m.View()
 
