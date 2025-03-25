@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 	"strings"
 	"testing"
@@ -43,40 +44,42 @@ func TestNaturesCommand(t *testing.T) {
 		name           string
 		args           []string
 		expectedOutput string
-		expectError    bool
+		expectedError  bool
 	}{
 		{
 			name: "Help flag",
 			args: []string{"natures", "-h"},
-			expectedOutput: "╭──────────────────────────────╮\n" +
-				"│Get details about all natures.│\n" +
-				"│                              │\n" +
-				"│ USAGE:                       │\n" +
-				"│    poke-cli natures          │\n" +
-				"╰──────────────────────────────╯\n",
-			expectError: false,
+			expectedOutput: styling.StripANSI(
+				"╭──────────────────────────────╮\n" +
+					"│Get details about all natures.│\n" +
+					"│                              │\n" +
+					"│ USAGE:                       │\n" +
+					"│    poke-cli natures          │\n" +
+					"╰──────────────────────────────╯\n"),
+			expectedError: false,
 		},
 		{
 			name: "Valid Execution",
 			args: []string{"natures"},
-			expectedOutput: "Natures affect the growth of a Pokémon.\n" +
-				"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
-				"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
-				"Nature Chart:\n" +
-				"┌──────────┬─────────┬──────────┬──────────┬──────────┬─────────┐\n" +
-				"│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ Speed   │\n" +
-				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-				"│ +Attack  │ Hardy   │ Lonely   │ Adamant  │ Naughty  │ Brave   │\n" +
-				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-				"│ +Defense │ Bold    │ Docile   │ Impish   │ Lax      │ Relaxed │\n" +
-				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-				"│ +Sp. Atk │ Modest  │ Mild     │ Bashful  │ Rash     │ Quiet   │\n" +
-				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-				"│ +Sp. Def │ Calm    │ Gentle   │ Careful  │ Quirky   │ Sassy   │\n" +
-				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-				"│ Speed    │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │\n" +
-				"└──────────┴─────────┴──────────┴──────────┴──────────┴─────────┘\n",
-			expectError: false,
+			expectedOutput: styling.StripANSI(
+				"Natures affect the growth of a Pokémon.\n" +
+					"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
+					"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
+					"Nature Chart:\n" +
+					"┌──────────┬─────────┬──────────┬──────────┬──────────┬─────────┐\n" +
+					"│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ Speed   │\n" +
+					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+					"│ +Attack  │ Hardy   │ Lonely   │ Adamant  │ Naughty  │ Brave   │\n" +
+					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+					"│ +Defense │ Bold    │ Docile   │ Impish   │ Lax      │ Relaxed │\n" +
+					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+					"│ +Sp. Atk │ Modest  │ Mild     │ Bashful  │ Rash     │ Quiet   │\n" +
+					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+					"│ +Sp. Def │ Calm    │ Gentle   │ Careful  │ Quirky   │ Sassy   │\n" +
+					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+					"│ Speed    │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │\n" +
+					"└──────────┴─────────┴──────────┴──────────┴──────────┴─────────┘\n"),
+			expectedError: false,
 		},
 	}
 
@@ -94,7 +97,7 @@ func TestNaturesCommand(t *testing.T) {
 				defer func() {
 					// Recover from os.Exit calls
 					if r := recover(); r != nil {
-						if !tt.expectError {
+						if !tt.expectedError {
 							t.Fatalf("Unexpected error: %v", r)
 						}
 					}
@@ -102,8 +105,10 @@ func TestNaturesCommand(t *testing.T) {
 				NaturesCommand()
 			})
 
+			cleanOutput := styling.StripANSI(output)
+
 			// Check output
-			if !strings.Contains(output, tt.expectedOutput) {
+			if !strings.Contains(cleanOutput, tt.expectedOutput) {
 				t.Errorf("Output mismatch.\nExpected to contain:\n%s\nGot:\n%s", tt.expectedOutput, output)
 			}
 		})

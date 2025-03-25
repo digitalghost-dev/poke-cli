@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"flag"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -56,11 +57,17 @@ func TestValidateAbilityArgs(t *testing.T) {
 		{"poke-cli", "ability", "strong-jaw", "all", "pokemon"},
 	}
 
-	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidateAbilityArgs(input)
-		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
 	}
 }
 
@@ -127,11 +134,17 @@ func TestValidatePokemonArgs(t *testing.T) {
 		{"poke-cli", "pokemon", "hypno", "--abilities", "-s", "--types", "--image=sm", "-m"},
 	}
 
-	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidatePokemonArgs(input)
-		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
 	}
 }
 
@@ -160,11 +173,17 @@ func TestValidateSearchArgs(t *testing.T) {
 		{"poke-cli", "search", "pokemon", "meowscarada"},
 	}
 
-	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateTypesArgs(input)
-		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+		err := ValidateSearchArgs(input)
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
 	}
 }
 
@@ -196,10 +215,16 @@ func TestValidateTypesArgs(t *testing.T) {
 		{"poke-cli", "types", "rock", "pokemon"},
 	}
 
-	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidateTypesArgs(input)
-		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
 	}
 }

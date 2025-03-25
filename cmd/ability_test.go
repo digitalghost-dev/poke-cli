@@ -103,7 +103,9 @@ func TestAbilityCommand(t *testing.T) {
 				AbilityCommand()
 			})
 
-			if !strings.Contains(output, tt.expectedOutput) {
+			cleanOutput := styling.StripANSI(output)
+
+			if !strings.Contains(cleanOutput, tt.expectedOutput) {
 				t.Errorf("Output mismatch. Expected to contain:\n%s\nGot:\n%s", tt.expectedOutput, output)
 			}
 		})
