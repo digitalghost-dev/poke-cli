@@ -26,10 +26,14 @@ func SearchCommand() {
 		fmt.Println(helpMessage)
 	}
 
-	// Parse CLI flags first
 	flag.Parse()
 
-	// Validate arguments before doing anything else
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		flag.Usage()
+		return
+	}
+
+	// Validate arguments before launching TUI
 	if err := cmd.ValidateSearchArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
