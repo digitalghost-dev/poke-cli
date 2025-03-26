@@ -46,7 +46,6 @@ var apiCall = connections.ApiCallSetup // set as a var for testability
 
 // Search returns resources list, filtered by resources term.
 func query(endpoint string, search string) (result Resource, err error) {
-
 	url := connections.APIURL + endpoint + "/?offset=0&limit=9999"
 	err = apiCall(url, &result, false)
 	if err != nil {

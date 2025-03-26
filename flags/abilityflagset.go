@@ -30,9 +30,9 @@ func SetupAbilityFlagSet() (*flag.FlagSet, *bool, *bool) {
 func PokemonFlag(endpoint string, abilityName string) error {
 	abilitiesStruct, _, _ := connections.AbilityApiCall(endpoint, abilityName, "https://pokeapi.co/api/v2/")
 
-	capitalizedEffect := cases.Title(language.English).String(strings.Replace(abilityName, "-", " ", -1))
+	capitalizedEffect := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
 
-	fmt.Printf("\n%s\n\n", styling.StyleUnderline.Render(fmt.Sprintf("Pokemon with %s", capitalizedEffect)))
+	fmt.Printf("\n%s\n\n", styling.StyleUnderline.Render("Pokemon with", capitalizedEffect))
 
 	// Extract Pokémon names and capitalize them
 	var pokemonNames []string

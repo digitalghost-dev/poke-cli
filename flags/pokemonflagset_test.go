@@ -2,9 +2,9 @@ package flags
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"os"
 	"reflect"
 	"strings"
@@ -63,8 +63,7 @@ func TestAbilitiesFlag(t *testing.T) {
 		t.Fatalf("Failed to read from pipe: %v", readErr)
 	}
 
-	// Assert no errors occurred during execution
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Define the expected output based on the API response
 	expectedOutput := `─────────
@@ -100,8 +99,7 @@ func TestImageFlag(t *testing.T) {
 		t.Fatalf("Failed to read from pipe: %v", readErr)
 	}
 
-	// Assert no errors occurred during execution
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Validate that the output contains some expected patterns
 	actualOutput := styling.StripANSI(output.String())
@@ -123,9 +121,9 @@ func TestImageFlagOptions(t *testing.T) {
 
 	// Test valid options
 	for _, option := range validOptions {
-		t.Run(fmt.Sprintf("ValidOption_%s", option), func(t *testing.T) {
+		t.Run("ValidOption_"+option, func(t *testing.T) {
 			err := ImageFlag("pokemon", "bulbasaur", option)
-			assert.NoError(t, err, fmt.Sprintf("ImageFlag should not return an error for valid option '%s'", option))
+			assert.NoError(t, err, "ImageFlag should not return an error for valid option '%s'", option)
 		})
 	}
 
@@ -134,9 +132,9 @@ func TestImageFlagOptions(t *testing.T) {
 
 	// Test invalid options
 	for _, option := range invalidOptions {
-		t.Run(fmt.Sprintf("InvalidOption_%s", option), func(t *testing.T) {
+		t.Run("InvalidOption_"+option, func(t *testing.T) {
 			err := ImageFlag("pokemon", "bulbasaur", option)
-			assert.Error(t, err, fmt.Sprintf("ImageFlag should return an error for invalid option '%s'", option))
+			assert.Error(t, err, "ImageFlag should return an error for invalid option '%s'", option)
 		})
 	}
 }
@@ -162,8 +160,7 @@ func TestStatsFlag(t *testing.T) {
 		t.Fatalf("Failed to read from pipe: %v", readErr)
 	}
 
-	// Assert no errors occurred
-	assert.NoError(t, err, "StatsFlag should not return an error for a valid Pokémon")
+	require.NoError(t, err, "StatsFlag should not return an error for a valid Pokémon")
 
 	// Define expected output components
 	expectedOutput := `──────────
@@ -181,7 +178,6 @@ Total      318
 	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the stats flag")
-
 }
 
 func TestTypesFlag(t *testing.T) {
@@ -206,7 +202,7 @@ func TestTypesFlag(t *testing.T) {
 	}
 
 	// Assert no errors occurred
-	assert.NoError(t, err, "TypesFlag should not return an error for a valid Pokémon")
+	require.NoError(t, err, "TypesFlag should not return an error for a valid Pokémon")
 
 	// Define expected output components
 	expectedOutput := `──────

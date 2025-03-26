@@ -10,7 +10,6 @@ import (
 )
 
 func NaturesCommand() {
-
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about all natures.\n\n",

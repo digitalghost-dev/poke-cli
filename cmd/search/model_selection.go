@@ -50,5 +50,5 @@ func checkbox(label string, checked bool) string {
 	if checked {
 		return styling.CheckboxStyle.Render("> " + label)
 	}
-	return fmt.Sprintf("%s", label)
+	return label
 }

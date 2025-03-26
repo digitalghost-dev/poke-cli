@@ -3,9 +3,7 @@ package search
 import (
 	"testing"
 	"time"
-	_ "time"
 
-	_ "github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/x/exp/teatest"
 )

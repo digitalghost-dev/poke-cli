@@ -114,7 +114,6 @@ func ValidatePokemonArgs(args []string) error {
 
 // ValidateSearchArgs validates the command line arguments
 func ValidateSearchArgs(args []string) error {
-
 	if len(args) > 3 {
 		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
 		return fmt.Errorf("%s", errMessage)

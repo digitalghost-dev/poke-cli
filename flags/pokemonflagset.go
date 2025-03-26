@@ -76,7 +76,7 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 			"as":  true,
 		}
 
-		name = strings.Replace(name, "-", " ", -1)
+		name = strings.ReplaceAll(name, "-", " ")
 		words := strings.Split(name, " ")
 		titleCaser := cases.Title(language.English)
 
@@ -93,11 +93,11 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 
 	for _, pokeAbility := range pokemonStruct.Abilities {
 		formattedName := formatAbilityName(pokeAbility.Ability.Name)
-		if pokeAbility.Slot == 1 {
+
+		switch pokeAbility.Slot {
+		case 1, 2:
 			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, formattedName)
-		} else if pokeAbility.Slot == 2 {
-			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, formattedName)
-		} else {
+		default:
 			fmt.Printf("Hidden Ability: %s\n", formattedName)
 		}
 	}

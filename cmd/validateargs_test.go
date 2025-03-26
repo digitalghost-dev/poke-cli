@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -39,7 +40,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidateAbilityArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -49,7 +50,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidateAbilityArgs(input)
-		assert.Error(t, err, "Expected error for invalid input")
+		require.Error(t, err, "Expected error for invalid input")
 	}
 
 	// Testing too many arguments
@@ -80,7 +81,7 @@ func TestValidateNaturesArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidateNaturesArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -111,7 +112,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidatePokemonArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -126,7 +127,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidatePokemonArgs(input)
-		assert.Error(t, err, "Expected error for invalid input")
+		require.Error(t, err, "Expected error for invalid input")
 	}
 
 	// Testing too many arguments
@@ -157,7 +158,7 @@ func TestValidateSearchArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidateSearchArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	invalidInputs := [][]string{
@@ -166,7 +167,7 @@ func TestValidateSearchArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidateSearchArgs(input)
-		assert.Error(t, err, "Expected error for invalid input")
+		require.Error(t, err, "Expected error for invalid input")
 	}
 
 	tooManyArgs := [][]string{
@@ -197,7 +198,7 @@ func TestValidateTypesArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidateTypesArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -207,7 +208,7 @@ func TestValidateTypesArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidateTypesArgs(input)
-		assert.Error(t, err, "Expected error for invalid input")
+		require.Error(t, err, "Expected error for invalid input")
 	}
 
 	// Testing too many arguments

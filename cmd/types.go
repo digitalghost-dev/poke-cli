@@ -56,7 +56,6 @@ func (m model) View() string {
 
 // Function to display type details after a type is selected
 func displayTypeDetails(typesName string, endpoint string) {
-
 	// Setting up variables to style the list
 	var columnWidth = 11
 	var subtle = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
@@ -185,7 +184,6 @@ func tableGeneration(endpoint string) table.Model {
 }
 
 func TypesCommand() {
-
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific typing.\n\n",

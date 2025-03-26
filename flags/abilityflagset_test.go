@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"os"
 	"reflect"
 	"strings"
@@ -50,7 +51,7 @@ func TestPokemonFlag(t *testing.T) {
 		t.Fatalf("Failed to read from pipe: %v", readErr)
 	}
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	expectedOutput := styling.StripANSI(fmt.Sprintf(
 		"Pokemon with Stench\n\n"+

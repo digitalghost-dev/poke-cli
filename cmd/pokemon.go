@@ -15,7 +15,6 @@ import (
 
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
-
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
 	flag.Usage = func() {
@@ -78,7 +77,7 @@ func PokemonCommand() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	capitalizedString := cases.Title(language.English).String(strings.Replace(pokemonName, "-", " ", -1))
+	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
 
 	// Weight calculation
 	weightKilograms := float64(pokemonWeight) / 10
