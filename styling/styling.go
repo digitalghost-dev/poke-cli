@@ -12,8 +12,8 @@ var (
 	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
 	Gray          = lipgloss.Color("#777777")
 	ColoredBullet = lipgloss.NewStyle().
-		SetString("•").
-		Foreground(lipgloss.Color("#FFCC00"))
+			SetString("•").
+			Foreground(lipgloss.Color("#FFCC00"))
 	CheckboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFCC00"))
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
 
@@ -21,15 +21,15 @@ var (
 	StyleItalic    = lipgloss.NewStyle().Italic(true)
 	StyleUnderline = lipgloss.NewStyle().Underline(true)
 	HelpBorder     = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00"))
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FFCC00"))
 	ErrorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	ErrorBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#F2055C"))
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#F2055C"))
 	TypesTableBorder = lipgloss.NewStyle().
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00"))
+				BorderStyle(lipgloss.NormalBorder()).
+				BorderForeground(lipgloss.Color("#FFCC00"))
 	ColorMap = map[string]string{
 		"normal":   "#B7B7A9",
 		"fire":     "#FF4422",
