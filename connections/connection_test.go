@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,7 +18,7 @@ func TestApiCallSetup(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode(expectedData)
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 	}))
 	defer ts.Close()
 
@@ -25,9 +26,36 @@ func TestApiCallSetup(t *testing.T) {
 
 	// Call ApiCallSetup with skipHTTPSCheck set to true
 	err := ApiCallSetup(ts.URL, &target, true)
-	assert.Nil(t, err, "Expected no error for skipHTTPSCheck")
+	require.NoError(t, err, "Expected no error for skipHTTPSCheck")
 
 	assert.Equal(t, expectedData, target, "Expected data does not match the response")
+
+	t.Run("invalid URL", func(t *testing.T) {
+		var target map[string]string
+		err := ApiCallSetup(":", &target, true)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid URL")
+	})
+
+	t.Run("GET request fails", func(t *testing.T) {
+		var target map[string]string
+		err := ApiCallSetup("https://nonexistent.example.com", &target, true)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "error making GET request")
+	})
+
+	t.Run("invalid JSON response", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, err := w.Write([]byte("not-json"))
+			assert.NoError(t, err)
+		}))
+		defer ts.Close()
+
+		var target map[string]string
+		err := ApiCallSetup(ts.URL, &target, true)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "error unmarshalling JSON")
+	})
 }
 
 func TestAbilityApiCall(t *testing.T) {
@@ -38,7 +66,7 @@ func TestAbilityApiCall(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode(expectedAbility)
-		assert.Nil(t, err, "Expected no error for skipHTTPSCheck")
+		assert.NoError(t, err, "Expected no error for skipHTTPSCheck")
 	}))
 	defer ts.Close()
 
@@ -70,7 +98,7 @@ func TestPokemonApiCall(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode(expectedPokemon)
-		assert.Nil(t, err, "Expected no error for skipHTTPSCheck")
+		assert.NoError(t, err, "Expected no error for skipHTTPSCheck")
 	}))
 	defer ts.Close()
 
@@ -106,7 +134,7 @@ func TestTypesApiCall(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err := json.NewEncoder(w).Encode(expectedTypes)
-		assert.Nil(t, err, "Expected no error for skipHTTPSCheck")
+		assert.NoError(t, err, "Expected no error for skipHTTPSCheck")
 	}))
 	defer ts.Close()
 

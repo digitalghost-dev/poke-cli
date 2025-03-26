@@ -3,7 +3,6 @@ package cmd
 import (
 	"flag"
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -16,7 +15,6 @@ import (
 
 // PokemonCommand processes the Pokémon command
 func PokemonCommand() {
-
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
 	flag.Usage = func() {
@@ -74,12 +72,12 @@ func PokemonCommand() {
 		os.Exit(1)
 	}
 
-	_, pokemonName, pokemonID, pokemonWeight, pokemonHeight, err := connections.PokemonApiCall(endpoint, pokemonName, "https://pokeapi.co/api/v2/")
+	_, pokemonName, pokemonID, pokemonWeight, pokemonHeight, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	capitalizedString := cases.Title(language.English).String(strings.Replace(pokemonName, "-", " ", -1))
+	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
 
 	// Weight calculation
 	weightKilograms := float64(pokemonWeight) / 10
@@ -97,13 +95,9 @@ func PokemonCommand() {
 		inches = 0
 	}
 
-	coloredBullet := lipgloss.NewStyle().
-		SetString("•").
-		Foreground(lipgloss.Color("#FFCC00"))
-
 	fmt.Printf(
 		"Your selected Pokémon: %s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
-		capitalizedString, coloredBullet, pokemonID, coloredBullet, weightKilograms, weightPounds, coloredBullet, heightFeet, feet, inches,
+		capitalizedString, styling.ColoredBullet, pokemonID, styling.ColoredBullet, weightKilograms, weightPounds, styling.ColoredBullet, heightFeet, feet, inches,
 	)
 
 	if *imageFlag != "" || *shortImageFlag != "" {

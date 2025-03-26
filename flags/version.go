@@ -71,12 +71,7 @@ func latestRelease(githubAPIURL string) {
 		fmt.Println("Error fetching data:", err)
 		return
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("Error closing body:", err)
-		}
-	}(response.Body)
+	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {

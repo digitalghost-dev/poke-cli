@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"flag"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -38,7 +40,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidateAbilityArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -48,7 +50,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidateAbilityArgs(input)
-		assert.Error(t, err, "Expected error for invalid input")
+		require.Error(t, err, "Expected error for invalid input")
 	}
 
 	// Testing too many arguments
@@ -56,11 +58,17 @@ func TestValidateAbilityArgs(t *testing.T) {
 		{"poke-cli", "ability", "strong-jaw", "all", "pokemon"},
 	}
 
-	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidateAbilityArgs(input)
-		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
 	}
 }
 
@@ -73,7 +81,7 @@ func TestValidateNaturesArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidateNaturesArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -104,7 +112,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidatePokemonArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -119,7 +127,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidatePokemonArgs(input)
-		assert.Error(t, err, "Expected error for invalid input")
+		require.Error(t, err, "Expected error for invalid input")
 	}
 
 	// Testing too many arguments
@@ -127,11 +135,56 @@ func TestValidatePokemonArgs(t *testing.T) {
 		{"poke-cli", "pokemon", "hypno", "--abilities", "-s", "--types", "--image=sm", "-m"},
 	}
 
-	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidatePokemonArgs(input)
-		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
+	}
+}
+
+// TestValidateSearchArgs tests the ValidateSearchArgs function
+func TestValidateSearchArgs(t *testing.T) {
+	validInputs := [][]string{
+		{"poke-cli", "search"},
+		{"poke-cli", "search", "--help"},
+	}
+
+	for _, input := range validInputs {
+		err := ValidateSearchArgs(input)
+		require.NoError(t, err, "Expected no error for valid input")
+	}
+
+	invalidInputs := [][]string{
+		{"poke-cli", "search", "pokemon"},
+	}
+
+	for _, input := range invalidInputs {
+		err := ValidateSearchArgs(input)
+		require.Error(t, err, "Expected error for invalid input")
+	}
+
+	tooManyArgs := [][]string{
+		{"poke-cli", "search", "pokemon", "meowscarada"},
+	}
+
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
+
+	for _, input := range tooManyArgs {
+		err := ValidateSearchArgs(input)
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
 	}
 }
 
@@ -145,7 +198,7 @@ func TestValidateTypesArgs(t *testing.T) {
 
 	for _, input := range validInputs {
 		err := ValidateTypesArgs(input)
-		assert.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "Expected no error for valid input")
 	}
 
 	// Testing invalid arguments
@@ -155,7 +208,7 @@ func TestValidateTypesArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidateTypesArgs(input)
-		assert.Error(t, err, "Expected error for invalid input")
+		require.Error(t, err, "Expected error for invalid input")
 	}
 
 	// Testing too many arguments
@@ -163,10 +216,16 @@ func TestValidateTypesArgs(t *testing.T) {
 		{"poke-cli", "types", "rock", "pokemon"},
 	}
 
-	expectedError := "╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯"
+	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidateTypesArgs(input)
-		assert.EqualError(t, err, expectedError, "Unexpected error message for invalid input")
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
 	}
 }

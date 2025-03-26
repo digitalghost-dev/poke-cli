@@ -13,7 +13,6 @@ import (
 )
 
 func AbilityCommand() {
-
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific ability.\n\n",
@@ -52,7 +51,7 @@ func AbilityCommand() {
 		}
 	}
 
-	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, "https://pokeapi.co/api/v2/")
+	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
 	if err != nil {
 		fmt.Println(err)
 		if os.Getenv("GO_TESTING") != "1" {
@@ -78,7 +77,7 @@ func AbilityCommand() {
 		}
 	}
 
-	capitalizedAbility := cases.Title(language.English).String(strings.Replace(abilityName, "-", " ", -1))
+	capitalizedAbility := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
 	fmt.Println(styling.StyleBold.Render(capitalizedAbility))
 
 	// API is missing some data for the short_effect for abilities from Generation 9.

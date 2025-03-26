@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -26,7 +27,7 @@ func TestValidateTypesArgs_TooManyArgs(t *testing.T) {
 
 	for _, input := range invalidInputs {
 		err := ValidateTypesArgs(input)
-		assert.Error(t, err, "Expected error for too many arguments")
+		require.Error(t, err, "Expected error for too many arguments")
 		assert.NotEqual(t, expectedError, err.Error())
 	}
 }
@@ -38,14 +39,6 @@ func TestModelInit(t *testing.T) {
 	assert.Nil(t, result, "Expected Init() to return nil")
 }
 
-func TestModelView_SelectedOption(t *testing.T) {
-	m := model{selectedOption: "someOption"}
-
-	output := m.View()
-
-	assert.Equal(t, "", output, "Expected output to be an empty string when selectedOption is set")
-}
-
 func TestModelView_DisplayTable(t *testing.T) {
 	m := model{selectedOption: ""}
 
@@ -53,7 +46,7 @@ func TestModelView_DisplayTable(t *testing.T) {
 	expectedOutput := "Select a type!\n" +
 		styling.TypesTableBorder.Render(m.table.View()) +
 		"\n" +
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit) • enter (select)")
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)")
 
 	output := m.View()
 
