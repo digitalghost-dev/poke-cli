@@ -20,6 +20,7 @@ func UpdateInput(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 				m.ShowResults = false
 				m.TextInput.Reset()
 				m.TextInput.Focus()
+				m.WarningMessage = ""
 				return m, textinput.Blink
 			}
 		} else {
@@ -76,14 +77,21 @@ func RenderInput(m Model) (string, string) {
 	}
 
 	if m.ShowResults {
+		// Check if there are any results
+		results := m.SearchResults
+		if strings.TrimSpace(results) == "" {
+			results = lipgloss.NewStyle().
+				Foreground(lipgloss.Color("9")).
+				Render("No results found.")
+		}
+
 		return fmt.Sprintf(
 			"Search Results:\n\n%s\n\n%s",
-			m.SearchResults,
+			results,
 			styling.KeyMenu.Render("Press 'b' to search again\nenter (select) • ctrl+c | esc (quit)"),
 		), endpoint
 	}
 
-	// Warning message rendered if present
 	warning := ""
 	if m.WarningMessage != "" {
 		warning = "\n\n" + lipgloss.NewStyle().
