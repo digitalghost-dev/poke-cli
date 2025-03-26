@@ -29,6 +29,33 @@ func TestApiCallSetup(t *testing.T) {
 	require.NoError(t, err, "Expected no error for skipHTTPSCheck")
 
 	assert.Equal(t, expectedData, target, "Expected data does not match the response")
+
+	t.Run("invalid URL", func(t *testing.T) {
+		var target map[string]string
+		err := ApiCallSetup(":", &target, true)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid URL")
+	})
+
+	t.Run("GET request fails", func(t *testing.T) {
+		var target map[string]string
+		err := ApiCallSetup("https://nonexistent.example.com", &target, true)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "error making GET request")
+	})
+
+	t.Run("invalid JSON response", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, err := w.Write([]byte("not-json"))
+			assert.NoError(t, err)
+		}))
+		defer ts.Close()
+
+		var target map[string]string
+		err := ApiCallSetup(ts.URL, &target, true)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "error unmarshalling JSON")
+	})
 }
 
 func TestAbilityApiCall(t *testing.T) {
