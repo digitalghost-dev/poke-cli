@@ -23,7 +23,7 @@ View future plans in the [Roadmap](#roadmap) section.
 
 ---
 ## Demo
-![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v0.12.0.gif)
+![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.1.0.gif)
 
 ---
 ## Installation
