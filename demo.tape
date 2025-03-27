@@ -122,3 +122,33 @@ Type "poke-cli ability stench --pokemon"
 Enter
 
 Sleep 6s
+
+Type clear
+
+Enter
+
+Type "poke-cli search"
+
+Sleep 2s
+
+Enter
+
+Sleep 2s
+
+Down@1s 1
+
+Sleep 2s
+
+Enter
+
+Sleep 1s
+
+Type@1s "^ar"
+
+Sleep 2s
+
+Enter
+
+Sleep 4s
+
+Type esc
