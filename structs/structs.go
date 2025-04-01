@@ -1,5 +1,6 @@
 package structs
 
+// AbilityJSONStruct ability endpoint from API
 type AbilityJSONStruct struct {
 	Name          string `json:"name"`
 	EffectEntries []struct {
@@ -34,6 +35,33 @@ type AbilityJSONStruct struct {
 	} `json:"pokemon"`
 }
 
+// MoveJSONStruct move endpoint from API
+type MoveJSONStruct struct {
+	Name         string `json:"name"`
+	ID           int    `json:"id"`
+	Accuracy     int    `json:"accuracy"`
+	EffectChance int    `json:"effect_chance"`
+	PowerPoints  int    `json:"pp"`
+	Priority     int    `json:"priority"`
+	Power        int    `json:"power"`
+	DamageClass  struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	}
+	EffectEntries []struct {
+		Effect   string `json:"effect"`
+		Language struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		}
+	}
+	Type struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	}
+}
+
+// PokemonJSONStruct pokemon endpoint from API
 type PokemonJSONStruct struct {
 	Name      string `json:"name"`
 	ID        int    `json:"id"`
@@ -65,6 +93,7 @@ type PokemonJSONStruct struct {
 	} `json:"stats"`
 }
 
+// TypesJSONStruct type endpoint from API
 type TypesJSONStruct struct {
 	Name  string `json:"name"`
 	ID    int    `json:"id"`
