@@ -47,18 +47,18 @@ type MoveJSONStruct struct {
 	DamageClass  struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
-	}
+	} `json:"damage_class"`
 	EffectEntries []struct {
 		Effect   string `json:"effect"`
 		Language struct {
 			Name string `json:"name"`
 			URL  string `json:"url"`
-		}
-	}
+		} `json:"language"`
+	} `json:"effect_entries"`
 	Type struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
-	}
+	} `json:"type"`
 }
 
 // PokemonJSONStruct pokemon endpoint from API
