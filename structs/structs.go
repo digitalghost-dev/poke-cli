@@ -55,6 +55,17 @@ type MoveJSONStruct struct {
 			URL  string `json:"url"`
 		} `json:"language"`
 	} `json:"effect_entries"`
+	FlavorTextEntries []struct {
+		FlavorText string `json:"flavor_text"`
+		Language   struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		VersionGroup struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version_group"`
+	} `json:"flavor_text_entries"`
 	Type struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
