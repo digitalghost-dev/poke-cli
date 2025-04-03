@@ -3,12 +3,14 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -60,18 +62,45 @@ func MoveCommand() {
 	}
 
 	// Extract English effect_entries
-	var englishEffectEntry string
-	for _, entry := range moveStruct.EffectEntries {
-		if entry.Language.Name == "en" {
-			englishEffectEntry = entry.Effect
-			break
-		}
+	//var englishEffectEntry string
+	//for _, entry := range moveStruct.EffectEntries {
+	//	if entry.Language.Name == "en" {
+	//		englishEffectEntry = entry.Effect
+	//		break
+	//	}
+	//}
+
+	capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
+
+	docStyle := lipgloss.NewStyle().
+		Padding(1, 2).
+		BorderStyle(lipgloss.ThickBorder()).
+		BorderForeground(lipgloss.Color(styling.GetTypeColor(moveStruct.Type.Name)))
+
+	headerStyle := lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color(styling.GetTypeColor(moveStruct.Type.Name))).
+		Align(lipgloss.Center).
+		Width(30).
+		PaddingBottom(1)
+
+	labelStyle := lipgloss.NewStyle().Bold(true).Width(15)
+	valueStyle := lipgloss.NewStyle().Faint(true)
+
+	header := headerStyle.Render(capitalizedMove)
+
+	infoRows := []string{
+		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Power"), "|", valueStyle.Render(strconv.Itoa(moveStruct.Power))),
+		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("PP"), "|", valueStyle.Render(strconv.Itoa(moveStruct.PowerPoints))),
+		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Accuracy"), "|", valueStyle.Render(strconv.Itoa(moveStruct.Accuracy))),
+		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Category"), "|", valueStyle.Render(cases.Title(language.English).String(moveStruct.DamageClass.Name))),
+		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Effect Chance"), "|", valueStyle.Render(fmt.Sprintf("%d%%", moveStruct.EffectChance))),
+		lipgloss.JoinHorizontal(lipgloss.Top, labelStyle.Render("Priority"), "|", valueStyle.Render(strconv.Itoa(moveStruct.Priority))),
 	}
 
-	capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "_", " "))
-	fmt.Println(styling.StyleBold.Render(capitalizedMove))
+	infoBlock := lipgloss.JoinVertical(lipgloss.Left, infoRows...)
 
-	fmt.Println(englishEffectEntry)
-	fmt.Println(moveStruct.Type.Name)
-	fmt.Println(moveStruct.Power)
+	fullDoc := lipgloss.JoinVertical(lipgloss.Top, header, infoBlock)
+
+	fmt.Println(docStyle.Render(fullDoc))
 }
