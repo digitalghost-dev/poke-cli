@@ -27,7 +27,7 @@ func SetupAbilityFlagSet() (*flag.FlagSet, *bool, *bool) {
 	return abilityFlags, pokemonFlag, shortPokemonFlag
 }
 
-func PokemonFlag(endpoint string, abilityName string) error {
+func PokemonAbiltiesFlag(endpoint string, abilityName string) error {
 	abilitiesStruct, _, _ := connections.AbilityApiCall(endpoint, abilityName, "https://pokeapi.co/api/v2/")
 
 	capitalizedEffect := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
