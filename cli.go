@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/cmd"
+	"github.com/digitalghost-dev/poke-cli/cmd/move"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -58,6 +59,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "-v, --version", "Prints the current version"),
 			"\n\n", styling.StyleBold.Render("COMMANDS:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
+			fmt.Sprintf("\n\t%-15s %s", "move", "Get details about a move"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
@@ -87,6 +89,7 @@ func runCLI(args []string) int {
 
 	commands := map[string]func(){
 		"ability": cmd.AbilityCommand,
+		"move":    move.MoveCommand,
 		"natures": cmd.NaturesCommand,
 		"pokemon": cmd.PokemonCommand,
 		"types":   cmd.TypesCommand,
@@ -112,6 +115,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", command)),
 			styling.StyleBold.Render("\nCommands:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
+			fmt.Sprintf("\n\t%-15s %s", "move", "Get details about a move"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
