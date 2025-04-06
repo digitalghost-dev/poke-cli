@@ -51,25 +51,25 @@ func TestAbilityCommand(t *testing.T) {
 		name           string
 		args           []string
 		expectedOutput string
-		expectError    bool
+		expectedError  bool
 	}{
 		{
 			name:           "Help flag",
 			args:           []string{"ability", "-h"},
 			expectedOutput: "Get details about a specific ability.",
-			expectError:    false,
+			expectedError:  false,
 		},
 		{
 			name:           "Valid Execution",
 			args:           []string{"ability", "stench"},
 			expectedOutput: styling.StripANSI("Stench\nEffect: Has a 10% chance of making target Pokémon flinch with each hit.\nGeneration: III"),
-			expectError:    false,
+			expectedError:  false,
 		},
 		{
 			name:           "Valid Execution",
 			args:           []string{"ability", "poison-puppeteer", "--pokemon"},
 			expectedOutput: styling.StripANSI("Poison Puppeteer\nEffect: Pokémon poisoned by Pecharunt's moves will also become confused.\nGeneration: IX\n\nPokemon with Poison Puppeteer\n\n 1. Pecharunt"),
-			expectError:    false,
+			expectedError:  false,
 		},
 		{
 			name: "Valid Execution",
@@ -81,7 +81,7 @@ func TestAbilityCommand(t *testing.T) {
 				1, "Salandit", 2, "Salazzle", 3, "Glimmet",
 				4, "Glimmora", 5, "Salazzle-Totem",
 			)),
-			expectError: false,
+			expectedError: false,
 		},
 	}
 
@@ -95,7 +95,7 @@ func TestAbilityCommand(t *testing.T) {
 			output := captureAbilityOutput(func() {
 				defer func() {
 					if r := recover(); r != nil {
-						if !tt.expectError {
+						if !tt.expectedError {
 							t.Fatalf("Unexpected error: %v", r)
 						}
 					}
