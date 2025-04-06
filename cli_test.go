@@ -110,6 +110,7 @@ func TestRunCLI(t *testing.T) {
 				"│                                                          │\n" +
 				"│ COMMANDS:                                                │\n" +
 				"│    ability         Get details about an ability          │\n" +
+				"│    move            Get details about a move              │\n" +
 				"│    natures         Get details about all natures         │\n" +
 				"│    pokemon         Get details about a Pokémon           │\n" +
 				"│    search          Search for a resource                 │\n" +
@@ -139,6 +140,7 @@ func TestRunCLI(t *testing.T) {
 				"│                                                          │\n" +
 				"│ COMMANDS:                                                │\n" +
 				"│    ability         Get details about an ability          │\n" +
+				"│    move            Get details about a move              │\n" +
 				"│    natures         Get details about all natures         │\n" +
 				"│    pokemon         Get details about a Pokémon           │\n" +
 				"│    search          Search for a resource                 │\n" +
@@ -168,6 +170,7 @@ func TestRunCLI(t *testing.T) {
 				"│                                                          │\n" +
 				"│ COMMANDS:                                                │\n" +
 				"│    ability         Get details about an ability          │\n" +
+				"│    move            Get details about a move              │\n" +
 				"│    natures         Get details about all natures         │\n" +
 				"│    pokemon         Get details about a Pokémon           │\n" +
 				"│    search          Search for a resource                 │\n" +
