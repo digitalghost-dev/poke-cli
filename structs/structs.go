@@ -48,13 +48,6 @@ type MoveJSONStruct struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
 	} `json:"damage_class"`
-	EffectEntries []struct {
-		Effect   string `json:"effect"`
-		Language struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"language"`
-	} `json:"effect_entries"`
 	FlavorTextEntries []struct {
 		FlavorText string `json:"flavor_text"`
 		Language   struct {
@@ -66,6 +59,10 @@ type MoveJSONStruct struct {
 			URL  string `json:"url"`
 		} `json:"version_group"`
 	} `json:"flavor_text_entries"`
+	LearnedByPokemon []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"learned_by_pokemon"`
 	Type struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`
