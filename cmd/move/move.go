@@ -24,7 +24,6 @@ func MoveCommand() {
 			fmt.Sprintf("\n\t%-20s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
 			"\n\n",
 			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-20s %s", "-d, --details", "List a more descriptive move entry."),
 			fmt.Sprintf("\n\t%-20s %s", "-h, --help", "Prints the help menu."),
 		)
 		fmt.Println(helpMessage)
@@ -55,7 +54,6 @@ func MoveCommand() {
 }
 
 func moveInfoContainer(moveStruct structs.MoveJSONStruct, moveName string) {
-
 	capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
 
 	docStyle := lipgloss.NewStyle().
