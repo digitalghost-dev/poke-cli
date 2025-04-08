@@ -66,6 +66,24 @@ func AbilityApiCall(endpoint string, abilityName string, baseURL string) (struct
 	return abilityStruct, abilityStruct.Name, nil
 }
 
+// MoveApiCall function for calling the move endpoint of the pokeAPI
+func MoveApiCall(endpoint string, moveName string, baseURL string) (structs.MoveJSONStruct, string, error) {
+	fullURL := baseURL + endpoint + "/" + moveName
+
+	var moveStruct structs.MoveJSONStruct
+	err := ApiCallSetup(fullURL, &moveStruct, false)
+
+	if err != nil {
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!"),
+			"\nMove not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
+		)
+		return structs.MoveJSONStruct{}, "", fmt.Errorf("%s", errMessage)
+	}
+
+	return moveStruct, moveName, nil
+}
+
 // PokemonApiCall function for calling the pokemon endpoint of the pokeAPI
 func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (structs.PokemonJSONStruct, string, int, int, int, error) {
 	fullURL := baseURL + endpoint + "/" + pokemonName
