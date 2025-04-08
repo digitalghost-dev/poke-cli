@@ -34,6 +34,23 @@ func ValidateAbilityArgs(args []string) error {
 	return nil
 }
 
+// ValidateMoveArgs validates the command line arguments
+func ValidateMoveArgs(args []string) error {
+	handleHelpFlag(args)
+
+	if len(args) > 4 {
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	if len(args) == 2 {
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify a move")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	return nil
+}
+
 // ValidateNaturesArgs validates the command line arguments
 func ValidateNaturesArgs(args []string) error {
 	handleHelpFlag(args)
