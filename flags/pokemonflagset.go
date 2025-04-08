@@ -62,8 +62,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 }
 
 func AbilitiesFlag(endpoint string, pokemonName string) error {
-	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
 	header("Abilities")
 

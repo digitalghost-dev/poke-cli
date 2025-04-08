@@ -1,5 +1,6 @@
 package structs
 
+// AbilityJSONStruct ability endpoint from API
 type AbilityJSONStruct struct {
 	Name          string `json:"name"`
 	EffectEntries []struct {
@@ -34,6 +35,41 @@ type AbilityJSONStruct struct {
 	} `json:"pokemon"`
 }
 
+// MoveJSONStruct move endpoint from API
+type MoveJSONStruct struct {
+	Name         string `json:"name"`
+	ID           int    `json:"id"`
+	Accuracy     int    `json:"accuracy"`
+	EffectChance int    `json:"effect_chance"`
+	PowerPoints  int    `json:"pp"`
+	Priority     int    `json:"priority"`
+	Power        int    `json:"power"`
+	DamageClass  struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"damage_class"`
+	FlavorTextEntries []struct {
+		FlavorText string `json:"flavor_text"`
+		Language   struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		VersionGroup struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version_group"`
+	} `json:"flavor_text_entries"`
+	LearnedByPokemon []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"learned_by_pokemon"`
+	Type struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"type"`
+}
+
+// PokemonJSONStruct pokemon endpoint from API
 type PokemonJSONStruct struct {
 	Name      string `json:"name"`
 	ID        int    `json:"id"`
@@ -65,6 +101,7 @@ type PokemonJSONStruct struct {
 	} `json:"stats"`
 }
 
+// TypesJSONStruct type endpoint from API
 type TypesJSONStruct struct {
 	Name  string `json:"name"`
 	ID    int    `json:"id"`

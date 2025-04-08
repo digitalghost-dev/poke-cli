@@ -14,8 +14,8 @@ func UpdateSelection(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "down":
 			m.Choice++
-			if m.Choice > 1 {
-				m.Choice = 1
+			if m.Choice > 2 {
+				m.Choice = 2
 			}
 		case "up":
 			m.Choice--
@@ -36,9 +36,10 @@ func RenderSelection(m Model) string {
 	c := m.Choice
 	greeting := styling.StyleItalic.Render("Search for a resource and return a matching selection table")
 	choices := fmt.Sprintf(
-		"%s\n%s",
-		checkbox("Pokémon", c == 0),
-		checkbox("Ability", c == 1),
+		"%s\n%s\n%s",
+		checkbox("Ability", c == 0),
+		checkbox("Move", c == 1),
+		checkbox("Pokémon", c == 2),
 	)
 	help := styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)")
 

@@ -67,10 +67,13 @@ func RenderInput(m Model) (string, string) {
 
 	switch m.Choice {
 	case 0:
-		msg = "Enter a Pokémon name:"
-		endpoint = "pokemon"
-	case 1:
 		msg = "Enter an Ability name:"
+		endpoint = "ability"
+	case 1:
+		msg = "Enter a Move name:"
+		endpoint = "move"
+	case 2:
+		msg = "Enter a Pokémon name:"
 		endpoint = "ability"
 	default:
 		msg = "Enter your search query:"

@@ -1,4 +1,4 @@
-package cmd
+package move
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func captureAbilityOutput(f func()) string {
+func captureMoveOutput(f func()) string {
 	r, w, _ := os.Pipe()
 	defer func(r *os.File) {
 		err := r.Close()
@@ -35,10 +35,10 @@ func captureAbilityOutput(f func()) string {
 	return buf.String()
 }
 
-func TestAbilityCommand(t *testing.T) {
+func TestMoveCommand(t *testing.T) {
 	err := os.Setenv("GO_TESTING", "1")
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 	defer func() {
 		err := os.Unsetenv("GO_TESTING")
@@ -55,33 +55,9 @@ func TestAbilityCommand(t *testing.T) {
 	}{
 		{
 			name:           "Help flag",
-			args:           []string{"ability", "-h"},
-			expectedOutput: "Get details about a specific ability.",
+			args:           []string{"move", "--help"},
+			expectedOutput: "Get details about a specific move.",
 			expectedError:  false,
-		},
-		{
-			name:           "Valid Execution",
-			args:           []string{"ability", "stench"},
-			expectedOutput: styling.StripANSI("Stench\nEffect: Has a 10% chance of making target Pokémon flinch with each hit.\nGeneration: III"),
-			expectedError:  false,
-		},
-		{
-			name:           "Valid Execution",
-			args:           []string{"ability", "poison-puppeteer", "--pokemon"},
-			expectedOutput: styling.StripANSI("Poison Puppeteer\nEffect: Pokémon poisoned by Pecharunt's moves will also become confused.\nGeneration: IX\n\nPokemon with Poison Puppeteer\n\n 1. Pecharunt"),
-			expectedError:  false,
-		},
-		{
-			name: "Valid Execution",
-			args: []string{"ability", "corrosion", "-p"},
-			expectedOutput: styling.StripANSI(fmt.Sprintf(
-				"Corrosion\nEffect: This Pokémon can inflict poison on Poison and Steel Pokémon.\nGeneration: VII\n\nPokemon with Corrosion\n\n"+
-					"%2d. %-30s%2d. %-30s%2d. %-30s\n"+
-					"%2d. %-30s%2d. %-30s",
-				1, "Salandit", 2, "Salazzle", 3, "Glimmet",
-				4, "Glimmora", 5, "Salazzle-Totem",
-			)),
-			expectedError: false,
 		},
 	}
 
@@ -92,7 +68,7 @@ func TestAbilityCommand(t *testing.T) {
 
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 
-			output := captureAbilityOutput(func() {
+			output := captureMoveOutput(func() {
 				defer func() {
 					if r := recover(); r != nil {
 						if !tt.expectedError {
@@ -100,7 +76,7 @@ func TestAbilityCommand(t *testing.T) {
 						}
 					}
 				}()
-				AbilityCommand()
+				MoveCommand()
 			})
 
 			cleanOutput := styling.StripANSI(output)
