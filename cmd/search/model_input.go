@@ -74,7 +74,7 @@ func RenderInput(m Model) (string, string) {
 		endpoint = "move"
 	case 2:
 		msg = "Enter a Pokémon name:"
-		endpoint = "ability"
+		endpoint = "pokemon"
 	default:
 		msg = "Enter your search query:"
 	}

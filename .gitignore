@@ -8,6 +8,7 @@
 *.idea
 .dccache
 dist/
+poke-cli
 
 # Test binary, built with `go test -c`
 *.test
