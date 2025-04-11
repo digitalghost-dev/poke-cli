@@ -127,6 +127,18 @@ Type clear
 
 Enter
 
+Type "poke-cli move eruption"
+
+Sleep 2s
+
+Enter
+
+Sleep 3s
+
+Type clear
+
+Enter
+
 Type "poke-cli search"
 
 Sleep 2s
@@ -135,7 +147,7 @@ Enter
 
 Sleep 2s
 
-Down@1s 1
+Down@1s 2
 
 Sleep 2s
 
@@ -143,7 +155,7 @@ Enter
 
 Sleep 1s
 
-Type@1s "^ar"
+Type@1s "char"
 
 Sleep 2s
 
