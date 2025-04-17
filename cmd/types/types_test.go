@@ -1,6 +1,7 @@
-package cmd
+package types
 
 import (
+	"github.com/digitalghost-dev/poke-cli/cmd"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,7 +15,7 @@ func TestValidateTypesArgs_ValidInput(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateTypesArgs(input)
+		err := cmd.ValidateTypesArgs(input)
 		assert.NoError(t, err, "Expected no error for valid input")
 	}
 }
@@ -26,7 +27,7 @@ func TestValidateTypesArgs_TooManyArgs(t *testing.T) {
 	expectedError := "error, too many arguments\n"
 
 	for _, input := range invalidInputs {
-		err := ValidateTypesArgs(input)
+		err := cmd.ValidateTypesArgs(input)
 		require.Error(t, err, "Expected error for too many arguments")
 		assert.NotEqual(t, expectedError, err.Error())
 	}
