@@ -6,6 +6,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
+	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
@@ -92,7 +93,7 @@ func runCLI(args []string) int {
 		"move":    move.MoveCommand,
 		"natures": cmd.NaturesCommand,
 		"pokemon": cmd.PokemonCommand,
-		"types":   cmd.TypesCommand,
+		"types":   types.TypesCommand,
 		"search":  search.SearchCommand,
 	}
 
