@@ -21,13 +21,9 @@ func NaturesCommand() {
 
 	flag.Parse()
 
-	// Check for help flag
-	for _, arg := range os.Args[1:] {
-		if arg == "-h" || arg == "--help" {
-			flag.Usage()
-			
-			return
-		}
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		flag.Usage()
+		return
 	}
 
 	if err := ValidateNaturesArgs(os.Args); err != nil {
