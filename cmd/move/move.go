@@ -31,6 +31,15 @@ func MoveCommand() {
 
 	flag.Parse()
 
+	// Check for help flag
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		flag.Usage()
+
+		if flag.Lookup("test.v") == nil {
+			os.Exit(0)
+		}
+	}
+
 	if err := cmd.ValidateMoveArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
