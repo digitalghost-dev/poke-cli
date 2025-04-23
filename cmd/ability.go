@@ -33,6 +33,11 @@ func AbilityCommand() {
 
 	flag.Parse()
 
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		flag.Usage()
+		return
+	}
+
 	if err := ValidateAbilityArgs(args); err != nil {
 		fmt.Println(err.Error())
 		if os.Getenv("GO_TESTING") != "1" {
