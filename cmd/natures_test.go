@@ -62,25 +62,23 @@ func TestNaturesCommand(t *testing.T) {
 		{
 			name: "Full Natures output with table",
 			args: []string{"natures"},
-			expectedOutput: `Natures affect the growth of a Pokémon.
-				Each nature increases one of its stats by 10% and decreases one by 10%.
-				Five natures increase and decrease the same stat and therefore have no effect.
-				
-				Nature Chart:
-				┌──────────┬─────────┬──────────┬──────────┬──────────┬─────────┐
-				│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ Speed   │
-				├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
-				│ +Attack  │ Hardy   │ Lonely   │ Adamant  │ Naughty  │ Brave   │
-				├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
-				│ +Defense │ Bold    │ Docile   │ Impish   │ Lax      │ Relaxed │
-				├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
-				│ +Sp. Atk │ Modest  │ Mild     │ Bashful  │ Rash     │ Quiet   │
-				├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
-				│ +Sp. Def │ Calm    │ Gentle   │ Careful  │ Quirky   │ Sassy   │
-				├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
-				│ Speed    │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │
-				└──────────┴─────────┴──────────┴──────────┴──────────┴─────────┘
-				`,
+			expectedOutput: "Natures affect the growth of a Pokémon.\n" +
+				"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
+				"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
+				"Nature Chart:\n" +
+				"┌──────────┬─────────┬──────────┬──────────┬──────────┬─────────┐\n" +
+				"│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ Speed   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Attack  │ Hardy   │ Lonely   │ Adamant  │ Naughty  │ Brave   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Defense │ Bold    │ Docile   │ Impish   │ Lax      │ Relaxed │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Sp. Atk │ Modest  │ Mild     │ Bashful  │ Rash     │ Quiet   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Sp. Def │ Calm    │ Gentle   │ Careful  │ Quirky   │ Sassy   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ Speed    │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │\n" +
+				"└──────────┴─────────┴──────────┴──────────┴──────────┴─────────┘\n",
 			expectedError: false,
 		},
 	}
