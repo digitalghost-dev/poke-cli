@@ -1,30 +1,63 @@
 package cmd
 
 import (
-	"flag"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func TestHandleHelpFlag(t *testing.T) {
-	// Mock flag.Usage to avoid actual printing
-	flag.Usage = func() {}
-
-	// Test cases
+func TestCheckLength(t *testing.T) {
+	// Define test cases
 	tests := []struct {
-		name string
-		args []string
+		name        string
+		args        []string
+		maxLength   int
+		wantErr     bool
+		expectedErr string
 	}{
-		{"Valid short help flag", []string{"cmd", "subcmd", "-h"}},
-		{"Valid long help flag", []string{"cmd", "subcmd", "--help"}},
-		{"Invalid case (no flag)", []string{"cmd", "subcmd"}},
+		{
+			name:        "Valid length - Empty slice",
+			args:        []string{},
+			maxLength:   1,
+			wantErr:     false,
+			expectedErr: "",
+		},
+		{
+			name:        "Valid length - Within limit",
+			args:        []string{"arg1", "arg2"},
+			maxLength:   3,
+			wantErr:     false,
+			expectedErr: "",
+		},
+		{
+			name:        "Valid length - Exactly at limit",
+			args:        []string{"arg1", "arg2", "arg3"},
+			maxLength:   3,
+			wantErr:     false,
+			expectedErr: "",
+		},
+		{
+			name:        "Invalid length - Exceeds limit",
+			args:        []string{"arg1", "arg2", "arg3", "arg4"},
+			maxLength:   3,
+			wantErr:     true,
+			expectedErr: "Too many arguments",
+		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			handleHelpFlag(tc.args)
+	// Run test cases
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := checkLength(tt.args, tt.maxLength)
+
+			// Check if an error was expected
+			if tt.wantErr {
+				require.Error(t, err)
+				assert.Contains(t, styling.StripANSI(err.Error()), tt.expectedErr)
+			} else {
+				assert.NoError(t, err)
+			}
 		})
 	}
 }
@@ -107,7 +140,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 		{"poke-cli", "pokemon", "dodrio", "-a", "-s", "-t"},
 		{"poke-cli", "pokemon", "dragalge", "-a", "-s", "-t", "--image=sm"},
 		{"poke-cli", "pokemon", "squirtle", "-a", "-s"},
-		{"poke-cli", "pokemon", "squirtle", "-s", "-a"},
+		{"poke-cli", "pokemon", "dragapult", "-s", "-a"},
 	}
 
 	for _, input := range validInputs {
@@ -132,7 +165,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 
 	// Testing too many arguments
 	tooManyArgs := [][]string{
-		{"poke-cli", "pokemon", "hypno", "--abilities", "-s", "--types", "--image=sm", "-m"},
+		{"poke-cli", "pokemon", "hypo", "--abilities", "-s", "--types", "--image=sm", "-m"},
 	}
 
 	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
