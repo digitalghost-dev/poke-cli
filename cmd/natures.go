@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+var osExit = os.Exit
+
 func NaturesCommand() {
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
@@ -28,7 +30,8 @@ func NaturesCommand() {
 
 	if err := ValidateNaturesArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
-		os.Exit(1)
+		osExit(1)
+		return
 	}
 
 	fmt.Println("Natures affect the growth of a Pokémon.\n" +
@@ -53,7 +56,7 @@ func NaturesCommand() {
 		Rows(chart...).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			return lipgloss.NewStyle().
-				Padding(0, 1) // This styles the border color
+				Padding(0, 1)
 		})
 
 	fmt.Println(t.Render())
