@@ -20,11 +20,8 @@ func MoveCommand() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific move.\n\n",
 			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("move"), "<move-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-20s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-20s %s", "-h, --help", "Prints the help menu."),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("move"), "<move-name>"),
+			fmt.Sprintf("\n\n%s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
 		)
 		fmt.Println(helpMessage)
 	}
