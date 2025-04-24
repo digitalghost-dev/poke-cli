@@ -2,38 +2,33 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/stretchr/testify/assert"
 	"os"
-	"strings"
 	"testing"
 )
 
-func captureNaturesOutput(f func()) string {
-	// Create a pipe to capture standard output
-	r, w, _ := os.Pipe()
-	defer func(r *os.File) {
-		err := r.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(r)
+var exitCode int
 
-	// Redirect os.Stdout to the write end of the pipe
+func fakeExit(code int) {
+	exitCode = code
+	panic("exit")
+}
+
+func captureNaturesOutput(f func()) string {
+	r, w, _ := os.Pipe()
+	defer func() {
+		_ = r.Close()
+	}()
+
 	oldStdout := os.Stdout
 	os.Stdout = w
 	defer func() { os.Stdout = oldStdout }()
 
-	// Run the function
 	f()
 
-	// Close the write end of the pipe
-	err := w.Close()
-	if err != nil {
-		return ""
-	}
+	_ = w.Close()
 
-	// Read the captured output
 	var buf bytes.Buffer
 	_, _ = buf.ReadFrom(r)
 	return buf.String()
@@ -59,46 +54,56 @@ func TestNaturesCommand(t *testing.T) {
 			expectedError: false,
 		},
 		{
-			name: "Valid Execution",
+			name:           "Invalid extra argument",
+			args:           []string{"natures", "extra"},
+			expectedOutput: styling.StripANSI(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!")+"\nThe only currently available options\nafter <natures> command are '-h' or '--help'")) + "\n",
+			expectedError:  true,
+		},
+		{
+			name: "Full Natures output with table",
 			args: []string{"natures"},
-			expectedOutput: styling.StripANSI(
-				"Natures affect the growth of a Pokémon.\n" +
-					"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
-					"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
-					"Nature Chart:\n" +
-					"┌──────────┬─────────┬──────────┬──────────┬──────────┬─────────┐\n" +
-					"│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ Speed   │\n" +
-					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-					"│ +Attack  │ Hardy   │ Lonely   │ Adamant  │ Naughty  │ Brave   │\n" +
-					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-					"│ +Defense │ Bold    │ Docile   │ Impish   │ Lax      │ Relaxed │\n" +
-					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-					"│ +Sp. Atk │ Modest  │ Mild     │ Bashful  │ Rash     │ Quiet   │\n" +
-					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-					"│ +Sp. Def │ Calm    │ Gentle   │ Careful  │ Quirky   │ Sassy   │\n" +
-					"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
-					"│ Speed    │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │\n" +
-					"└──────────┴─────────┴──────────┴──────────┴──────────┴─────────┘\n"),
+			expectedOutput: "Natures affect the growth of a Pokémon.\n" +
+				"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
+				"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
+				"Nature Chart:\n" +
+				"┌──────────┬─────────┬──────────┬──────────┬──────────┬─────────┐\n" +
+				"│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ Speed   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Attack  │ Hardy   │ Lonely   │ Adamant  │ Naughty  │ Brave   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Defense │ Bold    │ Docile   │ Impish   │ Lax      │ Relaxed │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Sp. Atk │ Modest  │ Mild     │ Bashful  │ Rash     │ Quiet   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ +Sp. Def │ Calm    │ Gentle   │ Careful  │ Quirky   │ Sassy   │\n" +
+				"├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤\n" +
+				"│ Speed    │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │\n" +
+				"└──────────┴─────────┴──────────┴──────────┴──────────┴─────────┘\n",
 			expectedError: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Override osExit
+			oldExit := osExit
+			osExit = fakeExit
+			defer func() { osExit = oldExit }()
+
+			// Reset captured exit code
+			exitCode = 0
+
 			// Save original os.Args
 			originalArgs := os.Args
 			defer func() { os.Args = originalArgs }()
-
-			// Set os.Args for the test
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 
-			// Capture the output
+			// Capture output
 			output := captureNaturesOutput(func() {
 				defer func() {
-					// Recover from os.Exit calls
 					if r := recover(); r != nil {
-						if !tt.expectedError {
-							t.Fatalf("Unexpected error: %v", r)
+						if r != "exit" {
+							t.Fatalf("Unexpected panic: %v", r)
 						}
 					}
 				}()
@@ -107,9 +112,16 @@ func TestNaturesCommand(t *testing.T) {
 
 			cleanOutput := styling.StripANSI(output)
 
-			// Check output
-			if !strings.Contains(cleanOutput, tt.expectedOutput) {
-				t.Errorf("Output mismatch.\nExpected to contain:\n%s\nGot:\n%s", tt.expectedOutput, output)
+			// Logging expected vs actual
+			t.Logf("Expected Output:\n%s", tt.expectedOutput)
+			t.Logf("Actual Output:\n%s", cleanOutput)
+
+			// Assertions
+			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
+			if tt.expectedError {
+				assert.Equal(t, 1, exitCode, "Expected exit code 1 on error")
+			} else {
+				assert.Equal(t, 0, exitCode, "Expected no exit (code 0) on success")
 			}
 		})
 	}

@@ -57,6 +57,11 @@ func PokemonCommand() {
 
 	flag.Parse()
 
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		flag.Usage()
+		return
+	}
+
 	err := ValidatePokemonArgs(args)
 	if err != nil {
 		fmt.Println(err.Error())

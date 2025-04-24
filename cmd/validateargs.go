@@ -1,29 +1,25 @@
 package cmd
 
 import (
-	"flag"
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"os"
 )
 
-func handleHelpFlag(args []string) {
-	if len(args) == 3 && (args[2] == "-h" || args[2] == "--help") {
-		flag.Usage()
-
-		if flag.Lookup("test.v") == nil {
-			os.Exit(0)
-		}
+// checkLength checks if the number of arguments is lower than the max value
+func checkLength(args []string, max int) error {
+	if len(args) > max {
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!") + "\nToo many arguments",
+		)
+		return fmt.Errorf("%s", errMessage)
 	}
+	return nil
 }
 
 // ValidateAbilityArgs validates the command line arguments
 func ValidateAbilityArgs(args []string) error {
-	handleHelpFlag(args)
-
-	if len(args) > 4 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
-		return fmt.Errorf("%s", errMessage)
+	if err := checkLength(args, 4); err != nil {
+		return err
 	}
 
 	if len(args) == 2 {
@@ -36,11 +32,8 @@ func ValidateAbilityArgs(args []string) error {
 
 // ValidateMoveArgs validates the command line arguments
 func ValidateMoveArgs(args []string) error {
-	handleHelpFlag(args)
-
-	if len(args) > 4 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
-		return fmt.Errorf("%s", errMessage)
+	if err := checkLength(args, 3); err != nil {
+		return err
 	}
 
 	if len(args) == 2 {
@@ -53,21 +46,16 @@ func ValidateMoveArgs(args []string) error {
 
 // ValidateNaturesArgs validates the command line arguments
 func ValidateNaturesArgs(args []string) error {
-	handleHelpFlag(args)
-
-	if len(args) > 3 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
-		return fmt.Errorf("%s", errMessage)
+	if err := checkLength(args, 3); err != nil {
+		return err
 	}
 
 	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
 	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
-	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
-		errorTitle := styling.ErrorColor.Render("Error!")
-		errorString := "\nThe only currently available options\nafter [natures] command are '-h' or '--help'"
-		finalErrorMessage := errorTitle + errorString
-		renderedError := styling.ErrorBorder.Render(finalErrorMessage)
-		return fmt.Errorf("%s", renderedError)
+	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
+		errMsg := styling.ErrorColor.Render("Error!") +
+			"\nThe only currently available options\nafter <natures> command are '-h' or '--help'"
+		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
 	}
 
 	return nil
@@ -75,8 +63,6 @@ func ValidateNaturesArgs(args []string) error {
 
 // ValidatePokemonArgs validates the command line arguments
 func ValidatePokemonArgs(args []string) error {
-	handleHelpFlag(args)
-
 	// Check if the number of arguments is less than 3
 	if len(args) < 3 {
 		errMessage := styling.ErrorBorder.Render(
@@ -88,13 +74,8 @@ func ValidatePokemonArgs(args []string) error {
 		return fmt.Errorf("%s", errMessage)
 	}
 
-	// Check if there are too many arguments
-	if len(args) > 7 {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("Error!"),
-			"\nToo many arguments",
-		)
-		return fmt.Errorf("%s", errMessage)
+	if err := checkLength(args, 7); err != nil {
+		return err
 	}
 
 	// Validate each argument after the Pokémon's name
@@ -131,19 +112,16 @@ func ValidatePokemonArgs(args []string) error {
 
 // ValidateSearchArgs validates the command line arguments
 func ValidateSearchArgs(args []string) error {
-	if len(args) > 3 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
-		return fmt.Errorf("%s", errMessage)
+	if err := checkLength(args, 3); err != nil {
+		return err
 	}
 
 	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
-	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
-		errorTitle := styling.ErrorColor.Render("Error!")
-		errorString := "\nThe only currently available options\nafter [search] command are '-h' or '--help'"
-		finalErrorMessage := errorTitle + errorString
-		renderedError := styling.ErrorBorder.Render(finalErrorMessage)
-		return fmt.Errorf("%s", renderedError)
+	// If true, return an error message since only '-h' and '--help' are allowed after <search>
+	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
+		errMsg := styling.ErrorColor.Render("Error!") +
+			"\nThe only currently available options\nafter <search> command are '-h' or '--help'"
+		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
 	}
 
 	return nil
@@ -151,21 +129,16 @@ func ValidateSearchArgs(args []string) error {
 
 // ValidateTypesArgs validates the command line arguments
 func ValidateTypesArgs(args []string) error {
-	handleHelpFlag(args)
-
-	if len(args) > 3 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nToo many arguments")
-		return fmt.Errorf("%s", errMessage)
+	if err := checkLength(args, 3); err != nil {
+		return err
 	}
 
 	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
-	if len(args) == 3 && (args[2] != "-h" && args[2] != "--help") {
-		errorTitle := styling.ErrorColor.Render("Error!")
-		errorString := "\nThe only currently available options\nafter [types] command are '-h' or '--help'"
-		finalErrorMessage := errorTitle + errorString
-		renderedError := styling.ErrorBorder.Render(finalErrorMessage)
-		return fmt.Errorf("%s", renderedError)
+	// If true, return an error message since only '-h' and '--help' are allowed after <types>
+	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
+		errMsg := styling.ErrorColor.Render("Error!") +
+			"\nThe only currently available options\nafter <types> command are '-h' or '--help'"
+		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
 	}
 
 	return nil

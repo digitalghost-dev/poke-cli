@@ -20,16 +20,22 @@ func MoveCommand() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific move.\n\n",
 			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("move"), "<move-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-20s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-20s %s", "-h, --help", "Prints the help menu."),
+			"\n\t"+"poke-cli"+" "+styling.StyleBold.Render("move")+" <move-name>",
+			"\n\n"+styling.StyleItalic.Render("Use a hyphen when typing a name with a space."),
 		)
 		fmt.Println(helpMessage)
 	}
 
 	flag.Parse()
+
+	// Check for help flag
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		flag.Usage()
+
+		if flag.Lookup("test.v") == nil {
+			os.Exit(0)
+		}
+	}
 
 	if err := cmd.ValidateMoveArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
