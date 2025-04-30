@@ -1,52 +1,24 @@
 package move
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"log"
+	"github.com/stretchr/testify/assert"
 	"os"
-	"strings"
+	"path/filepath"
 	"testing"
 )
 
-func captureMoveOutput(f func()) string {
-	r, w, _ := os.Pipe()
-	defer func(r *os.File) {
-		err := r.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(r)
-
-	oldStdout := os.Stdout
-	os.Stdout = w
-	defer func() { os.Stdout = oldStdout }()
-
-	f()
-
-	err := w.Close()
+func loadGolden(t *testing.T, filename string) string {
+	t.Helper()
+	goldenPath := filepath.Join("../..", "testdata", filename)
+	content, err := os.ReadFile(goldenPath)
 	if err != nil {
-		log.Fatal(err)
+		t.Fatalf("failed to read golden file: %v", err)
 	}
-
-	var buf bytes.Buffer
-	_, _ = buf.ReadFrom(r)
-	return buf.String()
+	return string(content)
 }
 
 func TestMoveCommand(t *testing.T) {
-	err := os.Setenv("GO_TESTING", "1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func() {
-		err := os.Unsetenv("GO_TESTING")
-		if err != nil {
-			fmt.Println(err)
-		}
-	}()
-
 	tests := []struct {
 		name           string
 		args           []string
@@ -54,36 +26,22 @@ func TestMoveCommand(t *testing.T) {
 		expectedError  bool
 	}{
 		{
-			name:           "Help flag",
-			args:           []string{"move", "--help"},
-			expectedOutput: "Get details about a specific move.",
-			expectedError:  false,
+			name:           "Select 'Shadow-Ball' as move",
+			args:           []string{"move", "shadow-ball"},
+			expectedOutput: loadGolden(t, "moves.golden"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			originalArgs := os.Args
+			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			os.Args = append([]string{"poke-cli"}, tt.args...)
-
-			output := captureMoveOutput(func() {
-				defer func() {
-					if r := recover(); r != nil {
-						if !tt.expectedError {
-							t.Fatalf("Unexpected error: %v", r)
-						}
-					}
-				}()
-				MoveCommand()
-			})
-
+			output := MoveCommand()
 			cleanOutput := styling.StripANSI(output)
 
-			if !strings.Contains(cleanOutput, tt.expectedOutput) {
-				t.Errorf("Output mismatch. Expected to contain:\n%s\nGot:\n%s", tt.expectedOutput, output)
-			}
+			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
 		})
 	}
 }
