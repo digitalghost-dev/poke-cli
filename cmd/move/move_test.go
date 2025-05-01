@@ -28,7 +28,12 @@ func TestMoveCommand(t *testing.T) {
 		{
 			name:           "Select 'Shadow-Ball' as move",
 			args:           []string{"move", "shadow-ball"},
-			expectedOutput: loadGolden(t, "moves.golden"),
+			expectedOutput: loadGolden(t, "move.golden"),
+		},
+		{
+			name:           "Move help flag",
+			args:           []string{"move", "--help"},
+			expectedOutput: loadGolden(t, "move_help.golden"),
 		},
 	}
 
