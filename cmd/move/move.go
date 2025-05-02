@@ -15,7 +15,9 @@ import (
 	"strings"
 )
 
-func MoveCommand() {
+func MoveCommand() string {
+	var output strings.Builder
+
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific move.\n\n",
@@ -23,43 +25,34 @@ func MoveCommand() {
 			"\n\t"+"poke-cli"+" "+styling.StyleBold.Render("move")+" <move-name>",
 			"\n\n"+styling.StyleItalic.Render("Use a hyphen when typing a name with a space."),
 		)
-		fmt.Println(helpMessage)
+		output.WriteString(helpMessage + "\n")
 	}
 
 	flag.Parse()
 
-	// Check for help flag
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-
-		if flag.Lookup("test.v") == nil {
-			os.Exit(0)
-		}
+		return output.String()
 	}
 
 	if err := cmd.ValidateMoveArgs(os.Args); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		output.WriteString(err.Error())
+		return output.String()
 	}
 
 	args := flag.Args()
-
 	endpoint := strings.ToLower(args[0])
 	moveName := strings.ToLower(args[1])
 
-	moveStruct, moveName, err := connections.MoveApiCall(endpoint, moveName, connections.APIURL)
-	if err != nil {
-		fmt.Println(err)
-		if os.Getenv("GO_TESTING") != "1" {
-			os.Exit(1)
-		}
-	}
+	moveStruct, moveName, _ := connections.MoveApiCall(endpoint, moveName, connections.APIURL)
 
-	moveInfoContainer(moveStruct, moveName)
-	moveEffectContainer(moveStruct)
+	moveInfoContainer(&output, moveStruct, moveName)
+	moveEffectContainer(&output, moveStruct)
+
+	return output.String()
 }
 
-func moveInfoContainer(moveStruct structs.MoveJSONStruct, moveName string) {
+func moveInfoContainer(output *strings.Builder, moveStruct structs.MoveJSONStruct, moveName string) {
 	capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
 
 	docStyle := lipgloss.NewStyle().
@@ -89,13 +82,13 @@ func moveInfoContainer(moveStruct structs.MoveJSONStruct, moveName string) {
 	}
 
 	infoBlock := lipgloss.JoinVertical(lipgloss.Left, infoRows...)
-
 	fullDoc := lipgloss.JoinVertical(lipgloss.Top, header, infoBlock)
 
-	fmt.Println(docStyle.Render(fullDoc))
+	output.WriteString(docStyle.Render(fullDoc))
+	output.WriteString("\n")
 }
 
-func moveEffectContainer(moveStruct structs.MoveJSONStruct) {
+func moveEffectContainer(output *strings.Builder, moveStruct structs.MoveJSONStruct) {
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
@@ -111,8 +104,8 @@ func moveEffectContainer(moveStruct structs.MoveJSONStruct) {
 	}
 
 	effectBold := styling.StyleBold.Render("Effect:")
-
 	fullDoc := lipgloss.JoinVertical(lipgloss.Top, effectBold, flavorTextEntry)
 
-	fmt.Println(docStyle.Render(fullDoc))
+	output.WriteString(docStyle.Render(fullDoc))
+	output.WriteString("\n")
 }
