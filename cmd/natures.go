@@ -7,37 +7,38 @@ import (
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
+	"strings"
 )
 
-var osExit = os.Exit
+func NaturesCommand() string {
+	var output strings.Builder
 
-func NaturesCommand() {
+	// Define the usage function
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about all natures.\n\n",
 			styling.StyleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s", "poke-cli", styling.StyleBold.Render("natures")),
 		)
-		fmt.Println(helpMessage)
+		output.WriteString(helpMessage + "\n")
 	}
 
 	flag.Parse()
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return
+		return output.String()
 	}
 
 	if err := ValidateNaturesArgs(os.Args); err != nil {
-		fmt.Println(err.Error())
-		osExit(1)
-		return
+		output.WriteString(err.Error())
+		return output.String()
 	}
 
-	fmt.Println("Natures affect the growth of a Pokémon.\n" +
+	output.WriteString("Natures affect the growth of a Pokémon.\n" +
 		"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
 		"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
-		styling.StyleBold.Render("Nature Chart:"))
+		styling.StyleBold.Render("Nature Chart:") + "\n")
 
 	chart := [][]string{
 		{" ", styling.Red.Render("-Attack"), styling.Red.Render("-Defense"), styling.Red.Render("-Sp. Atk"), styling.Red.Render("-Sp. Def"), styling.Red.Render("Speed")},
@@ -59,5 +60,7 @@ func NaturesCommand() {
 				Padding(0, 1)
 		})
 
-	fmt.Println(t.Render())
+	output.WriteString(t.Render() + "\n")
+
+	return output.String()
 }
