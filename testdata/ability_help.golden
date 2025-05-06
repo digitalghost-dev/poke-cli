@@ -1,0 +1,11 @@
+╭───────────────────────────────────────────────────────────────────────────╮
+│Get details about a specific ability.                                      │
+│                                                                           │
+│ USAGE:                                                                    │
+│    poke-cli ability <ability-name> [flag]                                 │
+│    Use a hyphen when typing a name with a space.                          │
+│                                                                           │
+│ FLAGS:                                                                    │
+│    -p, --pokemon                  Prints Pokémon that learn this ability. │
+│    -h, --help                     Prints the help menu.                   │
+╰───────────────────────────────────────────────────────────────────────────╯
