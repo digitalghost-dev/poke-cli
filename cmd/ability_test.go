@@ -1,49 +1,22 @@
 package cmd
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"log"
+	"github.com/stretchr/testify/assert"
 	"os"
-	"strings"
 	"testing"
 )
-
-func captureAbilityOutput(f func()) string {
-	r, w, _ := os.Pipe()
-	defer func(r *os.File) {
-		err := r.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(r)
-
-	oldStdout := os.Stdout
-	os.Stdout = w
-	defer func() { os.Stdout = oldStdout }()
-
-	f()
-
-	err := w.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var buf bytes.Buffer
-	_, _ = buf.ReadFrom(r)
-	return buf.String()
-}
 
 func TestAbilityCommand(t *testing.T) {
 	err := os.Setenv("GO_TESTING", "1")
 	if err != nil {
-		return
+		t.Fatalf("Failed to set GO_TESTING env var: %v", err)
 	}
+
 	defer func() {
 		err := os.Unsetenv("GO_TESTING")
 		if err != nil {
-			fmt.Println(err)
+			t.Logf("Warning: failed to unset GO_TESTING: %v", err)
 		}
 	}()
 
@@ -51,63 +24,36 @@ func TestAbilityCommand(t *testing.T) {
 		name           string
 		args           []string
 		expectedOutput string
-		expectedError  bool
+		wantError      bool
 	}{
 		{
-			name:           "Help flag",
-			args:           []string{"ability", "-h"},
-			expectedOutput: "Get details about a specific ability.",
-			expectedError:  false,
+			name:           "Ability help flag",
+			args:           []string{"ability", "--help"},
+			expectedOutput: loadGolden(t, "ability_help.golden"),
 		},
 		{
-			name:           "Valid Execution",
-			args:           []string{"ability", "stench"},
-			expectedOutput: styling.StripANSI("Stench\nEffect: Has a 10% chance of making target Pokémon flinch with each hit.\nGeneration: III"),
-			expectedError:  false,
+			name:           "Ability command: clear-body",
+			args:           []string{"ability", "clear-body"},
+			expectedOutput: loadGolden(t, "ability.golden"),
 		},
 		{
-			name:           "Valid Execution",
-			args:           []string{"ability", "poison-puppeteer", "--pokemon"},
-			expectedOutput: styling.StripANSI("Poison Puppeteer\nEffect: Pokémon poisoned by Pecharunt's moves will also become confused.\nGeneration: IX\n\nPokemon with Poison Puppeteer\n\n 1. Pecharunt"),
-			expectedError:  false,
-		},
-		{
-			name: "Valid Execution",
-			args: []string{"ability", "corrosion", "-p"},
-			expectedOutput: styling.StripANSI(fmt.Sprintf(
-				"Corrosion\nEffect: This Pokémon can inflict poison on Poison and Steel Pokémon.\nGeneration: VII\n\nPokemon with Corrosion\n\n"+
-					"%2d. %-30s%2d. %-30s%2d. %-30s\n"+
-					"%2d. %-30s%2d. %-30s",
-				1, "Salandit", 2, "Salazzle", 3, "Glimmet",
-				4, "Glimmora", 5, "Salazzle-Totem",
-			)),
-			expectedError: false,
+			name:           "Misspelled ability name",
+			args:           []string{"ability", "bulletproff"},
+			expectedOutput: loadGolden(t, "ability_misspelled.golden"),
+			wantError:      true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			originalArgs := os.Args
+			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			os.Args = append([]string{"poke-cli"}, tt.args...)
-
-			output := captureAbilityOutput(func() {
-				defer func() {
-					if r := recover(); r != nil {
-						if !tt.expectedError {
-							t.Fatalf("Unexpected error: %v", r)
-						}
-					}
-				}()
-				AbilityCommand()
-			})
-
+			output := AbilityCommand()
 			cleanOutput := styling.StripANSI(output)
 
-			if !strings.Contains(cleanOutput, tt.expectedOutput) {
-				t.Errorf("Output mismatch. Expected to contain:\n%s\nGot:\n%s", tt.expectedOutput, output)
-			}
+			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
 		})
 	}
 }
