@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadGolden(t *testing.T) {
-	testDir := filepath.Join("..", "testdata")
+	testDir := filepath.Join("../..", "testdata")
 	if err := os.MkdirAll(testDir, 0755); err != nil {
 		t.Fatalf("failed to create testdata directory: %v", err)
 	}
