@@ -1,22 +1,12 @@
 package move
 
 import (
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"os"
-	"path/filepath"
 	"testing"
 )
-
-func loadGolden(t *testing.T, filename string) string {
-	t.Helper()
-	goldenPath := filepath.Join("../..", "testdata", filename)
-	content, err := os.ReadFile(goldenPath)
-	if err != nil {
-		t.Fatalf("failed to read golden file: %v", err)
-	}
-	return string(content)
-}
 
 func TestMoveCommand(t *testing.T) {
 	err := os.Setenv("GO_TESTING", "1")
@@ -40,12 +30,12 @@ func TestMoveCommand(t *testing.T) {
 		{
 			name:           "Select 'Shadow-Ball' as move",
 			args:           []string{"move", "shadow-ball"},
-			expectedOutput: loadGolden(t, "move.golden"),
+			expectedOutput: utils.LoadGolden(t, "move.golden"),
 		},
 		{
 			name:           "Move help flag",
 			args:           []string{"move", "--help"},
-			expectedOutput: loadGolden(t, "move_help.golden"),
+			expectedOutput: utils.LoadGolden(t, "move_help.golden"),
 		},
 	}
 
