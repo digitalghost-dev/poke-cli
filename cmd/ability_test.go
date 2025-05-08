@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -29,17 +30,17 @@ func TestAbilityCommand(t *testing.T) {
 		{
 			name:           "Ability help flag",
 			args:           []string{"ability", "--help"},
-			expectedOutput: loadGolden(t, "ability_help.golden"),
+			expectedOutput: utils.LoadGolden(t, "ability_help.golden"),
 		},
 		{
 			name:           "Ability command: clear-body",
 			args:           []string{"ability", "clear-body"},
-			expectedOutput: loadGolden(t, "ability.golden"),
+			expectedOutput: utils.LoadGolden(t, "ability.golden"),
 		},
 		{
 			name:           "Misspelled ability name",
 			args:           []string{"ability", "bulletproff"},
-			expectedOutput: loadGolden(t, "ability_misspelled.golden"),
+			expectedOutput: utils.LoadGolden(t, "ability_misspelled.golden"),
 			wantError:      true,
 		},
 	}
