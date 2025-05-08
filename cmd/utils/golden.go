@@ -1,4 +1,4 @@
-package cmd
+package utils
 
 import (
 	"os"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func loadGolden(t *testing.T, filename string) string {
+func LoadGolden(t *testing.T, filename string) string {
 	t.Helper()
 	goldenPath := filepath.Join("..", "testdata", filename)
 	content, err := os.ReadFile(goldenPath)
