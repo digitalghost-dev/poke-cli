@@ -1,4 +1,4 @@
-package cmd
+package utils
 
 import (
 	"os"
@@ -20,9 +20,14 @@ func TestLoadGolden(t *testing.T) {
 		t.Fatalf("failed to write golden file: %v", err)
 	}
 
-	defer os.Remove(fullPath)
+	defer func(name string) {
+		err := os.Remove(name)
+		if err != nil {
+			t.Fatalf("failed to remove golden file: %v", err)
+		}
+	}(fullPath)
 
-	actual := loadGolden(t, filename)
+	actual := LoadGolden(t, filename)
 	if actual != expected {
 		t.Errorf("expected %q, got %q", expected, actual)
 	}
