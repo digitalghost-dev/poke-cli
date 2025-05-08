@@ -6,7 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/digitalghost-dev/poke-cli/cmd"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 	"strings"
@@ -32,7 +32,7 @@ func TypesCommand() {
 		return
 	}
 
-	if err := cmd.ValidateTypesArgs(os.Args); err != nil {
+	if err := utils.ValidateTypesArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}

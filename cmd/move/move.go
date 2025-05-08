@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/digitalghost-dev/poke-cli/cmd"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -35,7 +35,7 @@ func MoveCommand() string {
 		return output.String()
 	}
 
-	if err := cmd.ValidateMoveArgs(os.Args); err != nil {
+	if err := utils.ValidateMoveArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
 		return output.String()
 	}

@@ -3,6 +3,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -62,7 +63,7 @@ func PokemonCommand() {
 		return
 	}
 
-	err := ValidatePokemonArgs(args)
+	err := utils.ValidatePokemonArgs(args)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
