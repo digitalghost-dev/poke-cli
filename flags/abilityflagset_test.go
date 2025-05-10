@@ -39,7 +39,7 @@ func TestPokemonFlag(t *testing.T) {
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	err := PokemonAbilitiesFlag("ability", "stench")
+	err := PokemonAbilitiesFlag(&output, "ability", "stench")
 
 	if closeErr := w.Close(); closeErr != nil {
 		t.Fatalf("Failed to close pipe writer: %v", closeErr)
