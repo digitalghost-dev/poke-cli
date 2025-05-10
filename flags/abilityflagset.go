@@ -7,6 +7,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"io"
 	"strings"
 )
 
@@ -27,12 +28,14 @@ func SetupAbilityFlagSet() (*flag.FlagSet, *bool, *bool) {
 	return abilityFlags, pokemonFlag, shortPokemonFlag
 }
 
-func PokemonAbilitiesFlag(endpoint string, abilityName string) error {
+func PokemonAbilitiesFlag(w io.Writer, endpoint string, abilityName string) error {
 	abilitiesStruct, _, _ := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
 
 	capitalizedEffect := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
 
-	fmt.Printf("\n%s\n\n", styling.StyleUnderline.Render("Pokemon with", capitalizedEffect))
+	if _, err := fmt.Fprintf(w, "\n%s\n\n", styling.StyleUnderline.Render("Pokemon with "+capitalizedEffect)); err != nil {
+		return err
+	}
 
 	// Extract Pokémon names and capitalize them
 	var pokemonNames []string
@@ -42,15 +45,16 @@ func PokemonAbilitiesFlag(endpoint string, abilityName string) error {
 
 	// Print names in a grid format
 	const cols = 3
-
 	for i, name := range pokemonNames {
-		entry := fmt.Sprintf("%2d. %-30s", i+1, name) // Numbered entry with padding
-		fmt.Print(entry)
+		entry := fmt.Sprintf("%2d. %-30s", i+1, name)
+		fmt.Fprint(w, entry)
 		if (i+1)%cols == 0 {
-			fmt.Println()
+			fmt.Fprintln(w)
 		}
 	}
-	fmt.Println()
+	if _, err := fmt.Fprintln(w); err != nil {
+		return err
+	}
 
 	return nil
 }
