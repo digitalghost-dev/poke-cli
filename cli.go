@@ -101,7 +101,7 @@ func runCLI(args []string) int {
 		"move":    printWrapper(move.MoveCommand),
 		"natures": printWrapper(natures.NaturesCommand),
 		"pokemon": cmd.PokemonCommand,
-		"types":   types.TypesCommand,
+		"types":   printWrapper(types.TypesCommand),
 		"search":  search.SearchCommand,
 	}
 

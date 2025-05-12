@@ -12,7 +12,9 @@ import (
 	"strings"
 )
 
-func TypesCommand() {
+func TypesCommand() string {
+	var output strings.Builder
+
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific typing.\n\n",
@@ -22,23 +24,25 @@ func TypesCommand() {
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu"),
 		)
-		fmt.Println(helpMessage)
+		output.WriteString(helpMessage + "\n")
 	}
 
 	flag.Parse()
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return
+		return output.String()
 	}
 
 	if err := utils.ValidateTypesArgs(os.Args); err != nil {
-		fmt.Println(err.Error())
+		output.WriteString(err.Error())
 		os.Exit(1)
 	}
 
 	endpoint := strings.ToLower(os.Args[1])[0:4]
 	tableGeneration(endpoint)
+
+	return output.String()
 }
 
 type model struct {
