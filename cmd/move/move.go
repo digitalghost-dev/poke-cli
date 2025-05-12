@@ -25,7 +25,7 @@ func MoveCommand() string {
 			"\n\t"+"poke-cli"+" "+styling.StyleBold.Render("move")+" <move-name>",
 			"\n\n"+styling.StyleItalic.Render("Use a hyphen when typing a name with a space."),
 		)
-		output.WriteString(helpMessage + "\n")
+		output.WriteString(helpMessage)
 	}
 
 	flag.Parse()

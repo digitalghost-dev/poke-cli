@@ -24,7 +24,7 @@ func TypesCommand() string {
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu"),
 		)
-		output.WriteString(helpMessage + "\n")
+		output.WriteString(helpMessage)
 	}
 
 	flag.Parse()

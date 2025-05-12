@@ -21,7 +21,7 @@ func NaturesCommand() string {
 			styling.StyleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s", "poke-cli", styling.StyleBold.Render("natures")),
 		)
-		output.WriteString(helpMessage + "\n")
+		output.WriteString(helpMessage)
 	}
 
 	flag.Parse()
