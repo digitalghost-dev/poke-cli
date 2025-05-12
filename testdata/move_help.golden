@@ -1,0 +1,8 @@
+╭─────────────────────────────────────────────╮
+│Get details about a specific move.           │
+│                                             │
+│ USAGE:                                      │
+│    poke-cli move <move-name>                │
+│                                             │
+│Use a hyphen when typing a name with a space.│
+╰─────────────────────────────────────────────╯

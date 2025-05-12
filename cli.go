@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/cmd"
+	"github.com/digitalghost-dev/poke-cli/cmd/ability"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
+	"github.com/digitalghost-dev/poke-cli/cmd/natures"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -22,7 +24,7 @@ func currentVersion() {
 		return
 	}
 
-	// Fallback to build info when version is not set
+	// Fallback to build info when the version is not set
 	buildInfo, ok := debug.ReadBuildInfo()
 	if !ok {
 		fmt.Println("Version: unknown (unable to read build info)")
@@ -33,6 +35,12 @@ func currentVersion() {
 		fmt.Printf("Version: %s\n", buildInfo.Main.Version)
 	} else {
 		fmt.Println("Version: (devel)")
+	}
+}
+
+func printWrapper(f func() string) func() {
+	return func() {
+		fmt.Println(f())
 	}
 }
 
@@ -89,11 +97,11 @@ func runCLI(args []string) int {
 	}
 
 	commands := map[string]func(){
-		"ability": cmd.AbilityCommand,
-		"move":    move.MoveCommand,
-		"natures": cmd.NaturesCommand,
+		"ability": printWrapper(ability.AbilityCommand),
+		"move":    printWrapper(move.MoveCommand),
+		"natures": printWrapper(natures.NaturesCommand),
 		"pokemon": cmd.PokemonCommand,
-		"types":   types.TypesCommand,
+		"types":   printWrapper(types.TypesCommand),
 		"search":  search.SearchCommand,
 	}
 

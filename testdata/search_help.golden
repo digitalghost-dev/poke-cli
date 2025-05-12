@@ -1,0 +1,11 @@
+╭──────────────────────────────────────────────────────────────╮
+│Search for a resource by name or partial match.               │
+│                                                              │
+│ USAGE:                                                       │
+│    poke-cli search [flag]                                    │
+│                                                              │
+│ FLAGS:                                                       │
+│    -h, --help      Prints out the help menu.                 │
+│                                                              │
+│ Supports prefix matching using ^ (example: ^char → charizard)│
+╰──────────────────────────────────────────────────────────────╯

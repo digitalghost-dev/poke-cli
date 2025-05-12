@@ -1,4 +1,4 @@
-package cmd
+package utils
 
 import (
 	"github.com/digitalghost-dev/poke-cli/styling"

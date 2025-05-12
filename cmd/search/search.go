@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/digitalghost-dev/poke-cli/cmd"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 )
@@ -34,7 +34,7 @@ func SearchCommand() {
 	}
 
 	// Validate arguments before launching TUI
-	if err := cmd.ValidateSearchArgs(os.Args); err != nil {
+	if err := utils.ValidateSearchArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}

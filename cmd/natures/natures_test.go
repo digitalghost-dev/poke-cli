@@ -1,4 +1,4 @@
-package types
+package natures
 
 import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestTypesCommand(t *testing.T) {
+func TestNaturesCommand(t *testing.T) {
 	tests := []struct {
 		name           string
 		args           []string
@@ -16,9 +16,20 @@ func TestTypesCommand(t *testing.T) {
 		wantError      bool
 	}{
 		{
-			name:           "Types help flag",
-			args:           []string{"types", "--help"},
-			expectedOutput: utils.LoadGolden(t, "types_help.golden"),
+			name:           "Natures help flag",
+			args:           []string{"natures", "--help"},
+			expectedOutput: utils.LoadGolden(t, "natures_help.golden"),
+		},
+		{
+			name:           "Invalid extra argument",
+			args:           []string{"natures", "brave"},
+			expectedOutput: utils.LoadGolden(t, "natures_invalid_extra_arg.golden"),
+			wantError:      true,
+		},
+		{
+			name:           "Full Natures output with table",
+			args:           []string{"natures"},
+			expectedOutput: utils.LoadGolden(t, "natures.golden"),
 		},
 	}
 
@@ -28,15 +39,10 @@ func TestTypesCommand(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output := TypesCommand()
+			output := NaturesCommand()
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
 		})
 	}
-}
-func TestModelInit(t *testing.T) {
-	m := model{}
-	cmd := m.Init()
-	assert.Nil(t, cmd, "Init() should return nil")
 }

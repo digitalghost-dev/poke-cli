@@ -1,4 +1,4 @@
-package move
+package ability
 
 import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestMoveCommand(t *testing.T) {
+func TestAbilityCommand(t *testing.T) {
 	err := os.Setenv("GO_TESTING", "1")
 	if err != nil {
 		t.Fatalf("Failed to set GO_TESTING env var: %v", err)
@@ -25,17 +25,23 @@ func TestMoveCommand(t *testing.T) {
 		name           string
 		args           []string
 		expectedOutput string
-		expectedError  bool
+		wantError      bool
 	}{
 		{
-			name:           "Select 'Shadow-Ball' as move",
-			args:           []string{"move", "shadow-ball"},
-			expectedOutput: utils.LoadGolden(t, "move.golden"),
+			name:           "Ability help flag",
+			args:           []string{"ability", "--help"},
+			expectedOutput: utils.LoadGolden(t, "ability_help.golden"),
 		},
 		{
-			name:           "Move help flag",
-			args:           []string{"move", "--help"},
-			expectedOutput: utils.LoadGolden(t, "move_help.golden"),
+			name:           "Ability command: clear-body",
+			args:           []string{"ability", "clear-body"},
+			expectedOutput: utils.LoadGolden(t, "ability.golden"),
+		},
+		{
+			name:           "Misspelled ability name",
+			args:           []string{"ability", "bulletproff"},
+			expectedOutput: utils.LoadGolden(t, "ability_misspelled.golden"),
+			wantError:      true,
 		},
 	}
 
@@ -45,7 +51,7 @@ func TestMoveCommand(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output := MoveCommand()
+			output := AbilityCommand()
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")

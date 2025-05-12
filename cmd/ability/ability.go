@@ -1,8 +1,9 @@
-package cmd
+package ability
 
 import (
 	"flag"
 	"fmt"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -12,7 +13,9 @@ import (
 	"strings"
 )
 
-func AbilityCommand() {
+func AbilityCommand() string {
+	var output strings.Builder
+
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific ability.\n\n",
@@ -24,7 +27,7 @@ func AbilityCommand() {
 			fmt.Sprintf("\n\t%-30s %s", "-p, --pokemon", "Prints Pokémon that learn this ability."),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
-		fmt.Println(helpMessage)
+		output.WriteString(helpMessage)
 	}
 
 	abilityFlags, pokemonFlag, shortPokemonFlag := flags.SetupAbilityFlagSet()
@@ -35,33 +38,33 @@ func AbilityCommand() {
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return
+		return output.String()
 	}
 
-	if err := ValidateAbilityArgs(args); err != nil {
-		fmt.Println(err.Error())
-		if os.Getenv("GO_TESTING") != "1" {
-			os.Exit(1)
-		}
+	if err := utils.ValidateAbilityArgs(args); err != nil {
+		output.WriteString(err.Error())
+		return output.String()
 	}
 
 	endpoint := strings.ToLower(args[1])
 	abilityName := strings.ToLower(args[2])
 
 	if err := abilityFlags.Parse(args[3:]); err != nil {
-		fmt.Printf("error parsing flags: %v\n", err)
+		output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 		abilityFlags.Usage()
 		if os.Getenv("GO_TESTING") != "1" {
 			os.Exit(1)
 		}
+		return output.String()
 	}
 
 	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
 	if err != nil {
-		fmt.Println(err)
 		if os.Getenv("GO_TESTING") != "1" {
+			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		return err.Error()
 	}
 
 	// Extract English short_effect
@@ -83,29 +86,33 @@ func AbilityCommand() {
 	}
 
 	capitalizedAbility := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
-	fmt.Println(styling.StyleBold.Render(capitalizedAbility))
+	output.WriteString(styling.StyleBold.Render(capitalizedAbility) + "\n")
 
 	// API is missing some data for the short_effect for abilities from Generation 9.
 	// If short_effect is empty, fallback to the move's flavor_text_entry.
 	if englishShortEffect == "" {
-		fmt.Println("Effect:", englishFlavorEntry)
+		output.WriteString("Effect: " + englishFlavorEntry + "\n")
 	} else {
-		fmt.Println("Effect:", englishShortEffect)
+		output.WriteString("Effect: " + englishShortEffect + "\n")
 	}
 
 	// Print the generation where the move was first introduced.
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")
 	if len(generationParts) > 1 {
 		generationUpper := strings.ToUpper(generationParts[1])
-		fmt.Println("Generation:", generationUpper)
+		output.WriteString("Generation: " + generationUpper + "\n")
 	} else {
-		fmt.Println("Generation: Unknown")
+		output.WriteString("Generation: Unknown\n")
 	}
 
 	if *pokemonFlag || *shortPokemonFlag {
-		if err := flags.PokemonAbilitiesFlag(endpoint, abilityName); err != nil {
-			fmt.Printf("error parsing flags: %v\n", err)
-			os.Exit(1)
+		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
+			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+			if os.Getenv("GO_TESTING") != "1" {
+				os.Exit(1)
+			}
 		}
 	}
+
+	return output.String()
 }
