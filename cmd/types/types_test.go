@@ -20,6 +20,11 @@ func TestTypesCommand(t *testing.T) {
 			args:           []string{"types", "--help"},
 			expectedOutput: utils.LoadGolden(t, "types_help.golden"),
 		},
+		{
+			name:           "Types help flag",
+			args:           []string{"types", "-h"},
+			expectedOutput: utils.LoadGolden(t, "types_help.golden"),
+		},
 	}
 
 	for _, tt := range tests {

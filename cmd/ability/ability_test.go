@@ -33,6 +33,11 @@ func TestAbilityCommand(t *testing.T) {
 			expectedOutput: utils.LoadGolden(t, "ability_help.golden"),
 		},
 		{
+			name:           "Ability help flag",
+			args:           []string{"ability", "-h"},
+			expectedOutput: utils.LoadGolden(t, "ability_help.golden"),
+		},
+		{
 			name:           "Ability command: clear-body",
 			args:           []string{"ability", "clear-body"},
 			expectedOutput: utils.LoadGolden(t, "ability.golden"),

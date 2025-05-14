@@ -28,14 +28,19 @@ func TestMoveCommand(t *testing.T) {
 		expectedError  bool
 	}{
 		{
-			name:           "Select 'Shadow-Ball' as move",
-			args:           []string{"move", "shadow-ball"},
-			expectedOutput: utils.LoadGolden(t, "move.golden"),
-		},
-		{
 			name:           "Move help flag",
 			args:           []string{"move", "--help"},
 			expectedOutput: utils.LoadGolden(t, "move_help.golden"),
+		},
+		{
+			name:           "Move help flag",
+			args:           []string{"move", "-h"},
+			expectedOutput: utils.LoadGolden(t, "move_help.golden"),
+		},
+		{
+			name:           "Select 'Shadow-Ball' as move",
+			args:           []string{"move", "shadow-ball"},
+			expectedOutput: utils.LoadGolden(t, "move.golden"),
 		},
 	}
 

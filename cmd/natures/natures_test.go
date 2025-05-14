@@ -21,6 +21,11 @@ func TestNaturesCommand(t *testing.T) {
 			expectedOutput: utils.LoadGolden(t, "natures_help.golden"),
 		},
 		{
+			name:           "Natures help flag",
+			args:           []string{"natures", "-h"},
+			expectedOutput: utils.LoadGolden(t, "natures_help.golden"),
+		},
+		{
 			name:           "Invalid extra argument",
 			args:           []string{"natures", "brave"},
 			expectedOutput: utils.LoadGolden(t, "natures_invalid_extra_arg.golden"),
