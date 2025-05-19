@@ -3,10 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/digitalghost-dev/poke-cli/cmd"
 	"github.com/digitalghost-dev/poke-cli/cmd/ability"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
 	"github.com/digitalghost-dev/poke-cli/cmd/natures"
+	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -100,24 +100,31 @@ func runCLI(args []string) int {
 		"ability": printWrapper(ability.AbilityCommand),
 		"move":    printWrapper(move.MoveCommand),
 		"natures": printWrapper(natures.NaturesCommand),
-		"pokemon": cmd.PokemonCommand,
+		"pokemon": printWrapper(pokemon.PokemonCommand),
 		"types":   printWrapper(types.TypesCommand),
 		"search":  search.SearchCommand,
 	}
 
-	if len(os.Args) < 2 {
+	cmdArg := ""
+	if len(os.Args) >= 2 {
+		cmdArg = os.Args[1]
+	}
+	cmdFunc, exists := commands[cmdArg]
+
+	switch {
+	case len(os.Args) < 2:
 		mainFlagSet.Usage()
 		return 1
-	} else if *latestFlag || *shortLatestFlag {
+	case *latestFlag || *shortLatestFlag:
 		flags.LatestFlag()
 		return 0
-	} else if *currentVersionFlag || *shortCurrentVersionFlag {
+	case *currentVersionFlag || *shortCurrentVersionFlag:
 		currentVersion()
 		return 0
-	} else if cmdFunc, exists := commands[os.Args[1]]; exists {
+	case exists:
 		cmdFunc()
 		return 0
-	} else {
+	default:
 		command := os.Args[1]
 		errMessage := styling.ErrorBorder.Render(
 			styling.ErrorColor.Render("Error!"),
