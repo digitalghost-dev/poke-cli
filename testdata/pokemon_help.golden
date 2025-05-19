@@ -1,0 +1,15 @@
+╭────────────────────────────────────────────────────────────────────────────╮
+│Get details about a specific Pokémon.                                       │
+│                                                                            │
+│ USAGE:                                                                     │
+│    poke-cli pokemon <pokemon-name> [flag]                                  │
+│    Use a hyphen when typing a name with a space.                           │
+│                                                                            │
+│ FLAGS:                                                                     │
+│    -a, --abilities                Prints the Pokémon's abilities.          │
+│    -i=xx, --image=xx              Prints out the Pokémon's default sprite. │
+│         options: [sm, md, lg]                                              │
+│    -s, --stats                    Prints the Pokémon's base stats.         │
+│    -t, --types                    Prints the Pokémon's typing.             │
+│    -h, --help                     Prints the help menu.                    │
+╰────────────────────────────────────────────────────────────────────────────╯
