@@ -13,6 +13,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 	"runtime/debug"
+	"strings"
 )
 
 var version = "(devel)"
@@ -45,6 +46,8 @@ func printWrapper(f func() string) func() {
 }
 
 func runCLI(args []string) int {
+	var output strings.Builder
+
 	mainFlagSet := flag.NewFlagSet("poke-cli", flag.ContinueOnError)
 
 	// -l, --latest flag retrieves the latest Docker image and GitHub release versions available
@@ -138,7 +141,11 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
 			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h")),
 		)
-		fmt.Printf("%s\n", errMessage)
+		output.WriteString(errMessage)
+
+		// This would typically be returned in a function or passed to something else
+		fmt.Println(output.String())
+
 		return 1
 	}
 }
