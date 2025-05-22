@@ -118,7 +118,7 @@ func PokemonCommand() string {
 		}
 
 		// Call the ImageFlag function with the specified size
-		if err := flags.ImageFlag(endpoint, pokemonName, size); err != nil {
+		if err := flags.ImageFlag(&output, endpoint, pokemonName, size); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 			if os.Getenv("GO_TESTING") != "1" {
 				os.Exit(1)
@@ -127,7 +127,7 @@ func PokemonCommand() string {
 	}
 
 	if *abilitiesFlag || *shortAbilitiesFlag {
-		if err := flags.AbilitiesFlag(endpoint, pokemonName); err != nil {
+		if err := flags.AbilitiesFlag(&output, endpoint, pokemonName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 			if os.Getenv("GO_TESTING") != "1" {
 				os.Exit(1)
@@ -145,7 +145,7 @@ func PokemonCommand() string {
 	}
 
 	if *statsFlag || *shortStatsFlag {
-		if err := flags.StatsFlag(endpoint, pokemonName); err != nil {
+		if err := flags.StatsFlag(&output, endpoint, pokemonName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 			if os.Getenv("GO_TESTING") != "1" {
 				os.Exit(1)

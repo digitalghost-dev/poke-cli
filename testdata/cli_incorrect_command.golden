@@ -1,0 +1,14 @@
+╭──────────────────────────────────────────────────╮
+│Error!                                            │
+│    'movesets' is not a valid command.            │
+│                                                  │
+│Commands:                                         │
+│    ability         Get details about an ability  │
+│    move            Get details about a move      │
+│    natures         Get details about all natures │
+│    pokemon         Get details about a Pokémon   │
+│    search          Search for a resource         │
+│    types           Get details about a typing    │
+│                                                  │
+│Also run poke-cli -h for more info!               │
+╰──────────────────────────────────────────────────╯
