@@ -15,7 +15,7 @@ import (
 )
 
 // PokemonCommand processes the Pokémon command
-func PokemonCommand() string {
+func PokemonCommand() (string, error) {
 	var output strings.Builder
 
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
@@ -42,33 +42,17 @@ func PokemonCommand() string {
 
 	args := os.Args
 
-	// Pre-parse validation for empty image flag values
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "-i=") && len(arg) == 3 {
-			output.WriteString(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
-			os.Exit(1)
-		}
-		if strings.HasPrefix(arg, "--image=") && len(arg) == 8 {
-			output.WriteString(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
-			os.Exit(1)
-		}
-		if strings.HasPrefix(arg, "-image=") && len(arg) == 7 {
-			output.WriteString(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
-			os.Exit(1)
-		}
-	}
-
 	flag.Parse()
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return output.String()
+		return output.String(), nil
 	}
 
 	err := utils.ValidatePokemonArgs(args)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		output.WriteString(err.Error()) // This is the styled error
+		return output.String(), nil
 	}
 
 	endpoint := strings.ToLower(args[1])
@@ -147,11 +131,9 @@ func PokemonCommand() string {
 	if *statsFlag || *shortStatsFlag {
 		if err := flags.StatsFlag(&output, endpoint, pokemonName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			if os.Getenv("GO_TESTING") != "1" {
-				os.Exit(1)
-			}
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
-	return output.String()
+	return output.String(), nil
 }
