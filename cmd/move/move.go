@@ -37,7 +37,7 @@ func MoveCommand() (string, error) {
 
 	if err := utils.ValidateMoveArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
-		return output.String(), nil
+		return output.String(), err
 	}
 
 	args := flag.Args()
