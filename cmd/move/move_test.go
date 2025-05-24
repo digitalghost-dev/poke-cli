@@ -50,7 +50,7 @@ func TestMoveCommand(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output := MoveCommand()
+			output, _ := MoveCommand()
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
