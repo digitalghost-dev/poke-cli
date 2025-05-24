@@ -52,7 +52,7 @@ func PokemonCommand() (string, error) {
 	err := utils.ValidatePokemonArgs(args)
 	if err != nil {
 		output.WriteString(err.Error()) // This is the styled error
-		return output.String(), nil
+		return output.String(), err
 	}
 
 	endpoint := strings.ToLower(args[1])
@@ -104,27 +104,21 @@ func PokemonCommand() (string, error) {
 		// Call the ImageFlag function with the specified size
 		if err := flags.ImageFlag(&output, endpoint, pokemonName, size); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			if os.Getenv("GO_TESTING") != "1" {
-				os.Exit(1)
-			}
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
 	if *abilitiesFlag || *shortAbilitiesFlag {
 		if err := flags.AbilitiesFlag(&output, endpoint, pokemonName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			if os.Getenv("GO_TESTING") != "1" {
-				os.Exit(1)
-			}
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
 	if *typesFlag || *shortTypesFlag {
 		if err := flags.TypesFlag(&output, endpoint, pokemonName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			if os.Getenv("GO_TESTING") != "1" {
-				os.Exit(1)
-			}
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
