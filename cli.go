@@ -39,9 +39,16 @@ func currentVersion() {
 	}
 }
 
-func printWrapper(f func() string) func() {
+// handleCommandOutput wraps a function that returns (string, error) into a no-arg function
+// that prints the output to stdout or stderr depending on whether an error occurred.
+func handleCommandOutput(fn func() (string, error)) func() {
 	return func() {
-		fmt.Println(f())
+		output, err := fn()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, output)
+			return
+		}
+		fmt.Println(output)
 	}
 }
 
@@ -100,11 +107,11 @@ func runCLI(args []string) int {
 	}
 
 	commands := map[string]func(){
-		"ability": printWrapper(ability.AbilityCommand),
-		"move":    printWrapper(move.MoveCommand),
-		"natures": printWrapper(natures.NaturesCommand),
-		"pokemon": printWrapper(pokemon.PokemonCommand),
-		"types":   printWrapper(types.TypesCommand),
+		"ability": handleCommandOutput(ability.AbilityCommand),
+		"move":    handleCommandOutput(move.MoveCommand),
+		"natures": handleCommandOutput(natures.NaturesCommand),
+		"pokemon": handleCommandOutput(pokemon.PokemonCommand),
+		"types":   handleCommandOutput(types.TypesCommand),
 		"search":  search.SearchCommand,
 	}
 
