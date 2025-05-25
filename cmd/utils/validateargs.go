@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	"strings"
 )
 
 // checkLength checks if the number of arguments is lower than the max value
@@ -55,7 +56,7 @@ func ValidateNaturesArgs(args []string) error {
 	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
 		errMsg := styling.ErrorColor.Render("Error!") +
 			"\nThe only currently available options\nafter <natures> command are '-h' or '--help'"
-		return fmt.Errorf("%s %s", styling.ErrorBorder.Render(errMsg), "\n")
+		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
 	}
 
 	return nil
@@ -76,6 +77,25 @@ func ValidatePokemonArgs(args []string) error {
 
 	if err := checkLength(args, 7); err != nil {
 		return err
+	}
+
+	printImageFlagError := func() error {
+		msg := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("Error!") +
+				"\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm.",
+		)
+		return fmt.Errorf("%s", msg)
+	}
+
+	for _, arg := range args {
+		switch {
+		case strings.HasPrefix(arg, "-i=") && strings.TrimPrefix(arg, "-i=") == "":
+			return printImageFlagError()
+		case strings.HasPrefix(arg, "--image=") && strings.TrimPrefix(arg, "--image=") == "":
+			return printImageFlagError()
+		case strings.HasPrefix(arg, "-image=") && strings.TrimPrefix(arg, "-image=") == "":
+			return printImageFlagError()
+		}
 	}
 
 	// Validate each argument after the Pokémon's name
