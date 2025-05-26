@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func AbilityCommand() string {
+func AbilityCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
@@ -38,12 +38,12 @@ func AbilityCommand() string {
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return output.String()
+		return output.String(), nil
 	}
 
 	if err := utils.ValidateAbilityArgs(args); err != nil {
 		output.WriteString(err.Error())
-		return output.String()
+		return output.String(), err
 	}
 
 	endpoint := strings.ToLower(args[1])
@@ -55,7 +55,7 @@ func AbilityCommand() string {
 		if os.Getenv("GO_TESTING") != "1" {
 			os.Exit(1)
 		}
-		return output.String()
+		return output.String(), err
 	}
 
 	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
@@ -64,7 +64,7 @@ func AbilityCommand() string {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-		return err.Error()
+		return err.Error(), nil
 	}
 
 	// Extract English short_effect
@@ -108,11 +108,9 @@ func AbilityCommand() string {
 	if *pokemonFlag || *shortPokemonFlag {
 		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			if os.Getenv("GO_TESTING") != "1" {
-				os.Exit(1)
-			}
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
-	return output.String()
+	return output.String(), nil
 }
