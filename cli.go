@@ -9,6 +9,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
@@ -36,19 +37,6 @@ func currentVersion() {
 		fmt.Printf("Version: %s\n", buildInfo.Main.Version)
 	} else {
 		fmt.Println("Version: (devel)")
-	}
-}
-
-// handleCommandOutput wraps a function that returns (string, error) into a no-arg function
-// that prints the output to stdout or stderr depending on whether an error occurred.
-func handleCommandOutput(fn func() (string, error)) func() {
-	return func() {
-		output, err := fn()
-		if err != nil {
-			fmt.Fprintln(os.Stderr, output)
-			return
-		}
-		fmt.Println(output)
 	}
 }
 
@@ -107,11 +95,11 @@ func runCLI(args []string) int {
 	}
 
 	commands := map[string]func(){
-		"ability": handleCommandOutput(ability.AbilityCommand),
-		"move":    handleCommandOutput(move.MoveCommand),
-		"natures": handleCommandOutput(natures.NaturesCommand),
-		"pokemon": handleCommandOutput(pokemon.PokemonCommand),
-		"types":   handleCommandOutput(types.TypesCommand),
+		"ability": utils.HandleCommandOutput(ability.AbilityCommand),
+		"move":    utils.HandleCommandOutput(move.MoveCommand),
+		"natures": utils.HandleCommandOutput(natures.NaturesCommand),
+		"pokemon": utils.HandleCommandOutput(pokemon.PokemonCommand),
+		"types":   utils.HandleCommandOutput(types.TypesCommand),
 		"search":  search.SearchCommand,
 	}
 
