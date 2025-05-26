@@ -48,6 +48,11 @@ func TestAbilityCommand(t *testing.T) {
 			expectedOutput: utils.LoadGolden(t, "ability_misspelled.golden"),
 			wantError:      true,
 		},
+		{
+			name:           "Ability command: --pokemon flag",
+			args:           []string{"ability", "anger-point", "--pokemon"},
+			expectedOutput: utils.LoadGolden(t, "ability_flag_pokemon.golden"),
+		},
 	}
 
 	for _, tt := range tests {
@@ -56,7 +61,7 @@ func TestAbilityCommand(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output := AbilityCommand()
+			output, _ := AbilityCommand()
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
