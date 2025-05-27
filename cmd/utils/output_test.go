@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"os"
 	"testing"
@@ -40,7 +40,7 @@ func TestHandleCommandOutput_Success(t *testing.T) {
 
 func TestHandleCommandOutput_Error(t *testing.T) {
 	fn := func() (string, error) {
-		return "something failed", fmt.Errorf("error")
+		return "something failed", errors.New("error")
 	}
 
 	output := captureOutput(&os.Stderr, HandleCommandOutput(fn))
