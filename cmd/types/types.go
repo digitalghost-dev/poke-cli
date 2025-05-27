@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-func TypesCommand() string {
+func TypesCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
@@ -31,18 +31,18 @@ func TypesCommand() string {
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return output.String()
+		return output.String(), nil
 	}
 
 	if err := utils.ValidateTypesArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
-		os.Exit(1)
+		return output.String(), err
 	}
 
 	endpoint := strings.ToLower(os.Args[1])[0:4]
 	tableGeneration(endpoint)
 
-	return output.String()
+	return output.String(), nil
 }
 
 type model struct {

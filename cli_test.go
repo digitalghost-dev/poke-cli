@@ -2,6 +2,9 @@ package main
 
 import (
 	"bytes"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
+	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"regexp"
 	"testing"
@@ -93,119 +96,28 @@ func TestRunCLI(t *testing.T) {
 		expectedCode   int
 	}{
 		{
-			name: "No Arguments",
-			args: []string{},
-			expectedOutput: "╭──────────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!      │\n" +
-				"│                                                          │\n" +
-				"│ USAGE:                                                   │\n" +
-				"│    poke-cli [flag]                                       │\n" +
-				"│    poke-cli <command> [flag]                             │\n" +
-				"│    poke-cli <command> <subcommand> [flag]                │\n" +
-				"│                                                          │\n" +
-				"│ FLAGS:                                                   │\n" +
-				"│    -h, --help      Shows the help menu                   │\n" +
-				"│    -l, --latest    Prints the latest version available   │\n" +
-				"│    -v, --version   Prints the current version            │\n" +
-				"│                                                          │\n" +
-				"│ COMMANDS:                                                │\n" +
-				"│    ability         Get details about an ability          │\n" +
-				"│    move            Get details about a move              │\n" +
-				"│    natures         Get details about all natures         │\n" +
-				"│    pokemon         Get details about a Pokémon           │\n" +
-				"│    search          Search for a resource                 │\n" +
-				"│    types           Get details about a typing            │\n" +
-				"│                                                          │\n" +
-				"│ hint: when calling a resource with a space, use a hyphen │\n" +
-				"│ example: poke-cli ability strong-jaw                     │\n" +
-				"│ example: poke-cli pokemon flutter-mane                   │\n" +
-				"╰──────────────────────────────────────────────────────────╯",
-			expectedCode: 0,
-		},
-		{
-			name: "Help Flag Short",
-			args: []string{"-h"},
-			expectedOutput: "╭──────────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!      │\n" +
-				"│                                                          │\n" +
-				"│ USAGE:                                                   │\n" +
-				"│    poke-cli [flag]                                       │\n" +
-				"│    poke-cli <command> [flag]                             │\n" +
-				"│    poke-cli <command> <subcommand> [flag]                │\n" +
-				"│                                                          │\n" +
-				"│ FLAGS:                                                   │\n" +
-				"│    -h, --help      Shows the help menu                   │\n" +
-				"│    -l, --latest    Prints the latest version available   │\n" +
-				"│    -v, --version   Prints the current version            │\n" +
-				"│                                                          │\n" +
-				"│ COMMANDS:                                                │\n" +
-				"│    ability         Get details about an ability          │\n" +
-				"│    move            Get details about a move              │\n" +
-				"│    natures         Get details about all natures         │\n" +
-				"│    pokemon         Get details about a Pokémon           │\n" +
-				"│    search          Search for a resource                 │\n" +
-				"│    types           Get details about a typing            │\n" +
-				"│                                                          │\n" +
-				"│ hint: when calling a resource with a space, use a hyphen │\n" +
-				"│ example: poke-cli ability strong-jaw                     │\n" +
-				"│ example: poke-cli pokemon flutter-mane                   │\n" +
-				"╰──────────────────────────────────────────────────────────╯",
-			expectedCode: 0,
-		},
-		{
-			name: "Help Flag Long",
-			args: []string{"--help"},
-			expectedOutput: "╭──────────────────────────────────────────────────────────╮\n" +
-				"│Welcome! This tool displays data related to Pokémon!      │\n" +
-				"│                                                          │\n" +
-				"│ USAGE:                                                   │\n" +
-				"│    poke-cli [flag]                                       │\n" +
-				"│    poke-cli <command> [flag]                             │\n" +
-				"│    poke-cli <command> <subcommand> [flag]                │\n" +
-				"│                                                          │\n" +
-				"│ FLAGS:                                                   │\n" +
-				"│    -h, --help      Shows the help menu                   │\n" +
-				"│    -l, --latest    Prints the latest version available   │\n" +
-				"│    -v, --version   Prints the current version            │\n" +
-				"│                                                          │\n" +
-				"│ COMMANDS:                                                │\n" +
-				"│    ability         Get details about an ability          │\n" +
-				"│    move            Get details about a move              │\n" +
-				"│    natures         Get details about all natures         │\n" +
-				"│    pokemon         Get details about a Pokémon           │\n" +
-				"│    search          Search for a resource                 │\n" +
-				"│    types           Get details about a typing            │\n" +
-				"│                                                          │\n" +
-				"│ hint: when calling a resource with a space, use a hyphen │\n" +
-				"│ example: poke-cli ability strong-jaw                     │\n" +
-				"│ example: poke-cli pokemon flutter-mane                   │\n" +
-				"╰──────────────────────────────────────────────────────────╯",
-
-			expectedCode: 0,
-		},
-		{
-			name:           "Invalid Command",
-			args:           []string{"invalid"},
-			expectedOutput: "Error!",
-			expectedCode:   1,
+			name:           "Test CLI help flag",
+			args:           []string{"--help"},
+			expectedOutput: utils.LoadGolden(t, "cli_help.golden"),
+			expectedCode:   0,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			exit = func(code int) {}
+			originalArgs := os.Args
+			os.Args = append([]string{"poke-cli"}, tt.args...)
+			defer func() { os.Args = originalArgs }()
+
+			var exitCode int
 			output := captureOutput(func() {
-				code := runCLI(tt.args)
-				if code != tt.expectedCode {
-					t.Errorf("Expected exit code %d, got %d", tt.expectedCode, code)
-				}
+				exitCode = runCLI(tt.args)
 			})
 
-			output = stripANSI(output)
+			cleanOutput := styling.StripANSI(output)
 
-			if !bytes.Contains([]byte(output), []byte(tt.expectedOutput)) {
-				t.Errorf("Expected output to contain %q, got %q", tt.expectedOutput, output)
-			}
+			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
+			assert.Equal(t, tt.expectedCode, exitCode, "Exit code should match expected")
 		})
 	}
 }

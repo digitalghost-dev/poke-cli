@@ -20,6 +20,11 @@ func TestTypesCommand(t *testing.T) {
 			args:           []string{"types", "--help"},
 			expectedOutput: utils.LoadGolden(t, "types_help.golden"),
 		},
+		{
+			name:           "Types help flag",
+			args:           []string{"types", "-h"},
+			expectedOutput: utils.LoadGolden(t, "types_help.golden"),
+		},
 	}
 
 	for _, tt := range tests {
@@ -28,7 +33,7 @@ func TestTypesCommand(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output := TypesCommand()
+			output, _ := TypesCommand()
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")

@@ -28,14 +28,19 @@ func TestMoveCommand(t *testing.T) {
 		expectedError  bool
 	}{
 		{
-			name:           "Select 'Shadow-Ball' as move",
-			args:           []string{"move", "shadow-ball"},
-			expectedOutput: utils.LoadGolden(t, "move.golden"),
-		},
-		{
 			name:           "Move help flag",
 			args:           []string{"move", "--help"},
 			expectedOutput: utils.LoadGolden(t, "move_help.golden"),
+		},
+		{
+			name:           "Move help flag",
+			args:           []string{"move", "-h"},
+			expectedOutput: utils.LoadGolden(t, "move_help.golden"),
+		},
+		{
+			name:           "Select 'Shadow-Ball' as move",
+			args:           []string{"move", "shadow-ball"},
+			expectedOutput: utils.LoadGolden(t, "move.golden"),
 		},
 	}
 
@@ -45,7 +50,7 @@ func TestMoveCommand(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output := MoveCommand()
+			output, _ := MoveCommand()
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")

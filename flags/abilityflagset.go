@@ -47,12 +47,18 @@ func PokemonAbilitiesFlag(w io.Writer, endpoint string, abilityName string) erro
 	const cols = 3
 	for i, name := range pokemonNames {
 		entry := fmt.Sprintf("%2d. %-30s", i+1, name)
-		fmt.Fprint(w, entry)
+		_, err := fmt.Fprint(w, entry)
+		if err != nil {
+			return err
+		}
 		if (i+1)%cols == 0 {
-			fmt.Fprintln(w)
+			_, err := fmt.Fprintln(w)
+			if err != nil {
+				return err
+			}
 		}
 	}
-	if _, err := fmt.Fprintln(w); err != nil {
+	if _, err := fmt.Fprint(w); err != nil {
 		return err
 	}
 

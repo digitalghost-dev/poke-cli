@@ -3,16 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/digitalghost-dev/poke-cli/cmd"
 	"github.com/digitalghost-dev/poke-cli/cmd/ability"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
 	"github.com/digitalghost-dev/poke-cli/cmd/natures"
+	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 	"runtime/debug"
+	"strings"
 )
 
 var version = "(devel)"
@@ -38,13 +40,9 @@ func currentVersion() {
 	}
 }
 
-func printWrapper(f func() string) func() {
-	return func() {
-		fmt.Println(f())
-	}
-}
-
 func runCLI(args []string) int {
+	var output strings.Builder
+
 	mainFlagSet := flag.NewFlagSet("poke-cli", flag.ContinueOnError)
 
 	// -l, --latest flag retrieves the latest Docker image and GitHub release versions available
@@ -97,27 +95,34 @@ func runCLI(args []string) int {
 	}
 
 	commands := map[string]func(){
-		"ability": printWrapper(ability.AbilityCommand),
-		"move":    printWrapper(move.MoveCommand),
-		"natures": printWrapper(natures.NaturesCommand),
-		"pokemon": cmd.PokemonCommand,
-		"types":   printWrapper(types.TypesCommand),
+		"ability": utils.HandleCommandOutput(ability.AbilityCommand),
+		"move":    utils.HandleCommandOutput(move.MoveCommand),
+		"natures": utils.HandleCommandOutput(natures.NaturesCommand),
+		"pokemon": utils.HandleCommandOutput(pokemon.PokemonCommand),
+		"types":   utils.HandleCommandOutput(types.TypesCommand),
 		"search":  search.SearchCommand,
 	}
 
-	if len(os.Args) < 2 {
+	cmdArg := ""
+	if len(os.Args) >= 2 {
+		cmdArg = os.Args[1]
+	}
+	cmdFunc, exists := commands[cmdArg]
+
+	switch {
+	case len(os.Args) < 2:
 		mainFlagSet.Usage()
 		return 1
-	} else if *latestFlag || *shortLatestFlag {
+	case *latestFlag || *shortLatestFlag:
 		flags.LatestFlag()
 		return 0
-	} else if *currentVersionFlag || *shortCurrentVersionFlag {
+	case *currentVersionFlag || *shortCurrentVersionFlag:
 		currentVersion()
 		return 0
-	} else if cmdFunc, exists := commands[os.Args[1]]; exists {
+	case exists:
 		cmdFunc()
 		return 0
-	} else {
+	default:
 		command := os.Args[1]
 		errMessage := styling.ErrorBorder.Render(
 			styling.ErrorColor.Render("Error!"),
@@ -131,7 +136,11 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
 			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h")),
 		)
-		fmt.Printf("%s\n", errMessage)
+		output.WriteString(errMessage)
+
+		// This would typically be returned in a function or passed to something else
+		fmt.Println(output.String())
+
 		return 1
 	}
 }

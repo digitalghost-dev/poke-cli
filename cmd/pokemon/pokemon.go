@@ -1,4 +1,4 @@
-package cmd
+package pokemon
 
 import (
 	"flag"
@@ -15,7 +15,9 @@ import (
 )
 
 // PokemonCommand processes the Pokémon command
-func PokemonCommand() {
+func PokemonCommand() (string, error) {
+	var output strings.Builder
+
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
 	flag.Usage = func() {
@@ -33,40 +35,24 @@ func PokemonCommand() {
 			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
-		fmt.Println(helpMessage)
+		output.WriteString(helpMessage)
 	}
 
 	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
-	// Pre-parse validation for empty image flag values
-	for _, arg := range args {
-		if strings.HasPrefix(arg, "-i=") && len(arg) == 3 {
-			fmt.Println(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
-			os.Exit(1)
-		}
-		if strings.HasPrefix(arg, "--image=") && len(arg) == 8 {
-			fmt.Println(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
-			os.Exit(1)
-		}
-		if strings.HasPrefix(arg, "-image=") && len(arg) == 7 {
-			fmt.Println(styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nThe image flag (-i or --image) requires a non-empty value.\nValid sizes are: lg, md, sm."))
-			os.Exit(1)
-		}
-	}
-
 	flag.Parse()
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return
+		return output.String(), nil
 	}
 
 	err := utils.ValidatePokemonArgs(args)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		output.WriteString(err.Error()) // This is the styled error
+		return output.String(), err
 	}
 
 	endpoint := strings.ToLower(args[1])
@@ -101,10 +87,12 @@ func PokemonCommand() {
 		inches = 0
 	}
 
-	fmt.Printf(
+	output.WriteString(fmt.Sprintf(
 		"Your selected Pokémon: %s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
-		capitalizedString, styling.ColoredBullet, pokemonID, styling.ColoredBullet, weightKilograms, weightPounds, styling.ColoredBullet, heightFeet, feet, inches,
-	)
+		capitalizedString, styling.ColoredBullet, pokemonID,
+		styling.ColoredBullet, weightKilograms, weightPounds,
+		styling.ColoredBullet, heightFeet, feet, inches,
+	))
 
 	if *imageFlag != "" || *shortImageFlag != "" {
 		// Determine the size based on the provided flags
@@ -114,30 +102,32 @@ func PokemonCommand() {
 		}
 
 		// Call the ImageFlag function with the specified size
-		if err := flags.ImageFlag(endpoint, pokemonName, size); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+		if err := flags.ImageFlag(&output, endpoint, pokemonName, size); err != nil {
+			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
 	if *abilitiesFlag || *shortAbilitiesFlag {
-		if err := flags.AbilitiesFlag(endpoint, pokemonName); err != nil {
-			fmt.Printf("Error: %s\n", err)
-			os.Exit(1)
+		if err := flags.AbilitiesFlag(&output, endpoint, pokemonName); err != nil {
+			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
 	if *typesFlag || *shortTypesFlag {
-		if err := flags.TypesFlag(endpoint, pokemonName); err != nil {
-			fmt.Printf("Error: %s\n", err)
-			os.Exit(1)
+		if err := flags.TypesFlag(&output, endpoint, pokemonName); err != nil {
+			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
 	if *statsFlag || *shortStatsFlag {
-		if err := flags.StatsFlag(endpoint, pokemonName); err != nil {
-			fmt.Printf("Error: %s\n", err)
-			os.Exit(1)
+		if err := flags.StatsFlag(&output, endpoint, pokemonName); err != nil {
+			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+			return "", fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
+
+	return output.String(), nil
 }

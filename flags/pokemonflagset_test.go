@@ -50,7 +50,7 @@ func TestAbilitiesFlag(t *testing.T) {
 	os.Stdout = w
 
 	// Call the function with a known Pokémon (e.g., bulbasaur)
-	err := AbilitiesFlag("pokemon", "bulbasaur")
+	err := AbilitiesFlag(&output, "pokemon", "bulbasaur")
 
 	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
@@ -86,7 +86,7 @@ func TestImageFlag(t *testing.T) {
 	os.Stdout = w
 
 	// Call the function with a known Pokémon (e.g., bulbasaur)
-	err := ImageFlag("pokemon", "bulbasaur", "sm")
+	err := ImageFlag(&output, "pokemon", "bulbasaur", "sm")
 
 	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
@@ -122,7 +122,8 @@ func TestImageFlagOptions(t *testing.T) {
 	// Test valid options
 	for _, option := range validOptions {
 		t.Run("ValidOption_"+option, func(t *testing.T) {
-			err := ImageFlag("pokemon", "bulbasaur", option)
+			var buf bytes.Buffer
+			err := ImageFlag(&buf, "pokemon", "bulbasaur", option)
 			assert.NoError(t, err, "ImageFlag should not return an error for valid option '%s'", option)
 		})
 	}
@@ -133,7 +134,8 @@ func TestImageFlagOptions(t *testing.T) {
 	// Test invalid options
 	for _, option := range invalidOptions {
 		t.Run("InvalidOption_"+option, func(t *testing.T) {
-			err := ImageFlag("pokemon", "bulbasaur", option)
+			var buf bytes.Buffer
+			err := ImageFlag(&buf, "pokemon", "bulbasaur", option)
 			assert.Error(t, err, "ImageFlag should return an error for invalid option '%s'", option)
 		})
 	}
@@ -147,7 +149,7 @@ func TestStatsFlag(t *testing.T) {
 	os.Stdout = w
 
 	// Call the StatsFlag function with a valid Pokémon
-	err := StatsFlag("pokemon", "bulbasaur")
+	err := StatsFlag(&output, "pokemon", "bulbasaur")
 
 	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
@@ -188,7 +190,7 @@ func TestTypesFlag(t *testing.T) {
 	os.Stdout = w
 
 	// Call the TypesFlag function with a valid Pokémon
-	err := TypesFlag("pokemon", "bulbasaur")
+	err := TypesFlag(&output, "pokemon", "bulbasaur")
 
 	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {

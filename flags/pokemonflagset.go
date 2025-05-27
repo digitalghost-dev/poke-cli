@@ -12,12 +12,15 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"image"
+	"io"
 	"net/http"
 	"os"
 	"strings"
 )
 
-func header(header string) {
+func header(header string) string {
+	var output strings.Builder
+
 	HeaderBold := lipgloss.NewStyle().
 		BorderStyle(lipgloss.NormalBorder()).
 		BorderForeground(lipgloss.Color("#FFCC00")).
@@ -25,7 +28,9 @@ func header(header string) {
 		Bold(true).
 		Render(header)
 
-	fmt.Println(HeaderBold)
+	output.WriteString(HeaderBold)
+
+	return output.String()
 }
 
 func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool) {
@@ -61,10 +66,14 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
 }
 
-func AbilitiesFlag(endpoint string, pokemonName string) error {
+func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
-	header("Abilities")
+	// Print the header from header func
+	_, err := fmt.Fprintln(w, header("Abilities"))
+	if err != nil {
+		return err
+	}
 
 	// Anonymous function to format ability names
 	formatAbilityName := func(name string) string {
@@ -95,20 +104,30 @@ func AbilitiesFlag(endpoint string, pokemonName string) error {
 
 		switch pokeAbility.Slot {
 		case 1, 2:
-			fmt.Printf("Ability %d: %s\n", pokeAbility.Slot, formattedName)
+			_, err := fmt.Fprintf(w, "Ability %d: %s\n", pokeAbility.Slot, formattedName)
+			if err != nil {
+				return err
+			}
 		default:
-			fmt.Printf("Hidden Ability: %s\n", formattedName)
+			_, err := fmt.Fprintf(w, "Hidden Ability: %s\n", formattedName)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
-func ImageFlag(endpoint string, pokemonName string, size string) error {
+func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
-	header("Image")
+	// Print the header from header func
+	_, err := fmt.Fprintln(w, header("Image"))
+	if err != nil {
+		return err
+	}
 
 	// Anonymous function to transform the image to a string
 	// ToString generates an ASCII representation of the image with color
@@ -171,18 +190,25 @@ func ImageFlag(endpoint string, pokemonName string, size string) error {
 	}
 
 	imgStr := ToString(dimensions[0], dimensions[1], img)
-	fmt.Println(imgStr)
+	_, err = fmt.Fprint(w, imgStr)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func StatsFlag(endpoint string, pokemonName string) error {
+func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
-	header("Base Stats")
+	// Print the header from header func
+	_, err := fmt.Fprintln(w, header("Base Stats"))
+	if err != nil {
+		return err
+	}
 
-	// Anonymous function to map stat values to categories
+	// Anonymous function to map stat values to specific categories
 	getStatCategory := func(value int) string {
 		switch {
 		case value < 20:
@@ -205,7 +231,10 @@ func StatsFlag(endpoint string, pokemonName string) error {
 		scaledValue := (value * maxWidth) / maxValue
 		bar := strings.Repeat("▇", scaledValue)
 		coloredBar := style.Render(bar)
-		fmt.Printf("%-10s %s %d\n", label, coloredBar, value)
+		_, err := fmt.Fprintf(w, "%-10s %s %d\n", label, coloredBar, value)
+		if err != nil {
+			return
+		}
 	}
 
 	// Mapping from API stat names to custom display names
@@ -227,7 +256,7 @@ func StatsFlag(endpoint string, pokemonName string) error {
 		"highest": "#00C2B8",
 	}
 
-	// Find the maxium stat value
+	// Find the maximum stat value
 	maxValue := 0
 	for _, stat := range pokemonStruct.Stats {
 		if stat.BaseStat > maxValue {
@@ -257,12 +286,15 @@ func StatsFlag(endpoint string, pokemonName string) error {
 		totalBaseStats += stat.BaseStat
 	}
 
-	fmt.Printf("%-10s %d\n", "Total", totalBaseStats)
+	_, err = fmt.Fprintf(w, "%-10s %d\n", "Total", totalBaseStats)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func TypesFlag(endpoint string, pokemonName string) error {
+func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
@@ -287,17 +319,27 @@ func TypesFlag(endpoint string, pokemonName string) error {
 		"fairy":    "#EE99EE",
 	}
 
-	header("Typing")
+	// Print the header from header func
+	_, err := fmt.Fprintln(w, header("Typing"))
+	if err != nil {
+		return err
+	}
 
 	for _, pokeType := range pokemonStruct.Types {
 		colorHex, exists := colorMap[pokeType.Type.Name]
 		if exists {
 			color := lipgloss.Color(colorHex)
 			style := lipgloss.NewStyle().Bold(true).Foreground(color)
-			styledName := style.Render(cases.Title(language.English).String(pokeType.Type.Name)) // Apply styling here
-			fmt.Printf("Type %d: %s\n", pokeType.Slot, styledName)                               // Interpolate styled text
+			styledName := style.Render(cases.Title(language.English).String(pokeType.Type.Name))
+			_, err := fmt.Fprintf(w, "Type %d: %s\n", pokeType.Slot, styledName)
+			if err != nil {
+				return err
+			}
 		} else {
-			fmt.Printf("Type %d: %s\n", pokeType.Slot, cases.Title(language.English).String(pokeType.Type.Name))
+			_, err := fmt.Fprintf(w, "Type %d: %s\n", pokeType.Slot, cases.Title(language.English).String(pokeType.Type.Name))
+			if err != nil {
+				return err
+			}
 		}
 	}
 

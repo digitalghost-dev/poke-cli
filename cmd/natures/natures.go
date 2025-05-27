@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func NaturesCommand() string {
+func NaturesCommand() (string, error) {
 	var output strings.Builder
 
 	// Define the usage function
@@ -28,12 +28,12 @@ func NaturesCommand() string {
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return output.String()
+		return output.String(), nil
 	}
 
 	if err := utils.ValidateNaturesArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
-		return output.String()
+		return output.String(), err
 	}
 
 	output.WriteString("Natures affect the growth of a Pokémon.\n" +
@@ -63,5 +63,5 @@ func NaturesCommand() string {
 
 	output.WriteString(t.Render() + "\n")
 
-	return output.String()
+	return output.String(), nil
 }

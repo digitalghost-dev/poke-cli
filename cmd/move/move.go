@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-func MoveCommand() string {
+func MoveCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
@@ -32,12 +32,12 @@ func MoveCommand() string {
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return output.String()
+		return output.String(), nil
 	}
 
 	if err := utils.ValidateMoveArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
-		return output.String()
+		return output.String(), err
 	}
 
 	args := flag.Args()
@@ -49,7 +49,7 @@ func MoveCommand() string {
 	moveInfoContainer(&output, moveStruct, moveName)
 	moveEffectContainer(&output, moveStruct)
 
-	return output.String()
+	return output.String(), nil
 }
 
 func moveInfoContainer(output *strings.Builder, moveStruct structs.MoveJSONStruct, moveName string) {
