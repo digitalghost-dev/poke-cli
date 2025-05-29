@@ -13,8 +13,10 @@ import (
 	"golang.org/x/text/language"
 	"image"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -33,7 +35,7 @@ func header(header string) string {
 	return output.String()
 }
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool) {
+func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
 	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the Pokémon's abilities")
@@ -41,6 +43,9 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 
 	imageFlag := pokeFlags.String("image", "", "Print the Pokémon's default sprite")
 	shortImageFlag := pokeFlags.String("i", "", "Print the Pokémon's default sprite")
+
+	moveFlag := pokeFlags.Bool("moves", false, "Print the Pokémon's learnable moves")
+	shortMoveFlag := pokeFlags.Bool("m", false, "Print the Pokémon's learnable moves")
 
 	statsFlag := pokeFlags.Bool("stats", false, "Print the Pokémon's base stats")
 	shortStatsFlag := pokeFlags.Bool("s", false, "Print the Pokémon's base stats")
@@ -56,6 +61,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
+			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokemon's learnable moves."),
 			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
 			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
@@ -63,7 +69,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 		fmt.Println(helpMessage)
 	}
 
-	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
+	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
 }
 
 func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
@@ -193,6 +199,59 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	_, err = fmt.Fprint(w, imgStr)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
+	baseURL := "https://pokeapi.co/api/v2/"
+	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+
+	type MoveInfo struct {
+		Accuracy int
+		Level    int
+		Name     string
+		Power    int
+		Type     string
+	}
+
+	_, err := fmt.Fprintln(w, header("Moves"))
+	if err != nil {
+		return err
+	}
+
+	var moves []MoveInfo
+
+	for _, pokeMove := range pokemonStruct.Moves {
+		for _, detail := range pokeMove.VersionGroupDetails {
+			if detail.VersionGroup.Name == "scarlet-violet" && detail.MoveLearnedMethod.Name == "level-up" {
+				moveName := pokeMove.Move.Name
+				moveStruct, _, err := connections.MoveApiCall("move", moveName, baseURL)
+				if err != nil {
+					log.Printf("Error fetching move %s: %v", moveName, err)
+					continue // Skip moves that fail to fetch
+				}
+
+				moves = append(moves, MoveInfo{
+					Accuracy: moveStruct.Accuracy,
+					Level:    detail.LevelLearnedAt,
+					Name:     moveName,
+					Power:    moveStruct.Power,
+					Type:     moveStruct.Type.Name,
+				})
+			}
+		}
+	}
+
+	// Sort moves by Level in ascending order
+	sort.Slice(moves, func(i, j int) bool {
+		return moves[i].Level < moves[j].Level
+	})
+
+	// Print formatted output
+	for _, m := range moves {
+		fmt.Fprintf(w, "%s - Level: %d, Power: %d // Acc: %d -- %s\n", m.Name, m.Level, m.Power, m.Accuracy, m.Type)
 	}
 
 	return nil
