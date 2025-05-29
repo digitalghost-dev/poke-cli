@@ -83,6 +83,23 @@ type PokemonJSONStruct struct {
 		Hidden bool `json:"hidden"`
 		Slot   int  `json:"slot"`
 	} `json:"abilities"`
+	Moves []struct {
+		Move struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"move"`
+		VersionGroupDetails []struct {
+			LevelLearnedAt    int `json:"level_learned_at"`
+			MoveLearnedMethod struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"move_learn_method"`
+			VersionGroup struct {
+				Name string `json:"name"`
+				URL  string `json:"url"`
+			} `json:"version_group"`
+		} `json:"version_group_details"`
+	} `json:"moves"`
 	Types []struct {
 		Slot int `json:"slot"`
 		Type struct {
