@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
@@ -17,6 +18,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -208,6 +210,11 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
+	_, err := fmt.Fprintln(w, header("Moves"))
+	if err != nil {
+		return err
+	}
+
 	type MoveInfo struct {
 		Accuracy int
 		Level    int
@@ -216,44 +223,62 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 		Type     string
 	}
 
-	_, err := fmt.Fprintln(w, header("Moves"))
-	if err != nil {
-		return err
-	}
-
 	var moves []MoveInfo
 
 	for _, pokeMove := range pokemonStruct.Moves {
 		for _, detail := range pokeMove.VersionGroupDetails {
-			if detail.VersionGroup.Name == "scarlet-violet" && detail.MoveLearnedMethod.Name == "level-up" {
-				moveName := pokeMove.Move.Name
-				moveStruct, _, err := connections.MoveApiCall("move", moveName, baseURL)
-				if err != nil {
-					log.Printf("Error fetching move %s: %v", moveName, err)
-					continue // Skip moves that fail to fetch
-				}
-
-				moves = append(moves, MoveInfo{
-					Accuracy: moveStruct.Accuracy,
-					Level:    detail.LevelLearnedAt,
-					Name:     moveName,
-					Power:    moveStruct.Power,
-					Type:     moveStruct.Type.Name,
-				})
+			if detail.VersionGroup.Name != "scarlet-violet" || detail.MoveLearnedMethod.Name != "level-up" {
+				continue
 			}
+
+			moveName := pokeMove.Move.Name
+			moveStruct, _, err := connections.MoveApiCall("move", moveName, baseURL)
+			if err != nil {
+				log.Printf("Error fetching move %s: %v", moveName, err)
+				continue
+			}
+
+			moves = append(moves, MoveInfo{
+				Accuracy: moveStruct.Accuracy,
+				Level:    detail.LevelLearnedAt,
+				Name:     moveName,
+				Power:    moveStruct.Power,
+				Type:     moveStruct.Type.Name,
+			})
 		}
 	}
 
-	// Sort moves by Level in ascending order
+	if len(moves) == 0 {
+		fmt.Fprintln(w, "No level-up moves found for Scarlet & Violet.")
+		return nil
+	}
+
+	// Sort by level
 	sort.Slice(moves, func(i, j int) bool {
 		return moves[i].Level < moves[j].Level
 	})
 
-	// Print formatted output
+	// Convert to table rows
+	var rows [][]string
 	for _, m := range moves {
-		fmt.Fprintf(w, "%s - Level: %d, Power: %d // Acc: %d -- %s\n", m.Name, m.Level, m.Power, m.Accuracy, m.Type)
+		rows = append(rows, []string{
+			m.Name,
+			m.Type,
+			strconv.Itoa(m.Accuracy),
+			strconv.Itoa(m.Level),
+			strconv.Itoa(m.Power),
+		})
 	}
 
+	// Build and print table
+	color := lipgloss.AdaptiveColor{Light: "#4B4B4B", Dark: "#D3D3D3"}
+	t := table.New().
+		Border(lipgloss.NormalBorder()).
+		BorderStyle(lipgloss.NewStyle().Foreground(color)).
+		Headers("Type", "Name", "Accuracy", "Level", "Power").
+		Rows(rows...)
+
+	fmt.Fprintln(w, t)
 	return nil
 }
 
