@@ -1,0 +1,28 @@
+Your selected Pokémon: Greninja
+• National Pokédex #: 658
+• Weight: 40.0kg (88.2 lbs)
+• Height: 4.9m (4′11″)
+───────────────
+Learnable Moves
+┌──────────────────┬────────┬──────────┬────────┬─────┐
+│Name              │Level   │Type      │Accuracy│Power│
+├──────────────────┼────────┼──────────┼────────┼─────┤
+│Water Shuriken    │0       │Water     │100     │15   │
+│Pound             │1       │Normal    │100     │40   │
+│Growl             │1       │Normal    │100     │0    │
+│Water Gun         │1       │Water     │100     │40   │
+│Quick Attack      │1       │Normal    │100     │40   │
+│Night Slash       │1       │Dark      │100     │70   │
+│Role Play         │1       │Psychic   │0       │0    │
+│Haze              │1       │Ice       │0       │0    │
+│Lick              │10      │Ghost     │100     │30   │
+│Water Pulse       │14      │Water     │100     │60   │
+│Smokescreen       │19      │Normal    │100     │0    │
+│Shadow Sneak      │23      │Ghost     │100     │40   │
+│Spikes            │28      │Ground    │0       │0    │
+│Aerial Ace        │33      │Flying    │0       │60   │
+│Substitute        │42      │Normal    │0       │0    │
+│Extrasensory      │49      │Psychic   │100     │80   │
+│Double Team       │56      │Normal    │0       │0    │
+│Hydro Pump        │68      │Water     │80      │110  │
+└──────────────────┴────────┴──────────┴────────┴─────┘
