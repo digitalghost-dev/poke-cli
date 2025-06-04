@@ -75,7 +75,7 @@ func ValidatePokemonArgs(args []string) error {
 		return fmt.Errorf("%s", errMessage)
 	}
 
-	if err := checkLength(args, 7); err != nil {
+	if err := checkLength(args, 8); err != nil {
 		return err
 	}
 
