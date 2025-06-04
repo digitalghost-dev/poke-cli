@@ -210,7 +210,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
-	_, err := fmt.Fprintln(w, header("Moves"))
+	_, err := fmt.Fprintln(w, header("Learnable Moves"))
 	if err != nil {
 		return err
 	}
@@ -238,18 +238,24 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 				continue
 			}
 
+			capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
+			capitalizedType := cases.Title(language.English).String(moveStruct.Type.Name)
+
 			moves = append(moves, MoveInfo{
 				Accuracy: moveStruct.Accuracy,
 				Level:    detail.LevelLearnedAt,
-				Name:     moveName,
+				Name:     capitalizedMove,
 				Power:    moveStruct.Power,
-				Type:     moveStruct.Type.Name,
+				Type:     capitalizedType,
 			})
 		}
 	}
 
 	if len(moves) == 0 {
-		fmt.Fprintln(w, "No level-up moves found for Scarlet & Violet.")
+		_, err := fmt.Fprintln(w, "No level-up moves found for Scarlet & Violet.")
+		if err != nil {
+			return err
+		}
 		return nil
 	}
 
@@ -261,24 +267,53 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	// Convert to table rows
 	var rows [][]string
 	for _, m := range moves {
+		styledType := lipgloss.
+			NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color(styling.ColorMap[strings.ToLower(m.Type)])).
+			Render(m.Type)
+
 		rows = append(rows, []string{
 			m.Name,
-			m.Type,
-			strconv.Itoa(m.Accuracy),
 			strconv.Itoa(m.Level),
+			styledType,
+			strconv.Itoa(m.Accuracy),
 			strconv.Itoa(m.Power),
 		})
 	}
 
 	// Build and print table
 	color := lipgloss.AdaptiveColor{Light: "#4B4B4B", Dark: "#D3D3D3"}
+
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
 		BorderStyle(lipgloss.NewStyle().Foreground(color)).
-		Headers("Type", "Name", "Accuracy", "Level", "Power").
+		StyleFunc(func(row, column int) lipgloss.Style {
+			var style lipgloss.Style
+
+			switch column {
+			case 0:
+				style = style.Width(18)
+			case 1:
+				style = style.Width(8)
+			case 2:
+				style = style.Width(10)
+			case 3:
+				style = style.Width(10)
+			case 4:
+				style = style.Width(8)
+			}
+
+			return style
+		}).
+		Headers("Name", "Level", "Type", "Accuracy", "Power").
 		Rows(rows...)
 
-	fmt.Fprintln(w, t)
+	_, err = fmt.Fprintln(w, t)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -382,27 +417,6 @@ func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
 	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
-	colorMap := map[string]string{
-		"normal":   "#B7B7A9",
-		"fire":     "#FF4422",
-		"water":    "#3499FF",
-		"electric": "#FFCC33",
-		"grass":    "#77CC55",
-		"ice":      "#66CCFF",
-		"fighting": "#BB5544",
-		"poison":   "#AA5699",
-		"ground":   "#DEBB55",
-		"flying":   "#889AFF",
-		"psychic":  "#FF5599",
-		"bug":      "#AABC22",
-		"rock":     "#BBAA66",
-		"ghost":    "#6666BB",
-		"dragon":   "#7766EE",
-		"dark":     "#775544",
-		"steel":    "#AAAABB",
-		"fairy":    "#EE99EE",
-	}
-
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Typing"))
 	if err != nil {
@@ -410,7 +424,7 @@ func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	}
 
 	for _, pokeType := range pokemonStruct.Types {
-		colorHex, exists := colorMap[pokeType.Type.Name]
+		colorHex, exists := styling.ColorMap[pokeType.Type.Name]
 		if exists {
 			color := lipgloss.Color(colorHex)
 			style := lipgloss.NewStyle().Bold(true).Foreground(color)
