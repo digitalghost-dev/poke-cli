@@ -31,6 +31,7 @@ func PokemonCommand() (string, error) {
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
+			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokemon's learnable moves."),
 			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
 			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
@@ -38,7 +39,7 @@ func PokemonCommand() (string, error) {
 		output.WriteString(helpMessage)
 	}
 
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -110,6 +111,13 @@ func PokemonCommand() (string, error) {
 
 	if *abilitiesFlag || *shortAbilitiesFlag {
 		if err := flags.AbilitiesFlag(&output, endpoint, pokemonName); err != nil {
+			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+			return "", fmt.Errorf("error parsing flags: %w", err)
+		}
+	}
+
+	if *moveFlag || *shortMoveFlag {
+		if err := flags.MovesFlag(&output, endpoint, pokemonName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 			return "", fmt.Errorf("error parsing flags: %w", err)
 		}

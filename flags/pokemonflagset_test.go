@@ -13,7 +13,7 @@ import (
 
 func TestSetupPokemonFlagSet(t *testing.T) {
 	// Call the function to get the flag set and flags
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := SetupPokemonFlagSet()
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := SetupPokemonFlagSet()
 
 	// Check flag set properties
 	assert.NotNil(t, pokeFlags, "Flag set should not be nil")
@@ -29,6 +29,8 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 		{shortAbilitiesFlag, false, "Short abilities flag should be 'a'"},
 		{imageFlag, "", "Image flag default value should be 'md'"},
 		{shortImageFlag, "", "Short image flag default value should be 'md'"},
+		{moveFlag, false, "Move flag default value should be 'moves'"},
+		{shortMoveFlag, false, "Short move flag default value should be 'm'"},
 		{typesFlag, false, "Types flag should be 'types'"},
 		{shortTypesFlag, false, "Short types flag should be 't'"},
 		{statsFlag, false, "Stats flag should be 'stats'"},

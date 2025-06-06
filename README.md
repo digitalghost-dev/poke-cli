@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.2.4?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.3.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -76,11 +76,11 @@ View future plans in the [Roadmap](#roadmap) section.
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.2.4 <command> [subcommand] flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.3.0 <command> [subcommand] flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.2.4 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.3.0 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -150,7 +150,7 @@ Below is a list of the planned/completed commands and flags:
     - [x] `-i | --image`: display a pixel image of the Pokémon.
     - [x] `-s | --stats`: display the Pokémon's base stats.
     - [x] `-t | --types`: display the Pokémon's typing.
-    - [ ] `-m | --moves`: display learnable moves.
+    - [x] `-m | --moves`: display learnable moves.
 - [x] `search`: search for a resource (`ability`, `berry`, `pokemon`, `move`)
 - [ ] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.
