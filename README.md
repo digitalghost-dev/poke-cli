@@ -150,7 +150,7 @@ Below is a list of the planned/completed commands and flags:
     - [x] `-i | --image`: display a pixel image of the Pokémon.
     - [x] `-s | --stats`: display the Pokémon's base stats.
     - [x] `-t | --types`: display the Pokémon's typing.
-    - [ ] `-m | --moves`: display learnable moves.
+    - [x] `-m | --moves`: display learnable moves.
 - [x] `search`: search for a resource (`ability`, `berry`, `pokemon`, `move`)
 - [ ] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.
