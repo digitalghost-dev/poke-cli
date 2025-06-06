@@ -165,7 +165,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 
 	// Testing too many arguments
 	tooManyArgs := [][]string{
-		{"poke-cli", "pokemon", "hypo", "--abilities", "-s", "--types", "--image=sm", "-m"},
+		{"poke-cli", "pokemon", "hypo", "--abilities", "-s", "--types", "--image=sm", "-m", "-p"},
 	}
 
 	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
