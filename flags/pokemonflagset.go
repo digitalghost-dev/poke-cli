@@ -75,7 +75,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 }
 
 func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
-	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Abilities"))
@@ -129,7 +129,7 @@ func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Image"))
@@ -208,7 +208,7 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 
 func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	_, err := fmt.Fprintln(w, header("Learnable Moves"))
 	if err != nil {
@@ -319,7 +319,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Base Stats"))
@@ -415,7 +415,7 @@ func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _, _, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Typing"))

@@ -65,19 +65,19 @@ func PokemonCommand() (string, error) {
 		os.Exit(1)
 	}
 
-	_, pokemonName, pokemonID, pokemonWeight, pokemonHeight, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, pokemonName, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		output.WriteString(err.Error())
+		return output.String(), err
 	}
 	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
 
 	// Weight calculation
-	weightKilograms := float64(pokemonWeight) / 10
+	weightKilograms := float64(pokemonStruct.Weight) / 10
 	weightPounds := float64(weightKilograms) * 2.20462
 
 	// Height calculation
-	heightMeters := float64(pokemonHeight) / 10
+	heightMeters := float64(pokemonStruct.Height) / 10
 	heightFeet := heightMeters * 3.28084
 	feet := int(heightFeet)
 	inches := int(math.Round((heightFeet - float64(feet)) * 12)) // Use math.Round to avoid truncation
@@ -90,7 +90,7 @@ func PokemonCommand() (string, error) {
 
 	output.WriteString(fmt.Sprintf(
 		"Your selected Pokémon: %s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
-		capitalizedString, styling.ColoredBullet, pokemonID,
+		capitalizedString, styling.ColoredBullet, pokemonStruct.ID,
 		styling.ColoredBullet, weightKilograms, weightPounds,
 		styling.ColoredBullet, heightFeet, feet, inches,
 	))
