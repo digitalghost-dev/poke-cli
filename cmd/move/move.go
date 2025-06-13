@@ -44,7 +44,11 @@ func MoveCommand() (string, error) {
 	endpoint := strings.ToLower(args[0])
 	moveName := strings.ToLower(args[1])
 
-	moveStruct, moveName, _ := connections.MoveApiCall(endpoint, moveName, connections.APIURL)
+	moveStruct, moveName, err := connections.MoveApiCall(endpoint, moveName, connections.APIURL)
+	if err != nil {
+		output.WriteString(err.Error())
+		return output.String(), err
+	}
 
 	moveInfoContainer(&output, moveStruct, moveName)
 	moveEffectContainer(&output, moveStruct)
