@@ -31,7 +31,9 @@ func TestHandleCommandOutput_Success(t *testing.T) {
 		return "it worked", nil
 	}
 
-	output := captureOutput(&os.Stdout, HandleCommandOutput(fn))
+	output := captureOutput(&os.Stdout, func() {
+		HandleCommandOutput(fn)()
+	})
 
 	if output != "it worked\n" {
 		t.Errorf("expected 'it worked\\n', got %q", output)
@@ -43,7 +45,9 @@ func TestHandleCommandOutput_Error(t *testing.T) {
 		return "something failed", errors.New("error")
 	}
 
-	output := captureOutput(&os.Stderr, HandleCommandOutput(fn))
+	output := captureOutput(&os.Stderr, func() {
+		HandleCommandOutput(fn)()
+	})
 
 	if output != "something failed\n" {
 		t.Errorf("expected 'something failed\\n', got %q", output)
