@@ -94,23 +94,28 @@ func runCLI(args []string) int {
 		return 2
 	}
 
-	commands := map[string]func(){
+	remainingArgs := mainFlagSet.Args()
+
+	commands := map[string]func() int{
 		"ability": utils.HandleCommandOutput(ability.AbilityCommand),
 		"move":    utils.HandleCommandOutput(move.MoveCommand),
 		"natures": utils.HandleCommandOutput(natures.NaturesCommand),
 		"pokemon": utils.HandleCommandOutput(pokemon.PokemonCommand),
 		"types":   utils.HandleCommandOutput(types.TypesCommand),
-		"search":  search.SearchCommand,
+		"search": func() int {
+			search.SearchCommand()
+			return 0
+		},
 	}
 
 	cmdArg := ""
-	if len(os.Args) >= 2 {
-		cmdArg = os.Args[1]
+	if len(remainingArgs) >= 1 {
+		cmdArg = remainingArgs[0]
 	}
 	cmdFunc, exists := commands[cmdArg]
 
 	switch {
-	case len(os.Args) < 2:
+	case len(remainingArgs) == 0 && !*latestFlag && !*shortLatestFlag && !*currentVersionFlag && !*shortCurrentVersionFlag:
 		mainFlagSet.Usage()
 		return 1
 	case *latestFlag || *shortLatestFlag:
@@ -120,13 +125,11 @@ func runCLI(args []string) int {
 		currentVersion()
 		return 0
 	case exists:
-		cmdFunc()
-		return 0
+		return cmdFunc()
 	default:
-		command := os.Args[1]
 		errMessage := styling.ErrorBorder.Render(
 			styling.ErrorColor.Render("Error!"),
-			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", command)),
+			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", cmdArg)),
 			styling.StyleBold.Render("\nCommands:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
 			fmt.Sprintf("\n\t%-15s %s", "move", "Get details about a move"),
@@ -138,7 +141,6 @@ func runCLI(args []string) int {
 		)
 		output.WriteString(errMessage)
 
-		// This would typically be returned in a function or passed to something else
 		fmt.Println(output.String())
 
 		return 1
