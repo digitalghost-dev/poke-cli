@@ -81,11 +81,11 @@ func MoveApiCall(endpoint string, moveName string, baseURL string) (structs.Move
 		return structs.MoveJSONStruct{}, "", fmt.Errorf("%s", errMessage)
 	}
 
-	return moveStruct, moveName, nil
+	return moveStruct, moveStruct.Name, nil
 }
 
 // PokemonApiCall function for calling the pokemon endpoint of the pokeAPI
-func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (structs.PokemonJSONStruct, string, int, int, int, error) {
+func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (structs.PokemonJSONStruct, string, error) {
 	fullURL := baseURL + endpoint + "/" + pokemonName
 
 	var pokemonStruct structs.PokemonJSONStruct
@@ -96,10 +96,10 @@ func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (struct
 			styling.ErrorColor.Render("Error!"),
 			"\nPokémon not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
-		return structs.PokemonJSONStruct{}, "", 0, 0, 0, fmt.Errorf("%s", errMessage)
+		return structs.PokemonJSONStruct{}, "", fmt.Errorf("%s", errMessage)
 	}
 
-	return pokemonStruct, pokemonStruct.Name, pokemonStruct.ID, pokemonStruct.Weight, pokemonStruct.Height, nil
+	return pokemonStruct, pokemonStruct.Name, nil
 }
 
 // TypesApiCall function for calling the type endpoint of the pokeAPI

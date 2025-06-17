@@ -11,24 +11,22 @@ import (
 	"runtime"
 )
 
-func latestDockerImage() {
+type commandRunner func(name string, args ...string) *exec.Cmd
+
+func latestDockerImage(run commandRunner) {
 	var cmd *exec.Cmd
 
 	if runtime.GOOS == "windows" {
-		// Windows PowerShell equivalent
-		cmd = exec.Command("powershell", "-Command", `
-			$tags = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1";
-			$tags.results[0].name
-		`)
+		cmd = run("powershell", "-Command", `
+            $tags = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1";
+            $tags.results[0].name
+        `)
 	} else {
-		// Check if curl is available
 		_, err := exec.LookPath("curl")
 		if err == nil {
-			// Use curl if available
-			cmd = exec.Command("sh", "-c", `curl -s https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
+			cmd = run("sh", "-c", `curl -s https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
 		} else {
-			// Use wget as a fallback
-			cmd = exec.Command("sh", "-c", `wget -qO- https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
+			cmd = run("sh", "-c", `wget -qO- https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
 		}
 	}
 
@@ -90,6 +88,6 @@ func latestRelease(githubAPIURL string) {
 
 func LatestFlag() {
 	// cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
-	latestDockerImage()
+	latestDockerImage(exec.Command)
 	latestRelease("https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest")
 }

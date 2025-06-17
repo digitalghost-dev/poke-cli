@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"runtime"
+	"os/exec"
 	"testing"
 )
 
@@ -36,17 +36,38 @@ func captureOutput(f func()) string {
 }
 
 func TestLatestDockerImage(t *testing.T) {
-	output := captureOutput(func() { latestDockerImage() })
+	tests := []struct {
+		name        string
+		mockRunner  func(name string, args ...string) *exec.Cmd
+		expectError bool
+		expectText  string
+	}{
+		{
+			name: "success",
+			mockRunner: func(name string, args ...string) *exec.Cmd {
+				return exec.Command("echo", "v1.0.0\n")
+			},
+			expectError: false,
+			expectText:  "Latest Docker image version: v1.0.0",
+		},
+		{
+			name: "error from command",
+			mockRunner: func(name string, args ...string) *exec.Cmd {
+				return exec.Command("false") // returns error
+			},
+			expectError: true,
+			expectText:  "Error running command",
+		},
+	}
 
-	assert.Contains(t, output, "Latest Docker image version:")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := captureOutput(func() {
+				latestDockerImage(tt.mockRunner)
+			})
 
-	// Since the actual API response might change, avoid testing the exact version number.
-	// Instead, check if a non-empty version string is printed.
-
-	if runtime.GOOS == "windows" {
-		assert.Contains(t, output, "\n")
-	} else {
-		assert.Contains(t, output, "\n")
+			assert.Contains(t, output, tt.expectText)
+		})
 	}
 }
 
