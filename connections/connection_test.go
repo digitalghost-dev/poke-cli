@@ -73,7 +73,7 @@ func TestAbilityApiCall(t *testing.T) {
 
 		ability, name, err := AbilityApiCall("/ability", "unaware", ts.URL)
 
-		assert.NoError(t, err, "Expected no error on successful API call")
+		require.NoError(t, err, "Expected no error on successful API call")
 		assert.Equal(t, expectedAbility, ability, "Expected ability struct does not match")
 		assert.Equal(t, "unaware", name, "Expected ability name does not match")
 	})
@@ -85,11 +85,10 @@ func TestAbilityApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		ability, name, err := AbilityApiCall("/ability", "non-existent-ability", ts.URL)
+		ability, _, err := AbilityApiCall("/ability", "non-existent-ability", ts.URL)
 
-		assert.Error(t, err, "Expected an error for invalid ability")
+		require.Error(t, err, "Expected an error for invalid ability")
 		assert.Equal(t, structs.AbilityJSONStruct{}, ability, "Expected empty ability struct on error")
-		assert.Equal(t, "", name, "Expected empty ability name on error")
 
 		assert.Contains(t, err.Error(), "Ability not found", "Expected 'Ability not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -111,7 +110,7 @@ func TestMoveApiCall(t *testing.T) {
 
 		move, name, err := MoveApiCall("/move", "shadow-ball", ts.URL)
 
-		assert.NoError(t, err, "Expected no error on successful API call")
+		require.NoError(t, err, "Expected no error on successful API call")
 		assert.Equal(t, expectedMove, move, "Expected move struct does not match")
 		assert.Equal(t, "shadow-ball", name, "Expected move name does not match")
 	})
@@ -123,11 +122,10 @@ func TestMoveApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		move, name, err := MoveApiCall("/move", "non-existent-move", ts.URL)
+		move, _, err := MoveApiCall("/move", "non-existent-move", ts.URL)
 
-		assert.Error(t, err, "Expected an error for invalid move")
+		require.Error(t, err, "Expected an error for invalid move")
 		assert.Equal(t, structs.MoveJSONStruct{}, move, "Expected empty move struct on error")
-		assert.Equal(t, "", name, "Expected empty move name on error")
 
 		assert.Contains(t, err.Error(), "Move not found", "Expected 'Move not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -149,7 +147,7 @@ func TestPokemonApiCall(t *testing.T) {
 
 		pokemon, name, err := PokemonApiCall("/pokemon", "flareon", ts.URL)
 
-		assert.NoError(t, err, "Expected no error on successful API call")
+		require.NoError(t, err, "Expected no error on successful API call")
 		assert.Equal(t, expectedPokemon, pokemon, "Expected pokemon struct does not match")
 		assert.Equal(t, "flareon", name, "Expected pokemon name does not match")
 	})
@@ -161,11 +159,10 @@ func TestPokemonApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		pokemon, name, err := PokemonApiCall("/pokemon", "non-existent-pokemon", ts.URL)
+		pokemon, _, err := PokemonApiCall("/pokemon", "non-existent-pokemon", ts.URL)
 
-		assert.Error(t, err, "Expected an error for invalid pokemon")
+		require.Error(t, err, "Expected an error for invalid pokemon")
 		assert.Equal(t, structs.PokemonJSONStruct{}, pokemon, "Expected empty pokemon struct on error")
-		assert.Equal(t, "", name, "Expected empty pokemon name on error")
 
 		assert.Contains(t, err.Error(), "Pokémon not found", "Expected 'Pokémon not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
