@@ -122,6 +122,32 @@ func TestRunCLI(t *testing.T) {
 	}
 }
 
+// TODO: finish testing different commands?
+func TestRunCLI_VariousCommands(t *testing.T) {
+	tests := []struct {
+		name     string
+		args     []string
+		expected int
+	}{
+		//{"Invalid command", []string{"foobar"}, 1},
+		{"Latest flag long", []string{"--latest"}, 0},
+		{"Latest flag short", []string{"-l"}, 0},
+		{"Version flag long", []string{"--version"}, 0},
+		{"Version flag short", []string{"-v"}, 0},
+		//{"Missing Pokémon name", []string{"pokemon"}, 1},
+		//{"Another invalid command", []string{"invalid"}, 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			exitCode := runCLI(tt.args)
+			if exitCode != tt.expected {
+				t.Errorf("expected %d, got %d for args %v", tt.expected, exitCode, tt.args)
+			}
+		})
+	}
+}
+
 func TestMainFunction(t *testing.T) {
 	originalExit := exit
 	defer func() { exit = originalExit }() // Restore original exit after test
