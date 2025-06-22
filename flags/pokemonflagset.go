@@ -20,6 +20,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func header(header string) string {
@@ -225,37 +226,72 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 	var moves []MoveInfo
 
+	movesChan := make(chan MoveInfo)
+	errorsChan := make(chan error)
+
+	var wg sync.WaitGroup
+
+	// Count eligible moves for concurrency
+	eligibleMoves := 0
 	for _, pokeMove := range pokemonStruct.Moves {
 		for _, detail := range pokeMove.VersionGroupDetails {
 			if detail.VersionGroup.Name != "scarlet-violet" || detail.MoveLearnedMethod.Name != "level-up" {
 				continue
 			}
 
-			moveName := pokeMove.Move.Name
-			moveStruct, _, err := connections.MoveApiCall("move", moveName, baseURL)
-			if err != nil {
-				log.Printf("Error fetching move %s: %v", moveName, err)
+			eligibleMoves++
+			wg.Add(1)
+			go func(moveName string, level int) {
+				defer wg.Done()
+
+				moveStruct, _, err := connections.MoveApiCall("move", moveName, baseURL)
+				if err != nil {
+					errorsChan <- fmt.Errorf("error fetching move %s: %v", moveName, err)
+					return
+				}
+
+				capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
+				capitalizedType := cases.Title(language.English).String(moveStruct.Type.Name)
+
+				movesChan <- MoveInfo{
+					Accuracy: moveStruct.Accuracy,
+					Level:    level,
+					Name:     capitalizedMove,
+					Power:    moveStruct.Power,
+					Type:     capitalizedType,
+				}
+			}(pokeMove.Move.Name, detail.LevelLearnedAt)
+		}
+	}
+
+	// Close channels when all goroutines are done
+	go func() {
+		wg.Wait()
+		close(movesChan)
+		close(errorsChan)
+	}()
+
+	// Collect results from channels
+	movesOpen, errorsOpen := true, true
+	for movesOpen || errorsOpen {
+		select {
+		case move, ok := <-movesChan:
+			if !ok {
+				movesOpen = false
 				continue
 			}
-
-			capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
-			capitalizedType := cases.Title(language.English).String(moveStruct.Type.Name)
-
-			moves = append(moves, MoveInfo{
-				Accuracy: moveStruct.Accuracy,
-				Level:    detail.LevelLearnedAt,
-				Name:     capitalizedMove,
-				Power:    moveStruct.Power,
-				Type:     capitalizedType,
-			})
+			moves = append(moves, move)
+		case err, ok := <-errorsChan:
+			if !ok {
+				errorsOpen = false
+				continue
+			}
+			log.Println(err)
 		}
 	}
 
 	if len(moves) == 0 {
-		_, err := fmt.Fprintln(w, "No level-up moves found for Scarlet & Violet.")
-		if err != nil {
-			return err
-		}
+		fmt.Fprintln(w, "No level-up moves found for Scarlet & Violet.")
 		return nil
 	}
 
