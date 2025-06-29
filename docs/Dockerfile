@@ -5,8 +5,9 @@ WORKDIR /build
 
 RUN pip install mkdocs mkdocs-material
 
-COPY ../mkdocs.yml /build/mkdocs.yml
-COPY docs/index.md /build/docs/index.md
+COPY mkdocs.yml /build/mkdocs.yml
+
+COPY docs/ /build/docs/
 
 RUN mkdocs build
 
