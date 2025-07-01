@@ -63,7 +63,8 @@ Set Shell "bash"
 Set FontSize 32
 Set Width 2100
 Set Height 1300
-Set TypingSpeed 85ms
+Set TypingSpeed 100ms
+Set Theme "tokyonight-storm"
 
 Type "poke-cli pokemon charizard --abilities --stats --types"
 
