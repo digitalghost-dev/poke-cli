@@ -88,8 +88,7 @@ View future plans in the [Roadmap](#roadmap) section.
    
 ### Homebrew
 ```bash
-brew tap digitalghost-dev/poke-cli
-brew install poke-cli
+brew install --cask digitalghost-dev/tap/poke-cli
 
 # verify
 poke-cli -v
