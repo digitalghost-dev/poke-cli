@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.3.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.3.3?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -13,6 +13,7 @@
 
 ## Overview
 `poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing data about Pokémon! This is my first Go project.
+View the [documentation](https://docs.poke-cli.com)!
 
 The architecture behind how the tool works is straight forward:
 1. Each command indicates which [API](https://pokeapi.co/) endpoint to use.
@@ -23,7 +24,7 @@ View future plans in the [Roadmap](#roadmap) section.
 
 ---
 ## Demo
-![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.2.1.gif)
+![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.3.3.gif)
 
 ---
 ## Installation
@@ -76,11 +77,11 @@ View future plans in the [Roadmap](#roadmap) section.
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.3.2 <command> [subcommand] flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.3.3 <command> [subcommand] flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.3.2 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.3.3 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
