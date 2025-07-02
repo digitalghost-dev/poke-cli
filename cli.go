@@ -74,6 +74,7 @@ func runCLI(args []string) int {
 			"\n\n", styling.StyleItalic.Render("hint: when calling a resource with a space, use a hyphen"),
 			"\n", styling.StyleItalic.Render("example: poke-cli ability strong-jaw"),
 			"\n", styling.StyleItalic.Render("example: poke-cli pokemon flutter-mane"),
+			"\n\n", fmt.Sprintf("%s %s", "↓ ctrl/cmd + click for docs/guides\n", styling.DocsLink),
 		)
 		fmt.Println(helpMessage)
 	}

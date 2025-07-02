@@ -17,6 +17,10 @@ var (
 	CheckboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFCC00"))
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
 
+	DocsLink = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#FFCC00")).
+			Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
+
 	StyleBold      = lipgloss.NewStyle().Bold(true)
 	StyleItalic    = lipgloss.NewStyle().Italic(true)
 	StyleUnderline = lipgloss.NewStyle().Underline(true)
