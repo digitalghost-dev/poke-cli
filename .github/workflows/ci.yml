@@ -16,6 +16,8 @@ on:
       - 'README.md'
       - '.github/**'
       - '.dockerignore'
+      - 'docs/**'
+      - 'etl/**'
       - '.gitignore'
       - 'demo**'
       - 'go.mod'
@@ -26,7 +28,7 @@ on:
       - main
 
 env:
-  VERSION_NUMBER: 'v1.3.2'
+  VERSION_NUMBER: 'v1.3.3'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
@@ -53,7 +55,77 @@ jobs:
         with:
           sarif_file: results.sarif
 
-  build-docker-image:
+  build-docs-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [ gosec ]
+    if: needs.gosec.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docs
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v3.0.0'
+
+      - name: Prepare Docker Build Context
+        run: |
+          mkdir docker-context
+          rsync -av --exclude=docker-context . docker-context/
+
+      - name: Build and Export
+        uses: 'docker/build-push-action@v5.0.0'
+        with:
+          context: ./docker-context
+          file: ./docker-context/docs/Dockerfile
+          tags: docs:latest
+          outputs: type=docker,dest=/tmp/docs.tar
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: /tmp/docs.tar
+
+  upload-docs-to-ecr:
+    runs-on: ubuntu-22.04
+    needs: [build-docs-docker-image]
+    if: needs.build-docs-docker-image.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docs
+          path: /tmp
+
+      - name: Load Image
+        run: docker load -i /tmp/docs.tar
+
+      - name: Tag and Push
+        run: |
+          docker tag docs:latest ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
+          docker push ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
+
+      # AWS will then take care of updating App Runner with the latest version
+
+  build-cli-docker-image:
     runs-on: ubuntu-22.04
     needs: [gosec]
     if: needs.gosec.result == 'success'
@@ -83,11 +155,11 @@ jobs:
           name: poke-cli
           path: /tmp/poke-cli.tar
 
-  # Uploading to Elastic Container Registry has a backup method.
-  upload-to-ecr:
+  # Uploading to Elastic Container Registry as a backup method.
+  upload-cli-to-ecr:
     runs-on: ubuntu-22.04
-    needs: [build-docker-image]
-    if: needs.build-docker-image.result == 'success'
+    needs: [build-cli-docker-image]
+    if: needs.build-cli-docker-image.result == 'success'
 
     steps:
       - name: Checkout
@@ -116,8 +188,8 @@ jobs:
       id-token: 'write'
 
     runs-on: ubuntu-22.04
-    needs: [build-docker-image]
-    if: needs.build-docker-image.result == 'success'
+    needs: [build-cli-docker-image]
+    if: needs.build-cli-docker-image.result == 'success'
 
     steps:
       - name: Checkout
