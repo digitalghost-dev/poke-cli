@@ -14,10 +14,10 @@ builds:
       - windows
       - darwin
     ldflags:
-      - -s -w -X main.version=v1.3.2
+      - -s -w -X main.version=v1.3.3
 
 archives:
-  - format: tar.gz
+  - formats: [ 'zip' ]
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -28,7 +28,7 @@ archives:
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        format: zip
+      - formats: [ 'zip' ]
 
 changelog:
   sort: asc
@@ -37,11 +37,20 @@ changelog:
       - "^docs:"
       - "^test:"
 
-brews:
-  - repository:
+homebrew_casks:
+  - name: poke-cli
+    conflicts:
+      - formula: poke-cli
+    repository:
       owner: digitalghost-dev
       name: homebrew-poke-cli
       token: "{{.Env.GITHUB_TOKEN}}"
     homepage: "https://github.com/digitalghost-dev/poke-cli"
-    description: "A CLI tool written in Go that allows you to view data about Pokémon from the terminal."
+    description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     license: "Apache License 2.0"
+    hooks:
+      post:
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poke-cli"]
+          end
