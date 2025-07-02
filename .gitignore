@@ -26,3 +26,6 @@ go.work.sum
 
 # env file
 .env
+
+# Python
+etl/.venv

@@ -22,4 +22,7 @@
 │ hint: when calling a resource with a space, use a hyphen │
 │ example: poke-cli ability strong-jaw                     │
 │ example: poke-cli pokemon flutter-mane                   │
+│                                                          │
+│ ↓ ctrl/cmd + click for docs/guides                       │
+│ ]8;;https://docs.poke-cli.com\docs.poke-cli.com]8;;\                                        │
 ╰──────────────────────────────────────────────────────────╯

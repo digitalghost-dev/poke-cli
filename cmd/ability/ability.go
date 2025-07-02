@@ -88,21 +88,21 @@ func AbilityCommand() (string, error) {
 	capitalizedAbility := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
 	output.WriteString(styling.StyleBold.Render(capitalizedAbility) + "\n")
 
-	// API is missing some data for the short_effect for abilities from Generation 9.
-	// If short_effect is empty, fallback to the move's flavor_text_entry.
-	if englishShortEffect == "" {
-		output.WriteString("Effect: " + englishFlavorEntry + "\n")
-	} else {
-		output.WriteString("Effect: " + englishShortEffect + "\n")
-	}
-
-	// Print the generation where the move was first introduced.
+	// Print the generation where the ability was first introduced.
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")
 	if len(generationParts) > 1 {
 		generationUpper := strings.ToUpper(generationParts[1])
-		output.WriteString("Generation: " + generationUpper + "\n")
+		output.WriteString(fmt.Sprintf("%s First introduced in generation "+generationUpper+"\n", styling.ColoredBullet))
 	} else {
-		output.WriteString("Generation: Unknown\n")
+		output.WriteString(fmt.Sprintf("%s Generation: Unknown\n", styling.ColoredBullet))
+	}
+
+	// API is missing some data for the short_effect for abilities from Generation 9.
+	// If short_effect is empty, fallback to the move's flavor_text_entry.
+	if englishShortEffect == "" {
+		output.WriteString(fmt.Sprintf("%s Effect: "+englishFlavorEntry, styling.ColoredBullet))
+	} else {
+		output.WriteString(fmt.Sprintf("%s Effect: "+englishShortEffect, styling.ColoredBullet))
 	}
 
 	if *pokemonFlag || *shortPokemonFlag {
