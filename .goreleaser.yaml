@@ -43,7 +43,7 @@ homebrew_casks:
       - formula: poke-cli
     repository:
       owner: digitalghost-dev
-      name: homebrew-poke-cli
+      name: homebrew-tap
       token: "{{.Env.GITHUB_TOKEN}}"
     homepage: "https://github.com/digitalghost-dev/poke-cli"
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
