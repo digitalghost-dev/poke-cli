@@ -33,7 +33,7 @@ func PokemonAbilitiesFlag(w io.Writer, endpoint string, abilityName string) erro
 
 	capitalizedEffect := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
 
-	if _, err := fmt.Fprintf(w, "\n%s\n\n", styling.StyleUnderline.Render("Pokemon with "+capitalizedEffect)); err != nil {
+	if _, err := fmt.Fprintf(w, "\n\n%s\n\n", styling.StyleUnderline.Render("Pokemon with "+capitalizedEffect)); err != nil {
 		return err
 	}
 
