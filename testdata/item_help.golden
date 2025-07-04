@@ -1,0 +1,10 @@
+╭────────────────────────────────────────────────────────╮
+│Get details about a specific item.                      │
+│                                                        │
+│ USAGE:                                                 │
+│    poke-cli item <item-name> [flag]                    │
+│    Use a hyphen when typing a name with a space.       │
+│                                                        │
+│ FLAGS:                                                 │
+│    -h, --help                     Prints the help menu.│
+╰────────────────────────────────────────────────────────╯
