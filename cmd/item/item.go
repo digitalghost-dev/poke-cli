@@ -58,7 +58,7 @@ func ItemCommand() (string, error) {
 func itemInfoContainer(output *strings.Builder, itemStruct structs.ItemJSONStruct, itemName string) {
 	capitalizedItem := styling.StyleBold.Render(cases.Title(language.English).String(strings.ReplaceAll(itemName, "-", " ")))
 	itemCost := fmt.Sprintf("Cost: %d", itemStruct.Cost)
-	itemCategory := fmt.Sprintf("Category: %s", cases.Title(language.English).String(strings.ReplaceAll(itemStruct.Category.Name, "-", " ")))
+	itemCategory := "Category: " + cases.Title(language.English).String(strings.ReplaceAll(itemStruct.Category.Name, "-", " "))
 
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
