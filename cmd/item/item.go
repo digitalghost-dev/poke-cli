@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -36,6 +37,11 @@ func ItemCommand() (string, error) {
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
 		return output.String(), nil
+	}
+
+	if err := utils.ValidateItemArgs(os.Args); err != nil {
+		output.WriteString(err.Error())
+		return output.String(), err
 	}
 
 	endpoint := strings.ToLower(args[1])

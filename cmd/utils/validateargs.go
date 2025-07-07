@@ -31,6 +31,20 @@ func ValidateAbilityArgs(args []string) error {
 	return nil
 }
 
+// ValidateItemArgs validates the command line arguments
+func ValidateItemArgs(args []string) error {
+	if err := checkLength(args, 3); err != nil {
+		return err
+	}
+
+	if len(args) == 2 {
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify a move")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	return nil
+}
+
 // ValidateMoveArgs validates the command line arguments
 func ValidateMoveArgs(args []string) error {
 	if err := checkLength(args, 3); err != nil {
