@@ -14,7 +14,7 @@ builds:
       - windows
       - darwin
     ldflags:
-      - -s -w -X main.version=v1.3.3
+      - -s -w -X main.version=v1.4.0
 
 archives:
   - formats: [ 'zip' ]
@@ -28,7 +28,7 @@ archives:
     # use zip for windows archives
     format_overrides:
       - goos: windows
-      - formats: [ 'zip' ]
+        formats: [ 'zip' ]
 
 changelog:
   sort: asc
@@ -51,6 +51,6 @@ homebrew_casks:
     hooks:
       post:
         install: |
-          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+          if OS.mac? && system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
             system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poke-cli"]
           end
