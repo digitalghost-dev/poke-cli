@@ -29,11 +29,13 @@ func TypesCommand() (string, error) {
 
 	flag.Parse()
 
+	// Handle help flag
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
 		return output.String(), nil
 	}
 
+	// Validate arguments
 	if err := utils.ValidateTypesArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
@@ -46,41 +48,57 @@ func TypesCommand() (string, error) {
 }
 
 type model struct {
+	quitting       bool
 	table          table.Model
 	selectedOption string
 }
 
-func (m model) Init() tea.Cmd { return nil }
+// Init initializes the model
+func (m model) Init() tea.Cmd {
+	return nil
+}
 
+// Update handles user input and updates the model state
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var bubbleCmd tea.Cmd
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc", "ctrl+c":
+			m.quitting = true
 			return m, tea.Quit
 		case "enter":
+			// User selected a type
 			m.selectedOption = m.table.SelectedRow()[0]
 			return m, tea.Quit
 		}
 	}
 
+	// Handle other updates (like navigation)
 	m.table, bubbleCmd = m.table.Update(msg)
 	return m, bubbleCmd
 }
 
+// View renders the current UI
 func (m model) View() string {
+	if m.quitting {
+		return "\n  Goodbye! \n"
+	}
+
+	// Don't render anything if a selection has been made
 	if m.selectedOption != "" {
 		return ""
 	}
 
+	// Render the type selection table with instructions
 	return fmt.Sprintf("Select a type!\n%s\n%s",
 		styling.TypesTableBorder.Render(m.table.View()),
 		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)"))
 }
 
 // Function that generates and handles the type selection table
-func tableGeneration(endpoint string) table.Model {
+func tableGeneration(endpoint string) {
 	types := []string{"Normal", "Fire", "Water", "Electric", "Grass", "Ice",
 		"Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug",
 		"Rock", "Ghost", "Dragon", "Steel", "Fairy"}
@@ -90,6 +108,7 @@ func tableGeneration(endpoint string) table.Model {
 		rows[i] = []string{t}
 	}
 
+	// Initialize table with configuration
 	t := table.New(
 		table.WithColumns([]table.Column{{Title: "Type", Width: 16}}),
 		table.WithRows(rows),
@@ -97,6 +116,7 @@ func tableGeneration(endpoint string) table.Model {
 		table.WithHeight(7),
 	)
 
+	// Set table styles
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
@@ -108,12 +128,15 @@ func tableGeneration(endpoint string) table.Model {
 	t.SetStyles(s)
 
 	m := model{table: t}
-	if programModel, err := tea.NewProgram(m).Run(); err != nil {
+	programModel, err := tea.NewProgram(m).Run()
+
+	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
-	} else if finalModel, ok := programModel.(model); ok && finalModel.selectedOption != "quit" {
-		DamageTable(strings.ToLower(finalModel.selectedOption), endpoint)
 	}
 
-	return t
+	// Only show damage table if a type was actually selected (not when quitting)
+	if finalModel, ok := programModel.(model); ok && finalModel.selectedOption != "" {
+		DamageTable(strings.ToLower(finalModel.selectedOption), endpoint)
+	}
 }
