@@ -35,6 +35,31 @@ type AbilityJSONStruct struct {
 	} `json:"pokemon"`
 }
 
+// ItemJSONStruct item endpoint from API
+type ItemJSONStruct struct {
+	Name     string `json:"name"`
+	ID       int    `json:"id"`
+	Cost     int    `json:"cost"`
+	Category struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"category"`
+	FlavorTextEntries []struct {
+		Language struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		Text         string `json:"text"`
+		VersionGroup struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version_group"`
+	} `json:"flavor_text_entries"`
+	Sprites struct {
+		Default string `json:"default"`
+	} `json:"sprites"`
+}
+
 // MoveJSONStruct move endpoint from API
 type MoveJSONStruct struct {
 	Name         string `json:"name"`
