@@ -100,7 +100,7 @@ func (m model) View() string {
 // Function that generates and handles the type selection table
 func tableGeneration(endpoint string) {
 	types := []string{"Normal", "Fire", "Water", "Electric", "Grass", "Ice",
-		"Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug",
+		"Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Dark",
 		"Rock", "Ghost", "Dragon", "Steel", "Fairy"}
 
 	rows := make([]table.Row, len(types))
