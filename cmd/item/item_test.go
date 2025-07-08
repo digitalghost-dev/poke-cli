@@ -47,6 +47,12 @@ func TestItemCommand(t *testing.T) {
 			args:           []string{"item", "clear-amulet"},
 			expectedOutput: utils.LoadGolden(t, "item_missing_data.golden"),
 		},
+		{
+			name:           "Too many arguments",
+			args:           []string{"item", "dubious-disc", "--help"},
+			expectedOutput: utils.LoadGolden(t, "item_too_many_args.golden"),
+			expectedError:  true,
+		},
 	}
 
 	for _, tt := range tests {
