@@ -78,7 +78,6 @@ func ItemApiCall(endpoint string, itemName string, baseURL string) (structs.Item
 			styling.ErrorColor.Render("Error!"),
 			"\nItem not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
-		fmt.Println(fullURL)
 		return structs.ItemJSONStruct{}, "", fmt.Errorf("%s", errMessage)
 	}
 
