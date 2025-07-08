@@ -14,7 +14,6 @@ import (
 func NaturesCommand() (string, error) {
 	var output strings.Builder
 
-	// Define the usage function
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about all natures.\n\n",
