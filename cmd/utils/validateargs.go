@@ -6,13 +6,23 @@ import (
 	"strings"
 )
 
-// checkLength checks if the number of arguments is lower than the max value
+// checkLength checks if the number of arguments is lower than the max value.  Helper Function.
 func checkLength(args []string, max int) error {
 	if len(args) > max {
 		errMessage := styling.ErrorBorder.Render(
 			styling.ErrorColor.Render("Error!") + "\nToo many arguments",
 		)
 		return fmt.Errorf("%s", errMessage)
+	}
+	return nil
+}
+
+// checkNoOtherOptions checks if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
+func checkNoOtherOptions(args []string, max int, commandName string) error {
+	if len(args) == max && args[2] != "-h" && args[2] != "--help" {
+		errMsg := styling.ErrorColor.Render("Error!") +
+			"\nThe only available options after the\n" + commandName + " command are '-h' or '--help'"
+		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
 	}
 	return nil
 }
@@ -38,7 +48,7 @@ func ValidateItemArgs(args []string) error {
 	}
 
 	if len(args) == 2 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify a move")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify an item ")
 		return fmt.Errorf("%s", errMessage)
 	}
 
@@ -52,7 +62,7 @@ func ValidateMoveArgs(args []string) error {
 	}
 
 	if len(args) == 2 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify a move")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify a move ")
 		return fmt.Errorf("%s", errMessage)
 	}
 
@@ -65,12 +75,8 @@ func ValidateNaturesArgs(args []string) error {
 		return err
 	}
 
-	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
-	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
-		errMsg := styling.ErrorColor.Render("Error!") +
-			"\nThe only currently available options\nafter <natures> command are '-h' or '--help'"
-		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
+	if err := checkNoOtherOptions(args, 3, "<natures>"); err != nil {
+		return err
 	}
 
 	return nil
@@ -150,12 +156,8 @@ func ValidateSearchArgs(args []string) error {
 		return err
 	}
 
-	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after <search>
-	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
-		errMsg := styling.ErrorColor.Render("Error!") +
-			"\nThe only currently available options\nafter <search> command are '-h' or '--help'"
-		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
+	if err := checkNoOtherOptions(args, 3, "<search>"); err != nil {
+		return err
 	}
 
 	return nil
@@ -167,12 +169,8 @@ func ValidateTypesArgs(args []string) error {
 		return err
 	}
 
-	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after <types>
-	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
-		errMsg := styling.ErrorColor.Render("Error!") +
-			"\nThe only currently available options\nafter <types> command are '-h' or '--help'"
-		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
+	if err := checkNoOtherOptions(args, 3, "<types>"); err != nil {
+		return err
 	}
 
 	return nil
