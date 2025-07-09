@@ -121,11 +121,11 @@ func ValidatePokemonArgs(args []string) error {
 	// Validate each argument after the Pokémon's name
 	if len(args) > 3 {
 		for _, arg := range args[3:] {
-			// Check for single `-` or `--` which are invalid
+			// Check for an empty flag after Pokémon's name
 			if arg == "-" || arg == "--" {
 				errorTitle := styling.ErrorColor.Render("Error!")
 				errorString := fmt.Sprintf(
-					"\nInvalid argument '%s'. Single '-' or '--' is not allowed.\nPlease use valid flags.",
+					"\nEmpty flag '%s'.\nPlease specify valid flag(s).",
 					arg,
 				)
 				finalErrorMessage := errorTitle + errorString
@@ -133,7 +133,7 @@ func ValidatePokemonArgs(args []string) error {
 				return fmt.Errorf("%s", renderedError)
 			}
 
-			// Check if the argument starts with a flag prefix but is invalid
+			// Check if the argument after Pokémon's name is an attempted flag
 			if arg[0] != '-' {
 				errorTitle := styling.ErrorColor.Render("Error!")
 				errorString := fmt.Sprintf(
