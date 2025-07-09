@@ -25,7 +25,7 @@ func TestPokemonCommand(t *testing.T) {
 		name           string
 		args           []string
 		expectedOutput string
-		wantError      bool
+		expectedError  bool
 	}{
 		{
 			name:           "Pokemon help flag",
@@ -43,10 +43,22 @@ func TestPokemonCommand(t *testing.T) {
 			expectedOutput: utils.LoadGolden(t, "pokemon_image.golden"),
 		},
 		{
-			name:           "Pokemon invalid image flag",
+			name:           "Pokemon image flag missing size",
 			args:           []string{"pokemon", "tryanitar", "--image="},
-			expectedOutput: utils.LoadGolden(t, "pokemon_invalid_image_flag.golden"),
-			wantError:      true,
+			expectedOutput: utils.LoadGolden(t, "pokemon_image_flag_missing_size.golden"),
+			expectedError:  true,
+		},
+		{
+			name:           "Pokemon image flag non-valid size",
+			args:           []string{"pokemon", "floatzel", "--image=xl"},
+			expectedOutput: utils.LoadGolden(t, "pokemon_image_flag_non-valid_size.golden"),
+			expectedError:  true,
+		},
+		{
+			name:           "Pokemon image flag empty flag",
+			args:           []string{"pokemon", "gastly", "--"},
+			expectedOutput: utils.LoadGolden(t, "pokemon_image_flag_empty_flag.golden"),
+			expectedError:  true,
 		},
 		{
 			name:           "Pokemon stats flag",
