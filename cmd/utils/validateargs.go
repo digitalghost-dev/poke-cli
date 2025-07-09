@@ -6,13 +6,23 @@ import (
 	"strings"
 )
 
-// checkLength checks if the number of arguments is lower than the max value
+// checkLength checks if the number of arguments is lower than the max value.  Helper Function.
 func checkLength(args []string, max int) error {
 	if len(args) > max {
 		errMessage := styling.ErrorBorder.Render(
 			styling.ErrorColor.Render("Error!") + "\nToo many arguments",
 		)
 		return fmt.Errorf("%s", errMessage)
+	}
+	return nil
+}
+
+// checkNoOtherOptions checks if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
+func checkNoOtherOptions(args []string, max int, commandName string) error {
+	if len(args) == max && args[2] != "-h" && args[2] != "--help" {
+		errMsg := styling.ErrorColor.Render("Error!") +
+			"\nThe only available options after the\n" + commandName + " command are '-h' or '--help'"
+		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
 	}
 	return nil
 }
@@ -31,6 +41,20 @@ func ValidateAbilityArgs(args []string) error {
 	return nil
 }
 
+// ValidateItemArgs validates the command line arguments
+func ValidateItemArgs(args []string) error {
+	if err := checkLength(args, 3); err != nil {
+		return err
+	}
+
+	if len(args) == 2 {
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify an item ")
+		return fmt.Errorf("%s", errMessage)
+	}
+
+	return nil
+}
+
 // ValidateMoveArgs validates the command line arguments
 func ValidateMoveArgs(args []string) error {
 	if err := checkLength(args, 3); err != nil {
@@ -38,7 +62,7 @@ func ValidateMoveArgs(args []string) error {
 	}
 
 	if len(args) == 2 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify a move")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nPlease specify a move ")
 		return fmt.Errorf("%s", errMessage)
 	}
 
@@ -51,12 +75,8 @@ func ValidateNaturesArgs(args []string) error {
 		return err
 	}
 
-	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after 'types'
-	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
-		errMsg := styling.ErrorColor.Render("Error!") +
-			"\nThe only currently available options\nafter <natures> command are '-h' or '--help'"
-		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
+	if err := checkNoOtherOptions(args, 3, "<natures>"); err != nil {
+		return err
 	}
 
 	return nil
@@ -101,11 +121,11 @@ func ValidatePokemonArgs(args []string) error {
 	// Validate each argument after the Pokémon's name
 	if len(args) > 3 {
 		for _, arg := range args[3:] {
-			// Check for single `-` or `--` which are invalid
+			// Check for an empty flag after Pokémon's name
 			if arg == "-" || arg == "--" {
 				errorTitle := styling.ErrorColor.Render("Error!")
 				errorString := fmt.Sprintf(
-					"\nInvalid argument '%s'. Single '-' or '--' is not allowed.\nPlease use valid flags.",
+					"\nEmpty flag '%s'.\nPlease specify valid flag(s).",
 					arg,
 				)
 				finalErrorMessage := errorTitle + errorString
@@ -113,7 +133,7 @@ func ValidatePokemonArgs(args []string) error {
 				return fmt.Errorf("%s", renderedError)
 			}
 
-			// Check if the argument starts with a flag prefix but is invalid
+			// Check if the argument after Pokémon's name is an attempted flag
 			if arg[0] != '-' {
 				errorTitle := styling.ErrorColor.Render("Error!")
 				errorString := fmt.Sprintf(
@@ -136,12 +156,8 @@ func ValidateSearchArgs(args []string) error {
 		return err
 	}
 
-	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after <search>
-	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
-		errMsg := styling.ErrorColor.Render("Error!") +
-			"\nThe only currently available options\nafter <search> command are '-h' or '--help'"
-		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
+	if err := checkNoOtherOptions(args, 3, "<search>"); err != nil {
+		return err
 	}
 
 	return nil
@@ -153,12 +169,8 @@ func ValidateTypesArgs(args []string) error {
 		return err
 	}
 
-	// Check if there are exactly 3 arguments and the third argument is neither '-h' nor '--help'
-	// If true, return an error message since only '-h' and '--help' are allowed after <types>
-	if len(args) == 3 && args[2] != "-h" && args[2] != "--help" {
-		errMsg := styling.ErrorColor.Render("Error!") +
-			"\nThe only currently available options\nafter <types> command are '-h' or '--help'"
-		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
+	if err := checkNoOtherOptions(args, 3, "<types>"); err != nil {
+		return err
 	}
 
 	return nil

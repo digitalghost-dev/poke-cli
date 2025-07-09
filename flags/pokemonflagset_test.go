@@ -80,6 +80,55 @@ Hidden Ability: Chlorophyll
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the abilities flag")
 }
 
+func TestMovesFlag(t *testing.T) {
+	// Capture standard output
+	var output bytes.Buffer
+	stdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	// Call the MovesFlag function with a valid Pokémon
+	err := MovesFlag(&output, "pokemon", "bulbasaur")
+
+	// Close and restore stdout
+	if closeErr := w.Close(); closeErr != nil {
+		t.Fatalf("Failed to close pipe writer: %v", closeErr)
+	}
+	os.Stdout = stdout
+
+	_, readErr := output.ReadFrom(r)
+	if readErr != nil {
+		t.Fatalf("Failed to read from pipe: %v", readErr)
+	}
+
+	// Assert no errors occurred
+	require.NoError(t, err, "MovesFlag should not return an error for a valid Pokémon")
+
+	// Get the actual output and strip ANSI codes
+	actualOutput := styling.StripANSI(output.String())
+
+	// Check for expected header
+	assert.Contains(t, actualOutput, "Learnable Moves", "Output should contain the header 'Learnable Moves'")
+
+	// Check for table headers
+	assert.Contains(t, actualOutput, "Name", "Output should contain the 'Name' column header")
+	assert.Contains(t, actualOutput, "Level", "Output should contain the 'Level' column header")
+	assert.Contains(t, actualOutput, "Type", "Output should contain the 'Type' column header")
+	assert.Contains(t, actualOutput, "Accuracy", "Output should contain the 'Accuracy' column header")
+	assert.Contains(t, actualOutput, "Power", "Output should contain the 'Power' column header")
+
+	// Since the actual moves might change with API updates, we'll just check that the output is not empty
+	assert.NotEmpty(t, actualOutput, "Output should not be empty")
+
+	// Check that the output contains some common moves for Bulbasaur
+	// Note: These are common moves, but if they change in the API, this test might need updating
+	assert.True(t,
+		strings.Contains(actualOutput, "Tackle") ||
+			strings.Contains(actualOutput, "Vine Whip") ||
+			strings.Contains(actualOutput, "Growl"),
+		"Output should contain at least one of Bulbasaur's common moves")
+}
+
 func TestImageFlag(t *testing.T) {
 	// Capture standard output
 	var output bytes.Buffer

@@ -104,8 +104,8 @@ func PokemonCommand() (string, error) {
 
 		// Call the ImageFlag function with the specified size
 		if err := flags.ImageFlag(&output, endpoint, pokemonName, size); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
+			output.WriteString(fmt.Sprintf("%v\n", err))
+			return output.String(), fmt.Errorf("%w", err)
 		}
 	}
 

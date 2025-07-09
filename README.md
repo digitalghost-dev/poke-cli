@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.3.3?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.4.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -77,22 +77,24 @@ View future plans in the [Roadmap](#roadmap) section.
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.3.3 <command> [subcommand] flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.4.0 <command> [subcommand] flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.3.3 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.4.0 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
    
 ### Homebrew
-```bash
-brew install --cask digitalghost-dev/tap/poke-cli
-
-# verify
-poke-cli -v
-```
+1. Install the Cask:
+    ```bash
+    brew install --cask digitalghost-dev/tap/poke-cli
+    ````
+2. Verify install!
+    ```bash
+    poke-cli -v
+    ```
 
 ### Source
 
@@ -121,6 +123,7 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │                                                          │
 │ COMMANDS:                                                │
 │    ability         Get details about an ability          │
+│    item            Get details about an item             │
 │    move            Get details about a move              │
 │    natures         Get details about all natures         │
 │    pokemon         Get details about a Pokémon           │
@@ -130,6 +133,9 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │ hint: when calling a resource with a space, use a hyphen │
 │ example: poke-cli ability strong-jaw                     │
 │ example: poke-cli pokemon flutter-mane                   │
+│                                                          │
+│ ↓ ctrl/cmd + click for docs/guides                       │
+│ docs.poke-cli.com                                        │
 ╰──────────────────────────────────────────────────────────╯
 ```
 
@@ -138,20 +144,25 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 ## Roadmap
 Below is a list of the planned/completed commands and flags:
 
-- [x] `ability`: get data about a specific ability.
+- [x] `ability`: get data about an ability.
     - [x] `-p | --pokemon`: display Pokémon that learn this ability.
-- [ ] `berry`: get data about a specific berry.
-- [ ] `item`: get data about a specific item.
-- [x] `move`: get data about a specific move.
+- [ ] `berry`: get data about a berry.
+- [x] `item`: get data about an item.
+- [x] `move`: get data about a move.
     - [ ] `-p | --pokemon`: display Pokémon that learn this move.
 - [x] `natures`: get data about natures.
-- [x] `pokemon`: get data about a specific Pokémon.
+- [x] `pokemon`: get data about a Pokémon.
     - [x] `-a | --abilities`: display the Pokémon's abilities.
     - [x] `-i | --image`: display a pixel image of the Pokémon.
     - [x] `-s | --stats`: display the Pokémon's base stats.
     - [x] `-t | --types`: display the Pokémon's typing.
     - [x] `-m | --moves`: display learnable moves.
-- [x] `search`: search for a resource (`ability`, `berry`, `pokemon`, `move`)
+- [ ] `search`: search for a resource 
+    - [x] `ability`
+    - [ ] `berry`
+    - [ ] `item`
+    - [x] `move`
+    - [x] `pokemon`
 - [ ] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.
 

@@ -31,6 +31,20 @@ Output:
 
 ---
 
+## `item`
+* Retrieve information about a specific item, including its cost, category and description.
+
+Example:
+```console
+$ poke-cli item poke-ball
+```
+
+Output:
+
+![item_command](assets/item.gif)
+
+---
+
 ## `move`
 * Retrieve information about a specific move, including its type, power, PP, accuracy, category, etc.,
 and the move's effect.

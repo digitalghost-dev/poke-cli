@@ -95,6 +95,43 @@ func TestAbilityApiCall(t *testing.T) {
 	})
 }
 
+func TestItemApiCall(t *testing.T) {
+	t.Run("Successful API call returns expected item", func(t *testing.T) {
+		expectedItem := structs.ItemJSONStruct{
+			Name: "choice-band",
+		}
+
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			err := json.NewEncoder(w).Encode(expectedItem)
+			assert.NoError(t, err, "Expected no error for encoding response")
+		}))
+		defer ts.Close()
+
+		item, name, err := ItemApiCall("/item", "choice-band", ts.URL)
+
+		require.NoError(t, err, "Expected no error on successful API call")
+		assert.Equal(t, expectedItem, item, "Expected item struct does not match")
+		assert.Equal(t, "choice-band", name, "Expected item name does not match")
+	})
+
+	t.Run("Failed API call returns styled error", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Simulate API failure (e.g., 404 Not Found)
+			http.Error(w, "Not Found", http.StatusNotFound)
+		}))
+		defer ts.Close()
+
+		item, _, err := ItemApiCall("/item", "non-existent-item", ts.URL)
+
+		require.Error(t, err, "Expected an error for invalid item")
+		assert.Equal(t, structs.ItemJSONStruct{}, item, "Expected empty item struct on error")
+
+		assert.Contains(t, err.Error(), "Item not found", "Expected 'Item not found' in error message")
+		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
+	})
+}
+
 func TestMoveApiCall(t *testing.T) {
 	t.Run("Successful API call returns expected move", func(t *testing.T) {
 		expectedMove := structs.MoveJSONStruct{

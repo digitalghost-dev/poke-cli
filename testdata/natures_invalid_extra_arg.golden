@@ -1,5 +1,5 @@
-╭────────────────────────────────────────────╮
-│Error!                                      │
-│The only currently available options        │
-│after <natures> command are '-h' or '--help'│
-╰────────────────────────────────────────────╯
+╭──────────────────────────────────────╮
+│Error!                                │
+│The only available options after the  │
+│<natures> command are '-h' or '--help'│
+╰──────────────────────────────────────╯

@@ -10,9 +10,7 @@ import (
 	"os"
 )
 
-// SearchCommand is the main function for the "search" command.
 func SearchCommand() {
-	// Define your custom usage function first
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Search for a resource by name or partial match.\n\n",
@@ -33,7 +31,6 @@ func SearchCommand() {
 		return
 	}
 
-	// Validate arguments before launching TUI
 	if err := utils.ValidateSearchArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
