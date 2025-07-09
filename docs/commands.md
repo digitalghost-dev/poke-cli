@@ -36,7 +36,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli item poke-call
+$ poke-cli item poke-ball
 ```
 
 Output:
