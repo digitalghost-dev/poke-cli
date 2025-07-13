@@ -163,6 +163,19 @@ func ValidateSearchArgs(args []string) error {
 	return nil
 }
 
+// ValidateSpeedArgs validates the command line arguments
+func ValidateSpeedArgs(args []string) error {
+	if err := checkLength(args, 3); err != nil {
+		return err
+	}
+
+	if err := checkNoOtherOptions(args, 3, "<speed>"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ValidateTypesArgs validates the command line arguments
 func ValidateTypesArgs(args []string) error {
 	if err := checkLength(args, 3); err != nil {
