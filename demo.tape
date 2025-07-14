@@ -61,7 +61,7 @@ Require echo
 
 Set Shell "bash"
 Set FontSize 32
-Set Width 2100
+Set Width 2300
 Set Height 1300
 Set TypingSpeed 100ms
 Set Theme "tokyonight-storm"
@@ -118,7 +118,7 @@ Type clear
 
 Enter
 
-Type "poke-cli ability stench --pokemon"
+Type "poke-cli ability solar-power --pokemon"
 
 Enter
 
@@ -129,6 +129,18 @@ Type clear
 Enter
 
 Type "poke-cli move eruption"
+
+Sleep 2s
+
+Enter
+
+Sleep 3s
+
+Type clear
+
+Enter
+
+Type "poke-cli item choice-band"
 
 Sleep 2s
 
