@@ -2,16 +2,19 @@ package speed
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 	xstrings "github.com/charmbracelet/x/exp/strings"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"log"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -87,6 +90,35 @@ type PokemonDetails struct {
 type SpeedStatFunc func(name string) (string, error)
 
 func SpeedCommand() (string, error) {
+	// Reset the output string builder
+	output.Reset()
+
+	flag.Usage = func() {
+		helpMessage := styling.HelpBorder.Render(
+			"Calculate the speed of a Pokémon.\n\n",
+			styling.StyleBold.Render("USAGE:"),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("speed"), "[flag]"),
+			"\n\n",
+			styling.StyleBold.Render("FLAGS:"),
+			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu"),
+		)
+		output.WriteString(helpMessage)
+	}
+
+	flag.Parse()
+
+	// Handle help flag
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		flag.Usage()
+		return output.String(), nil
+	}
+
+	// Validate arguments
+	if err := utils.ValidateSpeedArgs(os.Args); err != nil {
+		output.WriteString(err.Error())
+		return output.String(), err
+	}
+
 	form := form()
 
 	err := form.Run()
