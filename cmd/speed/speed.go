@@ -16,6 +16,63 @@ import (
 	"strings"
 )
 
+// SpeedStatFunc is a function type for getting a Pokémon's base speed stat
+
+// DefaultSpeedStat is the default implementation of SpeedStatFunc
+var DefaultSpeedStat SpeedStatFunc = func(name string) (string, error) {
+	pokemonStruct, _, err := connections.PokemonApiCall("pokemon", name, connections.APIURL)
+	if err != nil {
+		return "", fmt.Errorf("API call failed: %w", err)
+	}
+
+	for _, stat := range pokemonStruct.Stats {
+		if stat.Stat.Name == "speed" {
+			return fmt.Sprintf("%d", stat.BaseStat), nil
+		}
+	}
+
+	return "", errors.New("speed stat not found")
+}
+
+var (
+	pokemon            PokemonDetails
+	output             strings.Builder
+	abilityMultipliers = map[string]float64{
+		"None":         1.0,
+		"Swift Swim":   2.0,
+		"Chlorophyll":  2.0,
+		"Sand Rush":    2.0,
+		"Slush Rush":   2.0,
+		"Unburden":     2.0,
+		"Quick Feet":   1.5,
+		"Surge Surfer": 2.0,
+	}
+	modifierMultipliers = map[string]float64{
+		"Choice Scarf": 1.5,
+		"Tailwind":     2.0,
+	}
+	stageMultipliers = map[int]float64{
+		-6: 0.25,
+		-5: 2.0 / 7.0,
+		-4: 1.0 / 3.0,
+		-3: 0.4,
+		-2: 0.5,
+		-1: 2.0 / 3.0,
+		0:  1.0,
+		+1: 1.5,
+		+2: 2.0,
+		+3: 2.5,
+		+4: 3.0,
+		+5: 3.5,
+		+6: 4.0,
+	}
+	natureMultipliers = map[string]float64{
+		"+10%": 1.1,
+		"0%":   1.0,
+		"-10%": 0.9,
+	}
+)
+
 type PokemonDetails struct {
 	Name       string
 	SpeedStage string
@@ -27,11 +84,25 @@ type PokemonDetails struct {
 	SpeedIV    string
 }
 
-func SpeedCommand() (string, error) {
-	var (
-		pokemon PokemonDetails
-	)
+type SpeedStatFunc func(name string) (string, error)
 
+func SpeedCommand() (string, error) {
+	form := form()
+
+	err := form.Run()
+	if err != nil {
+		return "", err
+	}
+
+	result, err := formula()
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
+func form() *huh.Form {
 	form := huh.NewForm(
 		//TODO: add welcome screen
 		// Page 2
@@ -138,32 +209,10 @@ func SpeedCommand() (string, error) {
 		),
 	)
 
-	err := form.Run()
-	if err != nil {
-		return "", err // return the error to the caller
-	}
+	return form
+}
 
-	// Initialize output builder
-	var output strings.Builder
-
-	// Define multiplier maps for speed calculation
-	var modifierMultipliers = map[string]float64{
-		"Choice Scarf": 1.5,
-		"Tailwind":     2.0,
-	}
-
-	var abilityMultipliers = map[string]float64{
-		"None":         1.0,
-		"Swift Swim":   2.0,
-		"Chlorophyll":  2.0,
-		"Sand Rush":    2.0,
-		"Slush Rush":   2.0,
-		"Unburden":     2.0,
-		"Quick Feet":   1.5,
-		"Surge Surfer": 2.0,
-	}
-
-	// Calculate modifier multiplier
+func formula() (string, error) {
 	modifierMultiplier := 1.0 // start with no change
 	for _, mod := range pokemon.Modifier {
 		if val, ok := modifierMultipliers[mod]; ok {
@@ -171,51 +220,16 @@ func SpeedCommand() (string, error) {
 		}
 	}
 
-	// Get ability multiplier from the map
 	abilityMultiplier := abilityMultipliers[pokemon.Ability]
 
-	// Define stage multipliers for speed calculation
-	var stageMultipliers = map[int]float64{
-		-6: 0.25,
-		-5: 2.0 / 7.0,
-		-4: 1.0 / 3.0,
-		-3: 0.4,
-		-2: 0.5,
-		-1: 2.0 / 3.0,
-		0:  1.0,
-		+1: 1.5,
-		+2: 2.0,
-		+3: 2.5,
-		+4: 3.0,
-		+5: 3.5,
-		+6: 4.0,
-	}
-
-	// Convert speed stage to integer and get the multiplier
 	speedStageInt, err := strconv.Atoi(pokemon.SpeedStage)
 	if err != nil {
 		log.Fatalf("Invalid SpeedStage: %v", err)
 	}
 	stageMultiplier := stageMultipliers[speedStageInt]
 
-	// Function to get the base speed stat from the API
-	speedStat := func(name string) (string, error) {
-		pokemonStruct, _, err := connections.PokemonApiCall("pokemon", name, connections.APIURL)
-		if err != nil {
-			return "", fmt.Errorf("API call failed: %w", err)
-		}
-
-		for _, stat := range pokemonStruct.Stats {
-			if stat.Stat.Name == "speed" {
-				return fmt.Sprintf("%d", stat.BaseStat), nil
-			}
-		}
-
-		return "", errors.New("speed stat not found")
-	}
-
-	// Get the Pokémon's base speed
-	speedStr, err := speedStat(pokemon.Name)
+	// Get the Pokémon's base speed using the DefaultSpeedStat function
+	speedStr, err := DefaultSpeedStat(pokemon.Name)
 	if err != nil {
 		return "", err
 	}
@@ -239,16 +253,8 @@ func SpeedCommand() (string, error) {
 		return "", fmt.Errorf("failed to convert speed to int: %w", err)
 	}
 
-	// Define nature multipliers
-	var natureMultipliers = map[string]float64{
-		"+10%": 1.1,
-		"0%":   1.0,
-		"-10%": 0.9,
-	}
-
 	natureMultiplier := natureMultipliers[pokemon.Nature]
 
-	// Format Pokémon name with title case
 	chosenPokemon := cases.Title(language.English).String(pokemon.Name)
 
 	// Calculate final speed using the formula:
@@ -259,8 +265,7 @@ func SpeedCommand() (string, error) {
 	finalSpeedFloor := math.Floor(finalSpeed)
 	finalSpeedStr := fmt.Sprintf("%.0f", finalSpeedFloor)
 
-	// Format and return the output
-	header := fmt.Sprintf("%s at level %s with selected options has a current speed of %s",
+	header := fmt.Sprintf("%s at level %s with selected options has a current speed of %s.",
 		styling.YellowAdaptive(chosenPokemon),
 		styling.YellowAdaptive(pokemon.Level),
 		styling.YellowAdaptive(finalSpeedStr),
