@@ -1,14 +1,16 @@
-╭──────────────────────────────────────────────────╮
-│Error!                                            │
-│    'movesets' is not a valid command.            │
-│                                                  │
-│Commands:                                         │
-│    ability         Get details about an ability  │
-│    move            Get details about a move      │
-│    natures         Get details about all natures │
-│    pokemon         Get details about a Pokémon   │
-│    search          Search for a resource         │
-│    types           Get details about a typing    │
-│                                                  │
-│Also run poke-cli -h for more info!               │
-╰──────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────╮
+│Error!                                                         │
+│    'movesets' is not a valid command.                         │
+│                                                               │
+│Commands:                                                      │
+│    ability         Get details about an ability               │
+│    item            Get details about an item                  │
+│    move            Get details about a move                   │
+│    natures         Get details about all natures              │
+│    pokemon         Get details about a Pokémon                │
+│    search          Search for a resource                      │
+│    speed           Calculate the speed of a Pokémon in battle │
+│    types           Get details about a typing                 │
+│                                                               │
+│Also run poke-cli -h for more info!                            │
+╰───────────────────────────────────────────────────────────────╯
