@@ -19,8 +19,6 @@ import (
 	"strings"
 )
 
-// SpeedStatFunc is a function type for getting a Pokémon's base speed stat
-
 // DefaultSpeedStat is the default implementation of SpeedStatFunc
 var DefaultSpeedStat SpeedStatFunc = func(name string) (string, error) {
 	pokemonStruct, _, err := connections.PokemonApiCall("pokemon", name, connections.APIURL)
@@ -30,7 +28,7 @@ var DefaultSpeedStat SpeedStatFunc = func(name string) (string, error) {
 
 	for _, stat := range pokemonStruct.Stats {
 		if stat.Stat.Name == "speed" {
-			return fmt.Sprintf("%d", stat.BaseStat), nil
+			return strconv.Itoa(stat.BaseStat), nil
 		}
 	}
 
@@ -87,6 +85,7 @@ type PokemonDetails struct {
 	SpeedIV    string
 }
 
+// SpeedStatFunc is a function type for getting a Pokémon's base speed stat
 type SpeedStatFunc func(name string) (string, error)
 
 func SpeedCommand() (string, error) {
@@ -136,14 +135,21 @@ func SpeedCommand() (string, error) {
 
 func form() *huh.Form {
 	form := huh.NewForm(
-		//TODO: add welcome screen
-		// Page 2
+		huh.NewGroup(huh.NewNote().
+			Title("Speed Calculator").
+			Description("This command will calculate the speed stat\nof a Pokémon during an in-game battle.").
+			Next(true).
+			NextLabel("Next"),
+		),
 		huh.NewGroup(
 			huh.NewInput().
 				Value(&pokemon.Name).
 				Title("Enter the first Pokémon's name:").
-				Placeholder("cacturne").
+				Placeholder("incineroar").
 				Validate(func(s string) error {
+					if strings.TrimSpace(s) == "" {
+						return errors.New("input cannot be blank")
+					}
 					_, _, err := connections.PokemonApiCall("pokemon", s, connections.APIURL)
 					if err != nil {
 						return errors.New("not a valid Pokémon")
@@ -174,7 +180,7 @@ func form() *huh.Form {
 					if err != nil {
 						return errors.New("please enter a valid number")
 					}
-					if num < 1 || num > 252 {
+					if num < 0 || num > 252 {
 						return errors.New("level must be between 0 and 252")
 					}
 					return nil
@@ -189,7 +195,7 @@ func form() *huh.Form {
 					if err != nil {
 						return errors.New("please enter a valid number")
 					}
-					if num < 1 || num > 31 {
+					if num < 0 || num > 31 {
 						return errors.New("level must be between 0 and 31")
 					}
 					return nil
@@ -239,7 +245,7 @@ func form() *huh.Form {
 					return nil
 				}),
 		),
-	)
+	).WithTheme(styling.FormTheme())
 
 	return form
 }
