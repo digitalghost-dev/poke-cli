@@ -2,15 +2,19 @@ package styling
 
 import (
 	"fmt"
+	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 	"image/color"
 	"regexp"
 )
 
 var (
-	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
-	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
-	Gray          = lipgloss.Color("#777777")
+	Green          = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
+	Red            = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
+	Gray           = lipgloss.Color("#777777")
+	YellowAdaptive = func(s string) string {
+		return lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFDE00"}).Render(s)
+	}
 	ColoredBullet = lipgloss.NewStyle().
 			SetString("•").
 			Foreground(lipgloss.Color("#FFCC00"))
@@ -69,7 +73,7 @@ func StripANSI(input string) string {
 	return ansiRegex.ReplaceAllString(input, "")
 }
 
-// To avoid unnecessary dependencies, I adapted the MakeColor function from
+// Color To avoid unnecessary dependencies, I adapted the MakeColor function from
 // "github.com/lucasb-eyer/go-colorful" and implemented it using only the
 // standard library. Since I only needed this function, importing the entire
 // library was unnecessary.
@@ -77,7 +81,7 @@ type Color struct {
 	R, G, B float64
 }
 
-// Implement the Go color.Color interface.
+// RGBA Implement the Go color.Color interface.
 func (col Color) RGBA() (uint32, uint32, uint32, uint32) {
 	return uint32(col.R*65535.0 + 0.5), uint32(col.G*65535.0 + 0.5), uint32(col.B*65535.0 + 0.5), 0xFFFF
 }
@@ -101,4 +105,50 @@ func MakeColor(c color.Color) (Color, bool) {
 func (col Color) Hex() string {
 	return fmt.Sprintf("#%02x%02x%02x",
 		uint8(col.R*255.0+0.5), uint8(col.G*255.0+0.5), uint8(col.B*255.0+0.5))
+}
+
+func FormTheme() *huh.Theme {
+	var (
+		yellow   = lipgloss.Color("#FFDE00")
+		blue     = lipgloss.Color("#3B4CCA")
+		red      = lipgloss.Color("#D00000")
+		black    = lipgloss.Color("#000000")
+		normalFg = lipgloss.AdaptiveColor{Light: "235", Dark: "252"}
+	)
+	t := huh.ThemeBase()
+
+	t.Focused.Base = t.Focused.Base.BorderForeground(lipgloss.Color("238"))
+	t.Focused.Card = t.Focused.Base
+	t.Focused.Title = t.Focused.Title.Foreground(blue).Bold(true)
+	t.Focused.NoteTitle = t.Focused.NoteTitle.Foreground(blue).Bold(true).MarginBottom(1)
+	t.Focused.Directory = t.Focused.Directory.Foreground(blue)
+	t.Focused.Description = t.Focused.Description.Foreground(lipgloss.AdaptiveColor{Light: "", Dark: "243"})
+	t.Focused.ErrorIndicator = t.Focused.ErrorIndicator.Foreground(red)
+	t.Focused.ErrorMessage = t.Focused.ErrorMessage.Foreground(red)
+	t.Focused.SelectSelector = t.Focused.SelectSelector.Foreground(red)
+	t.Focused.NextIndicator = t.Focused.NextIndicator.Foreground(yellow)
+	t.Focused.PrevIndicator = t.Focused.PrevIndicator.Foreground(yellow)
+	t.Focused.Option = t.Focused.Option.Foreground(normalFg)
+	t.Focused.MultiSelectSelector = t.Focused.MultiSelectSelector.Foreground(red)
+	t.Focused.SelectedOption = t.Focused.SelectedOption.Foreground(red)
+	t.Focused.SelectedPrefix = lipgloss.NewStyle().Foreground(red).SetString("✓ ")
+	t.Focused.UnselectedPrefix = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "", Dark: "243"}).SetString("• ")
+	t.Focused.UnselectedOption = t.Focused.UnselectedOption.Foreground(normalFg)
+	t.Focused.FocusedButton = t.Focused.FocusedButton.Foreground(black).Background(yellow)
+	t.Focused.Next = t.Focused.FocusedButton
+
+	t.Focused.TextInput.Cursor = t.Focused.TextInput.Cursor.Foreground(yellow)
+	t.Focused.TextInput.Placeholder = t.Focused.TextInput.Placeholder.Foreground(lipgloss.AdaptiveColor{Light: "248", Dark: "238"})
+	t.Focused.TextInput.Prompt = t.Focused.TextInput.Prompt.Foreground(red)
+
+	t.Blurred = t.Focused
+	t.Blurred.Base = t.Focused.Base.BorderStyle(lipgloss.HiddenBorder())
+	t.Blurred.Card = t.Blurred.Base
+	t.Blurred.NextIndicator = lipgloss.NewStyle()
+	t.Blurred.PrevIndicator = lipgloss.NewStyle()
+
+	t.Group.Title = t.Focused.Title
+	t.Group.Description = t.Focused.Description
+
+	return t
 }
