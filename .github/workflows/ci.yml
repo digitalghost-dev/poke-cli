@@ -17,7 +17,7 @@ on:
       - '.github/**'
       - '.dockerignore'
       - 'docs/**'
-      - 'etl/**'
+      - '../../card_data/**'
       - '.gitignore'
       - 'demo**'
       - 'go.mod'
@@ -28,7 +28,7 @@ on:
       - main
 
 env:
-  VERSION_NUMBER: 'v1.4.0'
+  VERSION_NUMBER: 'v1.5.0'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
