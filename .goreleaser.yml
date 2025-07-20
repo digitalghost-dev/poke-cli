@@ -14,7 +14,7 @@ builds:
       - windows
       - darwin
     ldflags:
-      - -s -w -X main.version=v1.4.0
+      - -s -w -X main.version=v1.5.0
 
 archives:
   - formats: [ 'zip' ]
@@ -45,7 +45,7 @@ homebrew_casks:
       owner: digitalghost-dev
       name: homebrew-tap
       token: "{{.Env.GITHUB_TOKEN}}"
-    homepage: "https://github.com/digitalghost-dev/poke-cli"
+    homepage: "https://docs.poke-cli.com/"
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     license: "Apache License 2.0"
     hooks:
@@ -54,3 +54,22 @@ homebrew_casks:
           if OS.mac? && system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
             system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poke-cli"]
           end
+
+winget:
+  - name: poke-cli
+    publisher: digitalghost-dev
+    license: MIT
+    homepage: "https://docs.poke-cli.com/"
+    short_description: "Pokémon CLI/TUI terminal tool."
+    repository:
+      owner: digitalghost-dev
+      name: winget-pkgs
+      token: "{{.Env.GITHUB_TOKEN}}"
+      branch: "poke-cli-{{.Version}}"
+      pull_request:
+        enabled: true
+        base:
+          owner: microsoft
+          name: winget-pkgs
+          branch: master
+    description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
