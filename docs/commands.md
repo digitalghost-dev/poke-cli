@@ -130,6 +130,19 @@ Output:
 
 ---
 
+## `speed`
+* Calculate the speed of a Pokémon in battle.
+
+Example:
+```console
+$ poke-cli speed
+```
+Output:
+
+![speed_command](assets/speed.gif)
+
+---
+
 ## `types`
 * Retrieve details about a specific type and a damage relation table.
 
