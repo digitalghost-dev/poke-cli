@@ -9,6 +9,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/natures"
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
+	"github.com/digitalghost-dev/poke-cli/cmd/speed"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -72,6 +73,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
+			fmt.Sprintf("\n\t%-15s %s", "speed", "Calculate the speed of a Pokémon in battle"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
 			"\n\n", styling.StyleItalic.Render("hint: when calling a resource with a space, use a hyphen"),
 			"\n", styling.StyleItalic.Render("example: poke-cli ability strong-jaw"),
@@ -105,6 +107,7 @@ func runCLI(args []string) int {
 		"move":    utils.HandleCommandOutput(move.MoveCommand),
 		"natures": utils.HandleCommandOutput(natures.NaturesCommand),
 		"pokemon": utils.HandleCommandOutput(pokemon.PokemonCommand),
+		"speed":   utils.HandleCommandOutput(speed.SpeedCommand),
 		"types":   utils.HandleCommandOutput(types.TypesCommand),
 		"search": func() int {
 			search.SearchCommand()
@@ -141,6 +144,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
 			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
 			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
+			fmt.Sprintf("\n\t%-15s %s", "speed", "Calculate the speed of a Pokémon in battle"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
 			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h")),
 		)

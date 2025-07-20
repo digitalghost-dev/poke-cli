@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.4.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.5.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -24,7 +24,7 @@ View future plans in the [Roadmap](#roadmap) section.
 
 ---
 ## Demo
-![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.3.3.gif)
+![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.5.0.gif)
 
 ---
 ## Installation
@@ -32,6 +32,7 @@ View future plans in the [Roadmap](#roadmap) section.
 * [Binary](#binary)
 * [Docker Image](#docker-image)
 * [Homebrew](#homebrew)
+* [Winget](#winget)
 * [Source](#source)
 
 ### Binary
@@ -77,11 +78,11 @@ View future plans in the [Roadmap](#roadmap) section.
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.4.0 <command> [subcommand] flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.5.0 <command> [subcommand] flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.4.0 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.5.0 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -91,7 +92,18 @@ View future plans in the [Roadmap](#roadmap) section.
     ```bash
     brew install --cask digitalghost-dev/tap/poke-cli
     ````
-2. Verify install!
+2. Verify install:
+    ```bash
+    poke-cli -v
+    ```
+   
+### Winget
+1. Install the package:
+    ```powershell
+    winget install poke-cli
+    ```
+   
+2. Verify install:
     ```bash
     poke-cli -v
     ```
@@ -108,35 +120,36 @@ View future plans in the [Roadmap](#roadmap) section.
 ## Usage
 By running `poke-cli [-h | --help]`, it'll display information on how to use the tool. 
 ```
-╭──────────────────────────────────────────────────────────╮
-│Welcome! This tool displays data related to Pokémon!      │
-│                                                          │
-│ USAGE:                                                   │
-│    poke-cli [flag]                                       │
-│    poke-cli <command> [flag]                             │
-│    poke-cli <command> <subcommand> [flag]                │
-│                                                          │
-│ FLAGS:                                                   │
-│    -h, --help      Shows the help menu                   │
-│    -l, --latest    Prints the latest version available   │
-│    -v, --version   Prints the current version            │
-│                                                          │
-│ COMMANDS:                                                │
-│    ability         Get details about an ability          │
-│    item            Get details about an item             │
-│    move            Get details about a move              │
-│    natures         Get details about all natures         │
-│    pokemon         Get details about a Pokémon           │
-│    search          Search for a resource                 │
-│    types           Get details about a typing            │
-│                                                          │
-│ hint: when calling a resource with a space, use a hyphen │
-│ example: poke-cli ability strong-jaw                     │
-│ example: poke-cli pokemon flutter-mane                   │
-│                                                          │
-│ ↓ ctrl/cmd + click for docs/guides                       │
-│ docs.poke-cli.com                                        │
-╰──────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────╮
+│Welcome! This tool displays data related to Pokémon!           │
+│                                                               │
+│ USAGE:                                                        │
+│    poke-cli [flag]                                            │
+│    poke-cli <command> [flag]                                  │
+│    poke-cli <command> <subcommand> [flag]                     │
+│                                                               │
+│ FLAGS:                                                        │
+│    -h, --help      Shows the help menu                        │
+│    -l, --latest    Prints the latest version available        │
+│    -v, --version   Prints the current version                 │
+│                                                               │
+│ COMMANDS:                                                     │
+│    ability         Get details about an ability               │
+│    item            Get details about an item                  │
+│    move            Get details about a move                   │
+│    natures         Get details about all natures              │
+│    pokemon         Get details about a Pokémon                │
+│    search          Search for a resource                      │
+│    speed           Calculate the speed of a Pokémon in battle │
+│    types           Get details about a typing                 │
+│                                                               │
+│ hint: when calling a resource with a space, use a hyphen      │
+│ example: poke-cli ability strong-jaw                          │
+│ example: poke-cli pokemon flutter-mane                        │
+│                                                               │
+│ ↓ ctrl/cmd + click for docs/guides                            │
+│ docs.poke-cli.com                                             │
+╰───────────────────────────────────────────────────────────────╯
 ```
 
 ---
@@ -163,7 +176,7 @@ Below is a list of the planned/completed commands and flags:
     - [ ] `item`
     - [x] `move`
     - [x] `pokemon`
-- [ ] `speed`: compare speed stats between two Pokémon.
+- [x] `speed`: compare speed stats between two Pokémon.
 - [x] `types`: get data about a specific typing.
 
 ---

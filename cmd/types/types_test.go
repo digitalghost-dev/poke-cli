@@ -45,6 +45,7 @@ func TestTypesCommand(t *testing.T) {
 		})
 	}
 }
+
 func TestModelInit(t *testing.T) {
 	m := model{}
 	cmd := m.Init()

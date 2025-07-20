@@ -101,6 +101,12 @@ func TestRunCLI(t *testing.T) {
 			expectedOutput: utils.LoadGolden(t, "cli_help.golden"),
 			expectedCode:   0,
 		},
+		{
+			name:           "Non-valid command",
+			args:           []string{"movesets"},
+			expectedOutput: utils.LoadGolden(t, "cli_incorrect_command.golden"),
+			expectedCode:   1,
+		},
 	}
 
 	for _, tt := range tests {

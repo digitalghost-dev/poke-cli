@@ -8,12 +8,12 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v1.4.0" -o poke-cli .
+RUN go build -ldflags "-X main.version=v1.5.0" -o poke-cli .
 
 # build 2
 FROM --platform=$BUILDPLATFORM alpine:3.22
 
-# Install only necessary packages and remove them after use
+# Installing only necessary packages and remove them after use
 RUN apk upgrade && \
     apk add --no-cache shadow && \
     addgroup -S poke_group && adduser -S poke_user -G poke_group && \
@@ -25,10 +25,8 @@ COPY --from=build /app/poke-cli /app/poke-cli
 ENV TERM=xterm-256color
 ENV COLOR_OUTPUT=true
 
-# Set correct permissions
 RUN chown -R poke_user:poke_group /app
 
-# Switch to non-root user
 USER poke_user
 
 ENTRYPOINT ["/app/poke-cli"]

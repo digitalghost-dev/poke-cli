@@ -1,29 +1,30 @@
-╭──────────────────────────────────────────────────────────╮
-│Welcome! This tool displays data related to Pokémon!      │
-│                                                          │
-│ USAGE:                                                   │
-│    poke-cli [flag]                                       │
-│    poke-cli <command> [flag]                             │
-│    poke-cli <command> <subcommand> [flag]                │
-│                                                          │
-│ FLAGS:                                                   │
-│    -h, --help      Shows the help menu                   │
-│    -l, --latest    Prints the latest version available   │
-│    -v, --version   Prints the current version            │
-│                                                          │
-│ COMMANDS:                                                │
-│    ability         Get details about an ability          │
-│    item            Get details about an item             │
-│    move            Get details about a move              │
-│    natures         Get details about all natures         │
-│    pokemon         Get details about a Pokémon           │
-│    search          Search for a resource                 │
-│    types           Get details about a typing            │
-│                                                          │
-│ hint: when calling a resource with a space, use a hyphen │
-│ example: poke-cli ability strong-jaw                     │
-│ example: poke-cli pokemon flutter-mane                   │
-│                                                          │
-│ ↓ ctrl/cmd + click for docs/guides                       │
-│ ]8;;https://docs.poke-cli.com\docs.poke-cli.com]8;;\                                        │
-╰──────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────╮
+│Welcome! This tool displays data related to Pokémon!           │
+│                                                               │
+│ USAGE:                                                        │
+│    poke-cli [flag]                                            │
+│    poke-cli <command> [flag]                                  │
+│    poke-cli <command> <subcommand> [flag]                     │
+│                                                               │
+│ FLAGS:                                                        │
+│    -h, --help      Shows the help menu                        │
+│    -l, --latest    Prints the latest version available        │
+│    -v, --version   Prints the current version                 │
+│                                                               │
+│ COMMANDS:                                                     │
+│    ability         Get details about an ability               │
+│    item            Get details about an item                  │
+│    move            Get details about a move                   │
+│    natures         Get details about all natures              │
+│    pokemon         Get details about a Pokémon                │
+│    search          Search for a resource                      │
+│    speed           Calculate the speed of a Pokémon in battle │
+│    types           Get details about a typing                 │
+│                                                               │
+│ hint: when calling a resource with a space, use a hyphen      │
+│ example: poke-cli ability strong-jaw                          │
+│ example: poke-cli pokemon flutter-mane                        │
+│                                                               │
+│ ↓ ctrl/cmd + click for docs/guides                            │
+│ ]8;;https://docs.poke-cli.com\docs.poke-cli.com]8;;\                                             │
+╰───────────────────────────────────────────────────────────────╯
