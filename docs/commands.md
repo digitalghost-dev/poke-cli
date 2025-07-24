@@ -86,6 +86,11 @@ Output:
 * `--stats | -s`
 * `--types | -t`
 
+!!! warning
+
+    The `-t | --types` flag is deprecated will be removed in v2.
+    The Pokémon's typing is now included in the base `pokemon` command.
+
 Example:
 ```console
 $ poke-cli pokemon rockruff --abilities --moves
@@ -107,12 +112,12 @@ Output:
 
 Example:
 ```console
-$ poke-cli pokemon cacturne --stats --types
+$ poke-cli pokemon cacturne --stats
 ```
 
 Output:
 
-![pokemon_stats_types](assets/pokemon_stats_types.gif)
+![pokemon_types](assets/pokemon_stats.gif)
 
 ---
 
