@@ -35,6 +35,10 @@ var (
 	ErrorBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#F2055C"))
+	WarningColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8C00"))
+	WarningBorder = lipgloss.NewStyle().
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#FF8C00"))
 	TypesTableBorder = lipgloss.NewStyle().
 				BorderStyle(lipgloss.NormalBorder()).
 				BorderForeground(lipgloss.Color("#FFCC00"))
