@@ -91,7 +91,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 		{"poke-cli", "ability", "strong-jaw", "all", "pokemon"},
 	}
 
-	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
+	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidateAbilityArgs(input)
@@ -168,7 +168,7 @@ func TestValidatePokemonArgs(t *testing.T) {
 		{"poke-cli", "pokemon", "hypo", "--abilities", "-s", "--types", "--image=sm", "-m", "-p"},
 	}
 
-	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
+	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidatePokemonArgs(input)
@@ -207,7 +207,7 @@ func TestValidateSearchArgs(t *testing.T) {
 		{"poke-cli", "search", "pokemon", "meowscarada"},
 	}
 
-	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
+	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidateSearchArgs(input)
@@ -249,7 +249,7 @@ func TestValidateTypesArgs(t *testing.T) {
 		{"poke-cli", "types", "rock", "pokemon"},
 	}
 
-	expectedError := styling.StripANSI("╭──────────────────╮\n│Error!            │\n│Too many arguments│\n╰──────────────────╯")
+	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
 		err := ValidateTypesArgs(input)
