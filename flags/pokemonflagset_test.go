@@ -262,6 +262,14 @@ func TestTypesFlag(t *testing.T) {
 Typing
 Type 1: Grass
 Type 2: Poison
+╭─────────────────────────────────────╮
+│⚠ Warning!                           │
+│The '-t | --types' flag is deprecated│
+│and will be removed in v2.           │
+│                                     │
+│Typing is now included by default.   │
+│You no longer need this flag.        │
+╰─────────────────────────────────────╯
 `
 
 	// Assert output contains the expected header and typing information
