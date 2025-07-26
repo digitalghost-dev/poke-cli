@@ -26,3 +26,6 @@ dist/
 
 # testdata
 testdata/
+
+# Python data
+card_data/

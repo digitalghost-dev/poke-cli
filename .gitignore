@@ -32,8 +32,8 @@ card_data/.venv
 __pycache__/
 
 # Terraform
-card_data/terraform/access-token
-/card_data/terraform/access-token
-card_data/terraform/secrets.tfvars
-card_data/terraform/terraform.tfstate
-/card_data/terraform/.terraform/
+card_data/infra/access-token
+/card_data/infra/access-token
+card_data/infra/secrets.tfvars
+card_data/infra/terraform.tfstate
+/card_data/infra/.terraform/

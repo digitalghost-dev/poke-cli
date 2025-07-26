@@ -57,7 +57,7 @@ func AbilityApiCall(endpoint string, abilityName string, baseURL string) (struct
 
 	if err != nil {
 		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("Error!"),
+			styling.ErrorColor.Render("✖ Error!"),
 			"\nAbility not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.AbilityJSONStruct{}, "", fmt.Errorf("%s", errMessage)
@@ -75,7 +75,7 @@ func ItemApiCall(endpoint string, itemName string, baseURL string) (structs.Item
 
 	if err != nil {
 		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("Error!"),
+			styling.ErrorColor.Render("✖ Error!"),
 			"\nItem not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.ItemJSONStruct{}, "", fmt.Errorf("%s", errMessage)
@@ -93,7 +93,7 @@ func MoveApiCall(endpoint string, moveName string, baseURL string) (structs.Move
 
 	if err != nil {
 		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("Error!"),
+			styling.ErrorColor.Render("✖ Error!"),
 			"\nMove not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.MoveJSONStruct{}, "", fmt.Errorf("%s", errMessage)
@@ -111,7 +111,7 @@ func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (struct
 
 	if err != nil {
 		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("Error!"),
+			styling.ErrorColor.Render("✖ Error!"),
 			"\nPokémon not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
 		)
 		return structs.PokemonJSONStruct{}, "", fmt.Errorf("%s", errMessage)

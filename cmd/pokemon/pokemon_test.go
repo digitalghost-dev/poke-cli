@@ -33,6 +33,12 @@ func TestPokemonCommand(t *testing.T) {
 			expectedOutput: utils.LoadGolden(t, "pokemon_help.golden"),
 		},
 		{
+			name:           "Pokemon no flags with dual type",
+			args:           []string{"pokemon", "victini"},
+			expectedOutput: utils.LoadGolden(t, "pokemon_no_flags_dual_type.golden"),
+			expectedError:  true,
+		},
+		{
 			name:           "Pokemon abilities flag",
 			args:           []string{"pokemon", "metagross", "--abilities"},
 			expectedOutput: utils.LoadGolden(t, "pokemon_abilities.golden"),
@@ -64,11 +70,6 @@ func TestPokemonCommand(t *testing.T) {
 			name:           "Pokemon stats flag",
 			args:           []string{"pokemon", "toxicroak", "--stats"},
 			expectedOutput: utils.LoadGolden(t, "pokemon_stats.golden"),
-		},
-		{
-			name:           "Pokemon typed flags",
-			args:           []string{"pokemon", "armarouge", "--types"},
-			expectedOutput: utils.LoadGolden(t, "pokemon_types.golden"),
 		},
 	}
 

@@ -1,5 +1,5 @@
 ╭──────────────────────────────────────────────────────────╮
-│Error!                                                    │
+│✖ Error!                                                  │
 │The image flag (-i or --image) requires a non-empty value.│
 │Valid sizes are: lg, md, sm.                              │
 ╰──────────────────────────────────────────────────────────╯

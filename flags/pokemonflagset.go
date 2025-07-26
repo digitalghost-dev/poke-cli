@@ -194,7 +194,7 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	// Validate size
 	dimensions, exists := sizeMap[strings.ToLower(size)]
 	if !exists {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nInvalid image size.\nValid sizes are: lg, md, sm")
+		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nInvalid image size.\nValid sizes are: lg, md, sm")
 		return fmt.Errorf("%s", errMessage)
 	}
 
@@ -476,6 +476,8 @@ func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
 			}
 		}
 	}
+
+	fmt.Fprintln(w, styling.WarningBorder.Render(styling.WarningColor.Render("⚠ Warning!"), "\nThe '-t | --types' flag is deprecated\nand will be removed in v2.\n\nTyping is now included by default.\nYou no longer need this flag. "))
 
 	return nil
 }

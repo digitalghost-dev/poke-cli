@@ -135,7 +135,7 @@ func runCLI(args []string) int {
 		return cmdFunc()
 	default:
 		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("Error!"),
+			styling.ErrorColor.Render("✖ Error!"),
 			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", cmdArg)),
 			styling.StyleBold.Render("\nCommands:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
