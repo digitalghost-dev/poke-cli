@@ -1,14 +1,17 @@
 package pokemon
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"io"
 	"math"
 	"os"
 	"strings"
@@ -21,6 +24,7 @@ func PokemonCommand() (string, error) {
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
 	flag.Usage = func() {
+		styledFlag := styling.ErrorColor.Render(fmt.Sprintf("%-30s", "-t, --types"))
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific Pokémon.\n\n",
 			styling.StyleBold.Render("USAGE:"),
@@ -33,7 +37,7 @@ func PokemonCommand() (string, error) {
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
 			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokemon's learnable moves."),
 			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
-			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
+			fmt.Sprintf("\n\t%s %s", styledFlag, styling.ErrorColor.Render("Deprecated. Types are included with each Pokémon.")),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
 		output.WriteString(helpMessage)
@@ -88,11 +92,39 @@ func PokemonCommand() (string, error) {
 		inches = 0
 	}
 
+	typing := func(w io.Writer) {
+		var typeBoxes []string
+
+		for _, pokeType := range pokemonStruct.Types {
+			colorHex, exists := styling.ColorMap[pokeType.Type.Name]
+			if exists {
+				color := lipgloss.Color(colorHex)
+				typeColorStyle := lipgloss.NewStyle().
+					Align(lipgloss.Center).
+					Foreground(lipgloss.Color("#FAFAFA")).
+					Background(color).
+					Margin(1, 1, 0, 0).
+					Height(1).
+					Width(14)
+
+				rendered := typeColorStyle.Render(cases.Title(language.English).String(pokeType.Type.Name))
+				typeBoxes = append(typeBoxes, rendered)
+			}
+		}
+
+		joinedTypes := lipgloss.JoinHorizontal(lipgloss.Top, typeBoxes...)
+		fmt.Fprintln(w, joinedTypes)
+	}
+
+	var typeOutput bytes.Buffer
+	typing(&typeOutput)
+
 	output.WriteString(fmt.Sprintf(
-		"Your selected Pokémon: %s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
-		capitalizedString, styling.ColoredBullet, pokemonStruct.ID,
+		"Your selected Pokémon: %s\n%s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
+		capitalizedString, typeOutput.String(),
+		styling.ColoredBullet, pokemonStruct.ID,
 		styling.ColoredBullet, weightKilograms, weightPounds,
-		styling.ColoredBullet, heightFeet, feet, inches,
+		styling.ColoredBullet, heightMeters, feet, inches,
 	))
 
 	if *imageFlag != "" || *shortImageFlag != "" {
