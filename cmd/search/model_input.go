@@ -31,7 +31,7 @@ func UpdateInput(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 
 				// checking for blank queries
 				if strings.TrimSpace(searchTerm) == "" {
-					errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("Error!"), "\nNo blank queries")
+					errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nNo blank queries")
 					m.WarningMessage = errMessage
 					return m, nil
 				}
