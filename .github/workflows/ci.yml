@@ -17,7 +17,7 @@ on:
       - '.github/**'
       - '.dockerignore'
       - 'docs/**'
-      - '../../card_data/**'
+      - 'card_data/**'
       - '.gitignore'
       - 'demo**'
       - 'go.mod'
