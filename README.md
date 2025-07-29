@@ -30,6 +30,7 @@ View future plans in the [Roadmap](#roadmap) section.
 ## Installation
 
 * [Binary](#binary)
+* [Raw Package](#raw-package)
 * [Docker Image](#docker-image)
 * [Homebrew](#homebrew)
 * [Winget](#winget)
@@ -64,6 +65,11 @@ View future plans in the [Roadmap](#roadmap) section.
   # Unix
   .\poke-cli ability airlock --pokemon
   ```
+
+### Raw Package
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
+
+_Comming Soon..._
 
 ### Docker Image
 
