@@ -30,7 +30,7 @@ View future plans in the [Roadmap](#roadmap) section.
 ## Installation
 
 * [Binary](#binary)
-* [Raw Package](#raw-package)
+* [Linux Package](#linux-packages)
 * [Docker Image](#docker-image)
 * [Homebrew](#homebrew)
 * [Winget](#winget)
@@ -66,10 +66,14 @@ View future plans in the [Roadmap](#roadmap) section.
   .\poke-cli ability airlock --pokemon
   ```
 
-### Raw Package
+### Linux Packages
 [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
-_Comming Soon..._
+This package repository is generously hosted by Cloudsmith.
+Cloudsmith is a fully cloud-based service that lets you easily create, store, and share packages in any format, anywhere.
+
+
+_Coming Soon..._
 
 ### Docker Image
 
