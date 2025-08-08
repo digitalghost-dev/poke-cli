@@ -39,6 +39,11 @@ theme:
       primary: red
   features:
     - navigation.footer
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.index
   logo:
     assets/DigitalGhostLogo-512.png
 
@@ -63,3 +68,8 @@ extra:
   social:
     - icon: fontawesome/brands/docker
       link: https://hub.docker.com/r/digitalghostdev/poke-cli
+
+plugins:
+  - search
+  - mkdocs-nav-weight:
+      section_renamed: false
