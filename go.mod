@@ -1,6 +1,6 @@
 module github.com/digitalghost-dev/poke-cli
 
-go 1.24.4
+go 1.24.5
 
 require (
 	github.com/charmbracelet/bubbles v0.21.0
