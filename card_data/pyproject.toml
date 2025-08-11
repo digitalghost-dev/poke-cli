@@ -1,6 +1,6 @@
 [project]
 name = "card-data"
-version = "1.5.1"
+version = "1.5.2"
 description = "File directory to store all data related processes for the Pokémon TCG."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -16,6 +16,7 @@ dependencies = [
     "pyarrow>=20.0.0",
     "pydantic>=2.11.7",
     "requests>=2.32.4",
+    "soda-core-postgres>=3.5.5",
     "sqlalchemy>=2.0.41",
     "termcolor>=3.1.0",
 ]
