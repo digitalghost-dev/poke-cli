@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/digitalghost-dev/poke-cli/styling"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 func LatestFlag() (string, error) {
