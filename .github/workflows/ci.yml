@@ -23,12 +23,14 @@ on:
       - 'go.mod'
       - 'go.sum'
       - '.goreleaser.yaml'
+      - 'mkdocs.yml'
+      - 'nfpm.yaml'
       - 'pokemon.svg'
     branches:
       - main
 
 env:
-  VERSION_NUMBER: 'v1.5.1'
+  VERSION_NUMBER: 'v1.5.2'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
@@ -55,10 +57,26 @@ jobs:
         with:
           sarif_file: results.sarif
 
-  build-docs-docker-image:
+  lint-cli-dockerfile:
     runs-on: ubuntu-22.04
     needs: [ gosec ]
     if: needs.gosec.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: 'hadolint/hadolint-action@v3.1.0'
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: 'error'
+
+
+  build-docs-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [ lint-cli-dockerfile ]
+    if: needs.lint-cli-dockerfile.result == 'success'
 
     steps:
       - name: Checkout
