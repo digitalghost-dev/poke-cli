@@ -1,5 +1,5 @@
 # build 1
-FROM golang:1.24.4-alpine3.22 AS build
+FROM golang:1.24.5-alpine3.22 AS build
 
 WORKDIR /app
 
@@ -8,14 +8,13 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v1.5.1" -o poke-cli .
+RUN go build -ldflags "-X main.version=v1.5.2" -o poke-cli .
 
 # build 2
 FROM --platform=$BUILDPLATFORM alpine:3.22
 
 # Installing only necessary packages and remove them after use
-RUN apk upgrade && \
-    apk add --no-cache shadow && \
+RUN apk add --no-cache shadow=4.17.3-r0 && \
     addgroup -S poke_group && adduser -S poke_user -G poke_group && \
     sed -i 's/^root:.*/root:!*:0:0:root:\/root:\/sbin\/nologin/' /etc/passwd && \
     apk del shadow

@@ -3,6 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"runtime/debug"
+	"strings"
+
 	"github.com/digitalghost-dev/poke-cli/cmd/ability"
 	"github.com/digitalghost-dev/poke-cli/cmd/item"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
@@ -14,9 +18,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"os"
-	"runtime/debug"
-	"strings"
 )
 
 var version = "(devel)"
@@ -126,7 +127,7 @@ func runCLI(args []string) int {
 		mainFlagSet.Usage()
 		return 1
 	case *latestFlag || *shortLatestFlag:
-		flags.LatestFlag()
+		_, _ = flags.LatestFlag()
 		return 0
 	case *currentVersionFlag || *shortCurrentVersionFlag:
 		currentVersion()

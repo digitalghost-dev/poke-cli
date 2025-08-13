@@ -1,0 +1,26 @@
+checks for series:
+  # Row count validation
+  - row_count = 2
+
+  # Schema validation checks
+  - schema:
+      fail:
+        when required column missing: [id, name, logo]
+        when wrong column type:
+          id: text
+          name: text
+          logo: text
+
+  # Completeness checks (no null values)
+  - missing_count(id) = 0
+  - missing_count(name) = 0
+  - missing_count(logo) = 0
+
+  # Data uniqueness checks
+  - duplicate_count(id) = 0
+  - duplicate_count(name) = 0
+
+  # Data format validation - URL pattern check
+  - invalid_count(logo) = 0:
+      valid regex: '^https://.*'
+

@@ -9,6 +9,9 @@
 .dccache
 dist/
 poke-cli
+*.rpm
+*.apk
+*.deb
 
 # Test binary, built with `go test -c`
 *.test
@@ -32,8 +35,25 @@ card_data/.venv
 __pycache__/
 
 # Terraform
-card_data/infra/access-token
-/card_data/infra/access-token
-card_data/infra/secrets.tfvars
-card_data/infra/terraform.tfstate
-/card_data/infra/.terraform/
+### Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+**/*.tfvars
+**/*.tfvars.json
+
+### Terraform state files
+**/*.tfstate
+**/*.tfstate.*
+
+### Terraform crash log files
+crash.log
+crash.*.log
+
+### .terraform
+
+card_data/infrastructure/supabase/access-token
+/card_data/infrastructure/supabase/access-token
+**/.terraform/
+
+card_data/.tmp*/**

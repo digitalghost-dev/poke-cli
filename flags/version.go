@@ -7,87 +7,77 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os/exec"
-	"runtime"
+	"strings"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-type commandRunner func(name string, args ...string) *exec.Cmd
+func LatestFlag() (string, error) {
+	var output strings.Builder
 
-func latestDockerImage(run commandRunner) {
-	var cmd *exec.Cmd
+	latestRelease(&output)
 
-	if runtime.GOOS == "windows" {
-		cmd = run("powershell", "-Command", `
-            $tags = Invoke-RestMethod -Uri "https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1";
-            $tags.results[0].name
-        `)
-	} else {
-		_, err := exec.LookPath("curl")
-		if err == nil {
-			cmd = run("sh", "-c", `curl -s https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
-		} else {
-			cmd = run("sh", "-c", `wget -qO- https://hub.docker.com/v2/repositories/digitalghostdev/poke-cli/tags/?page_size=1 | grep -o '"name":"[^"]*"' | cut -d '"' -f 4`)
-		}
-	}
+	result := output.String()
+	fmt.Print(result)
 
-	output, err := cmd.Output()
-	if err != nil {
-		fmt.Printf("Error running command: %v\n", err)
-		return
-	}
-
-	fmt.Printf("Latest Docker image version: %s", string(output))
+	return result, nil
 }
 
-func latestRelease(githubAPIURL string) {
+func latestRelease(output *strings.Builder) {
 	type Release struct {
 		TagName string `json:"tag_name"`
 	}
 
 	// Parse and validate the URL
-	parsedURL, err := url.Parse(githubAPIURL)
+	parsedURL, err := url.Parse("https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest")
 	if err != nil {
-		fmt.Println("Invalid URL:", err)
+		fmt.Fprintf(output, "invalid URL: %v\n", err)
 		return
 	}
 
-	// Enforce HTTPS and specific host unless in test mode
-	if flag.Lookup("test.v") == nil { // Check if not in test mode
+	// Implementing gosec error
+	if flag.Lookup("test.v") == nil {
 		if parsedURL.Scheme != "https" {
-			fmt.Println("Only HTTPS URLs are allowed for security reasons")
+			fmt.Fprint(output, "only HTTPS URLs are allowed for security reasons\n")
 			return
 		}
 		if parsedURL.Host != "api.github.com" {
-			fmt.Println("URL host is not allowed")
+			fmt.Fprint(output, "url host is not allowed\n")
 			return
 		}
 	}
 
-	// Make the HTTP GET request
 	response, err := http.Get(parsedURL.String())
 	if err != nil {
-		fmt.Println("Error fetching data:", err)
+		fmt.Fprintf(output, "error fetching data: %v\n", err)
 		return
 	}
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		fmt.Fprintf(output, "error reading response body: %v\n", err)
 		return
 	}
 
 	var release Release
 	if err := json.Unmarshal(body, &release); err != nil {
-		fmt.Println("Error unmarshalling JSON:", err)
+		fmt.Fprintf(output, "error unmarshalling JSON: %v\n", err)
 		return
 	}
 
-	fmt.Println("Latest release tag:", release.TagName)
-}
+	releaseString := "Latest available version:"
+	releaseTag := styling.ColoredBullet.Render("") + release.TagName
 
-func LatestFlag() {
-	// cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
-	latestDockerImage(exec.Command)
-	latestRelease("https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest")
+	docStyle := lipgloss.NewStyle().
+		Padding(1, 2).
+		BorderStyle(lipgloss.ThickBorder()).
+		BorderForeground(lipgloss.AdaptiveColor{Light: "#444", Dark: "#EEE"}).
+		Width(30)
+
+	fullDoc := lipgloss.JoinVertical(lipgloss.Top, releaseString, releaseTag)
+
+	output.WriteString(docStyle.Render(fullDoc))
+	output.WriteString("\n")
 }

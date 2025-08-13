@@ -1,0 +1,9 @@
+data_source supabase:
+  type: postgres
+  connection:
+    host: aws-0-us-east-2.pooler.supabase.com
+    port: '5432'
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    database: postgres
+    schema: poke_data

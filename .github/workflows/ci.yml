@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: CI Builds
 
 on:
   workflow_dispatch:
@@ -23,23 +23,26 @@ on:
       - 'go.mod'
       - 'go.sum'
       - '.goreleaser.yaml'
+      - 'mkdocs.yml'
+      - 'nfpm.yaml'
       - 'pokemon.svg'
     branches:
       - main
 
 env:
-  VERSION_NUMBER: 'v1.5.1'
+  VERSION_NUMBER: 'v1.5.2'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+  security-events: write
 
 jobs:
   gosec:
     runs-on: ubuntu-22.04
-
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
     steps:
       - name: Checkout
@@ -55,10 +58,194 @@ jobs:
         with:
           sarif_file: results.sarif
 
-  build-docs-docker-image:
+  build-linux-packages:
     runs-on: ubuntu-22.04
     needs: [ gosec ]
     if: needs.gosec.result == 'success'
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.5'
+
+      - name: Build Go Binary
+        env:
+          GOOS: linux
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: 0
+        run: |
+          go build -ldflags="-s -w -X main.version=${{ env.VERSION_NUMBER }}" -o poke-cli
+
+      - name: Install nFPM
+        run: |
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.0
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+
+      - name: Create nFPM Config for Architecture
+        run: |
+          # Create architecture-specific config by modifying the base config
+          sed "s/arch: \"arm64\"/arch: \"${{ matrix.arch }}\"/" nfpm.yaml > nfpm-${{ matrix.arch }}.yaml
+
+      - name: Build packages
+        run: |
+          # Create output directory
+          mkdir -p dist
+          
+          # Build DEB package
+          nfpm package \
+            --config nfpm-${{ matrix.arch }}.yaml \
+            --packager deb \
+            --target dist/poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.deb
+          
+          # Build RPM package
+          nfpm package \
+            --config nfpm-${{ matrix.arch }}.yaml \
+            --packager rpm \
+            --target dist/poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.rpm
+          
+          # Build APK package
+          nfpm package \
+            --config nfpm-${{ matrix.arch }}.yaml \
+            --packager apk \
+            --target dist/poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.apk
+
+      - name: Upload packages as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages-${{ matrix.arch }}
+          path: dist/*
+
+  upload-deb-packages:
+    runs-on: ubuntu-22.04
+    needs: [ build-linux-packages ]
+    if: needs.build-linux-packages.result == 'success'
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+      fail-fast: false  # Don't cancel other uploads if one fails
+
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-packages-${{ matrix.arch }}
+          path: packages/
+
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.3
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+
+      - name: Upload DEB to Cloudsmith
+        working-directory: packages
+        run: |
+          cloudsmith push deb \
+            digitalghost-dev/poke-cli/debian/trixie \
+            poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.deb
+
+  upload-rpm-packages:
+    runs-on: ubuntu-22.04
+    needs: [ build-linux-packages ]
+    if: needs.build-linux-packages.result == 'success'
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+      fail-fast: false
+
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-packages-${{ matrix.arch }}
+          path: packages/
+
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.3
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+
+      - name: Upload RPM to Cloudsmith
+        working-directory: packages
+        run: |
+          cloudsmith push rpm \
+            digitalghost-dev/poke-cli/fedora/42 \
+            poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.rpm
+
+  upload-apk-packages:
+    runs-on: ubuntu-22.04
+    needs: [ build-linux-packages ]
+    if: needs.build-linux-packages.result == 'success'
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+      fail-fast: false
+
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-packages-${{ matrix.arch }}
+          path: packages/
+
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.3
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+
+      - name: Upload APK to Cloudsmith
+        working-directory: packages
+        run: |
+          cloudsmith push alpine \
+            digitalghost-dev/poke-cli/alpine/v3.22 \
+            poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.apk
+
+  upload-summary:
+    runs-on: ubuntu-22.04
+    needs: [ upload-deb-packages, upload-rpm-packages, upload-apk-packages ]
+    if: always()
+
+    steps:
+      - name: Check all Uploads
+        run: |
+          echo "DEB uploads: ${{ needs.upload-deb-packages.result }}"
+          echo "RPM uploads: ${{ needs.upload-rpm-packages.result }}"
+          echo "APK uploads: ${{ needs.upload-apk-packages.result }}"
+          
+          if [ "${{ needs.upload-deb-packages.result }}" != "success" ] || \
+             [ "${{ needs.upload-rpm-packages.result }}" != "success" ] || \
+             [ "${{ needs.upload-apk-packages.result }}" != "success" ]; then
+            echo "⚠️ Some uploads failed! ⚠️"
+            exit 1
+          fi
+          echo "✅ All packages uploaded successfully! ✅"
+
+  lint-cli-dockerfile:
+    runs-on: ubuntu-22.04
+    needs: [ gosec ]
+    if: needs.gosec.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: 'hadolint/hadolint-action@v3.1.0'
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: 'error'
+
+
+  build-docs-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [ lint-cli-dockerfile ]
+    if: needs.lint-cli-dockerfile.result == 'success'
 
     steps:
       - name: Checkout
@@ -123,8 +310,6 @@ jobs:
           docker tag docs:latest ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
           docker push ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
 
-      # AWS will then take care of updating App Runner with the latest version
-
   build-cli-docker-image:
     runs-on: ubuntu-22.04
     needs: [gosec]
@@ -183,10 +368,6 @@ jobs:
           docker push ${{ secrets.AWS_ECR_NAME }}:${{ env.VERSION_NUMBER }}
 
   syft:
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
     runs-on: ubuntu-22.04
     needs: [build-cli-docker-image]
     if: needs.build-cli-docker-image.result == 'success'
@@ -219,11 +400,6 @@ jobs:
           upload-artifact: true
 
   grype:
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
     runs-on: ubuntu-22.04
     needs: [syft]
     if: needs.syft.result == 'success'

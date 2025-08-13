@@ -1,122 +1,55 @@
 package flags
 
 import (
-	"bytes"
-	"fmt"
-	"github.com/stretchr/testify/assert"
-	"net/http"
-	"net/http/httptest"
 	"os"
-	"os/exec"
 	"testing"
+
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
+	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/stretchr/testify/assert"
 )
 
-// captureOutput redirects stdout to capture any printed output during a function's execution.
-func captureOutput(f func()) string {
-	// Save the original stdout
-	oldStdout := os.Stdout
-	// Create a pipe to capture the output
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-
-	// Run the function, capturing its output
-	f()
-
-	// Restore the original stdout and close the writer
-	err := w.Close()
+func TestLatestVersionFlag(t *testing.T) {
+	err := os.Setenv("GO_TESTING", "1")
 	if err != nil {
-		return fmt.Sprintf("error closing writer: %v", err)
+		t.Fatalf("Failed to set GO_TESTING env var: %v", err)
 	}
-	os.Stdout = oldStdout
 
-	// Read the captured output
-	var buf bytes.Buffer
-	_, _ = buf.ReadFrom(r)
-	return buf.String()
-}
+	defer func() {
+		err := os.Unsetenv("GO_TESTING")
+		if err != nil {
+			t.Logf("Warning: failed to unset GO_TESTING: %v", err)
+		}
+	}()
 
-func TestLatestDockerImage(t *testing.T) {
 	tests := []struct {
-		name        string
-		mockRunner  func(name string, args ...string) *exec.Cmd
-		expectError bool
-		expectText  string
+		name           string
+		args           []string
+		expectedOutput string
+		expectedError  bool
 	}{
 		{
-			name: "success",
-			mockRunner: func(name string, args ...string) *exec.Cmd {
-				return exec.Command("echo", "v1.0.0\n")
-			},
-			expectError: false,
-			expectText:  "Latest Docker image version: v1.0.0",
+			name:           "Get latest version with short flag",
+			args:           []string{"-l"},
+			expectedOutput: utils.LoadGolden(t, "main_latest_flag.golden"),
 		},
 		{
-			name: "error from command",
-			mockRunner: func(name string, args ...string) *exec.Cmd {
-				return exec.Command("false") // returns error
-			},
-			expectError: true,
-			expectText:  "Error running command",
+			name:           "Get latest version with long flag",
+			args:           []string{"--latest"},
+			expectedOutput: utils.LoadGolden(t, "main_latest_flag.golden"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			output := captureOutput(func() {
-				latestDockerImage(tt.mockRunner)
-			})
+			originalArgs := os.Args
+			os.Args = append([]string{"poke-cli"}, tt.args...)
+			defer func() { os.Args = originalArgs }()
 
-			assert.Contains(t, output, tt.expectText)
+			output, _ := LatestFlag()
+			cleanOutput := styling.StripANSI(output)
+
+			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
 		})
 	}
-}
-
-func TestLatestRelease(t *testing.T) {
-	githubAPIURL := "https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest"
-	output := captureOutput(func() { latestRelease(githubAPIURL) })
-
-	assert.Contains(t, output, "Latest release tag: v")
-}
-
-func TestLatestRelease_Success(t *testing.T) {
-	// Create a mock server that simulates a successful response
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, err := fmt.Fprintln(w, `{"tag_name": "v1.0.0"}`)
-		if err != nil {
-			t.Errorf("failed to write response: %v", err)
-			return
-		}
-	})
-	server := httptest.NewServer(handler)
-	defer server.Close()
-
-	// Capture output of the function
-	output := captureOutput(func() { latestRelease(server.URL) })
-	assert.Contains(t, output, "Latest release tag: v1.0.0")
-}
-
-func TestLatestRelease_InvalidJSON(t *testing.T) {
-	// Create a mock server that returns invalid JSON
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, err := fmt.Fprintln(w, `invalid-json`)
-		if err != nil {
-			t.Errorf("failed to write response: %v", err)
-			return
-		}
-	})
-	server := httptest.NewServer(handler)
-	defer server.Close()
-
-	// Capture output of the function
-	output := captureOutput(func() { latestRelease(server.URL) })
-	assert.Contains(t, output, "Error unmarshalling JSON:")
-}
-
-func TestLatestFlag(t *testing.T) {
-	// Capture the output of the LatestFlag function
-	output := captureOutput(LatestFlag)
-
-	// Verify that the output contains expected messages from both latestDockerImage and latestRelease
-	assert.Contains(t, output, "Latest Docker image version:", "Expected output to contain 'Latest Docker image version:' but got: %v", output)
-	assert.Contains(t, output, "Latest release tag:", "Expected output to contain 'Latest release tag:' but got: %v", output)
 }
