@@ -34,14 +34,15 @@ env:
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+  security-events: write
+
 jobs:
   gosec:
     runs-on: ubuntu-22.04
-
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
     steps:
       - name: Checkout
@@ -64,10 +65,6 @@ jobs:
     strategy:
       matrix:
         arch: [ amd64, arm64 ]
-
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - name: Checkout code
@@ -371,10 +368,6 @@ jobs:
           docker push ${{ secrets.AWS_ECR_NAME }}:${{ env.VERSION_NUMBER }}
 
   syft:
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
     runs-on: ubuntu-22.04
     needs: [build-cli-docker-image]
     if: needs.build-cli-docker-image.result == 'success'
@@ -407,11 +400,6 @@ jobs:
           upload-artifact: true
 
   grype:
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
     runs-on: ubuntu-22.04
     needs: [syft]
     if: needs.syft.result == 'success'
