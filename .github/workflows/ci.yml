@@ -313,8 +313,6 @@ jobs:
           docker tag docs:latest ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
           docker push ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
 
-      # AWS will then take care of updating App Runner with the latest version
-
   build-cli-docker-image:
     runs-on: ubuntu-22.04
     needs: [gosec]
