@@ -72,8 +72,11 @@ View future plans in the [Roadmap](#roadmap) section.
 This package repository is generously hosted by Cloudsmith.
 Cloudsmith is a fully cloud-based service that lets you easily create, store, and share packages in any format, anywhere.
 
-
-_Coming Soon..._
+| Package Type | Distributions                     | Repository Setup                                                                                                                        | Installation Command                         |
+|--------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
+| `apk`        | Alpine                            | `sudo apk add --no-cache bash && curl -1sLf 'https://dl.cloudsmith.io/basic/digitalghost-dev/poke-cli/setup.alpine.sh' \| sudo -E bash` | `sudo apk add poke-cli=1.5.2 --update-cache` |
+| `deb`        | Ubuntu, Debian                    | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.deb.sh' \| sudo -E bash`                                   | `sudo apt-get install poke-cli=1.5.2`        |
+| `rpm`        | Fedora, CentOS, Red Hat, openSUSE | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.rpm.sh' \| sudo -E bash`                                   | `sudo yum install poke-cli-1.5.2-1`          |
 
 ### Docker Image
 
