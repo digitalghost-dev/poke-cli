@@ -29,42 +29,34 @@ View future plans in the [Roadmap](#roadmap) section.
 ---
 ## Installation
 
-* [Binary](#binary)
-* [Linux Package](#linux-packages)
-* [Docker Image](#docker-image)
 * [Homebrew](#homebrew)
 * [Winget](#winget)
+* [Linux Packages](#linux-packages)
+* [Docker Image](#docker-image)
+* [Binary](#binary)
 * [Source](#source)
 
-### Binary
 
-1. Head to the [releases](https://github.com/digitalghost-dev/poke-cli/releases) page of the project.
-2. Choose a version to download. The latest is best.
-3. Choose an operating system and click on the matching zipped folder to start the download.
-4. Extract the folder. The tool is ready to use.
-5. Either change directories into the extracted folder or move the binary to a chosen directory.
-6. Run the tool!
+### Homebrew
+1. Install the Cask:
+    ```bash
+    brew install --cask digitalghost-dev/tap/poke-cli
+    ````
+2. Verify install:
+    ```bash
+    poke-cli -v
+    ```
 
-> [!IMPORTANT]
-> For macOS, you may have to allow the executable to run as it is not signed. Head to System Settings > Privacy & Security > scroll down and allow executable to run.
+### Winget
+1. Install the package:
+    ```powershell
+    winget install poke-cli
+    ```
 
-<details>
-
-<summary>View Image of Settings</summary>
-
-![settings](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/macos_privacy_settings.png)
-
-</details>
-
-
- #### Example usage
-  ```bash
-  # Windows
-  .\poke-cli.exe pokemon charizard --types --abilities
-   
-  # Unix
-  .\poke-cli ability airlock --pokemon
-  ```
+2. Verify install:
+    ```bash
+    poke-cli -v
+    ```
 
 ### Linux Packages
 [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
@@ -99,27 +91,36 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
+
+### Binary
+
+1. Head to the [releases](https://github.com/digitalghost-dev/poke-cli/releases) page of the project.
+2. Choose a version to download. The latest is best.
+3. Choose an operating system and click on the matching zipped folder to start the download.
+4. Extract the folder. The tool is ready to use.
+5. Either change directories into the extracted folder or move the binary to a chosen directory.
+6. Run the tool!
+
+> [!IMPORTANT]
+> For macOS, you may have to allow the executable to run as it is not signed. Head to System Settings > Privacy & Security > scroll down and allow executable to run.
+
+<details>
+
+<summary>View Image of Settings</summary>
+
+![settings](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/macos_privacy_settings.png)
+
+</details>
+
+
+#### Example usage
+  ```bash
+  # Windows
+  .\poke-cli.exe pokemon charizard --types --abilities
    
-### Homebrew
-1. Install the Cask:
-    ```bash
-    brew install --cask digitalghost-dev/tap/poke-cli
-    ````
-2. Verify install:
-    ```bash
-    poke-cli -v
-    ```
-   
-### Winget
-1. Install the package:
-    ```powershell
-    winget install poke-cli
-    ```
-   
-2. Verify install:
-    ```bash
-    poke-cli -v
-    ```
+  # Unix
+  .\poke-cli ability airlock --pokemon
+  ```
 
 ### Source
 
@@ -127,7 +128,8 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
    ```bash
    go install github.com/digitalghost-dev/poke-cli@latest
    ```
-2. The tool is ready to use!
+2. The tool should be ready to use if `$PATH` is set up.
+
 
 ---
 ## Usage
