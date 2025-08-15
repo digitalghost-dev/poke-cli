@@ -5,13 +5,6 @@ package flags
 import (
 	"flag"
 	"fmt"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
-	"github.com/digitalghost-dev/poke-cli/connections"
-	"github.com/digitalghost-dev/poke-cli/styling"
-	"github.com/disintegration/imaging"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	"image"
 	"io"
 	"log"
@@ -21,6 +14,15 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
+	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/structs"
+	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/disintegration/imaging"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func header(header string) string {
@@ -38,11 +40,14 @@ func header(header string) string {
 	return output.String()
 }
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool, *bool, *bool) {
+func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool, *bool, *bool) {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
 	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the Pokémon's abilities")
 	shortAbilitiesFlag := pokeFlags.Bool("a", false, "Print the Pokémon's abilities")
+
+	defenseFlag := pokeFlags.Bool("defense", false, "Print the Pokémon's type defenses")
+	shortDefenseFlag := pokeFlags.Bool("d", false, "Print the Pokémon's type defenses")
 
 	imageFlag := pokeFlags.String("image", "", "Print the Pokémon's default sprite")
 	shortImageFlag := pokeFlags.String("i", "", "Print the Pokémon's default sprite")
@@ -62,6 +67,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 		helpMessage := styling.HelpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
+			fmt.Sprintf("\n\t%-30s %s", "-d, --defense", "Prints the Pokémon's type defenses."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
 			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokemon's learnable moves."),
@@ -72,7 +78,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *string, *string, *bool
 		fmt.Println(helpMessage)
 	}
 
-	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
+	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, defenseFlag, shortDefenseFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
 }
 
 func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
@@ -124,6 +130,184 @@ func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
 			}
 		}
 	}
+
+	return nil
+}
+
+func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
+	baseURL := "https://pokeapi.co/api/v2/"
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+
+	// Print the header from header func
+	_, err := fmt.Fprintln(w, header("Type Defenses"))
+	if err != nil {
+		return err
+	}
+
+	allTypes := []string{"normal", "fire", "water", "electric", "grass", "ice",
+		"fighting", "poison", "ground", "flying", "psychic",
+		"bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"}
+
+	typeData := make(map[string]structs.TypesJSONStruct)
+	for _, pokeType := range pokemonStruct.Types {
+		typeStruct, _, _ := connections.TypesApiCall("type", pokeType.Type.Name, baseURL)
+		typeData[pokeType.Type.Name] = typeStruct
+	}
+
+	calculateTypeEffectiveness := func(attackingType string) float64 {
+		totalEffectiveness := 1.0
+
+		for _, pokeType := range pokemonStruct.Types {
+			typeStruct := typeData[pokeType.Type.Name]
+			effectiveness := 1.0
+
+			// Check for double damage (weakness)
+			for _, dmgType := range typeStruct.DamageRelations.DoubleDamageFrom {
+				if dmgType.Name == attackingType {
+					effectiveness = 2.0
+					break
+				}
+			}
+
+			// Check for half damage (resistance)
+			for _, dmgType := range typeStruct.DamageRelations.HalfDamageFrom {
+				if dmgType.Name == attackingType {
+					effectiveness = 0.5
+					break
+				}
+			}
+
+			// Check for no damage (immunity)
+			for _, dmgType := range typeStruct.DamageRelations.NoDamageFrom {
+				if dmgType.Name == attackingType {
+					effectiveness = 0.0
+					break
+				}
+			}
+
+			totalEffectiveness *= effectiveness
+		}
+
+		return totalEffectiveness
+	}
+
+	// Check for abilities that grant immunities or resistances
+	checkAbilityEffects := func() {
+		abilityImmunities := map[string][]string{
+			"flash-fire":    {"fire"},
+			"water-absorb":  {"water"},
+			"storm-drain":   {"water"},
+			"volt-absorb":   {"electric"},
+			"motor-drive":   {"electric"},
+			"lightning-rod": {"electric"},
+			"sap-sipper":    {"grass"},
+			"dry-skin":      {"water"},
+			"levitate":      {"ground"},
+			"earth-eater":   {"ground"},
+		}
+
+		abilityResistances := map[string][]string{
+			"thick-fat": {"fire", "ice"},
+			"heatproof": {"fire"},
+		}
+
+		for _, ability := range pokemonStruct.Abilities {
+			abilityName := ability.Ability.Name
+			formattedAbilityName := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
+
+			if types, exists := abilityImmunities[abilityName]; exists {
+				typeList := strings.Join(types, " and ")
+				_, err := fmt.Fprintf(w, "%s, with the %s ability, grants it immunity to %s type moves.\n",
+					cases.Title(language.English).String(pokemonName), formattedAbilityName, typeList)
+				if err != nil {
+					return
+				}
+			}
+
+			if types, exists := abilityResistances[abilityName]; exists {
+				typeList := strings.Join(types, " and ")
+				_, err := fmt.Fprintf(w, "%s, with the %s ability, grants it resistance to %s type moves.\n",
+					cases.Title(language.English).String(pokemonName), formattedAbilityName, typeList)
+				if err != nil {
+					return
+				}
+			}
+		}
+	}
+
+	// Calculate effectiveness for all types
+	typeEffectiveness := make(map[string]float64)
+	for _, attackingType := range allTypes {
+		typeEffectiveness[attackingType] = calculateTypeEffectiveness(attackingType)
+	}
+
+	var (
+		immune          []string
+		quarterDamage   []string
+		halfDamage      []string
+		normal          []string
+		doubleDamage    []string
+		quadrupleDamage []string
+	)
+
+	for typeName, eff := range typeEffectiveness {
+		capitalizedType := cases.Title(language.English).String(typeName)
+		switch eff {
+		case 0.0:
+			immune = append(immune, capitalizedType)
+		case 0.25:
+			quarterDamage = append(quarterDamage, capitalizedType)
+		case 0.5:
+			halfDamage = append(halfDamage, capitalizedType)
+		case 1.0:
+			normal = append(normal, capitalizedType)
+		case 2.0:
+			doubleDamage = append(doubleDamage, capitalizedType)
+		case 4.0:
+			quadrupleDamage = append(quadrupleDamage, capitalizedType)
+		}
+	}
+
+	if len(immune) > 0 {
+		_, err := fmt.Fprintf(w, "Immune: %s\n", strings.Join(immune, ", "))
+		if err != nil {
+			return err
+		}
+	}
+	if len(quarterDamage) > 0 {
+		_, err := fmt.Fprintf(w, "0.25×   Damage: %s\n", strings.Join(quarterDamage, ", "))
+		if err != nil {
+			return err
+		}
+	}
+	if len(halfDamage) > 0 {
+		_, err := fmt.Fprintf(w, "0.5×    Damage: %s\n", strings.Join(halfDamage, ", "))
+		if err != nil {
+			return err
+		}
+	}
+	if len(doubleDamage) > 0 {
+		_, err := fmt.Fprintf(w, "2.0×    Damage: %s\n", strings.Join(doubleDamage, ", "))
+		if err != nil {
+			return err
+		}
+	}
+	if len(quadrupleDamage) > 0 {
+		_, err := fmt.Fprintf(w, "4.0×    Damage: %s\n", strings.Join(quadrupleDamage, ", "))
+		if err != nil {
+			return err
+		}
+	}
+
+	// Add a newline before ability effects if there are any type effectiveness results
+	if len(immune) > 0 || len(quarterDamage) > 0 || len(halfDamage) > 0 || len(doubleDamage) > 0 || len(quadrupleDamage) > 0 {
+		_, err := fmt.Fprintln(w)
+		if err != nil {
+			return err
+		}
+	}
+
+	checkAbilityEffects()
 
 	return nil
 }
