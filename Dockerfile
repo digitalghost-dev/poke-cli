@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v1.5.2" -o poke-cli .
+RUN go build -ldflags "-X main.version=v1.6.0" -o poke-cli .
 
 # build 2
 FROM --platform=$BUILDPLATFORM alpine:3.22
