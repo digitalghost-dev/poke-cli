@@ -30,7 +30,7 @@ on:
       - main
 
 env:
-  VERSION_NUMBER: 'v1.5.2'
+  VERSION_NUMBER: 'v1.6.0'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
@@ -226,26 +226,10 @@ jobs:
           fi
           echo "✅ All packages uploaded successfully! ✅"
 
-  lint-cli-dockerfile:
+  build-docs-docker-image:
     runs-on: ubuntu-22.04
     needs: [ gosec ]
     if: needs.gosec.result == 'success'
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Lint Dockerfile
-        uses: 'hadolint/hadolint-action@v3.1.0'
-        with:
-          dockerfile: Dockerfile
-          failure-threshold: 'error'
-
-
-  build-docs-docker-image:
-    runs-on: ubuntu-22.04
-    needs: [ lint-cli-dockerfile ]
-    if: needs.lint-cli-dockerfile.result == 'success'
 
     steps:
       - name: Checkout
@@ -310,10 +294,25 @@ jobs:
           docker tag docs:latest ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
           docker push ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
 
+  lint-cli-dockerfile:
+    runs-on: ubuntu-22.04
+    needs: [ gosec ]
+    if: needs.gosec.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint Dockerfile
+        uses: 'hadolint/hadolint-action@v3.1.0'
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: 'error'
+
   build-cli-docker-image:
     runs-on: ubuntu-22.04
-    needs: [gosec]
-    if: needs.gosec.result == 'success'
+    needs: [ lint-cli-dockerfile ]
+    if: needs.lint-cli-dockerfile.result == 'success'
 
     steps:
       - name: Checkout
