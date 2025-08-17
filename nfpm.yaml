@@ -6,8 +6,7 @@ section: "default"
 version_schema: semver
 maintainer: "Christian S"
 description: |
-  A hybrid CLI/TUI tool written in Go for 
-  viewing Pokémon data from the terminal!
+  A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!
 homepage: "https://docs.poke-cli.com/"
 license: "MIT"
 
