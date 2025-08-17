@@ -63,7 +63,7 @@ Set Shell "bash"
 Set FontSize 32
 Set Width 2300
 Set Height 1300
-Set TypingSpeed 100ms
+Set TypingSpeed 50ms
 Set Theme "tokyonight-storm"
 
 Type "poke-cli pokemon charizard --abilities --stats"
@@ -78,13 +78,25 @@ Type clear
 
 Enter
 
+Type "poke-cli pokemon gastrodon --defense"
+
+Sleep 2s
+
+Enter
+
+Sleep 3s
+
+Type clear
+
+Enter
+
 Type "poke-cli pokemon tyranitar --image=sm"
 
 Sleep 2s
 
 Enter
 
-Sleep 4s
+Sleep 3s
 
 Type clear
 
@@ -102,7 +114,7 @@ Down@500ms 4
 
 Enter
 
-Sleep 6s
+Sleep 5s
 
 Type clear
 
@@ -112,7 +124,7 @@ Type "poke-cli natures"
 
 Enter
 
-Sleep 4s
+Sleep 3s
 
 Type clear
 
@@ -122,7 +134,7 @@ Type "poke-cli ability solar-power --pokemon"
 
 Enter
 
-Sleep 4s
+Sleep 3s
 
 Type clear
 
@@ -170,7 +182,7 @@ Sleep 1s
 
 Type@1s "char"
 
-Sleep 2s
+Sleep 1s
 
 Enter
 
@@ -190,7 +202,7 @@ Sleep 2s
 
 Enter
 
-Sleep 5s
+Sleep 3s
 
 Enter
 
@@ -248,5 +260,5 @@ Sleep 2s
 
 Enter
 
-Sleep 6s
+Sleep 5s
 
