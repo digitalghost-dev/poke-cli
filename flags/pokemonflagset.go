@@ -268,6 +268,13 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 		}
 	}
 
+	sort.Strings(immune)
+	sort.Strings(quarterDamage)
+	sort.Strings(halfDamage)
+	sort.Strings(normal)
+	sort.Strings(doubleDamage)
+	sort.Strings(quadrupleDamage)
+
 	if len(immune) > 0 {
 		_, err := fmt.Fprintf(w, "Immune: %s\n", strings.Join(immune, ", "))
 		if err != nil {
