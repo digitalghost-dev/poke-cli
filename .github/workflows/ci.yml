@@ -147,7 +147,7 @@ jobs:
         working-directory: packages
         run: |
           cloudsmith push deb \
-            digitalghost-dev/poke-cli/debian/trixie \
+            digitalghost-dev/poke-cli/debian/bookworm \
             poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.deb
 
   upload-rpm-packages:
