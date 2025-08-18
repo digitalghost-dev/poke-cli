@@ -172,7 +172,7 @@ Enter
 
 Sleep 2s
 
-Down@500ms 2
+Down@350ms 2
 
 Sleep 2s
 
@@ -180,7 +180,7 @@ Enter
 
 Sleep 1s
 
-Type@1s "char"
+Type@500ms "char"
 
 Sleep 1s
 
@@ -202,37 +202,37 @@ Sleep 2s
 
 Enter
 
-Sleep 3s
+Sleep 2.5s
 
 Enter
 
-Sleep 1.5s
+Sleep 1s
 
 Type "zapdos"
 
 Enter
 
-Sleep 1.5s
+Sleep 1s
 
 Type "50"
 
 Enter
 
-Sleep 1.5s
+Sleep 1s
 
 Type "252"
 
 Enter
 
-Sleep 1.5s
+Sleep 1s
 
 Type "31"
 
 Enter
 
-Sleep 1.5s
+Sleep 1s
 
-Down@500ms 1
+Down@350ms 1
 
 Type "x"
 
@@ -240,19 +240,19 @@ Sleep 2s
 
 Enter
 
-Down@500ms 3
+Down@350ms 3
 
-Up@750ms 3
-
-Enter
-
-Sleep 1.5s
-
-Down@500ms 1
+Up@350ms 3
 
 Enter
 
-Sleep 1.5s
+Sleep 1s
+
+Down@350ms 1
+
+Enter
+
+Sleep 1s
 
 Type "1"
 
