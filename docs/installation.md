@@ -11,11 +11,11 @@ There are a variety of ways to install the tool and support for different operat
 
 ### Homebrew
 1. Install the Cask:
-    ```bash
+    ```console
     brew install --cask digitalghost-dev/tap/poke-cli
     ````
 2. Verify install:
-    ```bash
+    ```console
     poke-cli -v
     ```
 
@@ -26,7 +26,7 @@ There are a variety of ways to install the tool and support for different operat
     ```
 
 2. Verify install:
-    ```bash
+    ```console
     poke-cli -v
     ```
 
@@ -57,11 +57,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
         * Necessary.
 3. Choose how to interact with the container:
     * Run a single command and exit:
-    ```bash
+    ```console
     docker run --rm -it digitalghostdev/poke-cli:v1.6.0 <command> [subcommand] flag]
     ```
     * Enter the container and use its shell:
-    ```bash
+    ```console
     docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.6.0 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
@@ -89,7 +89,7 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 
 
 #### Example usage
-  ```bash
+  ```console
   # Windows
   .\poke-cli.exe pokemon charizard --types --abilities
    
@@ -100,7 +100,7 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 ### Source
 
 1. Run the following command:
-   ```bash
+   ```console
    go install github.com/digitalghost-dev/poke-cli@latest
    ```
 2. The tool should be ready to use if `$PATH` is set up.
