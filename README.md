@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.5.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.6.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -24,7 +24,7 @@ View future plans in the [Roadmap](#roadmap) section.
 
 ---
 ## Demo
-![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.5.1.gif)
+![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.6.0.gif)
 
 ---
 ## Installation
@@ -64,11 +64,14 @@ View future plans in the [Roadmap](#roadmap) section.
 This package repository is generously hosted by Cloudsmith.
 Cloudsmith is a fully cloud-based service that lets you easily create, store, and share packages in any format, anywhere.
 
-| Package Type | Distributions                     | Repository Setup                                                                                                                        | Installation Command                         |
-|--------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
-| `apk`        | Alpine                            | `sudo apk add --no-cache bash && curl -1sLf 'https://dl.cloudsmith.io/basic/digitalghost-dev/poke-cli/setup.alpine.sh' \| sudo -E bash` | `sudo apk add poke-cli=1.5.2 --update-cache` |
-| `deb`        | Ubuntu, Debian                    | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.deb.sh' \| sudo -E bash`                                   | `sudo apt-get install poke-cli=1.5.2`        |
-| `rpm`        | Fedora, CentOS, Red Hat, openSUSE | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.rpm.sh' \| sudo -E bash`                                   | `sudo yum install poke-cli-1.5.2-1`          |
+1. Run the **Repository Setup** script first for the correct Linux distribution.
+2. Run the corresponding **Installation Command** afterward.
+
+| Package Type | Distributions                     | Repository Setup                                                                                                                        | Installation Command                   |
+|:------------:|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
+|    `apk`     | Alpine                            | `sudo apk add --no-cache bash && curl -1sLf 'https://dl.cloudsmith.io/basic/digitalghost-dev/poke-cli/setup.alpine.sh' \| sudo -E bash` | `sudo apk add poke-cli --update-cache` |
+|    `deb`     | Ubuntu, Debian                    | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.deb.sh' \| sudo -E bash`                                   | `sudo apt-get install poke-cli`        |
+|    `rpm`     | Fedora, CentOS, Red Hat, openSUSE | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.rpm.sh' \| sudo -E bash`                                   | `sudo yum install poke-cli`            |
 
 ### Docker Image
 
@@ -83,11 +86,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.5.2 <command> [subcommand] flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.6.0 <command> [subcommand] flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.5.2 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.6.0 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -181,7 +184,7 @@ Below is a list of the planned/completed commands and flags:
 - [x] `natures`: get data about natures.
 - [x] `pokemon`: get data about a Pokémon.
     - [x] `-a | --abilities`: display the Pokémon's abilities.
-    - [ ] `-d | --defense`: display the Pokémon's type defences.
+    - [x] `-d | --defense`: display the Pokémon's type defences.
     - [x] `-i | --image`: display a pixel image of the Pokémon.
     - [x] `-s | --stats`: display the Pokémon's base stats.
     - [x] `-m | --moves`: display learnable moves.

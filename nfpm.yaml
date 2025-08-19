@@ -1,13 +1,12 @@
 name: "poke-cli"
 arch: "arm64"
 platform: "linux"
-version: "v1.5.2"
+version: "v1.6.0"
 section: "default"
 version_schema: semver
 maintainer: "Christian S"
 description: |
-  A hybrid CLI/TUI tool written in Go for 
-  viewing Pokémon data from the terminal!
+  A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!
 homepage: "https://docs.poke-cli.com/"
 license: "MIT"
 

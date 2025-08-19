@@ -79,12 +79,13 @@ Output:
 
 **Available Flags**
 
-* `--help | -h`
-* `--abilities | -a`
-* `--image=xx | -i=xx`
-* `--moves | -m`
-* `--stats | -s`
-* `--types | -t`
+* `-h | --help`
+* `-a | --abilities`
+* `-d | --defense`
+* `-i=xx | --image=xx`
+* `-m | --moves`
+* `-s | --stats`
+* `-t | --types`
 
 !!! warning
 
@@ -101,7 +102,16 @@ Output:
 ![pokemon_abilities_moves](assets/pokemon_abilities_moves.gif)
 
 Example:
-```shell
+```console
+$ poke-cli pokemon gastrodon --defense
+```
+
+Output:
+
+![pokemon_defense](assets/pokemon_defense.gif)
+
+Example:
+```console
 # choose between three sizes: 'sm', 'md', 'lg'
 $ poke-cli pokemon tyranitar --image=sm
 ```

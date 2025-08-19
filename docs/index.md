@@ -14,4 +14,4 @@ View the [guides](Infrastructure_Guide/index.md) section for more details.
 
 ## Demo
 Here is a quick demo of the CLI/TUI tool in action.
-![demo_gif](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.5.1.gif)
+![demo_gif](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.6.0.gif)

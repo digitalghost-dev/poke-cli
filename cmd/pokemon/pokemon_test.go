@@ -1,11 +1,12 @@
 package pokemon
 
 import (
+	"os"
+	"testing"
+
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 func TestPokemonCommand(t *testing.T) {
@@ -42,6 +43,16 @@ func TestPokemonCommand(t *testing.T) {
 			name:           "Pokemon abilities flag",
 			args:           []string{"pokemon", "metagross", "--abilities"},
 			expectedOutput: utils.LoadGolden(t, "pokemon_abilities.golden"),
+		},
+		{
+			name:           "Pokemon defense flag",
+			args:           []string{"pokemon", "dragapult", "--defense"},
+			expectedOutput: utils.LoadGolden(t, "pokemon_defense.golden"),
+		},
+		{
+			name:           "Pokemon defense flag with ability immunity",
+			args:           []string{"pokemon", "gastrodon", "--defense"},
+			expectedOutput: utils.LoadGolden(t, "pokemon_defense_ability_immunities.golden"),
 		},
 		{
 			name:           "Pokemon image flag",

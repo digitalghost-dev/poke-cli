@@ -35,25 +35,26 @@ card_data/.venv
 __pycache__/
 
 # Terraform
-### Ignore CLI configuration files
 .terraformrc
 terraform.rc
-
 **/*.tfvars
 **/*.tfvars.json
-
-### Terraform state files
 **/*.tfstate
 **/*.tfstate.*
-
-### Terraform crash log files
 crash.log
 crash.*.log
 
-### .terraform
+# dbt
+card_data/logs/
+dbt_packages/
+logs/
+
+target/
+dbt_packages/
 
 card_data/infrastructure/supabase/access-token
 /card_data/infrastructure/supabase/access-token
 **/.terraform/
 
 card_data/.tmp*/**
+

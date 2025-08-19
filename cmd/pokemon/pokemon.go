@@ -4,6 +4,11 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
+	"math"
+	"os"
+	"strings"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
@@ -11,10 +16,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"io"
-	"math"
-	"os"
-	"strings"
 )
 
 // PokemonCommand processes the Pokémon command
@@ -43,7 +44,7 @@ func PokemonCommand() (string, error) {
 		output.WriteString(helpMessage)
 	}
 
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, defenseFlag, shortDefenseFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -143,6 +144,13 @@ func PokemonCommand() (string, error) {
 
 	if *abilitiesFlag || *shortAbilitiesFlag {
 		if err := flags.AbilitiesFlag(&output, endpoint, pokemonName); err != nil {
+			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+			return "", fmt.Errorf("error parsing flags: %w", err)
+		}
+	}
+
+	if *defenseFlag || *shortDefenseFlag {
+		if err := flags.DefenseFlag(&output, endpoint, pokemonName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 			return "", fmt.Errorf("error parsing flags: %w", err)
 		}

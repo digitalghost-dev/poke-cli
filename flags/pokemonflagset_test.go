@@ -2,24 +2,22 @@ package flags
 
 import (
 	"bytes"
-	"github.com/digitalghost-dev/poke-cli/styling"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSetupPokemonFlagSet(t *testing.T) {
-	// Call the function to get the flag set and flags
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := SetupPokemonFlagSet()
+	pokeFlags, abilitiesFlag, shortAbilitiesFlag, defenseFlag, shortDefenseFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := SetupPokemonFlagSet()
 
-	// Check flag set properties
 	assert.NotNil(t, pokeFlags, "Flag set should not be nil")
 	assert.Equal(t, "pokeFlags", pokeFlags.Name(), "Flag set name should be 'pokeFlags'")
 
-	// Define test cases for flag assertions
 	flagTests := []struct {
 		flag     interface{}
 		expected interface{}
@@ -27,6 +25,8 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 	}{
 		{abilitiesFlag, false, "Abilities flag should be 'abilities'"},
 		{shortAbilitiesFlag, false, "Short abilities flag should be 'a'"},
+		{defenseFlag, false, "Defense flag should be 'defense'"},
+		{shortDefenseFlag, false, "Short Defense flag should be 'd'"},
 		{imageFlag, "", "Image flag default value should be 'md'"},
 		{shortImageFlag, "", "Short image flag default value should be 'md'"},
 		{moveFlag, false, "Move flag default value should be 'moves'"},
@@ -37,7 +37,6 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 		{shortStatsFlag, false, "Short stats flag should be 's'"},
 	}
 
-	// Run assertions for all flags
 	for _, tt := range flagTests {
 		assert.NotNil(t, tt.flag, tt.name)
 		assert.Equal(t, tt.expected, reflect.ValueOf(tt.flag).Elem().Interface(), tt.name)
@@ -45,16 +44,13 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 }
 
 func TestAbilitiesFlag(t *testing.T) {
-	// Capture standard output
 	var output bytes.Buffer
 	stdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	// Call the function with a known Pokémon (e.g., bulbasaur)
 	err := AbilitiesFlag(&output, "pokemon", "bulbasaur")
 
-	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
 		t.Fatalf("Failed to close pipe writer: %v", closeErr)
 	}
@@ -67,30 +63,25 @@ func TestAbilitiesFlag(t *testing.T) {
 
 	require.NoError(t, err)
 
-	// Define the expected output based on the API response
 	expectedOutput := `─────────
 Abilities
 Ability 1: Overgrow
 Hidden Ability: Chlorophyll
 `
 
-	// Assert the actual output matches the expected output
 	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the abilities flag")
 }
 
-func TestMovesFlag(t *testing.T) {
-	// Capture standard output
+func TestDefenseFlag(t *testing.T) {
 	var output bytes.Buffer
 	stdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	// Call the MovesFlag function with a valid Pokémon
-	err := MovesFlag(&output, "pokemon", "bulbasaur")
+	err := DefenseFlag(&output, "pokemon", "bulbasaur")
 
-	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
 		t.Fatalf("Failed to close pipe writer: %v", closeErr)
 	}
@@ -101,45 +92,38 @@ func TestMovesFlag(t *testing.T) {
 		t.Fatalf("Failed to read from pipe: %v", readErr)
 	}
 
-	// Assert no errors occurred
-	require.NoError(t, err, "MovesFlag should not return an error for a valid Pokémon")
+	require.NoError(t, err, "DefenseFlag should not return an error for a valid Pokémon")
 
-	// Get the actual output and strip ANSI codes
 	actualOutput := styling.StripANSI(output.String())
 
-	// Check for expected header
-	assert.Contains(t, actualOutput, "Learnable Moves", "Output should contain the header 'Learnable Moves'")
+	assert.Contains(t, actualOutput, "Type Defenses", "Output should contain the header 'Type Defenses'")
 
-	// Check for table headers
-	assert.Contains(t, actualOutput, "Name", "Output should contain the 'Name' column header")
-	assert.Contains(t, actualOutput, "Level", "Output should contain the 'Level' column header")
-	assert.Contains(t, actualOutput, "Type", "Output should contain the 'Type' column header")
-	assert.Contains(t, actualOutput, "Accuracy", "Output should contain the 'Accuracy' column header")
-	assert.Contains(t, actualOutput, "Power", "Output should contain the 'Power' column header")
+	assert.Contains(t, actualOutput, "0.25×   Damage", "Should include quarter damage category")
+	assert.Contains(t, actualOutput, "0.5×    Damage", "Should include half damage category")
+	assert.Contains(t, actualOutput, "2.0×    Damage", "Should include double damage category")
 
-	// Since the actual moves might change with API updates, we'll just check that the output is not empty
-	assert.NotEmpty(t, actualOutput, "Output should not be empty")
+	for _, typ := range []string{"Grass"} {
+		assert.Contains(t, actualOutput, typ, "Quarter damage should list %s", typ)
+	}
+	for _, typ := range []string{"Water", "Electric", "Fighting", "Fairy"} {
+		assert.Contains(t, actualOutput, typ, "Half damage should list %s", typ)
+	}
+	for _, typ := range []string{"Fire", "Ice", "Flying", "Psychic"} {
+		assert.Contains(t, actualOutput, typ, "Double damage should list %s", typ)
+	}
 
-	// Check that the output contains some common moves for Bulbasaur
-	// Note: These are common moves, but if they change in the API, this test might need updating
-	assert.True(t,
-		strings.Contains(actualOutput, "Tackle") ||
-			strings.Contains(actualOutput, "Vine Whip") ||
-			strings.Contains(actualOutput, "Growl"),
-		"Output should contain at least one of Bulbasaur's common moves")
+	assert.NotContains(t, actualOutput, "Immune:", "Bulbasaur should not have immunities")
+	assert.NotContains(t, actualOutput, "4.0×", "Bulbasaur should not have 4x weaknesses")
 }
 
 func TestImageFlag(t *testing.T) {
-	// Capture standard output
 	var output bytes.Buffer
 	stdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	// Call the function with a known Pokémon (e.g., bulbasaur)
 	err := ImageFlag(&output, "pokemon", "bulbasaur", "sm")
 
-	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
 		t.Fatalf("Failed to close pipe writer: %v", closeErr)
 	}
@@ -152,11 +136,8 @@ func TestImageFlag(t *testing.T) {
 
 	require.NoError(t, err)
 
-	// Validate that the output contains some expected patterns
 	actualOutput := styling.StripANSI(output.String())
 
-	// Since the output is an ASCII image, we can't hardcode the expected output,
-	// but we can check that it contains some general expected structure
 	if !strings.Contains(actualOutput, "▀") {
 		t.Errorf("Output does not contain the expected ASCII art characters.")
 	}
@@ -167,10 +148,8 @@ func TestImageFlag(t *testing.T) {
 }
 
 func TestImageFlagOptions(t *testing.T) {
-	// Define valid options as a slice
 	validOptions := []string{"lg", "md", "sm"}
 
-	// Test valid options
 	for _, option := range validOptions {
 		t.Run("ValidOption_"+option, func(t *testing.T) {
 			var buf bytes.Buffer
@@ -179,10 +158,8 @@ func TestImageFlagOptions(t *testing.T) {
 		})
 	}
 
-	// Define invalid options as a slice
 	invalidOptions := []string{"s", "med", "large"}
 
-	// Test invalid options
 	for _, option := range invalidOptions {
 		t.Run("InvalidOption_"+option, func(t *testing.T) {
 			var buf bytes.Buffer
@@ -192,17 +169,53 @@ func TestImageFlagOptions(t *testing.T) {
 	}
 }
 
-func TestStatsFlag(t *testing.T) {
-	// Capture standard output
+func TestMovesFlag(t *testing.T) {
 	var output bytes.Buffer
 	stdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	// Call the StatsFlag function with a valid Pokémon
+	err := MovesFlag(&output, "pokemon", "bulbasaur")
+
+	if closeErr := w.Close(); closeErr != nil {
+		t.Fatalf("Failed to close pipe writer: %v", closeErr)
+	}
+	os.Stdout = stdout
+
+	_, readErr := output.ReadFrom(r)
+	if readErr != nil {
+		t.Fatalf("Failed to read from pipe: %v", readErr)
+	}
+
+	require.NoError(t, err, "MovesFlag should not return an error for a valid Pokémon")
+
+	actualOutput := styling.StripANSI(output.String())
+
+	assert.Contains(t, actualOutput, "Learnable Moves", "Output should contain the header 'Learnable Moves'")
+
+	assert.Contains(t, actualOutput, "Name", "Output should contain the 'Name' column header")
+	assert.Contains(t, actualOutput, "Level", "Output should contain the 'Level' column header")
+	assert.Contains(t, actualOutput, "Type", "Output should contain the 'Type' column header")
+	assert.Contains(t, actualOutput, "Accuracy", "Output should contain the 'Accuracy' column header")
+	assert.Contains(t, actualOutput, "Power", "Output should contain the 'Power' column header")
+
+	assert.NotEmpty(t, actualOutput, "Output should not be empty")
+
+	assert.True(t,
+		strings.Contains(actualOutput, "Tackle") ||
+			strings.Contains(actualOutput, "Vine Whip") ||
+			strings.Contains(actualOutput, "Growl"),
+		"Output should contain at least one of Bulbasaur's common moves")
+}
+
+func TestStatsFlag(t *testing.T) {
+	var output bytes.Buffer
+	stdout := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
 	err := StatsFlag(&output, "pokemon", "bulbasaur")
 
-	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
 		t.Fatalf("Failed to close pipe writer: %v", closeErr)
 	}
@@ -215,7 +228,6 @@ func TestStatsFlag(t *testing.T) {
 
 	require.NoError(t, err, "StatsFlag should not return an error for a valid Pokémon")
 
-	// Define expected output components
 	expectedOutput := `──────────
 Base Stats
 HP         ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 45
@@ -227,23 +239,19 @@ Speed      ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇
 Total      318
 `
 
-	// Assert output contains the expected header and typing information
 	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the stats flag")
 }
 
 func TestTypesFlag(t *testing.T) {
-	// Capture standard output
 	var output bytes.Buffer
 	stdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
-	// Call the TypesFlag function with a valid Pokémon
 	err := TypesFlag(&output, "pokemon", "bulbasaur")
 
-	// Close and restore stdout
 	if closeErr := w.Close(); closeErr != nil {
 		t.Fatalf("Failed to close pipe writer: %v", closeErr)
 	}
@@ -254,10 +262,8 @@ func TestTypesFlag(t *testing.T) {
 		t.Fatalf("Failed to read from pipe: %v", readErr)
 	}
 
-	// Assert no errors occurred
 	require.NoError(t, err, "TypesFlag should not return an error for a valid Pokémon")
 
-	// Define expected output components
 	expectedOutput := `──────
 Typing
 Type 1: Grass
@@ -271,8 +277,6 @@ Type 2: Poison
 │You no longer need this flag.        │
 ╰─────────────────────────────────────╯
 `
-
-	// Assert output contains the expected header and typing information
 	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the types flag")
