@@ -75,23 +75,14 @@ func PokemonCommand() (string, error) {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
-	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
 
-	// Weight calculation
-	weightKilograms := float64(pokemonStruct.Weight) / 10
-	weightPounds := float64(weightKilograms) * 2.20462
-
-	// Height calculation
-	heightMeters := float64(pokemonStruct.Height) / 10
-	heightFeet := heightMeters * 3.28084
-	feet := int(heightFeet)
-	inches := int(math.Round((heightFeet - float64(feet)) * 12)) // Use math.Round to avoid truncation
-
-	// Adjust for rounding to 12 inches (carry over to the next foot)
-	if inches == 12 {
-		feet++
-		inches = 0
+	pokemonSpeciesStruct, err := connections.PokemonSpeciesApiCall("pokemon-species", pokemonName, connections.APIURL)
+	if err != nil {
+		output.WriteString(err.Error())
+		return output.String(), err
 	}
+
+	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
 
 	typing := func(w io.Writer) {
 		var typeBoxes []string
@@ -117,15 +108,50 @@ func PokemonCommand() (string, error) {
 		fmt.Fprintln(w, joinedTypes)
 	}
 
-	var typeOutput bytes.Buffer
+	metrics := func(w io.Writer) {
+		// Weight calculation
+		weightKilograms := float64(pokemonStruct.Weight) / 10
+		weightPounds := float64(weightKilograms) * 2.20462
+
+		// Height calculation
+		heightMeters := float64(pokemonStruct.Height) / 10
+		heightFeet := heightMeters * 3.28084
+		feet := int(heightFeet)
+		inches := int(math.Round((heightFeet - float64(feet)) * 12)) // Use math.Round to avoid truncation
+
+		// Adjust for rounding to 12 inches (carry over to the next foot)
+		if inches == 12 {
+			feet++
+			inches = 0
+		}
+
+		fmt.Fprintf(w, "\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
+			styling.ColoredBullet, pokemonStruct.ID,
+			styling.ColoredBullet, weightKilograms, weightPounds,
+			styling.ColoredBullet, heightMeters, feet, inches)
+	}
+
+	species := func(w io.Writer) {
+		evolvesFrom := pokemonSpeciesStruct.EvolvesFromSpecies.Name
+
+		capitalizedPokemonName := cases.Title(language.English).String(strings.ReplaceAll(evolvesFrom, "-", " "))
+
+		fmt.Fprintf(w, "%s %s %s", styling.ColoredBullet, "Evolves from:", capitalizedPokemonName)
+	}
+
+	var (
+		typeOutput    bytes.Buffer
+		metricsOutput bytes.Buffer
+		speciesOutput bytes.Buffer
+	)
+
 	typing(&typeOutput)
+	metrics(&metricsOutput)
+	species(&speciesOutput)
 
 	output.WriteString(fmt.Sprintf(
-		"Your selected Pokémon: %s\n%s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
-		capitalizedString, typeOutput.String(),
-		styling.ColoredBullet, pokemonStruct.ID,
-		styling.ColoredBullet, weightKilograms, weightPounds,
-		styling.ColoredBullet, heightMeters, feet, inches,
+		"Your selected Pokémon: %s\n%s %s%s\n",
+		capitalizedString, typeOutput.String(), metricsOutput.String(), speciesOutput.String(),
 	))
 
 	if *imageFlag != "" || *shortImageFlag != "" {
