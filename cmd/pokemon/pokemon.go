@@ -145,11 +145,14 @@ func PokemonCommand() (string, error) {
 	}
 
 	species := func(w io.Writer) {
-		evolvesFrom := pokemonSpeciesStruct.EvolvesFromSpecies.Name
+		if pokemonSpeciesStruct.EvolvesFromSpecies.Name != "" {
+			evolvesFrom := pokemonSpeciesStruct.EvolvesFromSpecies.Name
 
-		capitalizedPokemonName := cases.Title(language.English).String(strings.ReplaceAll(evolvesFrom, "-", " "))
-
-		fmt.Fprintf(w, "%s %s %s", styling.ColoredBullet, "Evolves from:", capitalizedPokemonName)
+			capitalizedPokemonName := cases.Title(language.English).String(strings.ReplaceAll(evolvesFrom, "-", " "))
+			fmt.Fprintf(w, "%s %s %s", styling.ColoredBullet, "Evolves from:", capitalizedPokemonName)
+		} else {
+			fmt.Fprintf(w, "%s %s", styling.ColoredBullet, "Basic Pokémon")
+		}
 	}
 
 	var (
