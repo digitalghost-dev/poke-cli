@@ -84,6 +84,19 @@ func PokemonCommand() (string, error) {
 
 	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
 
+	entry := func(w io.Writer) {
+		for _, entry := range pokemonSpeciesStruct.FlavorTextEntries {
+			if entry.Language.Name == "en" && (entry.Version.Name == "x" || entry.Version.Name == "shield" || entry.Version.Name == "scarlet") {
+				flavorText := strings.ReplaceAll(entry.FlavorText, "\n", " ")
+				flavorText = strings.Join(strings.Fields(flavorText), " ")
+
+				wrapped := utils.WrapText(flavorText, 60)
+				fmt.Fprintln(w, wrapped)
+				return
+			}
+		}
+	}
+
 	typing := func(w io.Writer) {
 		var typeBoxes []string
 
@@ -140,18 +153,20 @@ func PokemonCommand() (string, error) {
 	}
 
 	var (
+		entryOutput   bytes.Buffer
 		typeOutput    bytes.Buffer
 		metricsOutput bytes.Buffer
 		speciesOutput bytes.Buffer
 	)
 
+	entry(&entryOutput)
 	typing(&typeOutput)
 	metrics(&metricsOutput)
 	species(&speciesOutput)
 
 	output.WriteString(fmt.Sprintf(
-		"Your selected Pokémon: %s\n%s %s%s\n",
-		capitalizedString, typeOutput.String(), metricsOutput.String(), speciesOutput.String(),
+		"Your selected Pokémon: %s\n%s%s %s%s\n",
+		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(),
 	))
 
 	if *imageFlag != "" || *shortImageFlag != "" {
