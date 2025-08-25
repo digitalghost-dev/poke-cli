@@ -168,7 +168,7 @@ func PokemonCommand() (string, error) {
 	species(&speciesOutput)
 
 	output.WriteString(fmt.Sprintf(
-		"Your selected Pokémon: %s\n%s%s %s%s\n",
+		"Your selected Pokémon: %s\n%s%s%s%s\n",
 		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(),
 	))
 
