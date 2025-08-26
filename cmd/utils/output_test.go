@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -51,5 +52,87 @@ func TestHandleCommandOutput_Error(t *testing.T) {
 
 	if output != "something failed\n" {
 		t.Errorf("expected 'something failed\\n', got %q", output)
+	}
+}
+
+func TestHandleFlagError_WithError(t *testing.T) {
+	var b strings.Builder
+	msg, err := HandleFlagError(&b, errors.New("bad flag"))
+
+	if got := b.String(); got != "error parsing flags: bad flag\n" {
+		t.Fatalf("builder content mismatch: got %q", got)
+	}
+	if msg != "" {
+		t.Fatalf("expected empty message, got %q", msg)
+	}
+	if err == nil {
+		t.Fatalf("expected non-nil error")
+	}
+	if err.Error() != "error parsing flags: bad flag" {
+		t.Fatalf("unexpected error message: %q", err.Error())
+	}
+}
+
+func TestHandleFlagError_NilError(t *testing.T) {
+	var b strings.Builder
+	msg, err := HandleFlagError(&b, nil)
+
+	if got := b.String(); got != "error parsing flags: <nil>\n" {
+		t.Fatalf("builder content mismatch for nil error: got %q", got)
+	}
+	if msg != "" {
+		t.Fatalf("expected empty message, got %q", msg)
+	}
+	if err == nil {
+		t.Fatalf("expected non-nil error when wrapping nil")
+	}
+	// Document current behavior of fmt.Errorf with %w and nil
+	if err.Error() != "error parsing flags: %!w(<nil>)" {
+		t.Fatalf("unexpected error message for nil wrap: %q", err.Error())
+	}
+}
+
+func TestWrapText_EmptyString(t *testing.T) {
+	if got := WrapText("", 10); got != "" {
+		t.Fatalf("expected empty string, got %q", got)
+	}
+}
+
+func TestWrapText_OnlySpaces(t *testing.T) {
+	if got := WrapText("   ", 10); got != "   " {
+		t.Fatalf("expected to preserve spaces, got %q", got)
+	}
+}
+
+func TestWrapText_NoWrap(t *testing.T) {
+	if got := WrapText("hello world", 20); got != "hello world" {
+		t.Fatalf("expected 'hello world', got %q", got)
+	}
+}
+
+func TestWrapText_CollapseSpaces(t *testing.T) {
+	if got := WrapText("hello     world", 20); got != "hello world" {
+		t.Fatalf("expected collapsed spaces, got %q", got)
+	}
+}
+
+func TestWrapText_WrapAtWidth(t *testing.T) {
+	if got := WrapText("hello world", 10); got != "hello\nworld" {
+		t.Fatalf("expected wrap at width, got %q", got)
+	}
+}
+
+func TestWrapText_LongWord(t *testing.T) {
+	in := "supercalifragilisticexpialidocious"
+	if got := WrapText(in, 10); got != in {
+		t.Fatalf("expected long word unchanged, got %q", got)
+	}
+}
+
+func TestWrapText_MultipleLines(t *testing.T) {
+	in := "one two three four five"
+	expected := "one two\nthree\nfour\nfive"
+	if got := WrapText(in, 7); got != expected {
+		t.Fatalf("expected %q, got %q", expected, got)
 	}
 }

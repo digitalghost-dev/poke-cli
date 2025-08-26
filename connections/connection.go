@@ -5,11 +5,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/digitalghost-dev/poke-cli/structs"
-	"github.com/digitalghost-dev/poke-cli/styling"
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/digitalghost-dev/poke-cli/structs"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 const APIURL = "https://pokeapi.co/api/v2/"
@@ -118,6 +119,24 @@ func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (struct
 	}
 
 	return pokemonStruct, pokemonStruct.Name, nil
+}
+
+// PokemonSpeciesApiCall function for calling the pokemon endpoint of the pokeAPI
+func PokemonSpeciesApiCall(endpoint string, pokemonSpeciesName string, baseURL string) (structs.PokemonSpeciesJSONStruct, error) {
+	fullURL := baseURL + endpoint + "/" + pokemonSpeciesName
+
+	var pokemonSpeciesStruct structs.PokemonSpeciesJSONStruct
+	err := ApiCallSetup(fullURL, &pokemonSpeciesStruct, false)
+
+	if err != nil {
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("✖ Error!"),
+			"\nPokémon not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
+		)
+		return structs.PokemonSpeciesJSONStruct{}, fmt.Errorf("%s", errMessage)
+	}
+
+	return pokemonSpeciesStruct, nil
 }
 
 // TypesApiCall function for calling the type endpoint of the pokeAPI

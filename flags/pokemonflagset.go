@@ -330,18 +330,17 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	}
 
 	// Anonymous function to transform the image to a string
-	// ToString generates an ASCII representation of the image with color
 	ToString := func(width int, height int, img image.Image) string {
 		// Resize the image to the specified width, preserving aspect ratio
 		img = imaging.Resize(img, width, height, imaging.NearestNeighbor)
 		b := img.Bounds()
-		imageWidth := b.Max.X - 2 // Adjust width to exclude margins
-		h := b.Max.Y - 4          // Adjust height to exclude margins
+
+		imageWidth := b.Max.X
+		h := b.Max.Y
 		str := strings.Builder{}
 
-		// Loop through the image pixels, two rows at a time
-		for heightCounter := 2; heightCounter < h; heightCounter += 2 {
-			for x := 1; x < imageWidth; x++ {
+		for heightCounter := 0; heightCounter < h-1; heightCounter += 2 {
+			for x := 0; x < imageWidth; x++ {
 				// Get the color of the current and next row's pixels
 				c1, _ := styling.MakeColor(img.At(x, heightCounter))
 				color1 := lipgloss.Color(c1.Hex())

@@ -75,22 +75,26 @@ func PokemonCommand() (string, error) {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
+
+	pokemonSpeciesStruct, err := connections.PokemonSpeciesApiCall("pokemon-species", pokemonName, connections.APIURL)
+	if err != nil {
+		output.WriteString(err.Error())
+		return output.String(), err
+	}
+
 	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
 
-	// Weight calculation
-	weightKilograms := float64(pokemonStruct.Weight) / 10
-	weightPounds := float64(weightKilograms) * 2.20462
+	entry := func(w io.Writer) {
+		for _, entry := range pokemonSpeciesStruct.FlavorTextEntries {
+			if entry.Language.Name == "en" && (entry.Version.Name == "x" || entry.Version.Name == "shield" || entry.Version.Name == "scarlet") {
+				flavorText := strings.ReplaceAll(entry.FlavorText, "\n", " ")
+				flavorText = strings.Join(strings.Fields(flavorText), " ")
 
-	// Height calculation
-	heightMeters := float64(pokemonStruct.Height) / 10
-	heightFeet := heightMeters * 3.28084
-	feet := int(heightFeet)
-	inches := int(math.Round((heightFeet - float64(feet)) * 12)) // Use math.Round to avoid truncation
-
-	// Adjust for rounding to 12 inches (carry over to the next foot)
-	if inches == 12 {
-		feet++
-		inches = 0
+				wrapped := utils.WrapText(flavorText, 60)
+				fmt.Fprintln(w, wrapped)
+				return
+			}
+		}
 	}
 
 	typing := func(w io.Writer) {
@@ -117,15 +121,55 @@ func PokemonCommand() (string, error) {
 		fmt.Fprintln(w, joinedTypes)
 	}
 
-	var typeOutput bytes.Buffer
+	metrics := func(w io.Writer) {
+		// Weight calculation
+		weightKilograms := float64(pokemonStruct.Weight) / 10
+		weightPounds := float64(weightKilograms) * 2.20462
+
+		// Height calculation
+		heightMeters := float64(pokemonStruct.Height) / 10
+		heightFeet := heightMeters * 3.28084
+		feet := int(heightFeet)
+		inches := int(math.Round((heightFeet - float64(feet)) * 12)) // Use math.Round to avoid truncation
+
+		// Adjust for rounding to 12 inches (carry over to the next foot)
+		if inches == 12 {
+			feet++
+			inches = 0
+		}
+
+		fmt.Fprintf(w, "\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
+			styling.ColoredBullet, pokemonStruct.ID,
+			styling.ColoredBullet, weightKilograms, weightPounds,
+			styling.ColoredBullet, heightMeters, feet, inches)
+	}
+
+	species := func(w io.Writer) {
+		if pokemonSpeciesStruct.EvolvesFromSpecies.Name != "" {
+			evolvesFrom := pokemonSpeciesStruct.EvolvesFromSpecies.Name
+
+			capitalizedPokemonName := cases.Title(language.English).String(strings.ReplaceAll(evolvesFrom, "-", " "))
+			fmt.Fprintf(w, "%s %s %s", styling.ColoredBullet, "Evolves from:", capitalizedPokemonName)
+		} else {
+			fmt.Fprintf(w, "%s %s", styling.ColoredBullet, "Basic Pokémon")
+		}
+	}
+
+	var (
+		entryOutput   bytes.Buffer
+		typeOutput    bytes.Buffer
+		metricsOutput bytes.Buffer
+		speciesOutput bytes.Buffer
+	)
+
+	entry(&entryOutput)
 	typing(&typeOutput)
+	metrics(&metricsOutput)
+	species(&speciesOutput)
 
 	output.WriteString(fmt.Sprintf(
-		"Your selected Pokémon: %s\n%s\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
-		capitalizedString, typeOutput.String(),
-		styling.ColoredBullet, pokemonStruct.ID,
-		styling.ColoredBullet, weightKilograms, weightPounds,
-		styling.ColoredBullet, heightMeters, feet, inches,
+		"Your selected Pokémon: %s\n%s%s%s%s\n",
+		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(),
 	))
 
 	if *imageFlag != "" || *shortImageFlag != "" {
@@ -142,38 +186,22 @@ func PokemonCommand() (string, error) {
 		}
 	}
 
-	if *abilitiesFlag || *shortAbilitiesFlag {
-		if err := flags.AbilitiesFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
+	flagChecks := []struct {
+		condition bool
+		flagFunc  func(io.Writer, string, string) error
+	}{
+		{*abilitiesFlag || *shortAbilitiesFlag, flags.AbilitiesFlag},
+		{*defenseFlag || *shortDefenseFlag, flags.DefenseFlag},
+		{*moveFlag || *shortMoveFlag, flags.MovesFlag},
+		{*typesFlag || *shortTypesFlag, flags.TypesFlag},
+		{*statsFlag || *shortStatsFlag, flags.StatsFlag},
 	}
 
-	if *defenseFlag || *shortDefenseFlag {
-		if err := flags.DefenseFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
-	}
-
-	if *moveFlag || *shortMoveFlag {
-		if err := flags.MovesFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
-	}
-
-	if *typesFlag || *shortTypesFlag {
-		if err := flags.TypesFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
-	}
-
-	if *statsFlag || *shortStatsFlag {
-		if err := flags.StatsFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
+	for _, check := range flagChecks {
+		if check.condition {
+			if err := check.flagFunc(&output, endpoint, pokemonName); err != nil {
+				return utils.HandleFlagError(&output, err)
+			}
 		}
 	}
 

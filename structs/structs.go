@@ -143,6 +143,26 @@ type PokemonJSONStruct struct {
 	} `json:"stats"`
 }
 
+// PokemonSpeciesJSONStruct pokemon-species endpoint from API
+type PokemonSpeciesJSONStruct struct {
+	Name               string `json:"name"`
+	EvolvesFromSpecies struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"evolves_from_species"`
+	FlavorTextEntries []struct {
+		FlavorText string `json:"flavor_text"`
+		Language   struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"language"`
+		Version struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"version"`
+	} `json:"flavor_text_entries"`
+}
+
 // TypesJSONStruct type endpoint from API
 type TypesJSONStruct struct {
 	Name  string `json:"name"`

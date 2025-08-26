@@ -2,12 +2,13 @@ package connections
 
 import (
 	"encoding/json"
-	"github.com/digitalghost-dev/poke-cli/structs"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/digitalghost-dev/poke-cli/structs"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestApiCallSetup - Test for the ApiCallSetup function
@@ -238,4 +239,42 @@ func TestTypesApiCall(t *testing.T) {
 	assert.Equal(t, expectedTypes, typesStruct)
 	assert.Equal(t, "electric", name)
 	assert.Equal(t, 13, id)
+}
+
+func TestPokemonSpeciesApiCall(t *testing.T) {
+	// Successful API call returns expected species data
+	t.Run("Successful API call returns expected species", func(t *testing.T) {
+		expectedSpecies := structs.PokemonSpeciesJSONStruct{
+			Name: "flareon",
+		}
+
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			err := json.NewEncoder(w).Encode(expectedSpecies)
+			assert.NoError(t, err, "Expected no error for encoding response")
+		}))
+		defer ts.Close()
+
+		species, err := PokemonSpeciesApiCall("/pokemon-species", "flareon", ts.URL)
+
+		require.NoError(t, err, "Expected no error on successful API call")
+		assert.Equal(t, expectedSpecies, species, "Expected species struct does not match")
+	})
+
+	// Failed API call returns styled error
+	t.Run("Failed API call returns styled error", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Simulate API failure (e.g., 404 Not Found)
+			http.Error(w, "Not Found", http.StatusNotFound)
+		}))
+		defer ts.Close()
+
+		species, err := PokemonSpeciesApiCall("/pokemon-species", "non-existent-species", ts.URL)
+
+		require.Error(t, err, "Expected an error for invalid species")
+		assert.Equal(t, structs.PokemonSpeciesJSONStruct{}, species, "Expected empty species struct on error")
+
+		assert.Contains(t, err.Error(), "Pokémon not found", "Expected 'Pokémon not found' in error message")
+		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
+	})
 }
