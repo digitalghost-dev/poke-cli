@@ -2,7 +2,7 @@
     <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
     <h1>Pokémon CLI</h1>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.6.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.6.1?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -30,7 +30,7 @@ View future plans in the [Roadmap](#roadmap) section.
 ## Installation
 
 * [Homebrew](#homebrew)
-* [Winget](#winget)
+* [Scoop](#scoop)
 * [Linux Packages](#linux-packages)
 * [Docker Image](#docker-image)
 * [Binary](#binary)
@@ -42,19 +42,24 @@ View future plans in the [Roadmap](#roadmap) section.
     ```bash
     brew install --cask digitalghost-dev/tap/poke-cli
     ````
-2. Verify install:
+2. Verify installation:
     ```bash
     poke-cli -v
     ```
 
-### Winget
-1. Install the package:
+### Scoop
+1. Add the bucket:
     ```powershell
-    winget install poke-cli
+    scoop bucket add digitalghost https://github.com/digitalghost-dev/scoop-bucket.git
     ```
 
-2. Verify install:
-    ```bash
+2. Install poke-cli:
+    ```powershell
+    scoop install poke-cli
+    ```
+   
+3. Verify installation:
+    ```powershell
     poke-cli -v
     ```
 
@@ -86,11 +91,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.6.0 <command> [subcommand] flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.6.1 <command> [subcommand] flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.6.0 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.6.1 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
