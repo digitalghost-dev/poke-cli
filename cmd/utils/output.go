@@ -22,7 +22,7 @@ func HandleCommandOutput(fn func() (string, error)) func() int {
 }
 
 func HandleFlagError(output *strings.Builder, err error) (string, error) {
-	output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+	fmt.Fprintf(output, "error parsing flags: %v\n", err)
 	return "", fmt.Errorf("error parsing flags: %w", err)
 }
 
