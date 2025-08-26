@@ -186,38 +186,22 @@ func PokemonCommand() (string, error) {
 		}
 	}
 
-	if *abilitiesFlag || *shortAbilitiesFlag {
-		if err := flags.AbilitiesFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
+	flagChecks := []struct {
+		condition bool
+		flagFunc  func(io.Writer, string, string) error
+	}{
+		{*abilitiesFlag || *shortAbilitiesFlag, flags.AbilitiesFlag},
+		{*defenseFlag || *shortDefenseFlag, flags.DefenseFlag},
+		{*moveFlag || *shortMoveFlag, flags.MovesFlag},
+		{*typesFlag || *shortTypesFlag, flags.TypesFlag},
+		{*statsFlag || *shortStatsFlag, flags.StatsFlag},
 	}
 
-	if *defenseFlag || *shortDefenseFlag {
-		if err := flags.DefenseFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
-	}
-
-	if *moveFlag || *shortMoveFlag {
-		if err := flags.MovesFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
-	}
-
-	if *typesFlag || *shortTypesFlag {
-		if err := flags.TypesFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
-		}
-	}
-
-	if *statsFlag || *shortStatsFlag {
-		if err := flags.StatsFlag(&output, endpoint, pokemonName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
+	for _, check := range flagChecks {
+		if check.condition {
+			if err := check.flagFunc(&output, endpoint, pokemonName); err != nil {
+				return utils.HandleFlagError(&output, err)
+			}
 		}
 	}
 
