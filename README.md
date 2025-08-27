@@ -49,17 +49,17 @@ View future plans in the [Roadmap](#roadmap) section.
 
 ### Scoop
 1. Add the bucket:
-    ```powershell
+    ```bash
     scoop bucket add digitalghost https://github.com/digitalghost-dev/scoop-bucket.git
     ```
 
 2. Install poke-cli:
-    ```powershell
+    ```bash
     scoop install poke-cli
     ```
    
 3. Verify installation:
-    ```powershell
+    ```bash
     poke-cli -v
     ```
 
