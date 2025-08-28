@@ -76,7 +76,7 @@ func PokemonCommand() (string, error) {
 		return output.String(), err
 	}
 
-	pokemonSpeciesStruct, err := connections.PokemonSpeciesApiCall("pokemon-species", pokemonName, connections.APIURL)
+	pokemonSpeciesStruct, err := connections.PokemonSpeciesApiCall("pokemon-species", pokemonStruct.Species.Name, connections.APIURL)
 	if err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
