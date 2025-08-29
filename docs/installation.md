@@ -2,7 +2,7 @@
 There are a variety of ways to install the tool and support for different operating systems.
 
 * [Homebrew](#homebrew)
-* [Winget](#winget)
+* [Scoop](#scoop)
 * [Linux Packages](#linux-packages)
 * [Docker Image](#docker-image)
 * [Binary](#binary)
@@ -19,14 +19,19 @@ There are a variety of ways to install the tool and support for different operat
     poke-cli -v
     ```
 
-### Winget
-1. Install the package:
-    ```powershell
-    winget install poke-cli
+### Scoop
+1. Add the bucket:
+    ```bash
+    scoop bucket add digitalghost https://github.com/digitalghost-dev/scoop-bucket.git
     ```
 
-2. Verify install:
-    ```console
+2. Install poke-cli:
+    ```bash
+    scoop install poke-cli
+    ```
+
+3. Verify installation:
+    ```bash
     poke-cli -v
     ```
 

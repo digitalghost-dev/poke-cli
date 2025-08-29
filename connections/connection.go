@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -31,7 +32,11 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		return errors.New("only HTTPS URLs are allowed for security reasons")
 	}
 
-	res, err := http.Get(parsedURL.String())
+	client := http.Client{
+		Timeout: time.Second * 30,
+	}
+
+	res, err := client.Get(parsedURL.String())
 	if err != nil {
 		return fmt.Errorf("error making GET request: %w", err)
 	}

@@ -331,13 +331,23 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 
 	// Anonymous function to transform the image to a string
 	ToString := func(width int, height int, img image.Image) string {
-		// Resize the image to the specified width, preserving aspect ratio
 		img = imaging.Resize(img, width, height, imaging.NearestNeighbor)
 		b := img.Bounds()
 
 		imageWidth := b.Max.X
 		h := b.Max.Y
+
+		rowCount := (h - 1) / 2
+		if h%2 != 0 {
+			rowCount++
+		}
+		estimatedSize := (imageWidth * rowCount * 55) + rowCount
+
 		str := strings.Builder{}
+		str.Grow(estimatedSize)
+
+		// Cache for lipgloss styles to avoid recreating identical styles
+		styleCache := make(map[string]lipgloss.Style)
 
 		for heightCounter := 0; heightCounter < h-1; heightCounter += 2 {
 			for x := 0; x < imageWidth; x++ {
@@ -347,14 +357,16 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 				c2, _ := styling.MakeColor(img.At(x, heightCounter+1))
 				color2 := lipgloss.Color(c2.Hex())
 
-				// Render the half-block character with the two colors
-				str.WriteString(lipgloss.NewStyle().
-					Foreground(color1).
-					Background(color2).
-					Render("▀"))
+				styleKey := string(color1) + "_" + string(color2)
+				style, exists := styleCache[styleKey]
+				if !exists {
+					style = lipgloss.NewStyle().Foreground(color1).Background(color2)
+					styleCache[styleKey] = style
+				}
+
+				str.WriteString(style.Render("▀"))
 			}
 
-			// Add a newline after each row
 			str.WriteString("\n")
 		}
 

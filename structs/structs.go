@@ -141,6 +141,10 @@ type PokemonJSONStruct struct {
 			Name string `json:"name"`
 		} `json:"stat"`
 	} `json:"stats"`
+	Species struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"species"`
 }
 
 // PokemonSpeciesJSONStruct pokemon-species endpoint from API
