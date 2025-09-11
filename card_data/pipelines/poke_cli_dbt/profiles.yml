@@ -1,0 +1,12 @@
+poke_cli_dbt:
+  outputs:
+    dev:
+      dbname: postgres
+      host: aws-0-us-east-2.pooler.supabase.com
+      pass: "{{ env_var('SUPABASE_PASSWORD') }}"
+      port: 6543
+      schema: public
+      threads: 1
+      type: postgres
+      user: "{{ env_var('SUPABASE_USER') }}"
+  target: dev
