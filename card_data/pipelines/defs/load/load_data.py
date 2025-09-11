@@ -26,8 +26,8 @@ def load_series_data() -> None:
         print(colored(" ✖", "red"), "Error:", e)
 
 
-@dg.asset(deps=[load_series_data], kinds={"Soda"})
-def data_quality_check() -> None:
+@dg.asset(deps=[load_series_data], kinds={"Soda"}, key_prefix=["staging"], name="series")
+def data_quality_check_on_series() -> None:
     # Set working directory to where this file is located
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
@@ -54,7 +54,7 @@ def data_quality_check() -> None:
         print(result.stderr)
 
 
-@dg.asset(deps=[extract_set_data], kinds={"Supabase", "Postgres"})
+@dg.asset(deps=[extract_set_data], kinds={"Supabase", "Postgres"}, key_prefix=["staging"], name="sets")
 def load_set_data() -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.sets"
@@ -69,7 +69,7 @@ def load_set_data() -> None:
         print(colored(" ✖", "red"), "Error:", e)
 
 
-@dg.asset(deps=[create_card_dataframe], kinds={"Supabase", "Postgres"})
+@dg.asset(deps=[create_card_dataframe], kinds={"Supabase", "Postgres"}, key_prefix=["staging"], name="cards")
 def load_card_data() -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.cards"
