@@ -1,0 +1,95 @@
+version: 2
+
+sources:
+  - name: staging
+    description: "Staging schema containing raw data loaded from extract pipeline"
+    tables:
+      - name: series
+        description: "Pokemon card series data"
+        columns:
+          - name: id
+            description: "Unique series identifier"
+          - name: name
+            description: "Series name"
+          - name: logo
+            description: "Series logo URL"
+      
+      - name: sets
+        description: "Pokemon card sets data"
+        columns:
+          - name: series_id
+            description: "Foreign key to series"
+          - name: set_id
+            description: "Unique set identifier"
+          - name: set_name
+            description: "Set name"
+          - name: official_card_count
+            description: "Official number of cards in set"
+          - name: total_card_count
+            description: "Total number of cards including variants"
+          - name: logo
+            description: "Set logo URL"
+          - name: symbol
+            description: "Set symbol URL"
+      
+      - name: cards
+        description: "Pokemon cards data"
+        columns:
+          - name: id
+            description: "Unique card identifier"
+          - name: name
+            description: "Card name"
+          - name: category
+            description: "Card category (Pokemon, Trainer, Energy)"
+          - name: hp
+            description: "Card HP value"
+          - name: image
+            description: "Card image URL"
+          - name: rarity
+            description: "Card rarity"
+          - name: types
+            description: "Card types (comma-separated)"
+          - name: localId
+            description: "Card local ID within the set"
+          - name: illustrator
+            description: "Card illustrator"
+          - name: regulationMark
+            description: "Regulation mark"
+          - name: retreat
+            description: "Retreat cost (numeric)"
+          - name: stage
+            description: "Evolution stage"
+          - name: legal_standard
+            description: "Legal status in Standard"
+          - name: legal_expanded
+            description: "Legal status in Expanded"
+          - name: set_cardCount_official
+            description: "Official card count for the set"
+          - name: set_cardCount_total
+            description: "Total card count including variants"
+          - name: set_id
+            description: "Foreign key to set"
+          - name: set_logo
+            description: "Set logo URL"
+          - name: set_name
+            description: "Set name"
+          - name: set_symbol
+            description: "Set symbol URL"
+          - name: attacks_json
+            description: "Raw attacks JSON"
+          - name: attack_1_name
+            description: "First attack name"
+          - name: attack_1_damage
+            description: "First attack damage"
+          - name: attack_1_effect
+            description: "First attack effect"
+          - name: attack_1_cost
+            description: "First attack energy cost"
+          - name: attack_2_name
+            description: "Second attack name"
+          - name: attack_2_damage
+            description: "Second attack damage"
+          - name: attack_2_effect
+            description: "Second attack effect"
+          - name: attack_2_cost
+            description: "Second attack energy cost"
