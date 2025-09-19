@@ -58,3 +58,6 @@ card_data/infrastructure/supabase/access-token
 
 card_data/.tmp*/**
 
+
+card_data/pipelines/poke_cli_dbt/.user.yml
+/card_data/supabase/
