@@ -145,6 +145,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "dagster-dbt" },
     { name = "dagster-dg-cli" },
     { name = "dagster-postgres" },
     { name = "dagster-webserver" },
@@ -173,6 +174,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "dagster-dbt", specifier = ">=0.27.3" },
     { name = "dagster-dg-cli" },
     { name = "dagster-postgres", specifier = ">=0.27.3" },
     { name = "dagster-webserver" },
