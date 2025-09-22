@@ -73,7 +73,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	// Update the table first
 	m.table, bubbleCmd = m.table.Update(msg)
 
 	// Keep the selected option in sync on every update
@@ -93,7 +92,6 @@ func (m model) View() string {
 		return "\n Goodbye! \n"
 	}
 
-	// Render the table, selected berry info, and key hints
 	selectedBerry := ""
 	if row := m.table.SelectedRow(); len(row) > 0 {
 		selectedBerry = fmt.Sprintf("\nBerry: %s", row[0])
@@ -116,7 +114,6 @@ func tableGeneration() {
 		rows[i] = []string{n}
 	}
 
-	// Initialize table with configuration
 	t := table.New(
 		table.WithColumns([]table.Column{{Title: "Berry", Width: 16}}),
 		table.WithRows(rows),
@@ -124,7 +121,6 @@ func tableGeneration() {
 		table.WithHeight(20),
 	)
 
-	// Set table styles
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
