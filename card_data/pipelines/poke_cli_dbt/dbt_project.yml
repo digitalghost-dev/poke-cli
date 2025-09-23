@@ -1,0 +1,24 @@
+name: 'poke_cli_dbt'
+version: '1.7.0'
+
+profile: 'poke_cli_dbt'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# directories removed by 'dbt clean'
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  poke_cli_dbt:
+    # Transform staging data to public schema
+    +materialized: table
+
+on-run-end:
+  - "{{ create_relationships() }}"
