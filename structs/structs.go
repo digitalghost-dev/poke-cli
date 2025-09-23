@@ -35,6 +35,28 @@ type AbilityJSONStruct struct {
 	} `json:"pokemon"`
 }
 
+// Berry represents a berry from the local SQLite db
+type Berry struct {
+	ID               int    `db:"id"`
+	Name             string `db:"name"`
+	Effect           string `db:"effect"`
+	Firmness         string `db:"firmness"`
+	GrowthTime       int    `db:"growth_time"`
+	MaxHarvest       int    `db:"max_harvest"`
+	NaturalGiftPower int    `db:"natural_gift_power"`
+	NaturalGiftType  string `db:"natural_gift_type"`
+	Size             int    `db:"size"`
+	Smoothness       int    `db:"smoothness"`
+	SoilDryness      int    `db:"soil_dryness"`
+}
+
+// BerryFlavor represents berry flavor data from the local SQLite db
+type BerryFlavor struct {
+	BerryID    int    `db:"berry_id"`
+	FlavorName string `db:"flavor_name"`
+	Potency    int    `db:"potency"`
+}
+
 // ItemJSONStruct item endpoint from API
 type ItemJSONStruct struct {
 	Name     string `json:"name"`
