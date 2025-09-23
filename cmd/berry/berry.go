@@ -94,12 +94,23 @@ func (m model) View() string {
 
 	selectedBerry := ""
 	if row := m.table.SelectedRow(); len(row) > 0 {
-		selectedBerry = fmt.Sprintf("\nBerry: %s", row[0])
+		selectedBerry = BerryInfo(row[0])
 	}
 
-	return fmt.Sprintf("Select a berry!\n%s%s\n%s",
-		styling.TypesTableBorder.Render(m.table.View()),
-		selectedBerry,
+	leftPanel := styling.TypesTableBorder.Render(m.table.View())
+
+	rightPanel := lipgloss.NewStyle().
+		Width(40).
+		Height(21).
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00")).
+		Padding(1).
+		Render(selectedBerry)
+
+	screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
+
+	return fmt.Sprintf("Select a berry!\n%s\n%s",
+		screen,
 		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit)"))
 }
 
