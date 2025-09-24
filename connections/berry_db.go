@@ -12,7 +12,7 @@ import (
 //go:embed db/berries.db
 var embeddedDB []byte
 
-func BerryListAllNames() ([]string, error) {
+func QueryBerryData(query string, args ...interface{}) ([]string, error) {
 	// Create temp file
 	tmpFile, err := os.CreateTemp("", "berries-*.db")
 	if err != nil {
@@ -39,30 +39,24 @@ func BerryListAllNames() ([]string, error) {
 		}
 	}(db)
 
-	rows, err := db.Query(`
-		SELECT 
-		    UPPER(SUBSTR(name, 1, 1)) || SUBSTR(name, 2) 
-		FROM 
-		    berries 
-		ORDER BY 
-		    name`)
+	rows, err := db.Query(query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query berry names: %w", err)
+		return nil, fmt.Errorf("failed to query berry data: %w", err)
 	}
 	defer rows.Close()
 
-	var names []string
+	var results []string
 	for rows.Next() {
-		var name string
-		if err := rows.Scan(&name); err != nil {
-			return nil, fmt.Errorf("failed to scan berry name: %w", err)
+		var result string
+		if err := rows.Scan(&result); err != nil {
+			return nil, fmt.Errorf("failed to scan berry data: %w", err)
 		}
-		names = append(names, name)
+		results = append(results, result)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating rows: %w", err)
 	}
 
-	return names, nil
+	return results, nil
 }
