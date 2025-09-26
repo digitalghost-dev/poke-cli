@@ -158,6 +158,7 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │                                                               │
 │ COMMANDS:                                                     │
 │    ability         Get details about an ability               │
+│    berry           Get details about a berry                  │
 │    item            Get details about an item                  │
 │    move            Get details about a move                   │
 │    natures         Get details about all natures              │
@@ -182,7 +183,7 @@ Below is a list of the planned/completed commands and flags:
 
 - [x] `ability`: get data about an ability.
     - [x] `-p | --pokemon`: display Pokémon that learn this ability.
-- [ ] `berry`: get data about a berry.
+- [x] `berry`: get data about a berry.
 - [x] `item`: get data about an item.
 - [x] `move`: get data about a move.
     - [ ] `-p | --pokemon`: display Pokémon that learn this move.
