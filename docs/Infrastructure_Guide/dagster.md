@@ -2,7 +2,7 @@
 weight: 6
 ---
 
-# 5. Dagster
+# 6. Dagster
 
 !!! question "What is Dagster?"
 
