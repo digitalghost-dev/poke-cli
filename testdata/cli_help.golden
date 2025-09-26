@@ -13,6 +13,7 @@
 │                                                               │
 │ COMMANDS:                                                     │
 │    ability         Get details about an ability               │
+│    berry           Get details about a berry                  │
 │    item            Get details about an item                  │
 │    move            Get details about a move                   │
 │    natures         Get details about all natures              │
