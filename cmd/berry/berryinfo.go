@@ -1,7 +1,6 @@
 package berry
 
 import (
-	"fmt"
 	"image"
 	"net/http"
 	"strings"
@@ -14,7 +13,7 @@ import (
 
 // BerryName prints information based on currently selected berry.
 func BerryName(berryName string) string {
-	return fmt.Sprintf("Berry: %s", berryName)
+	return "Berry: " + berryName
 }
 
 func BerryEffect(berryName string) string {

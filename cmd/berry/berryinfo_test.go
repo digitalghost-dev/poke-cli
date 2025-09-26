@@ -114,7 +114,6 @@ func TestBerryImageWithMockServer(t *testing.T) {
 
 		w.Header().Set("Content-Type", "image/png")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("mock image data"))
 	}))
 	defer server.Close()
 
