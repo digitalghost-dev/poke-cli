@@ -94,14 +94,14 @@ func (m model) View() string {
 
 	selectedBerry := ""
 	if row := m.table.SelectedRow(); len(row) > 0 {
-		selectedBerry = BerryInfo(row[0])
+		selectedBerry = BerryName(row[0]) + "\n---\n" + BerryEffect(row[0]) + "\n---\n" + BerryInfo(row[0]) + "\n---\nImage\n" + BerryImage(row[0])
 	}
 
 	leftPanel := styling.TypesTableBorder.Render(m.table.View())
 
 	rightPanel := lipgloss.NewStyle().
-		Width(40).
-		Height(21).
+		Width(50).
+		Height(29).
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("#FFCC00")).
 		Padding(1).
@@ -109,13 +109,19 @@ func (m model) View() string {
 
 	screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
 
-	return fmt.Sprintf("Select a berry!\n%s\n%s",
+	return fmt.Sprintf("Highlight a berry!\n%s\n%s",
 		screen,
 		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit)"))
 }
 
 func tableGeneration() {
-	namesList, err := connections.BerryListAllNames()
+	namesList, err := connections.QueryBerryData(`
+		SELECT 
+		    UPPER(SUBSTR(name, 1, 1)) || SUBSTR(name, 2)
+		FROM 
+		    berries 
+		ORDER BY 
+		    name`)
 	if err != nil {
 		log.Fatalf("Failed to get berry names: %v", err)
 	}
@@ -129,7 +135,7 @@ func tableGeneration() {
 		table.WithColumns([]table.Column{{Title: "Berry", Width: 16}}),
 		table.WithRows(rows),
 		table.WithFocused(true),
-		table.WithHeight(20),
+		table.WithHeight(28),
 	)
 
 	s := table.DefaultStyles()
