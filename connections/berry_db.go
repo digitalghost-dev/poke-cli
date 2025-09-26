@@ -18,14 +18,22 @@ func QueryBerryData(query string, args ...interface{}) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp file: %w", err)
 	}
-	defer os.Remove(tmpFile.Name()) // Clean up
+	defer func() {
+		// Close file first
+		if closeErr := tmpFile.Close(); closeErr != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to close temp file: %v\n", closeErr)
+		}
 
-	// temp file
+		// Then remove it
+		if removeErr := os.Remove(tmpFile.Name()); removeErr != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to remove temp file %s: %v\n", tmpFile.Name(), removeErr)
+		}
+	}()
+
+	// Write to temp file
 	if _, err := tmpFile.Write(embeddedDB); err != nil {
-		tmpFile.Close()
 		return nil, fmt.Errorf("failed to write embedded database: %w", err)
 	}
-	tmpFile.Close()
 
 	// Open the temp database file
 	db, err := sql.Open("sqlite", tmpFile.Name())
