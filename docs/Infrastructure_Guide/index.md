@@ -4,7 +4,7 @@ weight: 1
 
 # 1. Overview
 
-This section serves as a knowledge base for the project’s backend infrastructure, created for several purposes:
+This section serves as a knowledge base for the project’s backend infrastructure. It was created for a few purposes:
 
 1.	To document how I built everything, so I can easily reference it later.
 2.	To help others learn how to build something similar.
@@ -38,7 +38,7 @@ Below is a list of all the tools and services used in this project's infrastruct
 !!! note
 
     Keep in mind that the purpose of this project is to explore and learn new tools, services, and programming languages.
-    Some design choices might be overkill, included purely for learning, or might not make much sense at all.
+    Some design choices might be overkill or not make much sense at all, but included purely for learning.
 
     I'm not an expert! If you notice anything strange or think something could be improved, 
     please feel free to open a [GitHub Issue](https://github.com/digitalghost-dev/poke-cli/issues) and offer a suggestion.
