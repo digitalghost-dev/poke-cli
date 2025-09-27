@@ -2,14 +2,15 @@ package types
 
 import (
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"os"
-	"strings"
 )
 
 // DamageTable Function to display type details after a type is selected

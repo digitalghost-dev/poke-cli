@@ -1,6 +1,10 @@
 package types
 
 import (
+	"os"
+	"testing"
+	"time"
+
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -8,9 +12,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
-	"time"
 )
 
 func TestTypesCommand(t *testing.T) {

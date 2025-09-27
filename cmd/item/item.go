@@ -3,6 +3,9 @@ package item
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
@@ -10,8 +13,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"os"
-	"strings"
 )
 
 func ItemCommand() (string, error) {
