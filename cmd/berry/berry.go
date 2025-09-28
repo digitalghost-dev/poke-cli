@@ -1,8 +1,9 @@
-package types
+package berry
 
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -10,17 +11,18 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
+	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func TypesCommand() (string, error) {
+func BerryCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
-			"Get details about a specific typing.\n\n",
+			"Get details about a specific berry.\n\n",
 			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("types"), "[flag]"),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("berry"), "[flag]"),
 			"\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu"),
@@ -42,8 +44,7 @@ func TypesCommand() (string, error) {
 		return output.String(), err
 	}
 
-	endpoint := strings.ToLower(os.Args[1])[0:4]
-	tableGeneration(endpoint)
+	tableGeneration()
 
 	return output.String(), nil
 }
@@ -69,55 +70,74 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "esc", "ctrl+c":
 			m.quitting = true
 			return m, tea.Quit
-		case "enter":
-			// User selected a type
-			m.selectedOption = m.table.SelectedRow()[0]
-			return m, tea.Quit
 		}
 	}
 
-	// Handle other updates (like navigation)
 	m.table, bubbleCmd = m.table.Update(msg)
+
+	// Keep the selected option in sync on every update
+	if row := m.table.SelectedRow(); len(row) > 0 {
+		name := row[0]
+		if name != m.selectedOption {
+			m.selectedOption = name
+		}
+	}
+
 	return m, bubbleCmd
 }
 
 // View renders the current UI
 func (m model) View() string {
 	if m.quitting {
-		return "\n  Goodbye! \n"
+		return "\n Goodbye! \n"
 	}
 
-	// Don't render anything if a selection has been made
-	if m.selectedOption != "" {
-		return ""
+	selectedBerry := ""
+	if row := m.table.SelectedRow(); len(row) > 0 {
+		selectedBerry = BerryName(row[0]) + "\n---\n" + BerryEffect(row[0]) + "\n---\n" + BerryInfo(row[0]) + "\n---\nImage\n" + BerryImage(row[0])
 	}
 
-	// Render the type selection table with instructions
-	return fmt.Sprintf("Select a type!\n%s\n%s",
-		styling.TypesTableBorder.Render(m.table.View()),
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)"))
+	leftPanel := styling.TypesTableBorder.Render(m.table.View())
+
+	rightPanel := lipgloss.NewStyle().
+		Width(50).
+		Height(29).
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00")).
+		Padding(1).
+		Render(selectedBerry)
+
+	screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
+
+	return fmt.Sprintf("Highlight a berry!\n%s\n%s",
+		screen,
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit)"))
 }
 
-// Function that generates and handles the type selection table
-func tableGeneration(endpoint string) {
-	types := []string{"Normal", "Fire", "Water", "Electric", "Grass", "Ice",
-		"Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Dark",
-		"Rock", "Ghost", "Dragon", "Steel", "Fairy"}
-
-	rows := make([]table.Row, len(types))
-	for i, t := range types {
-		rows[i] = []string{t}
+func tableGeneration() {
+	namesList, err := connections.QueryBerryData(`
+		SELECT 
+		    UPPER(SUBSTR(name, 1, 1)) || SUBSTR(name, 2)
+		FROM 
+		    berries 
+		ORDER BY 
+		    name`)
+	if err != nil {
+		log.Fatalf("Failed to get berry names: %v", err)
 	}
 
-	// Initialize table with configuration
+	rows := make([]table.Row, len(namesList))
+	for i, n := range namesList {
+		rows[i] = []string{n}
+	}
+
 	t := table.New(
-		table.WithColumns([]table.Column{{Title: "Type", Width: 16}}),
+		table.WithColumns([]table.Column{{Title: "Berry", Width: 16}}),
 		table.WithRows(rows),
 		table.WithFocused(true),
-		table.WithHeight(7),
+		table.WithHeight(28),
 	)
 
-	// Set table styles
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
@@ -129,15 +149,10 @@ func tableGeneration(endpoint string) {
 	t.SetStyles(s)
 
 	m := model{table: t}
-	programModel, err := tea.NewProgram(m).Run()
+	_, err = tea.NewProgram(m).Run()
 
 	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
-	}
-
-	// Only show damage table if a type was actually selected (not when quitting)
-	if finalModel, ok := programModel.(model); ok && finalModel.selectedOption != "" {
-		DamageTable(strings.ToLower(finalModel.selectedOption), endpoint)
 	}
 }

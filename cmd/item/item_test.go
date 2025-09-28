@@ -1,11 +1,12 @@
 package item
 
 import (
+	"os"
+	"testing"
+
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 func TestItemCommand(t *testing.T) {

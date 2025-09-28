@@ -1,8 +1,8 @@
 ---
-weight: 5
+weight: 6
 ---
 
-# 5. Dagster
+# 6. Dagster
 
 !!! question "What is Dagster?"
 
@@ -13,9 +13,41 @@ weight: 5
     View more [about Dagster](https://dagster.io/platform-overview)
 
 ## Installation
-Dagster and its components can be installed with `uv`: `
+Dagster and its components needed for the project can be installed with `uv`: `
 
 ```bash
-uv add dagster dagster-webserver dagster-dg-cli dagster-postgres>=0.27.3
+uv add dagster dagster-webserver dagster-dg-cli dagster-postgres>=0.27.3 dagster-dbt
+```
+
+## Project Layout
+In my experience, Dagster needed a specific directory structure in order for the program to find all necessary files.
+This project uses a directory named `pipelines` to store all the Dagster files:
+
+```
+.
+└── pipelines/
+    ├── defs/
+    │   ├── extract/
+    │   │   └── extract_data.py
+    │   ├── load/
+    │   │   └── load_data.py
+    │   └── transformation/
+    │       └── transform_data.py
+    ├── poke_cli_dbt/
+    │   ├── logs
+    │   ├── macros/
+    │   │   ├── create_relationships.sql
+    │   │   └── create_rls.sql
+    │   ├── models/
+    │   │   ├── cards.sql
+    │   │   ├── series.sql
+    │   │   ├── sets.sql
+    │   │   └── sources.yml
+    │   ├── target
+    │   ├── dbt_project.yml
+    │   └── profiles.yml
+    └── soda/
+        ├── checks.yml
+        └── configuration.yml
 ```
 
