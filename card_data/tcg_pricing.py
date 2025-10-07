@@ -62,8 +62,8 @@ def pull_product_information():
         "product_id": product_id_list,
         "name": name_list,
         "card_number": card_number_list,
-        "price": price_list,
-    })
+        "market_price": price_list,
+    }).with_columns(pl.col("market_price").cast(pl.Decimal(scale=2)))
 
     print(df.sort("card_number"))
 
