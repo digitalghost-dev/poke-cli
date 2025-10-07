@@ -22,7 +22,6 @@ def get_card_number(card):
     return None
 
 def pull_product_information():
-    # Get products
     url = f"https://tcgcsv.com/tcgplayer/3/{SET_PRODUCT_MATCHING['sv01']}/products"
     r = requests.get(url)
 
@@ -31,36 +30,31 @@ def pull_product_information():
 
     data = r.json()
 
-    # Get prices ONCE
     url_prices = f"https://tcgcsv.com/tcgplayer/3/22873/prices"
     r_prices = requests.get(url_prices)
     price_data = r_prices.json()
 
-    # Create price lookup dictionary
     price_dict = {price["productId"]: price["marketPrice"]
                   for price in price_data["results"]}
 
-    # Build lists
     product_id_list = []
     name_list = []
     card_number_list = []
     price_list = []
 
-    for card in data["results"]:  # Remove islice to get all cards
+    for card in data["results"]:
         if not is_card(card):
             continue
 
         number = get_card_number(card)
         card_number_list.append(number)
 
-        # Clean name
         name = card["name"].partition("-")[0].strip() if "-" in card["name"] else card["name"]
         name_list.append(name)
 
         product_id = card["productId"]
         product_id_list.append(product_id)
 
-        # Look up price from dictionary (fast!)
         market_price = price_dict.get(product_id)
         price_list.append(market_price)
 
