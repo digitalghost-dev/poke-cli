@@ -90,7 +90,7 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
     return pl.DataFrame(df_data)
 
 
-@dg.asset(kinds={"API", "Polars", "Pydantic"})
+@dg.asset(kinds={"API", "Polars", "Pydantic"}, name="build_pricing_dataframe")
 def build_dataframe() -> pl.DataFrame:
     all_cards = []
     for set_number in SET_PRODUCT_MATCHING.keys():
