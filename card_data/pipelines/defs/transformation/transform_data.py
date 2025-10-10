@@ -15,7 +15,8 @@ class CustomDbtTranslator(DagsterDbtTranslator):
             source_mapping = {
                 "series": "quality_checks_series",
                 "sets": "load_set_data",
-                "cards": "load_card_data"
+                "cards": "load_card_data",
+                "pricing_data": "load_pricing_data",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])

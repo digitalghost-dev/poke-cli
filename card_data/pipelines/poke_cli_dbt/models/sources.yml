@@ -93,3 +93,15 @@ sources:
             description: "Second attack effect"
           - name: attack_2_cost
             description: "Second attack energy cost"
+
+      - name: pricing_data
+        description: "Card pricing data"
+        columns:
+          - name: product_id
+            description: "Product ID"
+          - name: name
+            description: "Card name"
+          - name: card_number
+            description: "Card number"
+          - name: market_price
+            description: "Market price"
