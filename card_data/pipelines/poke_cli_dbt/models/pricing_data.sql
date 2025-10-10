@@ -3,5 +3,5 @@
     post_hook="{{ enable_rls() }}"
 ) }}
 
-SELECT name, card_number, market_price
+SELECT product_id, name, card_number, market_price
 FROM {{ source('staging', 'pricing_data') }}
