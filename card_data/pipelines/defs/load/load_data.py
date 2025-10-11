@@ -15,6 +15,7 @@ from pathlib import Path
 @dg.asset(
     deps=[extract_series_data],
     kinds={"Supabase", "Postgres"},
+    name="load_series_data",
     retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
 )
 def load_series_data() -> None:
@@ -32,9 +33,12 @@ def load_series_data() -> None:
         raise
 
 
-@dg.asset(deps=[load_series_data], kinds={"Soda"}, key_prefix=["staging"], name="series")
+@dg.asset(
+    deps=[load_series_data],
+    kinds={"Soda"},
+    name="quality_checks_series"
+)
 def data_quality_check_on_series() -> None:
-    # Set working directory to where this file is located
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
 
@@ -59,12 +63,14 @@ def data_quality_check_on_series() -> None:
     if result.stderr:
         print(result.stderr)
 
+    if result.returncode != 0:
+        raise Exception(f"Soda data quality checks failed with return code {result.returncode}")
+
 
 @dg.asset(
     deps=[extract_set_data],
     kinds={"Supabase", "Postgres"},
-    key_prefix=["staging"],
-    name="sets",
+    name="load_set_data",
     retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
 )
 def load_set_data() -> None:
@@ -85,8 +91,7 @@ def load_set_data() -> None:
 @dg.asset(
     deps=[create_card_dataframe],
     kinds={"Supabase", "Postgres"},
-    key_prefix=["staging"],
-    name="cards",
+    name="load_card_data",
     retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
 )
 def load_card_data() -> None:
