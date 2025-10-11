@@ -137,7 +137,8 @@ Feel free to choose any other options that could be more suitable._
 6. Under **Settings**, give the database a name and let AWS manage the credentials.
 7. Under **Instance Configuration**, choose **Burstable Classes** and then select `t4g.micro` instance.
 8. Change storage to the minimum of 20GB.
-9. Under **Connectivity**, choose the VPC that was created in the [previous step](#vpc).
+9. Under **Connectivity**, choose to not connect to an EC2 instance. This can be done later.
+   * Choose the VPC that was created in the [previous step](#vpc).
    * The subnet from the VPC should be already selected.
    * Choose **no** for Public Access
    * Keep the **default** VPC security group.
