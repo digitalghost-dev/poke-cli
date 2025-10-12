@@ -95,6 +95,14 @@ def build_dataframe() -> pl.DataFrame:
     all_cards = []
     for set_number in SET_PRODUCT_MATCHING.keys():
         df = pull_product_information(set_number)
+
+        # Raise error if any DataFrame is empty
+        if df is None or df.shape[1] == 0 or df.is_empty():
+            error_msg = f"Empty DataFrame returned for set '{set_number}'. " \
+                       f"Cannot proceed with drop+replace operation to avoid data loss."
+            print(colored(" ✖", "red"), error_msg)
+            raise ValueError(error_msg)
+
         all_cards.append(df)
 
     concatenated = pl.concat(all_cards)
