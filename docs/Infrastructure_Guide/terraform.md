@@ -31,17 +31,17 @@ Terraformer acts as a "reverse Terraform" tool where it can read from created re
 Although the output can sometimes be a bit verbose, it's an easy way to capture everything to create reproducible builds.
 
 ### Profile
-Before installing Terraformer, a profile from AWS will need to be configured under `~/.aws/credentials` which is `TOML` like file.
+Before installing Terraformer, a profile from AWS will need to be configured under `~/.aws/credentials` which is an INI-like file (AWS credentials format).
 
 Configure the `terraform-user` profile from [1. AWS](aws.md#iam) to look like this:
 
-```toml
+```ini
 [terraform-user]
 aws_access_key_id = <ACCESS_KEY_ID>
 aws_secret_access_key = <SECRET_ACCESS_KEY>
 ```
 
-To retrieve these options, head to IAM > Users > teraform-user > Security Credentials tab
+To retrieve these options, head to IAM > Users > terraform-user > Security Credentials tab
 
 ### Install
 * [Install Guide](https://github.com/GoogleCloudPlatform/terraformer?tab=readme-ov-file#installation)
