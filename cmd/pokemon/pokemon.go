@@ -7,6 +7,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -97,6 +98,18 @@ func PokemonCommand() (string, error) {
 		}
 	}
 
+	eggGroup := func(w io.Writer) {
+		var eggGroupSlice []string
+
+		for _, entry := range pokemonSpeciesStruct.EggGroups {
+			capitalizedEggGroup := cases.Title(language.English).String(entry.Name)
+			eggGroupSlice = append(eggGroupSlice, capitalizedEggGroup)
+		}
+
+		sort.Strings(eggGroupSlice)
+		fmt.Fprintf(w, "\n%s %s %s", styling.ColoredBullet, "Egg Group(s):", strings.Join(eggGroupSlice, ", "))
+	}
+
 	typing := func(w io.Writer) {
 		var typeBoxes []string
 
@@ -156,20 +169,22 @@ func PokemonCommand() (string, error) {
 	}
 
 	var (
-		entryOutput   bytes.Buffer
-		typeOutput    bytes.Buffer
-		metricsOutput bytes.Buffer
-		speciesOutput bytes.Buffer
+		entryOutput    bytes.Buffer
+		eggGroupOutput bytes.Buffer
+		typeOutput     bytes.Buffer
+		metricsOutput  bytes.Buffer
+		speciesOutput  bytes.Buffer
 	)
 
 	entry(&entryOutput)
+	eggGroup(&eggGroupOutput)
 	typing(&typeOutput)
 	metrics(&metricsOutput)
 	species(&speciesOutput)
 
 	output.WriteString(fmt.Sprintf(
-		"Your selected Pokémon: %s\n%s%s%s%s\n",
-		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(),
+		"Your selected Pokémon: %s\n%s\n%s%s%s%s\n",
+		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(),
 	))
 
 	if *imageFlag != "" || *shortImageFlag != "" {

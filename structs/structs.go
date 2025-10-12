@@ -171,7 +171,11 @@ type PokemonJSONStruct struct {
 
 // PokemonSpeciesJSONStruct pokemon-species endpoint from API
 type PokemonSpeciesJSONStruct struct {
-	Name               string `json:"name"`
+	Name      string `json:"name"`
+	EggGroups []struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"egg_groups"`
 	EvolvesFromSpecies struct {
 		Name string `json:"name"`
 		URL  string `json:"url"`

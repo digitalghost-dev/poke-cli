@@ -1,6 +1,6 @@
 checks for series:
   # Row count validation
-  - row_count = 2
+  - row_count = 3
 
   # Schema validation checks
   - schema:

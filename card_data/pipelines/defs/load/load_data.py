@@ -1,4 +1,5 @@
 import dagster as dg
+from dagster import RetryPolicy, Backoff
 from sqlalchemy.exc import OperationalError
 from ..extract.extract_data import (
     extract_series_data,
@@ -11,7 +12,12 @@ import subprocess
 from pathlib import Path
 
 
-@dg.asset(deps=[extract_series_data], kinds={"Supabase", "Postgres"})
+@dg.asset(
+    deps=[extract_series_data],
+    kinds={"Supabase", "Postgres"},
+    name="load_series_data",
+    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
+)
 def load_series_data() -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.series"
@@ -23,12 +29,16 @@ def load_series_data() -> None:
         )
         print(colored(" ✓", "green"), f"Data loaded into {table_name}")
     except OperationalError as e:
-        print(colored(" ✖", "red"), "Error:", e)
+        print(colored(" ✖", "red"), "Connection error in load_series_data():", e)
+        raise
 
 
-@dg.asset(deps=[load_series_data], kinds={"Soda"}, key_prefix=["staging"], name="series")
+@dg.asset(
+    deps=[load_series_data],
+    kinds={"Soda"},
+    name="quality_checks_series"
+)
 def data_quality_check_on_series() -> None:
-    # Set working directory to where this file is located
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
 
@@ -53,8 +63,16 @@ def data_quality_check_on_series() -> None:
     if result.stderr:
         print(result.stderr)
 
+    if result.returncode != 0:
+        raise Exception(f"Soda data quality checks failed with return code {result.returncode}")
 
-@dg.asset(deps=[extract_set_data], kinds={"Supabase", "Postgres"}, key_prefix=["staging"], name="sets")
+
+@dg.asset(
+    deps=[extract_set_data],
+    kinds={"Supabase", "Postgres"},
+    name="load_set_data",
+    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
+)
 def load_set_data() -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.sets"
@@ -66,10 +84,16 @@ def load_set_data() -> None:
         )
         print(colored(" ✓", "green"), f"Data loaded into {table_name}")
     except OperationalError as e:
-        print(colored(" ✖", "red"), "Error:", e)
+        print(colored(" ✖", "red"), "Connection error in load_set_data():", e)
+        raise
 
 
-@dg.asset(deps=[create_card_dataframe], kinds={"Supabase", "Postgres"}, key_prefix=["staging"], name="cards")
+@dg.asset(
+    deps=[create_card_dataframe],
+    kinds={"Supabase", "Postgres"},
+    name="load_card_data",
+    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
+)
 def load_card_data() -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.cards"
@@ -81,4 +105,5 @@ def load_card_data() -> None:
         )
         print(colored(" ✓", "green"), f"Data loaded into {table_name}")
     except OperationalError as e:
-        print(colored(" ✖", "red"), "Error:", e)
+        print(colored(" ✖", "red"), "Connection error in load_card_data():", e)
+        raise

@@ -125,13 +125,25 @@ In this project, [PostgreSQL](https://www.postgresql.org/) is the database engin
 The cost to maintain the database with the project's configuration options come out to ~$15.00 USD.
 
 ### Setup Instructions
+_**Note:** these are the configuration options that were chosen for this project. Costs are the main driver behind these options.
+Feel free to choose any other options that could be more suitable._
 
 1. Visit the [RDS console](https://console.aws.amazon.com/rds/home).
 2. On the **dashboard**, there should be an option **Create a Database**. If not, click on **Databases** on the left menu.
    Then click **Create Database** in the upper-right.
-3. Choose PostgreSQL
-4. Choose dev/test
-5. Single zone
-6. Burstable class
-7. t4g.micro  instance
-8. Change storage to 20GB
+3. Under **Engine Options**, choose PostgreSQL.
+4. Under **Templates**, choose Dev/Test. If eligible, use Free tier.
+5. Under **Availability and Durability**, choose Single Instance Deployment.
+6. Under **Settings**, give the database a name and let AWS manage the credentials.
+7. Under **Instance Configuration**, choose **Burstable Classes** and then select `t4g.micro` instance.
+8. Change storage to the minimum of 20GB.
+9. Under **Connectivity**, choose to not connect to an EC2 instance. This can be done later.
+   * Choose the VPC that was created in the [previous step](#vpc).
+   * The subnet from the VPC should be already selected.
+   * Choose **no** for Public Access
+   * Keep the **default** VPC security group.
+   * This project does not have a preference on **Availability Zones** and uses the auto-generated **Certificate Authority**.
+10. Under **Tags**, create a new tag if desired for resource organization.
+11. Under **Database Authentication**, choose _password authentication_.
+12. Under **Monitoring**, choose the standard version of _Database Insights_. All other options in this section can be left as default.
+13. Review the **Estimated Monthly Costs**, make any changes if necessary, they click on _create database_.

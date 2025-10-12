@@ -42,15 +42,16 @@ def extract_series_data() -> pl.DataFrame:
         print(e)
         raise
 
-    filtered = [s.model_dump(mode="json") for s in validated if s.id in ["swsh", "sv"]]
+    filtered = [s.model_dump(mode="json") for s in validated if s.id in ["swsh", "sv", "me"]]
     return pl.DataFrame(filtered)
 
 
-@dg.asset(kinds={"API", "Polars", "Pydantic"})
+@dg.asset(kinds={"API", "Polars", "Pydantic"}, name="extract_set_data")
 def extract_set_data() -> pl.DataFrame:
     url_list = [
         "https://api.tcgdex.net/v2/en/series/swsh",
-        "https://api.tcgdex.net/v2/en/series/sv"
+        "https://api.tcgdex.net/v2/en/series/sv",
+        "https://api.tcgdex.net/v2/en/series/me",
     ]
 
     flat: list[dict] = []
@@ -86,11 +87,10 @@ def extract_set_data() -> pl.DataFrame:
     return pl.DataFrame([s.model_dump(mode="json") for s in validated])
 
 
-@dg.asset(kinds={"API"})
+@dg.asset(kinds={"API"}, name="extract_card_url_from_set_data")
 def extract_card_url_from_set() -> list:
     urls = [
-        "https://api.tcgdex.net/v2/en/sets/sv01",
-        "https://api.tcgdex.net/v2/en/sets/sv02",
+        "https://api.tcgdex.net/v2/en/sets/swsh3"
     ]
 
     all_card_urls = []  # Initialize empty list to collect all URLs
@@ -113,7 +113,7 @@ def extract_card_url_from_set() -> list:
     return all_card_urls
 
 
-@dg.asset(deps=[extract_card_url_from_set], kinds={"API"})
+@dg.asset(deps=[extract_card_url_from_set], kinds={"API"}, name="extract_card_info")
 def extract_card_info() -> list:
     card_url_list = extract_card_url_from_set()
     cards_list = []
@@ -124,6 +124,7 @@ def extract_card_info() -> list:
             r.raise_for_status()
             data = r.json()
             cards_list.append(data)
+            # print(f"Retrieved card: {data['id']} - {data.get('name', 'Unknown')}")
             time.sleep(0.1)
         except requests.RequestException as e:
             print(f"Failed to fetch {url}: {e}")
@@ -131,7 +132,7 @@ def extract_card_info() -> list:
     return cards_list
 
 
-@dg.asset(deps=[extract_card_info], kinds={"Polars"})
+@dg.asset(deps=[extract_card_info], kinds={"Polars"}, name="create_card_dataframe")
 def create_card_dataframe() -> pl.DataFrame:
     cards_list = extract_card_info()
 
