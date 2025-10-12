@@ -22,5 +22,5 @@ def load_pricing_data() -> None:
         )
         print(colored(" ✓", "green"), f"Data loaded into {table_name}")
     except OperationalError as e:
-        print(colored(" ✖", "red"), "Connection error in load_series_data():", e)
+        print(colored(" ✖", "red"), "Connection error in load_pricing_data():", e)
         raise
