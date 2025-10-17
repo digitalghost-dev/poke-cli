@@ -50,5 +50,5 @@ resource "aws_db_instance" "tfer--dagster-db" {
   }
 
   username               = "postgres"
-  vpc_security_group_ids = ["sg-026cc204887184c98"]
+  vpc_security_group_ids = ["sg-026cc204887184c98", "sg-09ff0b46e3dd7a843"]
 }
