@@ -1,9 +1,16 @@
 provider "aws" {
-  profile = "terraform-user"
   region = "us-west-2"
 }
 
 terraform {
+  cloud {
+    organization = "digitalghost-dev"
+
+    workspaces {
+      project = "poke-cli"
+      name = "vpc"
+    }
+  }
   required_providers {
     aws = {
       source  = "hashicorp/aws"
