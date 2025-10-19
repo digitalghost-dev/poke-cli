@@ -147,7 +147,7 @@ Feel free to choose any other options that could be more suitable._
 10. Under **Tags**, create a new tag if desired for resource organization.
 11. Under **Database Authentication**, choose _password authentication_.
 12. Under **Monitoring**, choose the standard version of _Database Insights_. All other options in this section can be left as default.
-13. Review the **Estimated Monthly Costs**, make any changes if necessary, they click on _create database_.
+13. Review the **Estimated Monthly Costs**, make any changes if necessary, then click on _create database_.
 
 ---
 
