@@ -8,7 +8,7 @@ terraform {
 
     workspaces {
       project = "poke-cli"
-      name = "poke-cli"
+      name = "rds"
     }
   }
   required_providers {
