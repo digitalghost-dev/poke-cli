@@ -104,16 +104,6 @@ func PokemonCommand() (string, error) {
 		for _, entry := range pokemonSpeciesStruct.EggGroups {
 			modernEggGroupNames := map[string]string{
 				"indeterminate": "Amorphous",
-			}
-
-			if name, exists := modernEggGroupNames[entry.Name]; exists {
-				eggGroupSlice = append(eggGroupSlice, name)
-			} else {
-				capitalizedEggGroup := cases.Title(language.English).String(entry.Name)
-				eggGroupSlice = append(eggGroupSlice, capitalizedEggGroup)
-			}
-			modernEggGroupNames = map[string]string{
-				"indeterminate": "Amorphous",
 				"ground":        "Field",
 				"humanshape":    "Human-Like",
 				"plant":         "Grass",
@@ -126,7 +116,6 @@ func PokemonCommand() (string, error) {
 				capitalizedEggGroup := cases.Title(language.English).String(entry.Name)
 				eggGroupSlice = append(eggGroupSlice, capitalizedEggGroup)
 			}
-
 		}
 
 		sort.Strings(eggGroupSlice)
