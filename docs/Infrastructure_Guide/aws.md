@@ -190,6 +190,7 @@ AWS EC2 (Elastic Compute Cloud) is a cloud service that provides resizable virtu
 
 ### Configure Instance
 Once connected to the virtual machine, run the following commands to get everything set up:
+
 1. Clone repository
     * Create a new directory: `git init <dir-name>`
     * `cd <dir-name>`
