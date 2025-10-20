@@ -96,6 +96,9 @@ sources:
 
       - name: pricing_data
         description: "Card pricing data"
+        meta:
+          dagster:
+            asset_key: ["load_pricing_data"]
         columns:
           - name: product_id
             description: "Product ID"
