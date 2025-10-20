@@ -20,6 +20,7 @@ Amazon Web Services was the chosen cloud vendor for hosting this project's infra
 * [IAM](#iam)
 * [VPC](#vpc)
 * [RDS](#rds)
+* [EC2](#ec2)
 
 !!! note
     
@@ -146,4 +147,83 @@ Feel free to choose any other options that could be more suitable._
 10. Under **Tags**, create a new tag if desired for resource organization.
 11. Under **Database Authentication**, choose _password authentication_.
 12. Under **Monitoring**, choose the standard version of _Database Insights_. All other options in this section can be left as default.
-13. Review the **Estimated Monthly Costs**, make any changes if necessary, they click on _create database_.
+13. Review the **Estimated Monthly Costs**, make any changes if necessary, then click on _create database_.
+
+---
+
+## EC2
+_Elastic Compute Cloud_
+
+AWS EC2 (Elastic Compute Cloud) is a cloud service that provides resizable virtual servers to run applications and workloads on demand.
+
+### Launch Instance
+1. Visit the [EC2 console](https://console.aws.amazon.com/ec2).
+2. Click on **Launch Instance**.
+3. Provide a **name** for the virtual machine.
+4. Under **Application and OS Images**, choose _Ubuntu 24.04 (HVM), SSD Volume Type 64-bit ARM_ or a different image if preferred.
+5. Under **Instance Type**, choose `t2.small`.
+6. Under **Key Pair (login)**, select a key pair or create a new one. If a new one is created, check for the `.pem` file in the downloads folder.
+7. Under **Network Settings**:
+   * Select the VPC created earlier.
+   * Switch to a _public_ subnet to allow connection to the virtual machine.
+   * Enable _Auto-assign public IP_.
+   * For the _Firewall_, select the default security group that should've been created when setting up the VPC.
+8. Under **Configure Storage**, leave as default.
+9. Under **Advanced Details**, lease as default.
+
+### Connect to Instance
+1. First, configure a trusted connection to the previously created RDS instance.
+   * Visit the [RDS console](https://console.aws.amazon.com/rds/home).
+   * Click on the RDS instance previously created.
+   * Scroll down to the **Connected Compute Resources** section, in the **Actions** drop-down, click **Set up EC2 Connection**.
+   * On the next screen, select the created EC2 instance from the drop-down. Then, select **Continue**.
+   * On the **Review and Confirm** screen, review all information then click **Continue**.
+2. SSH into machine.
+   * Back in the [EC2 console](https://console.aws.amazon.com/ec2), click on the created EC2 instance.
+   * In the top-right of the **Summary** section, click on the **Connect** button.
+   * On the next page, click on the **SSH Client** tab.
+   * Instructions on how to connect will be provided and `ssh` command will be provided. For example:
+     * `ssh -i "dagster-vm-key-pair.pem" ubuntu@ec2-<ip-address-of-vm>.<region>.compute.amazonaws.com`
+       * **Note:** Run this command in the directory of the `.pem` file.
+       * **Note:** Since the virtual machine was created with the default VPC security group, make sure the **Inbound Rules** of the security allows your IP address to connect.
+   * The terminal should show an Ubuntu welcome screen once connected.
+
+### Configure Instance
+Once connected to the virtual machine, run the following commands to get everything set up:
+
+1. Clone repository
+    * Create a new directory: `git init <dir-name>`
+    * `cd <dir-name>`
+    * `git remote add -f origin https://github.com/digitalghost-dev/poke-cli/`
+    * `git config core.sparseCheckout true`
+    * `echo "card_data/" >> .git/info/sparse-checkout`
+    * `git pull origin main`
+    * `ls` - verify that `card_data/` directory was created.
+2. Install tools
+    * Install `uv` for Python: `curl -LsSf https://astral.sh/uv/0.7.21/install.sh | sh`
+    * Add to `PATH`: `source $HOME/.local/bin/env`
+    * Install libraries from `pyproject.toml` file: `uv sync`
+    * Activate virtual environment: `source .venv/bin/activate`
+    * Create `dagster.yaml` file:
+      ```bash
+      mkdir -p ~/.dagster && cat > ~/.dagster/dagster.yaml << 'EOF'
+      storage:
+        postgres:
+          postgres_db:
+            username: postgres
+            password: "rds-password"
+            hostname: "rds-hostname"
+            db_name: postgres
+            port: 5432
+          params:
+            sslmode: require
+      EOF
+      ```
+    * Set environment variables:
+      * `echo 'export DAGSTER_HOME="$HOME/.dagster"' >> ~/.bashrc`
+      * `echo 'export SUPABASE_USER="supabase_user"' >> ~/.bashrc`
+      * `echo 'export SUPABASE_PASSWORD="supabase_password"' >> ~/.bashrc`
+    * `source ~/.bashrc` - to load variables in current session.
+3. Verify Dagster and Connectivity
+    * `dg dev --host 0.0.0.0 --port 3000`
+    * In the browser, visit `http://<ip-address-of-vm>:3000`

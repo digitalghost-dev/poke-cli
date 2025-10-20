@@ -20,7 +20,7 @@ resource "aws_db_instance" "tfer--dagster-db" {
   iam_database_authentication_enabled   = "false"
   identifier                            = "dagster-db"
   instance_class                        = "db.t3.micro"
-  kms_key_id                            = var.kms-arn-key
+  kms_key_id                            = var.kms_arn_key
   license_model                         = "postgresql-license"
   maintenance_window                    = "wed:08:28-wed:08:58"
   manage_master_user_password           = true
@@ -32,7 +32,7 @@ resource "aws_db_instance" "tfer--dagster-db" {
   option_group_name                     = "default:postgres-17"
   parameter_group_name                  = "default.postgres17"
   performance_insights_enabled          = "true"
-  performance_insights_kms_key_id       = var.kms-arn-key
+  performance_insights_kms_key_id       = var.kms_arn_key
   performance_insights_retention_period = "7"
   port                                  = "5432"
   publicly_accessible                   = "true"
@@ -50,5 +50,5 @@ resource "aws_db_instance" "tfer--dagster-db" {
   }
 
   username               = "postgres"
-  vpc_security_group_ids = ["sg-026cc204887184c98"]
+  vpc_security_group_ids = ["sg-026cc204887184c98", "sg-09ff0b46e3dd7a843"]
 }

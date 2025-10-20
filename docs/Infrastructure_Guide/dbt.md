@@ -12,7 +12,7 @@ weight: 5
     of data transformations. dbt compiles SQL models into executable queries and runs them in the proper order,
     turning raw data into analysis-ready datasets.
 
-    View more [about dbt](www.getdbt.com/product/what-is-dbt)
+    View more [about dbt](https://www.getdbt.com/product/what-is-dbt)
 
 ## Installation & Initialization
 

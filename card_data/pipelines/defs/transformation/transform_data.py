@@ -28,7 +28,7 @@ class CustomDbtTranslator(DagsterDbtTranslator):
     manifest=DBT_PROJECT_PATH / "target" / "manifest.json",
     dagster_dbt_translator=CustomDbtTranslator()
 )
-def poke_cli_dbt_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
+def dbt_load_pricing_data(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     """
     dbt assets that transform staging data into final models.
     """
@@ -36,6 +36,6 @@ def poke_cli_dbt_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
 
 dbt_resource = DbtCliResource(project_dir=DBT_PROJECT_PATH)
 defs = dg.Definitions(
-    assets=[poke_cli_dbt_assets],
+    assets=[dbt_load_pricing_data],
     resources={"dbt": dbt_resource}
 )
