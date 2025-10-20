@@ -2,9 +2,9 @@ import dagster as dg
 import polars as pl
 from dagster import RetryPolicy, Backoff
 from sqlalchemy.exc import OperationalError
-from ..extract.extract_pricing_data import build_dataframe
-from ...utils.secret_retriever import fetch_secret
 from termcolor import colored
+
+from ...utils.secret_retriever import fetch_secret
 
 
 @dg.asset(
