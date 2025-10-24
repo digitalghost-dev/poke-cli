@@ -1,0 +1,12 @@
+storage:
+  postgres:
+    postgres_db:
+      username: postgres
+      password:
+        env: AWS_RDS_PASSWORD
+      hostname:
+        env: AWS_RDS_HOSTNAME
+      db_name: postgres
+      port: 5432
+      params:
+        sslmode: require
