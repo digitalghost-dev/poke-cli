@@ -1,0 +1,20 @@
+[Unit]
+Description=Dagster Development Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/card_data/card_data
+Environment="AWS_DEFAULT_REGION=us-west-2"
+Environment="PATH=/home/ubuntu/card_data/card_data/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+ExecStartPre=/home/ubuntu/wait-for-rds.sh
+ExecStart=/home/ubuntu/start-dagster.sh
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
