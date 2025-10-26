@@ -1,8 +1,8 @@
 ---
-weight: 2
+weight: 3
 ---
 
-# 2. AWS
+# 3. AWS
 Amazon Web Services was the chosen cloud vendor for hosting this project's infrastructure.
 
 
@@ -21,6 +21,9 @@ Amazon Web Services was the chosen cloud vendor for hosting this project's infra
 * [VPC](#vpc)
 * [RDS](#rds)
 * [EC2](#ec2)
+* [Elastic IPs](#elastic-ips)
+* [EventBridge](#eventbridge)
+* [Secrets Manager](#secrets-manager)
 
 !!! note
     
@@ -227,3 +230,103 @@ Once connected to the virtual machine, run the following commands to get everyth
 3. Verify Dagster and Connectivity
     * `dg dev --host 0.0.0.0 --port 3000`
     * In the browser, visit `http://<ip-address-of-vm>:3000`
+
+---
+
+## Elastic IPs
+An Elastic IP is a static public IPv4 address in AWS that can be assigned to an EC2 instance.
+
+1. Visit the [EC2 console](https://console.aws.amazon.com/ec2).
+2. On the left, under **Network & Security**, click on **Elastic IPs**.
+3. In the upper-right, click on **Allocate Elastic IP Address**.
+4. On the configuration screen, leave all as default, provide a tag if needed, then click on **Allocate**.
+5. After the static IP address is allocated, select the IP address, then on the **Actions** dropdown, and finally, select **Associate Elastic IP Address**.
+6. On the next page, choose instance as the **Resource Types**.
+7. Select the previously created instance and its private IP.
+8. Then, click on **Associate**.
+
+---
+
+## EventBridge
+AWS [EventBridge](https://aws.amazon.com/eventbridge/) is a serverless event bus that can use rules to automatically 
+trigger actions—such as starting or stopping RDS and EC2 instances—based on scheduled times or specific events.
+
+EventBridge helps save on costs by stopping and starting the RDS and EC2 instance during off-peak hours. In the case 
+of this project, it would be between the hours of 11:00PM and 6:00AM PST. This is optional but recommended.
+
+### Create Policy
+Once the role is created, a custom policy needs to be created to allow the role access to start/stop the targeted service.
+
+1. Visit the [IAM console home](https://us-east-1.console.aws.amazon.com/iam/).
+2.  On the left, click on **Policies**.
+3. In the upper-right, click on **Create Policy**.
+4. In the **Policy Editor** section, choose the **JSON** editor and paste in the following (Update `Action` to match the targeted service):
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:StartInstances",
+                "ec2:StopInstances"
+            ],
+            "Resource": "arn:aws:ec2:us-west-2:*:instance/*"
+        }
+    ]
+}
+```
+5. Click **Next**. On the following screen, enter a name for the policy. For example, `ec2-start-stop`.
+6. Add a description and/or tags. Click on **Create Policy**.
+
+### Create Roles
+EventBridge needs a role to connect and access other AWS resources. This project uses separate roles for each service.
+The instructions below discuss the creation of a single role and a single attached policy.
+
+1. Visit the [IAM console home](https://us-east-1.console.aws.amazon.com/iam/).
+2. On the left, click on **Roles**.
+3. In the upper-right, click on **Create Role**.
+4. For **Trusted Entity Type**, choose **AWS Service**.
+5. For **Use Case**, search and choose **EC2**. Leave at default selected option. Click **Next**.
+6. For **Permissions Policies**, search and choose the custom policy created in the previous step.
+7. Enter descriptive role name. For example, `EC2-StartStop-Scheduler-Role`.
+8. Enter a description and/or tags. Then, click **Create Role**.
+
+### Create Schedule
+
+1. Visit the [EventBridge console home](https://console.aws.amazon.com/events).
+   * Ensure AWS is in the correct region as the rest of the project's services.
+   * If an EventBridge schedule is created in a different region than, say, an EC2 instance, it will not find it.
+2. On the right, under **Scheduler**, click on **Schedules**.
+3. Click on **Create Schedule**.
+
+#### Specify Schedule Details
+
+1. Specify Schedule Detail Page
+   * Provide a name and description. 
+   * For **Schedule Pattern**, choose **Recurring Schedule**. 
+   * Choose the correct timezone and select **Cron-Base Schedule**. 
+   * The `cron` expression only needs to run once a day. So, a schedule for starting the instance could be `0 6 * * ? *` - (run at 6am). 
+   * Add a **Flexible Time Window** if needed.
+   * The **Timeframe** section can be left blank. Click **Next**.
+2. Select Target Page
+   * Under **Target Detail**, select **All APIs** and search for and select EC2. 
+   * In the API search box, search for `StartInstances` or `StopInstances`. 
+   * In the next window, grab the **Instance ID** for the EC2 instead created earlier and paste it in to the JSON input.
+    ```json
+    {
+      "InstanceIds": [
+        "i-01dwf82r21c9da71f"
+      ]
+    }
+    ```
+   * Click **Next**.
+3. Settings Page
+   * Enable schedule state.
+   * Choose `NONE` for **Action after Schedule Completion**.
+   * Choose `None` for **Retry Policy and DLQ**
+   * Customize encryption if needed.
+   * In the **Permissions** section, choose **Use Existing Role**, then select the previously created role associated with this schedule’s service.
+   * Click **Next**.
+4. Review and Create Schedule Page
+    * Review all the configuration changes then click **Create Schedule**.
