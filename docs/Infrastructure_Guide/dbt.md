@@ -1,8 +1,8 @@
 ---
-weight: 5
+weight: 6
 ---
 
-# 5. dbt
+# 6. dbt
 
 !!! question "What is dbt?"
 

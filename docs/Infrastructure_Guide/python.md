@@ -1,8 +1,8 @@
 ---
-weight: 4
+weight: 5
 ---
 
-# 4. Python
+# 5. Python
 
 ## Installing uv
 _uv is the main package and project manager used in this project._

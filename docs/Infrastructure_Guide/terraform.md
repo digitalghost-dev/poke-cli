@@ -1,8 +1,8 @@
 ---
-weight: 3
+weight: 4
 ---
 
-# 3. Terraform
+# 4. Terraform
 
 !!! question "What is Terraform?"
 

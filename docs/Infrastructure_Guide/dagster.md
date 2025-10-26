@@ -1,8 +1,8 @@
 ---
-weight: 6
+weight: 7
 ---
 
-# 6. Dagster
+# 7. Dagster
 
 !!! question "What is Dagster?"
 
@@ -51,3 +51,43 @@ This project uses a directory named `pipelines` to store all the Dagster files:
         └── configuration.yml
 ```
 
+## 
+
+## Automating Startup with `systemd`
+In order to save on costs, the EC2 and RDS instances are scheduled to start and stop once each day. To automate the
+starting of the Dagster webservice, `systemd`, along with a couple of shell scripts, will be used to create this
+automation.
+
+This project, under `card_data/infrastructure/` has a file for starting the Dagster web service called `start-dagster.sh`
+and is set up to be used.
+
+
+```shell
+aws rds describe-db-instances \
+--region us-west-2 \
+--query 'DBInstances[*].[DBInstanceIdentifier,Endpoint.Address,Endpoint.Port]' \
+--output table
+```
+
+```shell
+aws secretsmanager create-secret \
+    --name dagster/supabase-creds \
+    --secret-string '{"password":"your_password","user":"your_user"}' \
+    --region us-west-2
+```
+
+```shell
+nano /home/ubuntu/wait-for-rds.sh
+
+nano /home/ubuntu/start-dagster.sh
+
+sudo nano /etc/systemd/system/dagster.service
+```
+
+```shell
+chmod +x /home/ubuntu/start-dagster.sh
+
+chmod +x /home/ubuntu/wait-for-rds.sh
+```
+
+create `
