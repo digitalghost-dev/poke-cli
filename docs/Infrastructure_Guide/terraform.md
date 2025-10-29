@@ -1,8 +1,8 @@
 ---
-weight: 4
+weight: 6
 ---
 
-# 4. Terraform
+# 6 // Terraform
 
 !!! question "What is Terraform?"
 

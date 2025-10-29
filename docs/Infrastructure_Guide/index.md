@@ -2,7 +2,7 @@
 weight: 1
 ---
 
-# 1. Overview
+# 1 // Overview
 
 This section serves as a knowledge base for the project’s backend infrastructure. It was created for a few purposes:
 

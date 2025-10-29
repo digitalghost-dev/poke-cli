@@ -2,7 +2,7 @@
 weight: 2
 ---
 
-# 2. Supabase
+# 2 // Supabase
 
 ## Create an Account
 
@@ -28,6 +28,6 @@ Signing in with GitHub is the easiest method.
 ```shell
 postgresql://postgres.[USERNAME]:[YOUR-PASSWORD]@aws-0-us-east-2.pooler.supabase.com:6543/postgres
 ```
-6. Note the connection string for later instructions such as creating a secret of the string in AWS Secrets Manager.[^1]
+6. Note the connection string for later instructions such as creating a secret of the string in AWS Secrets Manager[^1].
 
 [^1]: Used in section: [3. AWS // Secrets Manager](aws.md#secrets-manager).
