@@ -74,3 +74,6 @@ plugins:
   - search
   - mkdocs-nav-weight:
       section_renamed: false
+
+extra_css:
+  - stylesheets/extra.css
