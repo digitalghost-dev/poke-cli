@@ -83,7 +83,7 @@ Connect to the virtual machine and run the following commands to get everything 
       ```shell
       source .venv/bin/activate
       ```
-    * Create `dagster.yaml` file:
+    * Create `dagster.yaml` file (replace with correct password and hostname):
       ```bash
       mkdir -p ~/.dagster && cat > ~/.dagster/dagster.yaml << 'EOF'
       storage:
@@ -127,24 +127,30 @@ The `card_data/infrastructure/` directory has the following files:
 Although the files are included in this repository, they need to be moved or created in a specific directory on
 the Linux virtual machine.
 
-#### Move Files
+#### Copy Files
+Copy or move the files from the checked out repository to the proper directory on the Linux machine (_the files must first 
+be edited to match project specific configuration. Such as the proper RDS instance name in `wait-for-rds.sh`_):
 
 ```shell
-/home/ubuntu/wait-for-rds.sh
+cp card_data/card_data/infrastructure/wait-for-rds.sh /home/ubuntu/
 
-/home/ubuntu/start-dagster.sh
+cp card_data/card_data/infrastructure/start-dagster.sh /home/ubuntu/
 
-/etc/systemd/system/dagster.service
+cp card_data/card_data/infrastructure/dagster.service /etc/systemd/system/
 ```
 
 #### Create Files
-First, create `dagster.service`:
+The files can also be recreated. Update the files below with project specific configuration then
+run the `cat` or `tee` commands listed below.
 
-* Run `nano /etc/systemd/system/dagster.service` then copy and paste the following code in the editor:
+First, create `dagster.service`
 
-??? note "dagster.service"
+* Run the following shell command to create the file (_edit any differing details such as AWS region_):
 
-    ```bash
+??? container "dagster.service"
+
+    ```shell
+    sudo tee /etc/systemd/system/dagster.service > /dev/null << 'EOF'
     [Unit]
     Description=Dagster Development Server
     After=network-online.target
@@ -165,6 +171,132 @@ First, create `dagster.service`:
     
     [Install]
     WantedBy=multi-user.target
+    EOF
+    && echo "File created successfully"
+    ```
+
+Second, create `wait-for-rds.sh`
+
+* Retrieve RDS instance name:
+    ```shell
+    aws rds describe-db-instances \
+    --region us-west-2 \
+    --query 'DBInstances[*].[DBInstanceIdentifier,Endpoint.Address,Endpoint.Port]' \
+    --output table
+    ```
+  
+* Run the following shell command to create the file (_replace with correct instance id_):
+
+??? container "wait-for-rds.sh"
+
+    ```shell
+    cat > /home/ubuntu/wait-for-rds.sh << 'EOF'
+    #!/bin/bash
+
+    MAX_TRIES=20
+    COUNT=0
+    
+    RDS_HOST="<rds-instance-id>.<region>.rds.amazonaws.com"
+    RDS_PORT=5432
+    
+    echo "Checking if RDS is available..."
+    
+    while [ $COUNT -lt $MAX_TRIES ]; do
+    if nc -z -w5 $RDS_HOST $RDS_PORT 2>/dev/null; then
+    echo "RDS is available!"
+    exit 0
+    fi
+    COUNT=$((COUNT + 1))
+    echo "Attempt $COUNT/$MAX_TRIES - RDS not ready yet..."
+    sleep 10
+    done
+    
+    echo "RDS did not become available in time"
+    exit 1
+    EOF
+    ```
+
+Last, create `start-dagster.sh`
+
+* Retrieve RDS secret name from Secrets Manager. AWS auto-creates a secret for RDS.
+    ```shell
+    aws secretsmanager list-secrets \
+    --filters Key=name,Values=rds\! \
+    | jq -r '.SecretList[].Name'
+    ```
+
+??? container "start-dagster.sh"
+
+    ```shell
+    cat > /home/ubuntu/start-dagster.sh << 'EOF'
+    #!/bin/bash
+    
+    # Fetch secrets from AWS Secrets Manager
+    SUPABASE_SECRETS=$(aws secretsmanager get-secret-value \
+        --secret-id supabase \
+        --region us-west-2 \
+        --query SecretString \
+        --output text)
+    
+    AWS_RDS_SECRETS_PW=$(aws secretsmanager get-secret-value \
+        --secret-id '<correct-rds-secret>' \
+        --region us-west-2 \
+        --query SecretString \
+        --output text)
+    
+    AWS_RDS_SECRETS_HN=$(aws secretsmanager get-secret-value \
+        --secret-id rds-hostname \
+        --region us-west-2 \
+        --query SecretString \
+        --output text)
+    
+    # Extract values
+    SUPABASE_PASSWORD=$(echo "$SUPABASE_SECRETS" | jq -r '.password')
+    export SUPABASE_PASSWORD
+    
+    SUPABASE_USER=$(echo "$SUPABASE_SECRETS" | jq -r '.user')
+    export SUPABASE_USER
+    
+    AWS_RDS_PASSWORD=$(echo "$AWS_RDS_SECRETS_PW" | jq -r '.password')
+    export AWS_RDS_PASSWORD
+    
+    AWS_RDS_HOSTNAME=$(echo "$AWS_RDS_SECRETS_HN" | jq -r '.hostname')
+    export AWS_RDS_HOSTNAME
+    
+    DAGSTER_HOME=/home/ubuntu/card_data/card_data/
+    export DAGSTER_HOME
+    
+    # Activate the virtual environment
+    source /home/ubuntu/card_data/card_data/.venv/bin/activate
+    
+    # Start Dagster
+    exec dg dev --host 0.0.0.0 --port 3000
+    EOF 
     ```
 
 ### Start Service
+
+Apply, enable on boot, and start the service:
+
+```shell
+# Reload systemd to recognize the new service
+sudo systemctl daemon-reload
+
+# Enable it to start on boot
+sudo systemctl enable dagster.service
+
+# Start/stop
+sudo systemctl start dagster.service
+```
+
+Show the status of service running:
+
+```shell
+sudo systemctl status dagster.service
+```
+
+View live logs:
+
+```shell
+sudo journalctl -u dagster.service -f
+```
