@@ -47,7 +47,7 @@ func ValidateBerryArgs(args []string) error {
 		return err
 	}
 
-	if err := checkNoOtherOptions(args, 3, "<types>"); err != nil {
+	if err := checkNoOtherOptions(args, 3, "<berry>"); err != nil {
 		return err
 	}
 
