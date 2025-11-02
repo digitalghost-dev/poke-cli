@@ -2,7 +2,7 @@
 
 # Fetch secrets from AWS Secrets Manager
 SUPABASE_SECRETS=$(aws secretsmanager get-secret-value \
-    --secret-id dagster/supabase-creds \
+    --secret-id supabase \
     --region us-west-2 \
     --query SecretString \
     --output text)
