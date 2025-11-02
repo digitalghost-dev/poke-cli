@@ -63,6 +63,7 @@ terraformer import aws --regions us-west-2 --resources rds --profile terraform-u
 ```
 
 Where:
+
 * `--regions `is where the RDS instance is located.
 * `--resources` is the resources under RDS
 * `--profile` is the `terraform-user` profile from `~/.aws/credentials`
