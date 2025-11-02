@@ -1,9 +1,10 @@
 ---
-weight: 3
+weight: 4
 ---
 
-# 3. AWS
-Amazon Web Services was the chosen cloud vendor for hosting this project's infrastructure.
+# 4 // AWS
+Amazon Web Services was the chosen cloud vendor for hosting this project's infrastructure. This takes the 
+local deployment and moves it into the cloud. 
 
 
 !!! question "What is AWS?"
@@ -174,7 +175,7 @@ AWS EC2 (Elastic Compute Cloud) is a cloud service that provides resizable virtu
 8. Under **Configure Storage**, leave as default.
 9. Under **Advanced Details**, lease as default.
 
-### Connect to Instance
+### Verify Connection to Instance
 1. First, configure a trusted connection to the previously created RDS instance.
    * Visit the [RDS console](https://console.aws.amazon.com/rds/home).
    * Click on the RDS instance previously created.
@@ -188,48 +189,9 @@ AWS EC2 (Elastic Compute Cloud) is a cloud service that provides resizable virtu
    * Instructions on how to connect will be provided and `ssh` command will be provided. For example:
      * `ssh -i "dagster-vm-key-pair.pem" ubuntu@ec2-<ip-address-of-vm>.<region>.compute.amazonaws.com`
        * **Note:** Run this command in the directory of the `.pem` file.
-       * **Note:** Since the virtual machine was created with the default VPC security group, make sure the **Inbound Rules** of the security allows your IP address to connect.
+       * **Note:** Since the virtual machine was created with the default VPC security group, 
+       make sure the **Inbound Rules** of the security allows your IP address to connect.
    * The terminal should show an Ubuntu welcome screen once connected.
-
-### Configure Instance
-Once connected to the virtual machine, run the following commands to get everything set up:
-
-1. Clone repository
-    * Create a new directory: `git init <dir-name>`
-    * `cd <dir-name>`
-    * `git remote add -f origin https://github.com/digitalghost-dev/poke-cli/`
-    * `git config core.sparseCheckout true`
-    * `echo "card_data/" >> .git/info/sparse-checkout`
-    * `git pull origin main`
-    * `ls` - verify that `card_data/` directory was created.
-2. Install tools
-    * Install `uv` for Python: `curl -LsSf https://astral.sh/uv/0.7.21/install.sh | sh`
-    * Add to `PATH`: `source $HOME/.local/bin/env`
-    * Install libraries from `pyproject.toml` file: `uv sync`
-    * Activate virtual environment: `source .venv/bin/activate`
-    * Create `dagster.yaml` file:
-      ```bash
-      mkdir -p ~/.dagster && cat > ~/.dagster/dagster.yaml << 'EOF'
-      storage:
-        postgres:
-          postgres_db:
-            username: postgres
-            password: "rds-password"
-            hostname: "rds-hostname"
-            db_name: postgres
-            port: 5432
-          params:
-            sslmode: require
-      EOF
-      ```
-    * Set environment variables:
-      * `echo 'export DAGSTER_HOME="$HOME/.dagster"' >> ~/.bashrc`
-      * `echo 'export SUPABASE_USER="supabase_user"' >> ~/.bashrc`
-      * `echo 'export SUPABASE_PASSWORD="supabase_password"' >> ~/.bashrc`
-    * `source ~/.bashrc` - to load variables in current session.
-3. Verify Dagster and Connectivity
-    * `dg dev --host 0.0.0.0 --port 3000`
-    * In the browser, visit `http://<ip-address-of-vm>:3000`
 
 ---
 
@@ -248,6 +210,8 @@ An Elastic IP is a static public IPv4 address in AWS that can be assigned to an 
 ---
 
 ## EventBridge
+_Optional_
+
 AWS [EventBridge](https://aws.amazon.com/eventbridge/) is a serverless event bus that can use rules to automatically 
 trigger actions—such as starting or stopping RDS and EC2 instances—based on scheduled times or specific events.
 
@@ -330,3 +294,41 @@ The instructions below discuss the creation of a single role and a single attach
    * Click **Next**.
 4. Review and Create Schedule Page
     * Review all the configuration changes then click **Create Schedule**.
+
+---
+
+## Secrets Manager
+AWS Secrets Manager is a service for storing and managing sensitive information like database credentials, API keys, and passwords. 
+It provides encryption, automatic rotation, IAM-based access control, and integrates with RDS and other AWS services to manage 
+credentials programmatically.
+
+This project uses 
+
+### Supabase Secrets
+The EC2 instance for Dagster needs to authenticate with Supabase to write the card data. 
+
+Create a secret for Supabase credentials[^1]:
+
+```shell
+aws secretsmanager create-secret \
+--name supabase \
+--secret-string '{"password":"supabase-password","user":"supabase-user","database_uri":"postgresql://postgres.<user>:<password>@aws-0-us-east-2.pooler.supabase.com:6543/postgres"}' \
+--region us-west-2
+```
+
+!!! note
+
+    The connection string from Supabase has the username and password in it as such:
+    ```shell
+    postgresql://<postgres.rest-of-user-name>:<password>@aws-0-us-east-2.pooler.supabase.com:6543/postgres
+    ```
+
+    The username includes the `postgres` prefix like `postgres.rest-of-user-name`.
+
+!!! note "Reminder"
+
+    The EC2 instance has the `EC2-SecretsManager-Role` IAM role attached, which grants
+    permissions to create and retrieve secrets from AWS Secrets Manager. This uses an
+    IAM role (not an IAM user), so the instance receives temporary credentials automatically.
+
+[^1]: Can be retrieved by creating a project as shown in [2 // Supabase](supabase.md).
