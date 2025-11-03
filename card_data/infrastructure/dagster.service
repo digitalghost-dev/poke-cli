@@ -10,6 +10,10 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu/card_data/card_data
 Environment="AWS_DEFAULT_REGION=us-west-2"
 Environment="PATH=/home/ubuntu/card_data/card_data/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
 ExecStartPre=/home/ubuntu/wait-for-rds.sh
 ExecStart=/home/ubuntu/start-dagster.sh
 Restart=on-failure
