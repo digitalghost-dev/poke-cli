@@ -276,7 +276,7 @@ The instructions below discuss the creation of a single role and a single attach
 2. Select Target Page
    * Under **Target Detail**, select **All APIs** and search for and select EC2. 
    * In the API search box, search for `StartInstances` or `StopInstances`. 
-   * In the next window, grab the **Instance ID** for the EC2 instead created earlier and paste it in to the JSON input.
+   * In the next window, grab the **Instance ID** for the EC2 instance created earlier and paste it in to the JSON input.
     ```json
     {
       "InstanceIds": [
@@ -301,8 +301,6 @@ The instructions below discuss the creation of a single role and a single attach
 AWS Secrets Manager is a service for storing and managing sensitive information like database credentials, API keys, and passwords. 
 It provides encryption, automatic rotation, IAM-based access control, and integrates with RDS and other AWS services to manage 
 credentials programmatically.
-
-This project uses 
 
 ### Supabase Secrets
 The EC2 instance for Dagster needs to authenticate with Supabase to write the card data. 
