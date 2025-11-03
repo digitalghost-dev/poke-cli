@@ -30,7 +30,7 @@ Connect to the virtual machine and run the following commands to get everything 
       ```shell
       export AWS_DEFAULT_REGION=us-west-2
       # or set it to ~./bashrc file
-      echo 'export AWS_DEFAULT_REGION=us-east-1' >> ~/.bashrc
+      echo 'export AWS_DEFAULT_REGION=us-west-1' >> ~/.bashrc
       source ~/.bashrc
       ```
     * Run an `aws` command such as `secretsmanager` to verify AWS connectivity:
@@ -73,7 +73,7 @@ Connect to the virtual machine and run the following commands to get everything 
       ```
     * Add to `PATH`:
       ```shell
-      `source $HOME/.local/bin/env`
+      source $HOME/.local/bin/env
       ```
     * Install libraries from `pyproject.toml` file: 
       ```shell
@@ -282,15 +282,31 @@ Last, create `start-dagster.sh`
     
     # Extract values
     SUPABASE_PASSWORD=$(echo "$SUPABASE_SECRETS" | jq -r '.password')
+    if [ -z "$SUPABASE_PASSWORD" ] || [ "$SUPABASE_PASSWORD" = "null" ]; then
+        echo "ERROR: missing SUPABASE_PASSWORD from supabase secret" >&2
+        exit 1
+    fi
     export SUPABASE_PASSWORD
-    
+
     SUPABASE_USER=$(echo "$SUPABASE_SECRETS" | jq -r '.user')
+    if [ -z "$SUPABASE_USER" ] || [ "$SUPABASE_USER" = "null" ]; then
+        echo "ERROR: missing SUPABASE_USER from supabase secret" >&2
+        exit 1
+    fi
     export SUPABASE_USER
-    
+
     AWS_RDS_PASSWORD=$(echo "$AWS_RDS_SECRETS_PW" | jq -r '.password')
+    if [ -z "$AWS_RDS_PASSWORD" ] || [ "$AWS_RDS_PASSWORD" = "null" ]; then
+        echo "ERROR: missing AWS_RDS_PASSWORD from RDS secret" >&2
+        exit 1
+    fi
     export AWS_RDS_PASSWORD
-    
+
     AWS_RDS_HOSTNAME=$(echo "$AWS_RDS_SECRETS_HN" | jq -r '.hostname')
+    if [ -z "$AWS_RDS_HOSTNAME" ] || [ "$AWS_RDS_HOSTNAME" = "null" ]; then
+        echo "ERROR: missing AWS_RDS_HOSTNAME from rds-hostname secret" >&2
+        exit 1
+    fi
     export AWS_RDS_HOSTNAME
     
     DAGSTER_HOME=/home/ubuntu/card_data/card_data/
