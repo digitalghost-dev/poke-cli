@@ -73,7 +73,7 @@ Connect to the virtual machine and run the following commands to get everything 
       ```
     * Add to `PATH`:
       ```shell
-      `source $HOME/.local/bin/env
+      `source $HOME/.local/bin/env`
       ```
     * Install libraries from `pyproject.toml` file: 
       ```shell
@@ -127,6 +127,32 @@ The `card_data/infrastructure/` directory has the following files:
 Although the files are included in this repository, they need to be moved or created in a specific directory on
 the Linux virtual machine.
 
+##### Prerequisites
+
+Before copying or creating the scripts, ensure the following system tools are installed.
+These are required by the shell scripts:
+
+- **`netcat` (nc)**: Used by `wait-for-rds.sh` to check RDS availability
+- **`jq`**: Used by `start-dagster.sh` to parse JSON from AWS Secrets Manager
+
+For **Debian/Ubuntu** systems, install with:
+
+```shell
+sudo apt update && sudo apt install -y netcat jq
+```
+
+For other platforms, use the appropriate package manager:
+
+- **RHEL/CentOS/Amazon Linux**: `sudo yum install -y nc jq` or `sudo dnf install -y nc jq`
+- **macOS**: `brew install netcat jq`
+- **Alpine Linux**: `apk add netcat-openbsd jq`
+
+!!! warning
+
+    Without these tools installed, the scripts will fail with errors like 
+    "command not found" when systemd attempts to run them.
+
+
 #### Copy Files
 Copy or move the files from the checked out repository to the proper directory on the Linux machine (_the files must first 
 be edited to match project specific configuration. Such as the proper RDS instance name in `wait-for-rds.sh`_):
@@ -162,6 +188,10 @@ First, create `dagster.service`
     WorkingDirectory=/home/ubuntu/card_data/card_data
     Environment="AWS_DEFAULT_REGION=us-west-2"
     Environment="PATH=/home/ubuntu/card_data/card_data/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+    NoNewPrivileges=true
+    PrivateTmp=true
+    ProtectSystem=strict
+    ProtectHome=read-only
     ExecStartPre=/home/ubuntu/wait-for-rds.sh
     ExecStart=/home/ubuntu/start-dagster.sh
     Restart=on-failure
