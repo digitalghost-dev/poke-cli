@@ -2,8 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"github.com/digitalghost-dev/poke-cli/styling"
 	"strings"
+
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 // checkLength checks if the number of arguments is lower than the max value.  Helper Function.
@@ -36,6 +37,18 @@ func ValidateAbilityArgs(args []string) error {
 	if len(args) == 2 {
 		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nPlease specify an ability")
 		return fmt.Errorf("%s", errMessage)
+	}
+
+	return nil
+}
+
+func ValidateBerryArgs(args []string) error {
+	if err := checkLength(args, 3); err != nil {
+		return err
+	}
+
+	if err := checkNoOtherOptions(args, 3, "<berry>"); err != nil {
+		return err
 	}
 
 	return nil

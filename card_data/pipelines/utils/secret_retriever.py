@@ -10,7 +10,7 @@ def fetch_secret() -> str:
     cache_config = SecretCacheConfig()
     cache = SecretCache(config=cache_config, client=client)
 
-    secret = cache.get_secret_string("supabase-data")
+    secret = cache.get_secret_string("supabase")
 
     # convert to dictionary
     secret_dict = json.loads(secret)

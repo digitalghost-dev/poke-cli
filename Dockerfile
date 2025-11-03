@@ -1,5 +1,5 @@
 # build 1
-FROM golang:1.24.5-alpine3.22 AS build
+FROM golang:1.24.6-alpine3.22 AS build
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v1.7.2" -o poke-cli .
+RUN go build -ldflags "-X main.version=v1.7.3" -o poke-cli .
 
 # build 2
 FROM --platform=$BUILDPLATFORM alpine:3.22

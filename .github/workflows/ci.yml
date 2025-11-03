@@ -30,7 +30,7 @@ on:
       - main
 
 env:
-  VERSION_NUMBER: 'v1.7.2'
+  VERSION_NUMBER: 'v1.7.3'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
@@ -73,7 +73,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.24.5'
+          go-version: '1.24.6'
 
       - name: Build Go Binary
         env:

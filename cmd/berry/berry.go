@@ -39,7 +39,7 @@ func BerryCommand() (string, error) {
 	}
 
 	// Validate arguments
-	if err := utils.ValidateTypesArgs(os.Args); err != nil {
+	if err := utils.ValidateBerryArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}

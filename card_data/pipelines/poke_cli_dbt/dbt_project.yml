@@ -1,5 +1,5 @@
 name: 'poke_cli_dbt'
-version: '1.7.2'
+version: '1.7.3'
 
 profile: 'poke_cli_dbt'
 

@@ -135,8 +135,7 @@ func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
-	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Type Defenses"))
@@ -150,7 +149,7 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 	typeData := make(map[string]structs.TypesJSONStruct)
 	for _, pokeType := range pokemonStruct.Types {
-		typeStruct, _, _ := connections.TypesApiCall("type", pokeType.Type.Name, baseURL)
+		typeStruct, _, _ := connections.TypesApiCall("type", pokeType.Type.Name, connections.APIURL)
 		typeData[pokeType.Type.Name] = typeStruct
 	}
 
@@ -320,8 +319,7 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) error {
-	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Image"))
@@ -410,8 +408,7 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 }
 
 func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
-	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
 	_, err := fmt.Fprintln(w, header("Learnable Moves"))
 	if err != nil {
@@ -446,7 +443,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 			go func(moveName string, level int) {
 				defer wg.Done()
 
-				moveStruct, _, err := connections.MoveApiCall("move", moveName, baseURL)
+				moveStruct, _, err := connections.MoveApiCall("move", moveName, connections.APIURL)
 				if err != nil {
 					errorsChan <- fmt.Errorf("error fetching move %s: %v", moveName, err)
 					return
@@ -556,8 +553,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
-	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Base Stats"))
@@ -652,8 +648,7 @@ func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
-	baseURL := "https://pokeapi.co/api/v2/"
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, baseURL)
+	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 
 	// Print the header from header func
 	_, err := fmt.Fprintln(w, header("Typing"))
