@@ -7,13 +7,13 @@
     border-color: rgb(52, 152, 219);
 }
 
-.md-typeset .container > .admonition-title,
-.md-typeset .container > summary {
+.md-typeset .admonition.container > .admonition-title,
+.md-typeset details.container > summary {
     background-color: rgba(52, 152, 219, 0.1);
 }
 
-.md-typeset .container > .admonition-title::before,
-.md-typeset .container > summary::before {
+.md-typeset .admonition.container > .admonition-title::before,
+.md-typeset details.container > summary::before {
     background-color: rgb(52, 152, 219);
     -webkit-mask-image: var(--md-admonition-icon--container);
     mask-image: var(--md-admonition-icon--container);
