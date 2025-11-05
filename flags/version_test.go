@@ -32,11 +32,13 @@ func TestLatestVersionFlag(t *testing.T) {
 			name:           "Get latest version with short flag",
 			args:           []string{"-l"},
 			expectedOutput: utils.LoadGolden(t, "main_latest_flag.golden"),
+			expectedError:  false,
 		},
 		{
 			name:           "Get latest version with long flag",
 			args:           []string{"--latest"},
 			expectedOutput: utils.LoadGolden(t, "main_latest_flag.golden"),
+			expectedError:  false,
 		},
 	}
 
@@ -46,8 +48,14 @@ func TestLatestVersionFlag(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output, _ := LatestFlag()
+			output, err := LatestFlag()
 			cleanOutput := styling.StripANSI(output)
+
+			if tt.expectedError {
+				assert.Error(t, err, "Expected an error")
+			} else {
+				assert.NoError(t, err, "Expected no error")
+			}
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
 		})

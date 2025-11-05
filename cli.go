@@ -130,7 +130,10 @@ func runCLI(args []string) int {
 		mainFlagSet.Usage()
 		return 1
 	case *latestFlag || *shortLatestFlag:
-		_, _ = flags.LatestFlag()
+		_, err := flags.LatestFlag()
+		if err != nil {
+			return 1
+		}
 		return 0
 	case *currentVersionFlag || *shortCurrentVersionFlag:
 		currentVersion()
