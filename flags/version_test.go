@@ -7,6 +7,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLatestVersionFlag(t *testing.T) {
@@ -52,9 +53,9 @@ func TestLatestVersionFlag(t *testing.T) {
 			cleanOutput := styling.StripANSI(output)
 
 			if tt.expectedError {
-				assert.Error(t, err, "Expected an error")
+				require.Error(t, err, "Expected an error")
 			} else {
-				assert.NoError(t, err, "Expected no error")
+				require.NoError(t, err, "Expected no error")
 			}
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")

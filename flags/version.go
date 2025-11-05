@@ -2,6 +2,7 @@ package flags
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -38,12 +39,12 @@ func latestRelease(output *strings.Builder) error {
 
 	if flag.Lookup("test.v") == nil {
 		if parsedURL.Scheme != "https" {
-			err := fmt.Errorf("only HTTPS URLs are allowed for security reasons")
+			err := errors.New("only HTTPS URLs are allowed for security reasons")
 			fmt.Fprintln(output, err)
 			return err
 		}
 		if parsedURL.Host != "api.github.com" {
-			err := fmt.Errorf("url host is not allowed")
+			err := errors.New("url host is not allowed")
 			fmt.Fprintln(output, err)
 			return err
 		}
