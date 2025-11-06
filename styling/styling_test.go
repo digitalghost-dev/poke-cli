@@ -97,3 +97,20 @@ func TestColor_Hex(t *testing.T) {
 		t.Errorf("Expected %s, got %s", expected, hex)
 	}
 }
+
+func TestFormTheme(t *testing.T) {
+	theme := FormTheme()
+
+	assert.NotNil(t, theme, "FormTheme should return a non-nil theme")
+	assert.NotNil(t, theme.Focused, "Focused state should be configured")
+	assert.NotNil(t, theme.Blurred, "Blurred state should be configured")
+	assert.NotNil(t, theme.Group, "Group state should be configured")
+
+	focusedButtonStyle := theme.Focused.FocusedButton
+	assert.NotNil(t, focusedButtonStyle, "Focused button style should be set")
+
+	assert.Equal(t, theme.Focused.FocusedButton, theme.Focused.Next, "Next button should use focused button style")
+	assert.NotNil(t, theme.Blurred.Base, "Blurred base should be configured")
+	assert.Equal(t, theme.Focused.Title, theme.Group.Title, "Group title should match focused title")
+	assert.Equal(t, theme.Focused.Description, theme.Group.Description, "Group description should match focused description")
+}
