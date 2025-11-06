@@ -139,7 +139,7 @@ jobs:
           path: packages/
 
       - name: Install Cloudsmith CLI
-        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.3
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.8
         with:
           api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
 
@@ -167,7 +167,7 @@ jobs:
           path: packages/
 
       - name: Install Cloudsmith CLI
-        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.3
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.8
         with:
           api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
 
@@ -195,7 +195,7 @@ jobs:
           path: packages/
 
       - name: Install Cloudsmith CLI
-        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.3
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.8
         with:
           api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
 
