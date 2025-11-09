@@ -6,9 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/table"
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -42,93 +41,29 @@ func CardCommand() (string, error) {
 		return output.String(), err
 	}
 
-	tableGeneration()
-
-	return output.String(), nil
-}
-
-type model struct {
-	quitting       bool
-	table          table.Model
-	selectedOption string
-}
-
-// Init initializes the model
-func (m model) Init() tea.Cmd {
-	return nil
-}
-
-// Update handles user input and updates the model state
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var bubbleCmd tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "esc", "ctrl+c":
-			m.quitting = true
-			return m, tea.Quit
-		case "enter":
-			m.selectedOption = m.table.SelectedRow()[0]
-			return m, tea.Quit
-		}
+	items := []list.Item{
+		item("Mega Evolution"),
+		item("Scarlet & Violet"),
+		item("Sword & Shield"),
 	}
 
-	// Handle other updates (like navigation)
-	m.table, bubbleCmd = m.table.Update(msg)
-	return m, bubbleCmd
-}
+	const listWidth = 20
+	const listHeight = 10
 
-// View renders the current UI
-func (m model) View() string {
-	if m.quitting {
-		return "\n  Goodbye! \n"
-	}
+	l := list.New(items, itemDelegate{}, listWidth, listHeight)
+	l.Title = "First, pick an expansion"
+	l.SetShowStatusBar(false)
+	l.SetFilteringEnabled(true)
+	l.Styles.Title = titleStyle
+	l.Styles.PaginationStyle = paginationStyle
+	l.Styles.HelpStyle = helpStyle
 
-	// Don't render anything if a selection has been made
-	if m.selectedOption != "" {
-		return ""
-	}
+	m := ExpansionModel{list: l}
 
-	// Render the type selection table with instructions
-	return fmt.Sprintf("Select an era\n%s\n%s",
-		styling.TypesTableBorder.Render(m.table.View()),
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)"))
-}
-
-func tableGeneration() {
-	namesList := []string{
-		"Sword & Shield",
-		"Scarlet & Violet",
-	}
-
-	rows := make([]table.Row, len(namesList))
-	for i, n := range namesList {
-		rows[i] = []string{n}
-	}
-
-	t := table.New(
-		table.WithColumns([]table.Column{{Title: "Era", Width: 16}}),
-		table.WithRows(rows),
-		table.WithFocused(true),
-		table.WithHeight(10),
-	)
-
-	s := table.DefaultStyles()
-	s.Header = s.Header.
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00")).
-		BorderBottom(true)
-	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
-		Background(lipgloss.Color("#FFCC00"))
-	t.SetStyles(s)
-
-	m := model{table: t}
-	_, err := tea.NewProgram(m, tea.WithAltScreen()).Run()
-
-	if err != nil {
+	if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
+	return output.String(), nil
 }
