@@ -79,11 +79,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "esc":
 			m.Quitting = true
 			return m, tea.Quit
-		case "enter":
-			return UpdateSelection(msg, m)
 		}
 	}
 
+	if !m.Chosen {
+		return UpdateSelection(msg, m)
+	}
 	return UpdateInput(msg, m)
 }
 
