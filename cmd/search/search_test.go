@@ -3,11 +3,12 @@ package search
 import (
 	"bytes"
 	"fmt"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/digitalghost-dev/poke-cli/styling"
 	"os"
 	"strings"
 	"testing"
+
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/digitalghost-dev/poke-cli/styling"
 
 	"github.com/stretchr/testify/assert"
 )

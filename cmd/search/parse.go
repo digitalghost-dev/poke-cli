@@ -1,8 +1,9 @@
 package search
 
 import (
-	"github.com/digitalghost-dev/poke-cli/connections"
 	"strings"
+
+	"github.com/digitalghost-dev/poke-cli/connections"
 )
 
 type Resource struct {

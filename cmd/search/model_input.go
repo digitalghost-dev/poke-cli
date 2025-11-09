@@ -2,11 +2,12 @@ package search
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"strings"
 )
 
 // UpdateInput handles text input updates.

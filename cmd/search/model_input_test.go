@@ -1,9 +1,10 @@
 package search
 
 import (
+	"testing"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"testing"
 )
 
 func TestUpdateInput(t *testing.T) {

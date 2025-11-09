@@ -3,11 +3,12 @@ package search
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"os"
 )
 
 func SearchCommand() {
