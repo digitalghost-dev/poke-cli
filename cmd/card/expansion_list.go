@@ -46,48 +46,48 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fmt.Fprint(w, fn(str))
 }
 
-type ExpansionModel struct {
-	list     list.Model
-	choice   string
-	quitting bool
+type SeriesModel struct {
+	List     list.Model
+	Choice   string
+	Quitting bool
 }
 
-func (m ExpansionModel) Init() tea.Cmd {
+func (m SeriesModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m ExpansionModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m SeriesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
-			m.quitting = true
+			m.Quitting = true
 			return m, tea.Quit
 		case "enter":
-			i, ok := m.list.SelectedItem().(item)
+			i, ok := m.List.SelectedItem().(item)
 			if ok {
-				m.choice = string(i)
+				m.Choice = string(i)
 			}
 			return m, tea.Quit
 		}
 
 	case tea.WindowSizeMsg:
-		m.list.SetWidth(msg.Width)
+		m.List.SetWidth(msg.Width)
 		return m, nil
 	}
 
 	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
+	m.List, cmd = m.List.Update(msg)
 	return m, cmd
 }
 
-func (m ExpansionModel) View() string {
-	if m.quitting {
+func (m SeriesModel) View() string {
+	if m.Quitting {
 		return "\n  Quitting card search...\n\n"
 	}
-	if m.choice != "" {
-		return quitTextStyle.Render(fmt.Sprintf("%s? Sounds good to me.", m.choice))
+	if m.Choice != "" {
+		return quitTextStyle.Render(fmt.Sprintf("%s? Sounds good to me.", m.Choice))
 	}
 
-	return "\n" + m.list.View()
+	return "\n" + m.List.View()
 }
