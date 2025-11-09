@@ -34,7 +34,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprintf("%d. %s", index+1, i)
+	str := fmt.Sprintf("%s", i)
 
 	fn := itemStyle.Render
 	if index == m.Index() {
@@ -58,16 +58,11 @@ func (m ExpansionModel) Init() tea.Cmd {
 
 func (m ExpansionModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.list.SetWidth(msg.Width)
-		return m, nil
-
 	case tea.KeyMsg:
-		switch keypress := msg.String(); keypress {
-		case "q", "ctrl+c":
+		switch msg.String() {
+		case "ctrl+c", "esc":
 			m.quitting = true
 			return m, tea.Quit
-
 		case "enter":
 			i, ok := m.list.SelectedItem().(item)
 			if ok {
@@ -75,6 +70,10 @@ func (m ExpansionModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, tea.Quit
 		}
+
+	case tea.WindowSizeMsg:
+		m.list.SetWidth(msg.Width)
+		return m, nil
 	}
 
 	var cmd tea.Cmd
@@ -83,6 +82,9 @@ func (m ExpansionModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m ExpansionModel) View() string {
+	if m.quitting {
+		return "\n  Quitting card search...\n\n"
+	}
 	if m.choice != "" {
 		return quitTextStyle.Render(fmt.Sprintf("%s? Sounds good to me.", m.choice))
 	}

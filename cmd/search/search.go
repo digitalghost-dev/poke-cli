@@ -73,17 +73,17 @@ func (m Model) Init() tea.Cmd {
 
 // Update handles keypresses and updates the state.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if msg, ok := msg.(tea.KeyMsg); ok {
-		k := msg.String()
-		if k == "esc" || k == "ctrl+c" {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c", "esc":
 			m.Quitting = true
 			return m, tea.Quit
+		case "enter":
+			return UpdateSelection(msg, m)
 		}
 	}
 
-	if !m.Chosen {
-		return UpdateSelection(msg, m)
-	}
 	return UpdateInput(msg, m)
 }
 
