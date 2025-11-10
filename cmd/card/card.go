@@ -48,19 +48,19 @@ func CardCommand() (string, error) {
 	}
 
 	const listWidth = 20
-	const listHeight = 10
+	const listHeight = 12
 
 	l := list.New(items, itemDelegate{}, listWidth, listHeight)
-	l.Title = "First, pick an expansion"
+	l.Title = "First, pick a series"
 	l.SetShowStatusBar(false)
-	l.SetFilteringEnabled(true)
+	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := ExpansionModel{list: l}
+	m := SeriesModel{List: l}
 
-	if _, err := tea.NewProgram(m, tea.WithAltScreen()).Run(); err != nil {
+	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
