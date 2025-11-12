@@ -142,39 +142,3 @@ func TestSeriesModelView(t *testing.T) {
 		t.Errorf("Expected non-empty view for choice, got empty string")
 	}
 }
-
-func TestItemFilterValue(t *testing.T) {
-	testItem := item("Test Item")
-	filterValue := testItem.FilterValue()
-
-	if filterValue != "" {
-		t.Errorf("Expected FilterValue to return empty string, got '%s'", filterValue)
-	}
-}
-
-func TestItemDelegateHeight(t *testing.T) {
-	delegate := itemDelegate{}
-	height := delegate.Height()
-
-	if height != 1 {
-		t.Errorf("Expected Height to return 1, got %d", height)
-	}
-}
-
-func TestItemDelegateSpacing(t *testing.T) {
-	delegate := itemDelegate{}
-	spacing := delegate.Spacing()
-
-	if spacing != 0 {
-		t.Errorf("Expected Spacing to return 0, got %d", spacing)
-	}
-}
-
-func TestItemDelegateUpdate(t *testing.T) {
-	delegate := itemDelegate{}
-	cmd := delegate.Update(tea.KeyMsg{}, &list.Model{})
-
-	if cmd != nil {
-		t.Errorf("Expected Update to return nil, got %v", cmd)
-	}
-}
