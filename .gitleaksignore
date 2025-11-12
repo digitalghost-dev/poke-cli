@@ -1,1 +1,3 @@
-cmd/card/sets_list.go:generic-api-key:107
+cmd/card/setslist.go:generic-api-key:116
+cmd/card/cardlist.go:generic-api-key:131
+codecov.yml:generic-api-key:2
