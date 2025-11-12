@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -41,28 +40,39 @@ func CardCommand() (string, error) {
 		return output.String(), err
 	}
 
-	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
-	}
-
-	const listWidth = 20
-	const listHeight = 12
-
-	l := list.New(items, itemDelegate{}, listWidth, listHeight)
-	l.Title = "First, pick a series"
-	l.SetShowStatusBar(false)
-	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.PaginationStyle = paginationStyle
-	l.Styles.HelpStyle = helpStyle
-
-	m := SeriesModel{List: l}
-
-	if _, err := tea.NewProgram(m).Run(); err != nil {
+	seriesModel := SeriesList()
+	// Program 1: Series selection
+	finalModel, err := tea.NewProgram(seriesModel).Run()
+	if err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
+	}
+
+	result := finalModel.(SeriesModel)
+
+	if result.SeriesID != "" {
+		// Program 2: Sets selection
+		setsModel := SetsList(result.SeriesID)
+		finalSetsModel, err := tea.NewProgram(setsModel).Run()
+		if err != nil {
+			fmt.Println("Error running sets program:", err)
+			os.Exit(1)
+		}
+
+		setsResult := finalSetsModel.(SetsModel)
+
+		if setsResult.Quitting {
+			return output.String(), nil
+		}
+
+		// Program 3: Cards display
+		if setsResult.SetID != "" {
+			cardsModel := CardsList(setsResult.SetID)
+			if _, err := tea.NewProgram(cardsModel).Run(); err != nil {
+				fmt.Println("Error running cards program:", err)
+				os.Exit(1)
+			}
+		}
 	}
 
 	return output.String(), nil
