@@ -9,6 +9,7 @@ import (
 
 	"github.com/digitalghost-dev/poke-cli/cmd/ability"
 	"github.com/digitalghost-dev/poke-cli/cmd/berry"
+	"github.com/digitalghost-dev/poke-cli/cmd/card"
 	"github.com/digitalghost-dev/poke-cli/cmd/item"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
 	"github.com/digitalghost-dev/poke-cli/cmd/natures"
@@ -71,6 +72,7 @@ func runCLI(args []string) int {
 			"\n\n", styling.StyleBold.Render("COMMANDS:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
 			fmt.Sprintf("\n\t%-15s %s", "berry", "Get details about a berry"),
+			fmt.Sprintf("\n\t%-15s %s", "card", "Get details about a TCG card"),
 			fmt.Sprintf("\n\t%-15s %s", "item", "Get details about an item"),
 			fmt.Sprintf("\n\t%-15s %s", "move", "Get details about a move"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
@@ -107,6 +109,7 @@ func runCLI(args []string) int {
 	commands := map[string]func() int{
 		"ability": utils.HandleCommandOutput(ability.AbilityCommand),
 		"berry":   utils.HandleCommandOutput(berry.BerryCommand),
+		"card":    utils.HandleCommandOutput(card.CardCommand),
 		"item":    utils.HandleCommandOutput(item.ItemCommand),
 		"move":    utils.HandleCommandOutput(move.MoveCommand),
 		"natures": utils.HandleCommandOutput(natures.NaturesCommand),
@@ -147,6 +150,7 @@ func runCLI(args []string) int {
 			styling.StyleBold.Render("\nCommands:"),
 			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
 			fmt.Sprintf("\n\t%-15s %s", "berry", "Get details about a berry"),
+			fmt.Sprintf("\n\t%-15s %s", "card", "Get details about a TCG card"),
 			fmt.Sprintf("\n\t%-15s %s", "item", "Get details about an item"),
 			fmt.Sprintf("\n\t%-15s %s", "move", "Get details about a move"),
 			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
