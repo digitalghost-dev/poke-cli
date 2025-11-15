@@ -19,6 +19,7 @@ type CardsModel struct {
 	Quitting       bool
 	SeriesName     string
 	SelectedOption string
+	priceMap       map[string]string // Maps card name to price
 }
 
 func (m CardsModel) Init() tea.Cmd {
@@ -59,7 +60,12 @@ func (m CardsModel) View() string {
 
 	selectedCard := ""
 	if row := m.Table.SelectedRow(); len(row) > 0 {
-		selectedCard = CardName(row[0]) + "\n---\n" + CardPrice(row[0])
+		cardName := row[0]
+		price := m.priceMap[cardName]
+		if price == "" {
+			price = "Price: Not available"
+		}
+		selectedCard = CardName(cardName) + "\n---\n" + price
 	}
 
 	leftPanel := styling.TypesTableBorder.Render(m.Table.View())
@@ -97,10 +103,12 @@ func CardsList(setID string) CardsModel {
 		log.Fatal(err)
 	}
 
-	// Extract card names and build table rows
+	// Extract card names and build table rows + price map
 	rows := make([]table.Row, len(allCards))
+	priceMap := make(map[string]string)
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
+		priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
 	}
 
 	t := table.New(
@@ -120,7 +128,10 @@ func CardsList(setID string) CardsModel {
 		Background(lipgloss.Color("#FFCC00"))
 	t.SetStyles(s)
 
-	return CardsModel{Table: t}
+	return CardsModel{
+		Table:    t,
+		priceMap: priceMap,
+	}
 }
 
 func CallCardData(url string) ([]byte, error) {
