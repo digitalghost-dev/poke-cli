@@ -59,7 +59,7 @@ func (m CardsModel) View() string {
 
 	selectedCard := ""
 	if row := m.Table.SelectedRow(); len(row) > 0 {
-		selectedCard = CardName(row[0])
+		selectedCard = CardName(row[0]) + "\n---\n" + CardPrice(row[0])
 	}
 
 	leftPanel := styling.TypesTableBorder.Render(m.Table.View())
@@ -80,15 +80,16 @@ func (m CardsModel) View() string {
 }
 
 type cardData struct {
-	Name string `json:"name"`
-	HP   int    `json:"hp"`
+	Name           string  `json:"name"`
+	NumberPlusName string  `json:"number_plus_name"`
+	MarketPrice    float64 `json:"market_price"`
 }
 
 // CardsList creates and returns a new CardsModel with cards from a specific set
 func CardsList(setID string) CardsModel {
 	// Fetch card data from Supabase, filtered by set_id
-	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/cards?set_id=eq.%s&select=name,hp&order=id", setID)
-	body, _ := callCardData(url)
+	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price&order=localId", setID)
+	body, _ := CallCardData(url)
 
 	var allCards []cardData
 	err := json.Unmarshal(body, &allCards)
@@ -99,7 +100,7 @@ func CardsList(setID string) CardsModel {
 	// Extract card names and build table rows
 	rows := make([]table.Row, len(allCards))
 	for i, card := range allCards {
-		rows[i] = []string{card.Name}
+		rows[i] = []string{card.NumberPlusName}
 	}
 
 	t := table.New(
@@ -122,7 +123,7 @@ func CardsList(setID string) CardsModel {
 	return CardsModel{Table: t}
 }
 
-func callCardData(url string) ([]byte, error) {
+func CallCardData(url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatalf("Error creating request: %v", err)
