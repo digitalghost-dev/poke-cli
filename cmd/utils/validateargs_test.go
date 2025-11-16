@@ -1,10 +1,11 @@
 package utils
 
 import (
+	"testing"
+
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestCheckLength(t *testing.T) {
@@ -211,6 +212,45 @@ func TestValidateBerryArgs(t *testing.T) {
 
 	for _, input := range tooManyArgs {
 		err := ValidateBerryArgs(input)
+
+		if err == nil {
+			t.Fatalf("Expected an error for input %v, but got nil", input)
+		}
+
+		strippedErr := styling.StripANSI(err.Error())
+		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
+	}
+}
+
+// TestValidateCardArgs tests the ValidateCardArgs function
+func TestValidateCardArgs(t *testing.T) {
+	validInputs := [][]string{
+		{"poke-cli", "card"},
+		{"poke-cli", "card", "--help"},
+	}
+
+	for _, input := range validInputs {
+		err := ValidateCardArgs(input)
+		require.NoError(t, err, "Expected no error for valid input")
+	}
+
+	invalidInputs := [][]string{
+		{"poke-cli", "card", "scarlet"},
+	}
+
+	for _, input := range invalidInputs {
+		err := ValidateCardArgs(input)
+		require.Error(t, err, "Expected error for invalid input")
+	}
+
+	tooManyArgs := [][]string{
+		{"poke-cli", "card", "scarlet", "violet"},
+	}
+
+	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
+
+	for _, input := range tooManyArgs {
+		err := ValidateCardArgs(input)
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
