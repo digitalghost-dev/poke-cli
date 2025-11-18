@@ -10,6 +10,22 @@ from termcolor import colored
 SET_PRODUCT_MATCHING = {
     "sv01": "22873",
     "sv02": "23120",
+    "sv03": "23228",
+    "sv03.5": "23237",
+    "sv04": "23286",
+    "sv04.5": "23353",
+    "sv05": "23381",
+    "sv06": "23473",
+    "sv06.5": "23529",
+    "sv07": "23537",
+    "sv08": "23651",
+    "sv08.5": "23821",
+    "sv09": "24073",
+    "sv10": "24269",
+    "sv10.5b": "24325",
+    "sv10.5w": "24326",
+    "me01": "24380",
+    "me02": "24448"
 }
 
 
@@ -49,16 +65,17 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
     product_id = SET_PRODUCT_MATCHING[set_number]
 
     # Fetch product data
-    products_url = (f"https://tcgcsv.com/tcgplayer/3/{product_id}/products")
+    products_url = f"https://tcgcsv.com/tcgplayer/3/{product_id}/products"
     products_data = requests.get(products_url, timeout=30).json()
 
     # Fetch pricing data
-    prices_url = (f"https://tcgcsv.com/tcgplayer/3/{product_id}/prices")
+    prices_url = f"https://tcgcsv.com/tcgplayer/3/{product_id}/prices"
     prices_data = requests.get(prices_url, timeout=30).json()
 
     price_dict = {
         price["productId"]: price.get("marketPrice")
         for price in prices_data.get("results", [])
+        if price.get("subTypeName") != "Reverse Holofoil"
     }
 
     cards_data = []
