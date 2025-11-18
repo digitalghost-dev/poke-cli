@@ -4,6 +4,7 @@
         WITH cards_cte AS (
             SELECT
                 set_id,
+                image,
                 name,
                 "localId",
                 "set_cardCount_official",
@@ -25,6 +26,7 @@
             c.set_id,
             c.name,
             CONCAT(p.card_number, ' - ', c.name) AS number_plus_name,
+            CONCAT(c.image, '/high.png') AS image_url,
             c.set_name,
             c."localId",
             p."market_price",
