@@ -19,23 +19,26 @@ type CardsModel struct {
 	Quitting       bool
 	SeriesName     string
 	SelectedOption string
-	priceMap       map[string]string // Maps card name to price
+	PriceMap       map[string]string
+	ViewImage      bool
+	ImageMap       map[string]string
 }
 
 func (m CardsModel) Init() tea.Cmd {
 	return nil
 }
 
-// Update handles user input and updates the model state
 func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var bubbleCmd tea.Cmd
 
-	// TODO: update to match card/search command method
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc", "ctrl+c":
 			m.Quitting = true
+			return m, tea.Quit
+		case " ":
+			m.ViewImage = true
 			return m, tea.Quit
 		}
 	}
@@ -61,7 +64,7 @@ func (m CardsModel) View() string {
 	selectedCard := ""
 	if row := m.Table.SelectedRow(); len(row) > 0 {
 		cardName := row[0]
-		price := m.priceMap[cardName]
+		price := m.PriceMap[cardName]
 		if price == "" {
 			price = "Price: Not available"
 		}
@@ -89,12 +92,13 @@ type cardData struct {
 	Name           string  `json:"name"`
 	NumberPlusName string  `json:"number_plus_name"`
 	MarketPrice    float64 `json:"market_price"`
+	ImageURL       string  `json:"image_url"`
 }
 
 // CardsList creates and returns a new CardsModel with cards from a specific set
 func CardsList(setID string) CardsModel {
 	// Fetch card data from Supabase, filtered by set_id
-	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price&order=localId", setID)
+	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url&order=localId", setID)
 	body, _ := CallCardData(url)
 
 	var allCards []cardData
@@ -106,9 +110,11 @@ func CardsList(setID string) CardsModel {
 	// Extract card names and build table rows + price map
 	rows := make([]table.Row, len(allCards))
 	priceMap := make(map[string]string)
+	imageMap := make(map[string]string)
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
 		priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
+		imageMap[card.NumberPlusName] = card.ImageURL
 	}
 
 	t := table.New(
@@ -130,7 +136,8 @@ func CardsList(setID string) CardsModel {
 
 	return CardsModel{
 		Table:    t,
-		priceMap: priceMap,
+		PriceMap: priceMap,
+		ImageMap: imageMap,
 	}
 }
 
