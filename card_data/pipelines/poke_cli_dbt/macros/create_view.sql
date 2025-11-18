@@ -8,19 +8,19 @@
                 name,
                 "localId",
                 "set_cardCount_official",
-                CONCAT(name, ' - ', "localId", '/', "set_cardCount_official") AS card_combined_name,
+                CONCAT(name, ' - ', "localId", '/', LPAD("set_cardCount_official"::text, 3, '0')) AS card_combined_name,
                 set_name
             FROM public.cards
         ),
 
-             cards_pricing_cte AS (
-                 SELECT
-                     product_id,
-                     market_price,
-                     CONCAT(name, ' - ', card_number) AS card_combined_name,
-                     card_number
-                 FROM public.pricing_data
-             )
+         cards_pricing_cte AS (
+             SELECT
+                 product_id,
+                 market_price,
+                 CONCAT(name, ' - ', card_number) AS card_combined_name,
+                 card_number
+             FROM public.pricing_data
+         )
 
         SELECT
             c.set_id,
