@@ -90,10 +90,10 @@ def extract_set_data() -> pl.DataFrame:
 @dg.asset(kinds={"API"}, name="extract_card_url_from_set_data")
 def extract_card_url_from_set() -> list:
     urls = [
-        "https://api.tcgdex.net/v2/en/sets/swsh3"
+        "https://api.tcgdex.net/v2/en/sets/me02"
     ]
 
-    all_card_urls = []  # Initialize empty list to collect all URLs
+    all_card_urls = []
 
     for url in urls:
         try:
@@ -103,7 +103,7 @@ def extract_card_url_from_set() -> list:
             data = r.json()["cards"]
 
             set_card_urls = [f"https://api.tcgdex.net/v2/en/cards/{card['id']}" for card in data]
-            all_card_urls.extend(set_card_urls)  # Add all URLs from this set
+            all_card_urls.extend(set_card_urls)
 
             time.sleep(0.1)
 
