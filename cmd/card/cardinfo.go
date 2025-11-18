@@ -1,32 +1,54 @@
 package card
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
-	"net/url"
+	"image"
+	"net/http"
+	"os"
+
+	"github.com/charmbracelet/x/ansi/sixel"
+	"golang.org/x/image/draw"
 )
 
 func CardName(cardName string) string {
 	return cardName
 }
 
-func CardPrice(cardName string) string {
-	// URL encode the card name (spaces become %20, / becomes %2F, etc.)
-	encodedName := url.QueryEscape(cardName)
+func resizeImage(img image.Image, width, height int) image.Image {
+	dst := image.NewRGBA(image.Rect(0, 0, width, height))
+	draw.CatmullRom.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
+	return dst
+}
 
-	apiURL := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?select=market_price&number_plus_name=eq.%s", encodedName)
-	body, err := CallCardData(apiURL)
+func CardImage(imageURL string) string {
+	resp, err := http.Get(imageURL)
 	if err != nil {
-		return "Price: Not available"
+		fmt.Fprintf(os.Stderr, "failed to fetch image: %v\n", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Fprintf(os.Stderr, "non-200 response: %d\n", resp.StatusCode)
+		os.Exit(1)
 	}
 
-	var results []struct {
-		MarketPrice float64 `json:"market_price"`
-	}
-	err = json.Unmarshal(body, &results)
-	if err != nil || len(results) == 0 {
-		return "Price: Not available"
+	img, _, err := image.Decode(resp.Body)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to decode image: %v\n", err)
+		os.Exit(1)
 	}
 
-	return fmt.Sprintf("Price: $%.2f", results[0].MarketPrice)
+	resized := resizeImage(img, 500, 675)
+
+	// Build Sixel string to return
+	var buf bytes.Buffer
+	buf.WriteString("\x1bPq")
+	if err := new(sixel.Encoder).Encode(&buf, resized); err != nil {
+		return fmt.Sprintf("Image not available: %v", err)
+	}
+	buf.WriteString("\x1b\\")
+
+	return buf.String()
 }
