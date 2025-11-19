@@ -84,7 +84,10 @@ func CardCommand() (string, error) {
 					// Launch image viewer
 					imageURL := cardsResult.ImageMap[cardsResult.SelectedOption]
 					imageModel := ImageRenderer(cardsResult.SelectedOption, imageURL)
-					tea.NewProgram(imageModel, tea.WithAltScreen()).Run()
+					_, err := tea.NewProgram(imageModel, tea.WithAltScreen()).Run()
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Warning: image viewer error: %v\n", err)
+					}
 
 					// Re-launch cards with same state
 					cardsResult.ViewImage = false

@@ -116,7 +116,10 @@ func TestCardImage_Success(t *testing.T) {
 
 		w.Header().Set("Content-Type", "image/png")
 		w.WriteHeader(http.StatusOK)
-		png.Encode(w, img)
+		err := png.Encode(w, img)
+		if err != nil {
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -146,7 +149,10 @@ func TestCardImage_EncodingError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/png")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("not a valid PNG"))
+		_, err := w.Write([]byte("not a valid PNG"))
+		if err != nil {
+			return
+		}
 	}))
 	defer server.Close()
 

@@ -34,7 +34,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprintf("%s", i)
+	str := string(i)
 
 	fn := itemStyle.Render
 	if index == m.Index() {
