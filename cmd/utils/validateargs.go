@@ -61,7 +61,7 @@ func ValidateCardArgs(args []string) error {
 		return err
 	}
 
-	if err := checkNoOtherOptions(args, 3, "<berry>"); err != nil {
+	if err := checkNoOtherOptions(args, 3, "<card>"); err != nil {
 		return err
 	}
 

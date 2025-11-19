@@ -36,7 +36,10 @@ func TestSetsModel_Update_EscKey(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyEsc}
 	newModel, cmd := model.Update(msg)
 
-	resultModel := newModel.(SetsModel)
+	resultModel, ok := newModel.(SetsModel)
+	if !ok {
+		t.Fatalf("expected SetsModel, got %T", newModel)
+	}
 
 	if !resultModel.Quitting {
 		t.Error("Quitting should be set to true when ESC is pressed")
@@ -62,7 +65,10 @@ func TestSetsModel_Update_CtrlC(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyCtrlC}
 	newModel, cmd := model.Update(msg)
 
-	resultModel := newModel.(SetsModel)
+	resultModel, ok := newModel.(SetsModel)
+	if !ok {
+		t.Fatalf("expected SetsModel, got %T", newModel)
+	}
 
 	if !resultModel.Quitting {
 		t.Error("Quitting should be set to true when Ctrl+C is pressed")
@@ -87,7 +93,10 @@ func TestSetsModel_Update_WindowSizeMsg(t *testing.T) {
 	msg := tea.WindowSizeMsg{Width: 100, Height: 50}
 	newModel, cmd := model.Update(msg)
 
-	resultModel := newModel.(SetsModel)
+	resultModel, ok := newModel.(SetsModel)
+	if !ok {
+		t.Fatalf("expected SetsModel, got %T", newModel)
+	}
 
 	if cmd != nil {
 		t.Error("WindowSizeMsg should not return a command")
