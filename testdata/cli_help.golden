@@ -14,6 +14,7 @@
 │ COMMANDS:                                                     │
 │    ability         Get details about an ability               │
 │    berry           Get details about a berry                  │
+│    card            Get details about a TCG card               │
 │    item            Get details about an item                  │
 │    move            Get details about a move                   │
 │    natures         Get details about all natures              │

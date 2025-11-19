@@ -35,7 +35,7 @@ func TestCardName(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := CardName(tt.input)
+			result := tt.input
 			if result != tt.expected {
 				t.Errorf("CardName() = %v, want %v", result, tt.expected)
 			}
