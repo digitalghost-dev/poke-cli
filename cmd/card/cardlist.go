@@ -74,7 +74,7 @@ func (m CardsModel) View() string {
 	leftPanel := styling.TypesTableBorder.Render(m.Table.View())
 
 	rightPanel := lipgloss.NewStyle().
-		Width(50).
+		Width(40).
 		Height(29).
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("#FFCC00")).
@@ -97,7 +97,6 @@ type cardData struct {
 
 // CardsList creates and returns a new CardsModel with cards from a specific set
 func CardsList(setID string) CardsModel {
-	// Fetch card data from Supabase, filtered by set_id
 	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url&order=localId", setID)
 	body, _ := CallCardData(url)
 
@@ -118,7 +117,7 @@ func CardsList(setID string) CardsModel {
 	}
 
 	t := table.New(
-		table.WithColumns([]table.Column{{Title: "Card Name", Width: 40}}),
+		table.WithColumns([]table.Column{{Title: "Card Name", Width: 35}}),
 		table.WithRows(rows),
 		table.WithFocused(true),
 		table.WithHeight(28),
