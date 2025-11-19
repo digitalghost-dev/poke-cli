@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"net/http"
-	"os"
 
 	"github.com/charmbracelet/x/ansi/sixel"
 	"golang.org/x/image/draw"
@@ -21,23 +20,20 @@ func resizeImage(img image.Image, width, height int) image.Image {
 	return dst
 }
 
-func CardImage(imageURL string) string {
+func CardImage(imageURL string) (string, error) {
 	resp, err := http.Get(imageURL)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to fetch image: %v\n", err)
-		os.Exit(1)
+		return "", fmt.Errorf("failed to fetch image: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Fprintf(os.Stderr, "non-200 response: %d\n", resp.StatusCode)
-		os.Exit(1)
+		return "", fmt.Errorf("non-200 response: %d\n", resp.StatusCode)
 	}
 
 	img, _, err := image.Decode(resp.Body)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to decode image: %v\n", err)
-		os.Exit(1)
+		return "", fmt.Errorf("failed to decode image: %v\n", err)
 	}
 
 	resized := resizeImage(img, 500, 675)
@@ -46,9 +42,9 @@ func CardImage(imageURL string) string {
 	var buf bytes.Buffer
 	buf.WriteString("\x1bPq")
 	if err := new(sixel.Encoder).Encode(&buf, resized); err != nil {
-		return fmt.Sprintf("Image not available: %v", err)
+		return "", fmt.Errorf("failed to encode sixel: %w", err)
 	}
 	buf.WriteString("\x1b\\")
 
-	return buf.String()
+	return buf.String(), nil
 }
