@@ -14,14 +14,15 @@ import (
 )
 
 type CardsModel struct {
-	Table          table.Model
 	Choice         string
-	Quitting       bool
-	SeriesName     string
-	SelectedOption string
-	PriceMap       map[string]string
-	ViewImage      bool
+	IllustratorMap map[string]string
 	ImageMap       map[string]string
+	PriceMap       map[string]string
+	Quitting       bool
+	SelectedOption string
+	SeriesName     string
+	Table          table.Model
+	ViewImage      bool
 }
 
 func (m CardsModel) Init() tea.Cmd {
@@ -68,7 +69,8 @@ func (m CardsModel) View() string {
 		if price == "" {
 			price = "Price: Not available"
 		}
-		selectedCard = CardName(cardName) + "\n---\n" + price
+		illustrator := m.IllustratorMap[cardName]
+		selectedCard = cardName + "\n---\n" + price + "\n---\n" + illustrator
 	}
 
 	leftPanel := styling.TypesTableBorder.Render(m.Table.View())
@@ -89,15 +91,16 @@ func (m CardsModel) View() string {
 }
 
 type cardData struct {
+	Illustrator    string  `json:"illustrator"`
+	ImageURL       string  `json:"image_url"`
+	MarketPrice    float64 `json:"market_price"`
 	Name           string  `json:"name"`
 	NumberPlusName string  `json:"number_plus_name"`
-	MarketPrice    float64 `json:"market_price"`
-	ImageURL       string  `json:"image_url"`
 }
 
 // CardsList creates and returns a new CardsModel with cards from a specific set
 func CardsList(setID string) CardsModel {
-	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url&order=localId", setID)
+	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url,illustrator&order=localId", setID)
 	body, _ := CallCardData(url)
 
 	var allCards []cardData
@@ -110,9 +113,11 @@ func CardsList(setID string) CardsModel {
 	rows := make([]table.Row, len(allCards))
 	priceMap := make(map[string]string)
 	imageMap := make(map[string]string)
+	illustratorMap := make(map[string]string)
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
 		priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
+		illustratorMap[card.NumberPlusName] = fmt.Sprintf("Illustrator: %s", card.Illustrator)
 		imageMap[card.NumberPlusName] = card.ImageURL
 	}
 
@@ -134,9 +139,10 @@ func CardsList(setID string) CardsModel {
 	t.SetStyles(s)
 
 	return CardsModel{
-		Table:    t,
-		PriceMap: priceMap,
-		ImageMap: imageMap,
+		IllustratorMap: illustratorMap,
+		ImageMap:       imageMap,
+		PriceMap:       priceMap,
+		Table:          t,
 	}
 }
 
