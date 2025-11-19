@@ -55,7 +55,7 @@ func (m SetsModel) View() string {
 		return "\n  Quitting card search...\n\n"
 	}
 	if m.Choice != "" {
-		return quitTextStyle.Render(fmt.Sprintf("Set selected: %s", m.Choice))
+		return quitTextStyle.Render("Set selected:", m.Choice)
 	}
 
 	return "\n" + m.List.View()

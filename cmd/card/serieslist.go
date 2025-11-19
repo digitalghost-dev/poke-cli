@@ -1,8 +1,6 @@
 package card
 
 import (
-	"fmt"
-
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -55,7 +53,7 @@ func (m SeriesModel) View() string {
 		return "\n  Quitting card search...\n\n"
 	}
 	if m.Choice != "" {
-		return quitTextStyle.Render(fmt.Sprintf("Series selected: %s", m.Choice))
+		return quitTextStyle.Render("Series selected:", m.Choice)
 	}
 
 	return "\n" + m.List.View()

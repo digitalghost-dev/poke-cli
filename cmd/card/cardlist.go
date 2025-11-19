@@ -119,7 +119,7 @@ func CardsList(setID string) (CardsModel, error) {
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
 		priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
-		illustratorMap[card.NumberPlusName] = fmt.Sprintf("Illustrator: %s", card.Illustrator)
+		illustratorMap[card.NumberPlusName] = "Illustrator: " + card.Illustrator
 		imageMap[card.NumberPlusName] = card.ImageURL
 	}
 
