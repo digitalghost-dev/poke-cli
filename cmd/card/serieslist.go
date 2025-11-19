@@ -55,7 +55,7 @@ func (m SeriesModel) View() string {
 		return "\n  Quitting card search...\n\n"
 	}
 	if m.Choice != "" {
-		return quitTextStyle.Render(fmt.Sprintf("%s? Sounds good to me.", m.Choice))
+		return quitTextStyle.Render(fmt.Sprintf("Series selected: %s", m.Choice))
 	}
 
 	return "\n" + m.List.View()
