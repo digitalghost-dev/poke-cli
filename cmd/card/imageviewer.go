@@ -29,7 +29,7 @@ func (m ImageModel) View() string {
 }
 
 func ImageRenderer(cardName string, imageURL string) ImageModel {
-	imageData := CardImage(imageURL)
+	imageData, _ := CardImage(imageURL)
 
 	return ImageModel{
 		CardName: cardName,
