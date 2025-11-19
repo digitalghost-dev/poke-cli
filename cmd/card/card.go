@@ -68,9 +68,27 @@ func CardCommand() (string, error) {
 		// Program 3: Cards display
 		if setsResult.SetID != "" {
 			cardsModel := CardsList(setsResult.SetID)
-			if _, err := tea.NewProgram(cardsModel).Run(); err != nil {
-				fmt.Println("Error running cards program:", err)
-				os.Exit(1)
+
+			for {
+				finalCardsModel, err := tea.NewProgram(cardsModel, tea.WithAltScreen()).Run()
+				if err != nil {
+					return "", fmt.Errorf("error running cards program: %w", err)
+				}
+
+				cardsResult := finalCardsModel.(CardsModel)
+
+				if cardsResult.ViewImage {
+					// Launch image viewer
+					imageURL := cardsResult.ImageMap[cardsResult.SelectedOption]
+					imageModel := ImageRenderer(cardsResult.SelectedOption, imageURL)
+					tea.NewProgram(imageModel, tea.WithAltScreen()).Run()
+
+					// Re-launch cards with same state
+					cardsResult.ViewImage = false
+					cardsModel = cardsResult
+				} else {
+					break
+				}
 			}
 		}
 	}
