@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/charmbracelet/bubbles/table"
@@ -99,14 +98,17 @@ type cardData struct {
 }
 
 // CardsList creates and returns a new CardsModel with cards from a specific set
-func CardsList(setID string) CardsModel {
+func CardsList(setID string) (CardsModel, error) {
 	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url,illustrator&order=localId", setID)
-	body, _ := CallCardData(url)
+	body, err := CallCardData(url)
+	if err != nil {
+		return CardsModel{}, fmt.Errorf("failed to fetch card data: %w", err)
+	}
 
 	var allCards []cardData
-	err := json.Unmarshal(body, &allCards)
+	err = json.Unmarshal(body, &allCards)
 	if err != nil {
-		log.Fatal(err)
+		return CardsModel{}, fmt.Errorf("failed to unmarshal card data: %w", err)
 	}
 
 	// Extract card names and build table rows + price map
@@ -143,13 +145,13 @@ func CardsList(setID string) CardsModel {
 		ImageMap:       imageMap,
 		PriceMap:       priceMap,
 		Table:          t,
-	}
+	}, nil
 }
 
 func CallCardData(url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatalf("Error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.Header.Add("apikey", "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j")
@@ -159,13 +161,13 @@ func CallCardData(url string) ([]byte, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Error making GET request: %v", err)
+		return nil, fmt.Errorf("error making GET request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Error reading response body: %v", err)
+		return nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
 	return body, nil

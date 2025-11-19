@@ -67,7 +67,10 @@ func CardCommand() (string, error) {
 
 		// Program 3: Cards display
 		if setsResult.SetID != "" {
-			cardsModel := CardsList(setsResult.SetID)
+			cardsModel, err := CardsList(setsResult.SetID)
+			if err != nil {
+				return "", fmt.Errorf("error loading cards: %w", err)
+			}
 
 			for {
 				finalCardsModel, err := tea.NewProgram(cardsModel, tea.WithAltScreen()).Run()
