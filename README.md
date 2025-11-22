@@ -6,9 +6,6 @@
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
-    <img src="https://img.shields.io/coderabbit/prs/github/digitalghost-dev/poke-cli?style=flat-square&logo=coderabbit&logoColor=FF570A&labelColor=F6F6F1&color=FF570A" alt="coderabbit-review-count-badge">
-</div>
-<div align="center">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/go_test.yml?style=flat-square&logo=go&logoColor=00ADD8&label=Tests&labelColor=EEE&color=00ADD8" alt="tests-label">
     <img src="https://img.shields.io/github/go-mod/go-version/digitalghost-dev/poke-cli?style=flat-square&logo=Go&labelColor=EEE&color=00ADD8" alt="go-version"/>
     <img src="https://img.shields.io/codecov/c/github/digitalghost-dev/poke-cli?token=05GBSAOQIT&style=flat-square&logo=codecov&logoColor=00ADD8&labelColor=EEE&color=00ADD8" alt="codecov"/>
@@ -18,17 +15,21 @@
 `poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing data about Pokémon! This is my first Go project.
 View the [documentation](https://docs.poke-cli.com)!
 
-The architecture behind how the tool works is straight forward:
-1. Each command indicates which [API](https://pokeapi.co/) endpoint to use.
-2. Flags provide more information and can be stacked together or used individually.
-3. Each command has a `-h | --help` flag that is built-in with Golang's `flag` package.
-
-View future plans in the [Roadmap](#roadmap) section.
+* [Demo](#demo)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Roadmap](#roadmap)
+* [Tested Terminals](#tested-terminals)
 
 ---
 ## Demo
-![demo](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.6.0.gif)
+### Video Game Data
 
+![demo-vg](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.6.0.gif)
+
+### Trading Card Game Data
+
+![demo-tcg](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/poke-cli-v1.8.0.gif)
 ---
 ## Installation
 
@@ -162,6 +163,7 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │ COMMANDS:                                                     │
 │    ability         Get details about an ability               │
 │    berry           Get details about a berry                  │
+│    card            Get details about a TCG card               │
 │    item            Get details about an item                  │
 │    move            Get details about a move                   │
 │    natures         Get details about all natures              │
@@ -187,6 +189,12 @@ Below is a list of the planned/completed commands and flags:
 - [x] `ability`: get data about an ability.
     - [x] `-p | --pokemon`: display Pokémon that learn this ability.
 - [x] `berry`: get data about a berry.
+- [ ] `card`: get data about a TCG card.
+    - [x] add mega evolution data
+    - [x] add scarlet & violet data
+    - [ ] add sword & shield data
+    - [ ] add sun & moon data
+    - [ ] add x & y data
 - [x] `item`: get data about an item.
 - [x] `move`: get data about a move.
     - [ ] `-p | --pokemon`: display Pokémon that learn this move.
@@ -208,15 +216,16 @@ Below is a list of the planned/completed commands and flags:
 
 ---
 ## Tested Terminals
-| Terminal          |            OS             | Status | Issues                                                                          |
-|-------------------|:-------------------------:|:------:|---------------------------------------------------------------------------------|
-| Alacritty         | macOS, Ubuntu,<br>Windows |   ✅    | None                                                                            |
-| Ghostty           |           macOS           |   ✅    | None                                                                            |
-| HyperJS           |           macOS           |   ✅    | None                                                                            |
-| iTerm2            |           macOS           |   ✅    | None                                                                            |
-| Built-in Terminal | Ubuntu, Debian,<br>Fedora |   ✅    | None                                                                            |
-| Built-in Terminal |          Alpine           |   ⚠️   | Some colors aren't supported.<br>`pokemon <name> --image=xx` flag pixel issues. |             
-| Built-in Terminal |           macOS           |   ⚠️   | `pokemon <name> --image=xx` flag pixel issues.                                  |
-| Tabby             |          Ubuntu           |   ✅    | None                                                                            |
-| WezTerm           |      macOS, Windows       |   ✅    | None                                                                            |
-| Built-in Terminal |          Windows          |   ✅    | None                                                                            |
+| Terminal          |            OS             | Status | Issues                                                                                        |
+|-------------------|:-------------------------:|:------:|-----------------------------------------------------------------------------------------------|
+| Alacritty         | macOS, Ubuntu,<br>Windows |   🟡   | - Does not support sixel for TCG images.                                                      |
+| Ghostty           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                      |
+| HyperJS           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                      |
+| iTerm2            |           macOS           |   ✅    | - None                                                                                        |
+| Built-in Terminal | Ubuntu, Debian,<br>Fedora |   ✅    | - None                                                                                        |
+| Built-in Terminal |          Alpine           |   🟡   | - Some colors aren't supported.<br>- `pokemon <name> --image=xx` flag pixel issues.           |             
+| Built-in Terminal |           macOS           |   🟠   | - `pokemon <name> --image=xx` flag pixel issues.<br> - Does not support sixel for TCG images. |
+| Foot              |          Ubuntu           |   🟢   | - None                                                                                        |
+| Tabby             |          Ubuntu           |   🟢   | - None                                                                                        |
+| WezTerm           |      macOS, Windows       |   🟢   | - None                                                                                        |
+| Built-in Terminal |          Windows          |   🟢   | - None                                                                                        |
