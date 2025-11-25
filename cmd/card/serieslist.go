@@ -63,7 +63,6 @@ func SeriesList() SeriesModel {
 	items := []list.Item{
 		item("Mega Evolution"),
 		item("Scarlet & Violet"),
-		item("Sword & Shield"),
 	}
 
 	const listWidth = 20
