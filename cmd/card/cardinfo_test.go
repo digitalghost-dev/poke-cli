@@ -10,39 +10,6 @@ import (
 	"testing"
 )
 
-func TestCardName(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{
-			name:     "simple card name",
-			input:    "Pikachu",
-			expected: "Pikachu",
-		},
-		{
-			name:     "card with number",
-			input:    "001/198 - Pineco",
-			expected: "001/198 - Pineco",
-		},
-		{
-			name:     "empty string",
-			input:    "",
-			expected: "",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := tt.input
-			if result != tt.expected {
-				t.Errorf("CardName() = %v, want %v", result, tt.expected)
-			}
-		})
-	}
-}
-
 func TestResizeImage(t *testing.T) {
 	// Create a simple test image (100x100 red square)
 	testImg := image.NewRGBA(image.Rect(0, 0, 100, 100))
