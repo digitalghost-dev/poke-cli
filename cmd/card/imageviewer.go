@@ -7,6 +7,7 @@ import (
 type ImageModel struct {
 	CardName string
 	ImageURL string
+	Error    error
 }
 
 func (m ImageModel) Init() tea.Cmd {
@@ -29,10 +30,11 @@ func (m ImageModel) View() string {
 }
 
 func ImageRenderer(cardName string, imageURL string) ImageModel {
-	imageData, _ := CardImage(imageURL)
+	imageData, err := CardImage(imageURL)
 
 	return ImageModel{
 		CardName: cardName,
 		ImageURL: imageData,
+		Error:    err,
 	}
 }
