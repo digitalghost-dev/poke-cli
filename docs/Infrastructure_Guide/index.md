@@ -4,7 +4,7 @@ weight: 1
 
 # 1 // Overview
 
-This section serves as a knowledge base for the project’s backend infrastructure. It was created for a few purposes:
+This section serves as a knowledge base for the project’s backend data infrastructure. It was created for a few purposes:
 
 1.	To document how I built everything, so I can easily reference it later.
 2.	To help others learn how to build something similar.
@@ -20,6 +20,19 @@ The VGC data simply calls one API.
     All of the commands ran for this project in the terminal are based on macOS (i.e., Homebrew to install packages). 
     If building on a different operating system, please find the equivalent command. Links will be provided for install 
     guides for all operating systems when possible.
+
+## Data Infrastructure Diagram
+![data_infrastructure_diagram](../assets/data_infrastructure_diagram.svg)
+
+1. TCGPlayer pricing data and TCGDex card data are called and processed through a data pipeline orchestrated by Dagster
+and hosted on AWS.
+2. When the pipeline starts, Pydantic validates the incoming API data against a pre-defined schema, ensuring the data 
+types match the expected structure.
+3. Polars is used to create DataFrames.
+4. The data is loaded into a Supabase staging schema.
+5. Soda data quality checks are performed.
+6. `dbt` runs tests and builds the final tables in a Supabase production schema.
+7. Users are then able to query the `pokeapi.co` or `supabase` APIs for either video game or trading card data, respectively.
 
 ## Tools & Services
 
