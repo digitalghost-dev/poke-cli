@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -72,12 +71,16 @@ type setData struct {
 	Symbol            string `json:"symbol"`
 }
 
-func SetsList(seriesID string) SetsModel {
-	body, _ := callSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
-	var allSets []setData
-	err := json.Unmarshal(body, &allSets)
+func SetsList(seriesID string) (SetsModel, error) {
+	body, err := callSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
 	if err != nil {
-		log.Fatal(err)
+		return SetsModel{}, fmt.Errorf("error getting sets data: %v", err)
+	}
+	var allSets []setData
+
+	err = json.Unmarshal(body, &allSets)
+	if err != nil {
+		return SetsModel{}, fmt.Errorf("error parsing sets data: %v", err)
 	}
 
 	// Filter sets by series_id and build ID map
@@ -102,10 +105,11 @@ func SetsList(seriesID string) SetsModel {
 	l.Styles.HelpStyle = helpStyle
 
 	return SetsModel{
-		List:       l,
-		SeriesName: seriesID,
-		setsIDMap:  setsIDMap,
-	}
+			List:       l,
+			SeriesName: seriesID,
+			setsIDMap:  setsIDMap,
+		},
+		nil
 }
 
 func callSetsData(url string) ([]byte, error) {
