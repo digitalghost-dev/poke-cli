@@ -54,7 +54,12 @@ func CardCommand() (string, error) {
 
 	if result.SeriesID != "" {
 		// Program 2: Sets selection
-		setsModel, _ := SetsList(result.SeriesID)
+		setsModel, err := SetsList(result.SeriesID)
+
+		if err != nil {
+			return "", fmt.Errorf("error loading sets: %w", err)
+		}
+
 		finalSetsModel, err := tea.NewProgram(setsModel).Run()
 		if err != nil {
 			return "", fmt.Errorf("error running sets selection program: %w", err)
