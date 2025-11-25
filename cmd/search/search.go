@@ -3,11 +3,12 @@ package search
 import (
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"os"
 )
 
 func SearchCommand() {
@@ -72,9 +73,10 @@ func (m Model) Init() tea.Cmd {
 
 // Update handles keypresses and updates the state.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if msg, ok := msg.(tea.KeyMsg); ok {
-		k := msg.String()
-		if k == "esc" || k == "ctrl+c" {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c", "esc":
 			m.Quitting = true
 			return m, tea.Quit
 		}

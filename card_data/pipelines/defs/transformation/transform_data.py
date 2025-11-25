@@ -16,7 +16,7 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "series": "quality_checks_series",
                 "sets": "load_set_data",
                 "cards": "load_card_data",
-                "pricing_data": "load_pricing_data",
+                "pricing_data": "data_quality_checks_on_pricing",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])

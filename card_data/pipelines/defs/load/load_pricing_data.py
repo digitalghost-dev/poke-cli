@@ -1,3 +1,6 @@
+import subprocess
+from pathlib import Path
+
 import dagster as dg
 import polars as pl
 from dagster import RetryPolicy, Backoff
@@ -23,3 +26,36 @@ def load_pricing_data(build_pricing_dataframe: pl.DataFrame) -> None:
     except OperationalError as e:
         print(colored(" ✖", "red"), "Connection error in load_pricing_data():", e)
         raise
+
+
+@dg.asset(
+    deps=[load_pricing_data],
+    kinds={"Soda"},
+    name="data_quality_checks_on_pricing",
+)
+def data_quality_checks_on_pricing() -> None:
+    current_file_dir = Path(__file__).parent
+    print(f"Setting cwd to: {current_file_dir}")
+
+    result = subprocess.run(
+        [
+            "soda",
+            "scan",
+            "-d",
+            "supabase",
+            "-c",
+            "../../soda/configuration.yml",
+            "../../soda/checks_pricing.yml",
+        ],
+        capture_output=True,
+        text=True,
+        cwd=current_file_dir,
+    )
+
+    if result.stdout:
+        print(result.stdout)
+    if result.stderr:
+        print(result.stderr)
+
+    if result.returncode != 0:
+        raise Exception(f"Soda data quality checks failed with return code {result.returncode}")

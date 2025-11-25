@@ -42,12 +42,26 @@ func ValidateAbilityArgs(args []string) error {
 	return nil
 }
 
+// ValidateBerryArgs validates the command line arguments
 func ValidateBerryArgs(args []string) error {
 	if err := checkLength(args, 3); err != nil {
 		return err
 	}
 
 	if err := checkNoOtherOptions(args, 3, "<berry>"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ValidateCardArgs validates the command line arguments
+func ValidateCardArgs(args []string) error {
+	if err := checkLength(args, 3); err != nil {
+		return err
+	}
+
+	if err := checkNoOtherOptions(args, 3, "<card>"); err != nil {
 		return err
 	}
 
