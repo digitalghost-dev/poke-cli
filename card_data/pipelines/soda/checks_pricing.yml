@@ -1,0 +1,75 @@
+checks for pricing_data:
+  # Row count validation - currently have 4216 rows
+  # Expect at least 4000 cards
+  - row_count > 4000:
+      name: Minimum row count check
+
+  # Warn if row count drops significantly
+  - row_count > 4200:
+      warn:
+        when fail
+      name: Row count sanity check (warn if below expected)
+
+  # Schema validation checks
+  - schema:
+      fail:
+        when required column missing: [product_id, name, card_number, market_price]
+        when wrong column type:
+          product_id: bigint
+          name: text
+          card_number: text
+          market_price: double precision
+
+  # Completeness checks - product_id, name, card_number should always be present
+  - missing_count(product_id) = 0:
+      name: Product ID completeness
+
+  - missing_count(name) = 0:
+      name: Card name completeness
+
+  - missing_count(card_number) = 0:
+      name: Card number completeness
+
+  # Data uniqueness checks
+  - duplicate_count(product_id) = 0:
+      name: Product ID uniqueness
+
+  # Data format validation
+  # Card numbers should be alphanumeric with slashes (e.g., "013/198", "4", "005/086")
+  - invalid_count(card_number) = 0:
+      valid regex: '^[A-Za-z0-9/]+$'
+      name: Card number format validation
+
+  # Card names should not be empty and should be reasonable length (<100 chars)
+  - invalid_count(name) = 0:
+      valid min length: 1
+      valid max length: 100
+      name: Card name length validation
+
+  # Data range validation
+  # Product IDs should be positive 6-digit numbers (observed range: 475k-642k)
+  - invalid_count(product_id) = 0:
+      valid min: 100000
+      valid max: 999999999
+      name: Product ID range validation
+
+  # Market prices (when present) should be positive and reasonable
+  # Current range: $0.02 to $1119.08
+  - invalid_percent(market_price) < 1%:
+      valid min: 0.01
+      valid max: 10000
+      name: Market price range validation ($0.01-$10,000)
+
+  # Statistical validation - average price should be reasonable
+  # Current average is ~$6.01, allow range of $2-$20 for sanity
+  - avg(market_price):
+      warn:
+        when < 2
+        when > 20
+      name: Average market price sanity check
+
+  # Anomaly detection - check for extreme outliers
+  - max(market_price) < 5000:
+      warn:
+        when fail
+      name: Maximum price outlier detection (warn if >$5000)
