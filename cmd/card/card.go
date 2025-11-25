@@ -44,22 +44,26 @@ func CardCommand() (string, error) {
 	// Program 1: Series selection
 	finalModel, err := tea.NewProgram(seriesModel).Run()
 	if err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+		return "", fmt.Errorf("error running series selection program: %w", err)
 	}
 
-	result := finalModel.(SeriesModel)
+	result, ok := finalModel.(SeriesModel)
+	if !ok {
+		return "", fmt.Errorf("unexpected model type from series selection: got %T, want SeriesModel", finalModel)
+	}
 
 	if result.SeriesID != "" {
 		// Program 2: Sets selection
 		setsModel := SetsList(result.SeriesID)
 		finalSetsModel, err := tea.NewProgram(setsModel).Run()
 		if err != nil {
-			fmt.Println("Error running sets program:", err)
-			os.Exit(1)
+			return "", fmt.Errorf("error running sets selection program: %w", err)
 		}
 
-		setsResult := finalSetsModel.(SetsModel)
+		setsResult, ok := finalSetsModel.(SetsModel)
+		if !ok {
+			return "", fmt.Errorf("unexpected model type from sets selection: got %T, want SetsModel", finalSetsModel)
+		}
 
 		if setsResult.Quitting {
 			return output.String(), nil
@@ -78,7 +82,10 @@ func CardCommand() (string, error) {
 					return "", fmt.Errorf("error running cards program: %w", err)
 				}
 
-				cardsResult := finalCardsModel.(CardsModel)
+				cardsResult, ok := finalCardsModel.(CardsModel)
+				if !ok {
+					return "", fmt.Errorf("unexpected model type from cards display: got %T, want CardsModel", finalCardsModel)
+				}
 
 				if cardsResult.ViewImage {
 					// Launch image viewer
