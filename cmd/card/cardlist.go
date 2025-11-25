@@ -87,7 +87,7 @@ func (m CardsModel) View() string {
 
 	return fmt.Sprintf("Highlight a card!\n%s\n%s",
 		screen,
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit)"))
+		styling.KeyMenu.Render("↑ (move up)\n↓ (move down)\nspace (view image)\nctrl+c | esc (quit)"))
 }
 
 type cardData struct {
