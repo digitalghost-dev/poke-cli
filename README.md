@@ -216,16 +216,16 @@ Below is a list of the planned/completed commands and flags:
 
 ---
 ## Tested Terminals
-| Terminal          |            OS             | Status | Issues                                                                                        |
-|-------------------|:-------------------------:|:------:|-----------------------------------------------------------------------------------------------|
-| Alacritty         | macOS, Ubuntu,<br>Windows |   🟡   | - Does not support sixel for TCG images.                                                      |
-| Ghostty           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                      |
-| HyperJS           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                      |
-| iTerm2            |           macOS           |   ✅    | - None                                                                                        |
-| Built-in Terminal | Ubuntu, Debian,<br>Fedora |   ✅    | - None                                                                                        |
-| Built-in Terminal |          Alpine           |   🟡   | - Some colors aren't supported.<br>- `pokemon <name> --image=xx` flag pixel issues.           |             
-| Built-in Terminal |           macOS           |   🟠   | - `pokemon <name> --image=xx` flag pixel issues.<br> - Does not support sixel for TCG images. |
-| Foot              |          Ubuntu           |   🟢   | - None                                                                                        |
-| Tabby             |          Ubuntu           |   🟢   | - None                                                                                        |
-| WezTerm           |      macOS, Windows       |   🟢   | - None                                                                                        |
-| Built-in Terminal |          Windows          |   🟢   | - None                                                                                        |
+| Terminal          |            OS             | Status | Issues                                                                                       |
+|-------------------|:-------------------------:|:------:|----------------------------------------------------------------------------------------------|
+| Alacritty         | macOS, Ubuntu,<br>Windows |   🟡   | - Does not support sixel for TCG images.                                                     |
+| Ghostty           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                     |
+| HyperJS           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                     |
+| iTerm2            |           macOS           |   🟢   | - None                                                                                       |
+| Built-in Terminal | Ubuntu, Debian,<br>Fedora |   🟡   | - Does not support sixel for TCG images.                                                     |
+| Built-in Terminal |          Alpine           |   🟡   | - Some colors aren't supported.<br>- `pokemon <name> --image=xx` flag pixel issues.          |             
+| Built-in Terminal |           macOS           |   🟠   | - Does not support sixel for TCG images.<br>- `pokemon <name> --image=xx` flag pixel issues. |
+| Foot              |          Ubuntu           |   🟢   | - None                                                                                       |
+| Tabby             |          Ubuntu           |   🟢   | - None                                                                                       |
+| WezTerm           |      macOS, Windows       |   🟡   | - Windows version has issues with displaying TCG images.                                     |
+| Built-in Terminal |          Windows          |   🟢   | - None                                                                                       |
