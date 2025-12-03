@@ -2,46 +2,45 @@ package styling
 
 import (
 	"fmt"
-	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/lipgloss"
 	"image/color"
 	"regexp"
+
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/lipgloss"
 )
 
 var (
-	Green          = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
-	Red            = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
-	Gray           = lipgloss.Color("#777777")
-	YellowAdaptive = func(s string) string {
-		return lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFDE00"}).Render(s)
-	}
+	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
+	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
+	Gray          = lipgloss.Color("#777777")
+	Yellow        = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFDE00"})
 	ColoredBullet = lipgloss.NewStyle().
-			SetString("•").
-			Foreground(lipgloss.Color("#FFCC00"))
+		SetString("•").
+		Foreground(lipgloss.Color("#FFCC00"))
 	CheckboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFCC00"))
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
 
 	DocsLink = lipgloss.NewStyle().
-			Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFCC00"}).
-			Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
+		Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFCC00"}).
+		Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
 
 	StyleBold      = lipgloss.NewStyle().Bold(true)
 	StyleItalic    = lipgloss.NewStyle().Italic(true)
 	StyleUnderline = lipgloss.NewStyle().Underline(true)
 	HelpBorder     = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFCC00"))
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00"))
 	ErrorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	ErrorBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#F2055C"))
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#F2055C"))
 	WarningColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8C00"))
 	WarningBorder = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FF8C00"))
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("#FF8C00"))
 	TypesTableBorder = lipgloss.NewStyle().
-				BorderStyle(lipgloss.NormalBorder()).
-				BorderForeground(lipgloss.Color("#FFCC00"))
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00"))
 	ColorMap = map[string]string{
 		"normal":   "#B7B7A9",
 		"fire":     "#FF4422",
