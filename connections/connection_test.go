@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"github.com/digitalghost-dev/poke-cli/structs"
@@ -56,6 +57,33 @@ func TestApiCallSetup(t *testing.T) {
 		err := ApiCallSetup(ts.URL, &target, true)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "error unmarshalling JSON")
+	})
+
+	t.Run("non-200 status code returns error", func(t *testing.T) {
+		testCases := []struct {
+			name       string
+			statusCode int
+		}{
+			{"404 Not Found", http.StatusNotFound},
+			{"500 Internal Server Error", http.StatusInternalServerError},
+			{"403 Forbidden", http.StatusForbidden},
+			{"503 Service Unavailable", http.StatusServiceUnavailable},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(tc.statusCode)
+				}))
+				defer ts.Close()
+
+				var target map[string]string
+				err := ApiCallSetup(ts.URL, &target, true)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), "non-200 response")
+				assert.Contains(t, err.Error(), strconv.Itoa(tc.statusCode))
+			})
+		}
 	})
 }
 

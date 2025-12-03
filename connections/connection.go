@@ -36,12 +36,17 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		Timeout: time.Second * 30,
 	}
 
-	res, err := client.Get(parsedURL.String())
+	resp, err := client.Get(parsedURL.String())
 	if err != nil {
 		return fmt.Errorf("error making GET request: %w", err)
 	}
-	defer res.Body.Close()
-	body, err := io.ReadAll(res.Body)
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("non-200 response: %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("error reading response body: %w", err)
 	}
