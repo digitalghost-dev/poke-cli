@@ -16,6 +16,30 @@ import (
 
 const APIURL = "https://pokeapi.co/api/v2/"
 
+var httpClient = &http.Client{Timeout: 30 * time.Second}
+
+type EndpointResource interface {
+	GetResourceName() string
+}
+
+func FetchEndpoint[T EndpointResource](endpoint, resourceName, baseURL, resourceType string) (T, string, error) {
+	var zero T
+	fullURL := baseURL + endpoint + "/" + resourceName
+
+	var result T
+	err := ApiCallSetup(fullURL, &result, false)
+
+	if err != nil {
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("✖ Error!"),
+			fmt.Sprintf("\n%s not found.\n• Perhaps a typo?\n• Missing a hyphen instead of a space?", resourceType),
+		)
+		return zero, "", fmt.Errorf("%s", errMessage)
+	}
+
+	return result, result.GetResourceName(), nil
+}
+
 // ApiCallSetup Helper function to handle API calls and JSON unmarshalling
 func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error {
 	parsedURL, err := url.Parse(rawURL)
@@ -32,11 +56,7 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		return errors.New("only HTTPS URLs are allowed for security reasons")
 	}
 
-	client := http.Client{
-		Timeout: time.Second * 30,
-	}
-
-	resp, err := client.Get(parsedURL.String())
+	resp, err := httpClient.Get(parsedURL.String())
 	if err != nil {
 		return fmt.Errorf("error making GET request: %w", err)
 	}
@@ -59,107 +79,26 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 	return nil
 }
 
-// AbilityApiCall function for calling the ability endpoint of the pokeAPI
-func AbilityApiCall(endpoint string, abilityName string, baseURL string) (structs.AbilityJSONStruct, string, error) {
-	fullURL := baseURL + endpoint + "/" + abilityName
-
-	var abilityStruct structs.AbilityJSONStruct
-	err := ApiCallSetup(fullURL, &abilityStruct, false)
-
-	if err != nil {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("✖ Error!"),
-			"\nAbility not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
-		)
-		return structs.AbilityJSONStruct{}, "", fmt.Errorf("%s", errMessage)
-	}
-
-	return abilityStruct, abilityStruct.Name, nil
+func AbilityApiCall(endpoint, abilityName, baseURL string) (structs.AbilityJSONStruct, string, error) {
+	return FetchEndpoint[structs.AbilityJSONStruct](endpoint, abilityName, baseURL, "Ability")
 }
 
-// ItemApiCall function for calling the item endpoint of the pokeAPI
 func ItemApiCall(endpoint string, itemName string, baseURL string) (structs.ItemJSONStruct, string, error) {
-	fullURL := baseURL + endpoint + "/" + itemName
-
-	var itemStruct structs.ItemJSONStruct
-	err := ApiCallSetup(fullURL, &itemStruct, false)
-
-	if err != nil {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("✖ Error!"),
-			"\nItem not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
-		)
-		return structs.ItemJSONStruct{}, "", fmt.Errorf("%s", errMessage)
-	}
-
-	return itemStruct, itemStruct.Name, nil
+	return FetchEndpoint[structs.ItemJSONStruct](endpoint, itemName, baseURL, "Item")
 }
 
-// MoveApiCall function for calling the move endpoint of the pokeAPI
 func MoveApiCall(endpoint string, moveName string, baseURL string) (structs.MoveJSONStruct, string, error) {
-	fullURL := baseURL + endpoint + "/" + moveName
-
-	var moveStruct structs.MoveJSONStruct
-	err := ApiCallSetup(fullURL, &moveStruct, false)
-
-	if err != nil {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("✖ Error!"),
-			"\nMove not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
-		)
-		return structs.MoveJSONStruct{}, "", fmt.Errorf("%s", errMessage)
-	}
-
-	return moveStruct, moveStruct.Name, nil
+	return FetchEndpoint[structs.MoveJSONStruct](endpoint, moveName, baseURL, "Move")
 }
 
-// PokemonApiCall function for calling the pokemon endpoint of the pokeAPI
 func PokemonApiCall(endpoint string, pokemonName string, baseURL string) (structs.PokemonJSONStruct, string, error) {
-	fullURL := baseURL + endpoint + "/" + pokemonName
-
-	var pokemonStruct structs.PokemonJSONStruct
-	err := ApiCallSetup(fullURL, &pokemonStruct, false)
-
-	if err != nil {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("✖ Error!"),
-			"\nPokémon not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
-		)
-		return structs.PokemonJSONStruct{}, "", fmt.Errorf("%s", errMessage)
-	}
-
-	return pokemonStruct, pokemonStruct.Name, nil
+	return FetchEndpoint[structs.PokemonJSONStruct](endpoint, pokemonName, baseURL, "Pokémon")
 }
 
-// PokemonSpeciesApiCall function for calling the pokemon endpoint of the pokeAPI
-func PokemonSpeciesApiCall(endpoint string, pokemonSpeciesName string, baseURL string) (structs.PokemonSpeciesJSONStruct, error) {
-	fullURL := baseURL + endpoint + "/" + pokemonSpeciesName
-
-	var pokemonSpeciesStruct structs.PokemonSpeciesJSONStruct
-	err := ApiCallSetup(fullURL, &pokemonSpeciesStruct, false)
-
-	if err != nil {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("✖ Error!"),
-			"\nPokémon not found.\n\u2022 Perhaps a typo?\n\u2022 Missing a hyphen instead of a space?",
-		)
-		return structs.PokemonSpeciesJSONStruct{}, fmt.Errorf("%s", errMessage)
-	}
-
-	return pokemonSpeciesStruct, nil
+func PokemonSpeciesApiCall(endpoint string, pokemonSpeciesName string, baseURL string) (structs.PokemonSpeciesJSONStruct, string, error) {
+	return FetchEndpoint[structs.PokemonSpeciesJSONStruct](endpoint, pokemonSpeciesName, baseURL, "PokémonSpecies")
 }
 
-// TypesApiCall function for calling the type endpoint of the pokeAPI
-func TypesApiCall(endpoint string, typesName string, baseURL string) (structs.TypesJSONStruct, string, int) {
-	fullURL := baseURL + endpoint + "/" + typesName
-	var typesStruct structs.TypesJSONStruct
-
-	err := ApiCallSetup(fullURL, &typesStruct, false)
-
-	if err != nil {
-		fmt.Println(err)
-		return structs.TypesJSONStruct{}, "", 0
-	}
-
-	return typesStruct, typesStruct.Name, typesStruct.ID
+func TypesApiCall(endpoint string, typesName string, baseURL string) (structs.TypesJSONStruct, string, error) {
+	return FetchEndpoint[structs.TypesJSONStruct](endpoint, typesName, baseURL, "Type")
 }
