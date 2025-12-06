@@ -114,10 +114,11 @@ func TestAbilityApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		ability, _, err := AbilityApiCall("/ability", "non-existent-ability", ts.URL)
+		ability, name, err := AbilityApiCall("/ability", "non-existent-ability", ts.URL)
 
 		require.Error(t, err, "Expected an error for invalid ability")
 		assert.Equal(t, structs.AbilityJSONStruct{}, ability, "Expected empty ability struct on error")
+		assert.Equal(t, "", name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Ability not found", "Expected 'Ability not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -151,10 +152,11 @@ func TestItemApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		item, _, err := ItemApiCall("/item", "non-existent-item", ts.URL)
+		item, name, err := ItemApiCall("/item", "non-existent-item", ts.URL)
 
 		require.Error(t, err, "Expected an error for invalid item")
 		assert.Equal(t, structs.ItemJSONStruct{}, item, "Expected empty item struct on error")
+		assert.Equal(t, "", name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Item not found", "Expected 'Item not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -188,10 +190,11 @@ func TestMoveApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		move, _, err := MoveApiCall("/move", "non-existent-move", ts.URL)
+		move, name, err := MoveApiCall("/move", "non-existent-move", ts.URL)
 
 		require.Error(t, err, "Expected an error for invalid move")
 		assert.Equal(t, structs.MoveJSONStruct{}, move, "Expected empty move struct on error")
+		assert.Equal(t, "", name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Move not found", "Expected 'Move not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -225,10 +228,11 @@ func TestPokemonApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		pokemon, _, err := PokemonApiCall("/pokemon", "non-existent-pokemon", ts.URL)
+		pokemon, name, err := PokemonApiCall("/pokemon", "non-existent-pokemon", ts.URL)
 
 		require.Error(t, err, "Expected an error for invalid pokemon")
 		assert.Equal(t, structs.PokemonJSONStruct{}, pokemon, "Expected empty pokemon struct on error")
+		assert.Equal(t, "", name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Pokémon not found", "Expected 'Pokémon not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -237,40 +241,58 @@ func TestPokemonApiCall(t *testing.T) {
 
 // TestTypesApiCall - Test for the TypesApiCall function
 func TestTypesApiCall(t *testing.T) {
-	expectedTypes := structs.TypesJSONStruct{
-		Name: "electric",
-		ID:   13,
-		Pokemon: []struct {
-			Pokemon struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			} `json:"pokemon"`
-			Slot int `json:"slot"`
-		}{
-			{Pokemon: struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			}{Name: "pikachu", URL: "https://pokeapi.co/api/v2/pokemon/25/"},
-				Slot: 1},
-		},
-	}
+	t.Run("Successful API call returns expected type", func(t *testing.T) {
+		expectedTypes := structs.TypesJSONStruct{
+			Name: "electric",
+			ID:   13,
+			Pokemon: []struct {
+				Pokemon struct {
+					Name string `json:"name"`
+					URL  string `json:"url"`
+				} `json:"pokemon"`
+				Slot int `json:"slot"`
+			}{
+				{Pokemon: struct {
+					Name string `json:"name"`
+					URL  string `json:"url"`
+				}{Name: "pikachu", URL: "https://pokeapi.co/api/v2/pokemon/25/"},
+					Slot: 1},
+			},
+		}
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		err := json.NewEncoder(w).Encode(expectedTypes)
-		assert.NoError(t, err, "Expected no error for skipHTTPSCheck")
-	}))
-	defer ts.Close()
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			err := json.NewEncoder(w).Encode(expectedTypes)
+			assert.NoError(t, err, "Expected no error for encoding response")
+		}))
+		defer ts.Close()
 
-	typesStruct, name, id := TypesApiCall("/type", "electric", ts.URL)
+		typesStruct, name, err := TypesApiCall("/type", "electric", ts.URL)
 
-	assert.Equal(t, expectedTypes, typesStruct)
-	assert.Equal(t, "electric", name)
-	assert.Equal(t, 13, id)
+		require.NoError(t, err, "Expected no error on successful API call")
+		assert.Equal(t, expectedTypes, typesStruct, "Expected types struct does not match")
+		assert.Equal(t, "electric", name, "Expected type name does not match")
+	})
+
+	t.Run("Failed API call returns styled error", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Simulate API failure (e.g., 404 Not Found)
+			http.Error(w, "Not Found", http.StatusNotFound)
+		}))
+		defer ts.Close()
+
+		typesStruct, name, err := TypesApiCall("/type", "non-existent-type", ts.URL)
+
+		require.Error(t, err, "Expected an error for invalid type")
+		assert.Equal(t, structs.TypesJSONStruct{}, typesStruct, "Expected empty types struct on error")
+		assert.Equal(t, "", name, "Expected empty name string on error")
+
+		assert.Contains(t, err.Error(), "Type not found", "Expected 'Type not found' in error message")
+		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
+	})
 }
 
 func TestPokemonSpeciesApiCall(t *testing.T) {
-	// Successful API call returns expected species data
 	t.Run("Successful API call returns expected species", func(t *testing.T) {
 		expectedSpecies := structs.PokemonSpeciesJSONStruct{
 			Name: "flareon",
@@ -283,13 +305,13 @@ func TestPokemonSpeciesApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		species, err := PokemonSpeciesApiCall("/pokemon-species", "flareon", ts.URL)
+		species, name, err := PokemonSpeciesApiCall("/pokemon-species", "flareon", ts.URL)
 
 		require.NoError(t, err, "Expected no error on successful API call")
 		assert.Equal(t, expectedSpecies, species, "Expected species struct does not match")
+		assert.Equal(t, "flareon", name, "Expected species name does not match")
 	})
 
-	// Failed API call returns styled error
 	t.Run("Failed API call returns styled error", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Simulate API failure (e.g., 404 Not Found)
@@ -297,12 +319,13 @@ func TestPokemonSpeciesApiCall(t *testing.T) {
 		}))
 		defer ts.Close()
 
-		species, err := PokemonSpeciesApiCall("/pokemon-species", "non-existent-species", ts.URL)
+		species, name, err := PokemonSpeciesApiCall("/pokemon-species", "non-existent-species", ts.URL)
 
 		require.Error(t, err, "Expected an error for invalid species")
 		assert.Equal(t, structs.PokemonSpeciesJSONStruct{}, species, "Expected empty species struct on error")
+		assert.Equal(t, "", name, "Expected empty name string on error")
 
-		assert.Contains(t, err.Error(), "Pokémon not found", "Expected 'Pokémon not found' in error message")
+		assert.Contains(t, err.Error(), "PokémonSpecies not found", "Expected 'PokémonSpecies not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
 	})
 }
