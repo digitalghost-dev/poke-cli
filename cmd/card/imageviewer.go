@@ -18,6 +18,7 @@ type ImageModel struct {
 
 type imageReadyMsg struct {
 	sixelData string
+	err       error
 }
 
 // fetchImageCmd downloads and renders the image asynchronously
@@ -25,7 +26,7 @@ func fetchImageCmd(imageURL string) tea.Cmd {
 	return func() tea.Msg {
 		sixelData, err := CardImage(imageURL)
 		if err != nil {
-			return imageReadyMsg{err.Error()}
+			return imageReadyMsg{err: err}
 		}
 		return imageReadyMsg{sixelData: sixelData}
 	}
@@ -42,7 +43,13 @@ func (m ImageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case imageReadyMsg:
 		m.Loading = false
-		m.ImageData = msg.sixelData
+		if msg.err != nil {
+			m.Error = msg.err
+			m.ImageData = ""
+		} else {
+			m.Error = nil
+			m.ImageData = msg.sixelData
+		}
 		return m, nil
 	case spinner.TickMsg:
 		var cmd tea.Cmd
@@ -62,6 +69,9 @@ func (m ImageModel) View() string {
 		return lipgloss.NewStyle().Padding(2).Render(
 			m.Spinner.View() + "Loading image for \n" + m.CardName,
 		)
+	}
+	if m.Error != nil {
+		return styling.Red.Render(m.Error.Error())
 	}
 	return m.ImageData
 }
