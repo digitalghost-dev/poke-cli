@@ -59,7 +59,8 @@ func AbilityCommand() (string, error) {
 
 	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
 	if err != nil {
-		return err.Error(), nil
+		output.WriteString(err.Error())
+		return output.String(), err
 	}
 
 	// Extract English short_effect
@@ -102,7 +103,7 @@ func AbilityCommand() (string, error) {
 	if *pokemonFlag || *shortPokemonFlag {
 		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
+			return output.String(), fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 
