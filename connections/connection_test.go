@@ -118,7 +118,7 @@ func TestAbilityApiCall(t *testing.T) {
 
 		require.Error(t, err, "Expected an error for invalid ability")
 		assert.Equal(t, structs.AbilityJSONStruct{}, ability, "Expected empty ability struct on error")
-		assert.Equal(t, "", name, "Expected empty name string on error")
+		assert.Empty(t, name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Ability not found", "Expected 'Ability not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -156,7 +156,7 @@ func TestItemApiCall(t *testing.T) {
 
 		require.Error(t, err, "Expected an error for invalid item")
 		assert.Equal(t, structs.ItemJSONStruct{}, item, "Expected empty item struct on error")
-		assert.Equal(t, "", name, "Expected empty name string on error")
+		assert.Empty(t, name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Item not found", "Expected 'Item not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -194,7 +194,7 @@ func TestMoveApiCall(t *testing.T) {
 
 		require.Error(t, err, "Expected an error for invalid move")
 		assert.Equal(t, structs.MoveJSONStruct{}, move, "Expected empty move struct on error")
-		assert.Equal(t, "", name, "Expected empty name string on error")
+		assert.Empty(t, name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Move not found", "Expected 'Move not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -232,7 +232,7 @@ func TestPokemonApiCall(t *testing.T) {
 
 		require.Error(t, err, "Expected an error for invalid pokemon")
 		assert.Equal(t, structs.PokemonJSONStruct{}, pokemon, "Expected empty pokemon struct on error")
-		assert.Equal(t, "", name, "Expected empty name string on error")
+		assert.Empty(t, name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Pokémon not found", "Expected 'Pokémon not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -285,7 +285,7 @@ func TestTypesApiCall(t *testing.T) {
 
 		require.Error(t, err, "Expected an error for invalid type")
 		assert.Equal(t, structs.TypesJSONStruct{}, typesStruct, "Expected empty types struct on error")
-		assert.Equal(t, "", name, "Expected empty name string on error")
+		assert.Empty(t, name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "Type not found", "Expected 'Type not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
@@ -323,7 +323,7 @@ func TestPokemonSpeciesApiCall(t *testing.T) {
 
 		require.Error(t, err, "Expected an error for invalid species")
 		assert.Equal(t, structs.PokemonSpeciesJSONStruct{}, species, "Expected empty species struct on error")
-		assert.Equal(t, "", name, "Expected empty name string on error")
+		assert.Empty(t, name, "Expected empty name string on error")
 
 		assert.Contains(t, err.Error(), "PokémonSpecies not found", "Expected 'PokémonSpecies not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
