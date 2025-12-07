@@ -95,7 +95,7 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.8.1 <command> [subcommand] flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.8.1 <command> [subcommand] [flag]
     ```
    * Enter the container and use its shell:
     ```bash
