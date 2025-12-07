@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	spinnerpkg "github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -155,14 +156,15 @@ func TestImageModel_Update_ImageReady(t *testing.T) {
 func TestImageModel_Update_SpinnerTick(t *testing.T) {
 	model := ImageRenderer("Mewtwo", "http://example.com/mewtwo.png")
 
-	// Create a spinner tick message
 	msg := model.Spinner.Tick()
 
-	// Update should handle spinner ticks
-	newModel, cmd := model.Update(msg)
+	if _, ok := msg.(spinnerpkg.TickMsg); !ok {
+		t.Fatalf("expected spinner.TickMsg, got %T", msg)
+	}
 
-	// Should return a spinner command
-	if cmd == nil {
+	newModel, returnedCmd := model.Update(msg)
+
+	if returnedCmd == nil {
 		t.Error("Update with spinner.TickMsg should return a command")
 	}
 
