@@ -4,6 +4,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
+	"math"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 	xstrings "github.com/charmbracelet/x/exp/strings"
@@ -12,11 +18,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"log"
-	"math"
-	"os"
-	"strconv"
-	"strings"
 )
 
 // DefaultSpeedStat is the default implementation of SpeedStatFunc
@@ -304,18 +305,18 @@ func formula() (string, error) {
 	finalSpeedStr := fmt.Sprintf("%.0f", finalSpeedFloor)
 
 	header := fmt.Sprintf("%s at level %s with selected options has a current speed of %s.",
-		styling.YellowAdaptive(chosenPokemon),
-		styling.YellowAdaptive(pokemon.Level),
-		styling.YellowAdaptive(finalSpeedStr),
+		styling.Yellow.Render(chosenPokemon),
+		styling.Yellow.Render(pokemon.Level),
+		styling.Yellow.Render(finalSpeedStr),
 	)
 	body := fmt.Sprintf("EVs: %s\nIVs: %s\nModifiers: %s\nNature: %s\nAbility: %s\nSpeed Stage: %s\nBase Speed: %s",
-		styling.YellowAdaptive(pokemon.SpeedEV),
-		styling.YellowAdaptive(pokemon.SpeedIV),
-		styling.YellowAdaptive(xstrings.EnglishJoin(pokemon.Modifier, true)),
-		styling.YellowAdaptive(pokemon.Nature),
-		styling.YellowAdaptive(pokemon.Ability),
-		styling.YellowAdaptive(pokemon.SpeedStage),
-		styling.YellowAdaptive(speedStr),
+		styling.Yellow.Render(pokemon.SpeedEV),
+		styling.Yellow.Render(pokemon.SpeedIV),
+		styling.Yellow.Render(xstrings.EnglishJoin(pokemon.Modifier, true)),
+		styling.Yellow.Render(pokemon.Nature),
+		styling.Yellow.Render(pokemon.Ability),
+		styling.Yellow.Render(pokemon.SpeedStage),
+		styling.Yellow.Render(speedStr),
 	)
 
 	docStyle := lipgloss.NewStyle().

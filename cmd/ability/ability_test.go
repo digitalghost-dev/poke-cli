@@ -1,26 +1,15 @@
 package ability
 
 import (
+	"os"
+	"testing"
+
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 func TestAbilityCommand(t *testing.T) {
-	err := os.Setenv("GO_TESTING", "1")
-	if err != nil {
-		t.Fatalf("Failed to set GO_TESTING env var: %v", err)
-	}
-
-	defer func() {
-		err := os.Unsetenv("GO_TESTING")
-		if err != nil {
-			t.Logf("Warning: failed to unset GO_TESTING: %v", err)
-		}
-	}()
-
 	tests := []struct {
 		name           string
 		args           []string
@@ -52,6 +41,11 @@ func TestAbilityCommand(t *testing.T) {
 			name:           "Ability command: --pokemon flag",
 			args:           []string{"ability", "anger-point", "--pokemon"},
 			expectedOutput: utils.LoadGolden(t, "ability_flag_pokemon.golden"),
+		},
+		{
+			name:           "Ability command: special character in API call",
+			args:           []string{"ability", "poison-point"},
+			expectedOutput: utils.LoadGolden(t, "ability_poison_point.golden"),
 		},
 	}
 

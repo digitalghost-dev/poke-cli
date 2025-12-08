@@ -1,5 +1,29 @@
 package structs
 
+func (a AbilityJSONStruct) GetResourceName() string {
+	return a.Name
+}
+
+func (i ItemJSONStruct) GetResourceName() string {
+	return i.Name
+}
+
+func (m MoveJSONStruct) GetResourceName() string {
+	return m.Name
+}
+
+func (p PokemonJSONStruct) GetResourceName() string {
+	return p.Name
+}
+
+func (s PokemonSpeciesJSONStruct) GetResourceName() string {
+	return s.Name
+}
+
+func (t TypesJSONStruct) GetResourceName() string {
+	return t.Name
+}
+
 // AbilityJSONStruct ability endpoint from API
 type AbilityJSONStruct struct {
 	Name          string `json:"name"`

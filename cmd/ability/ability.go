@@ -3,14 +3,15 @@ package ability
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"os"
-	"strings"
 )
 
 func AbilityCommand() (string, error) {
@@ -52,19 +53,14 @@ func AbilityCommand() (string, error) {
 	if err := abilityFlags.Parse(args[3:]); err != nil {
 		output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 		abilityFlags.Usage()
-		if os.Getenv("GO_TESTING") != "1" {
-			os.Exit(1)
-		}
+
 		return output.String(), err
 	}
 
 	abilitiesStruct, abilityName, err := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
 	if err != nil {
-		if os.Getenv("GO_TESTING") != "1" {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-		return err.Error(), nil
+		output.WriteString(err.Error())
+		return output.String(), err
 	}
 
 	// Extract English short_effect
@@ -88,7 +84,6 @@ func AbilityCommand() (string, error) {
 	capitalizedAbility := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
 	output.WriteString(styling.StyleBold.Render(capitalizedAbility) + "\n")
 
-	// Print the generation where the ability was first introduced.
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")
 	if len(generationParts) > 1 {
 		generationUpper := strings.ToUpper(generationParts[1])
@@ -100,15 +95,15 @@ func AbilityCommand() (string, error) {
 	// API is missing some data for the short_effect for abilities from Generation 9.
 	// If short_effect is empty, fallback to the move's flavor_text_entry.
 	if englishShortEffect == "" {
-		output.WriteString(fmt.Sprintf("%s Effect: "+englishFlavorEntry, styling.ColoredBullet))
+		output.WriteString(fmt.Sprintf("%s Effect: %s", styling.ColoredBullet, englishFlavorEntry))
 	} else {
-		output.WriteString(fmt.Sprintf("%s Effect: "+englishShortEffect, styling.ColoredBullet))
+		output.WriteString(fmt.Sprintf("%s Effect: %s", styling.ColoredBullet, englishShortEffect))
 	}
 
 	if *pokemonFlag || *shortPokemonFlag {
 		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-			return "", fmt.Errorf("error parsing flags: %w", err)
+			return output.String(), fmt.Errorf("error parsing flags: %w", err)
 		}
 	}
 

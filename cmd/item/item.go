@@ -50,11 +50,8 @@ func ItemCommand() (string, error) {
 
 	itemStruct, itemName, err := connections.ItemApiCall(endpoint, itemName, connections.APIURL)
 	if err != nil {
-		if os.Getenv("GO_TESTING") != "1" {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-		return err.Error(), nil
+		output.WriteString(err.Error())
+		return output.String(), err
 	}
 
 	itemInfoContainer(&output, itemStruct, itemName)

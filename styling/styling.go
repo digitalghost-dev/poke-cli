@@ -2,19 +2,18 @@ package styling
 
 import (
 	"fmt"
-	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/lipgloss"
 	"image/color"
 	"regexp"
+
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/lipgloss"
 )
 
 var (
-	Green          = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
-	Red            = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
-	Gray           = lipgloss.Color("#777777")
-	YellowAdaptive = func(s string) string {
-		return lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFDE00"}).Render(s)
-	}
+	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
+	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
+	Gray          = lipgloss.Color("#777777")
+	Yellow        = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFDE00"})
 	ColoredBullet = lipgloss.NewStyle().
 			SetString("•").
 			Foreground(lipgloss.Color("#FFCC00"))
