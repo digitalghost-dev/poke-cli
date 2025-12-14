@@ -10,19 +10,19 @@ from ...utils.secret_retriever import fetch_secret
 from termcolor import colored
 import subprocess
 from pathlib import Path
+import polars as pl
 
 
 @dg.asset(
-    deps=[extract_series_data],
     kinds={"Supabase", "Postgres"},
     name="load_series_data",
     retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
 )
-def load_series_data() -> None:
+def load_series_data(extract_series_data: pl.DataFrame) -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.series"
 
-    df = extract_series_data()
+    df = extract_series_data
     try:
         df.write_database(
             table_name=table_name, connection=database_url, if_table_exists="replace"
@@ -68,16 +68,15 @@ def data_quality_check_on_series() -> None:
 
 
 @dg.asset(
-    deps=[extract_set_data],
     kinds={"Supabase", "Postgres"},
     name="load_set_data",
     retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
 )
-def load_set_data() -> None:
+def load_set_data(extract_set_data: pl.DataFrame) -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.sets"
 
-    df = extract_set_data()
+    df = extract_set_data
     try:
         df.write_database(
             table_name=table_name, connection=database_url, if_table_exists="replace"
@@ -89,16 +88,15 @@ def load_set_data() -> None:
 
 
 @dg.asset(
-    deps=[create_card_dataframe],
     kinds={"Supabase", "Postgres"},
     name="load_card_data",
     retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
 )
-def load_card_data() -> None:
+def load_card_data(create_card_dataframe: pl.DataFrame) -> None:
     database_url: str = fetch_secret()
     table_name: str = "staging.cards"
 
-    df = create_card_dataframe()
+    df = create_card_dataframe
     try:
         df.write_database(
             table_name=table_name, connection=database_url, if_table_exists="append"
