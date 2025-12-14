@@ -17,7 +17,7 @@
              SELECT
                  product_id,
                  market_price,
-                 CONCAT(REPLACE(name, ' (Secret)', ''), ' - ', card_number) AS card_combined_name,
+                 CONCAT(REGEXP_REPLACE(name, '\s*\(.*\)$', ''), ' - ', card_number) AS card_combined_name,
                  card_number
              FROM public.pricing_data
          )
