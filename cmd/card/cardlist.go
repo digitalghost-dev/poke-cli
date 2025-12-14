@@ -119,8 +119,18 @@ func CardsList(setID string) (CardsModel, error) {
 	illustratorMap := make(map[string]string)
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
-		priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
-		illustratorMap[card.NumberPlusName] = "Illustrator: " + card.Illustrator
+		if card.MarketPrice != 0 {
+			priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
+		} else {
+			priceMap[card.NumberPlusName] = "Pricing not available"
+		}
+
+		if card.Illustrator != "" {
+			illustratorMap[card.NumberPlusName] = "Illustrator: " + card.Illustrator
+		} else {
+			illustratorMap[card.NumberPlusName] = "Illustrator not available"
+		}
+
 		imageMap[card.NumberPlusName] = card.ImageURL
 	}
 
