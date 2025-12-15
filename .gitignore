@@ -64,3 +64,5 @@ card_data/pipelines/poke_cli_dbt/.user.yml
 
 card_data/~/
 card_data/storage/
+/.claude/
+CLAUDE.md
