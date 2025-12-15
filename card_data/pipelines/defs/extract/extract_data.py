@@ -114,9 +114,9 @@ def extract_card_url_from_set() -> list:
     return all_card_urls
 
 
-@dg.asset(deps=[extract_card_url_from_set], kinds={"API"}, name="extract_card_info")
-def extract_card_info() -> list:
-    card_url_list = extract_card_url_from_set()
+@dg.asset(kinds={"API"}, name="extract_card_info")
+def extract_card_info(extract_card_url_from_set_data: list) -> list:
+    card_url_list = extract_card_url_from_set_data
     cards_list = []
 
     for url in card_url_list:
@@ -125,7 +125,7 @@ def extract_card_info() -> list:
             r.raise_for_status()
             data = r.json()
             cards_list.append(data)
-            # print(f"Retrieved card: {data['id']} - {data.get('name', 'Unknown')}")
+            print(f"Retrieved card: {data['id']} - {data.get('name', 'Unknown')}")
             time.sleep(0.1)
         except requests.RequestException as e:
             print(f"Failed to fetch {url}: {e}")
@@ -133,9 +133,9 @@ def extract_card_info() -> list:
     return cards_list
 
 
-@dg.asset(deps=[extract_card_info], kinds={"Polars"}, name="create_card_dataframe")
-def create_card_dataframe() -> pl.DataFrame:
-    cards_list = extract_card_info()
+@dg.asset(kinds={"Polars"}, name="create_card_dataframe")
+def create_card_dataframe(extract_card_info: list) -> pl.DataFrame:
+    cards_list = extract_card_info
 
     all_flat_cards = []
 
