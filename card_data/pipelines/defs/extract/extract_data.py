@@ -102,7 +102,11 @@ def extract_card_url_from_set() -> list:
 
             data = r.json()["cards"]
 
-            set_card_urls = [f"https://api.tcgdex.net/v2/en/cards/{card['id']}" for card in data]
+            set_card_urls = [
+                f"https://api.tcgdex.net/v2/en/cards/{card['id']}"
+                for card in data
+                if '-TG' not in card['id']
+            ]
             all_card_urls.extend(set_card_urls)
 
             time.sleep(0.1)
