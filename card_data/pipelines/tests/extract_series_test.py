@@ -1,7 +1,12 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 import pytest
 import polars as pl
 import responses
-from .extract_data import extract_series_data
+from pipelines.defs.extract.extract_data import extract_series_data
 
 @pytest.fixture
 def mock_api_response():
