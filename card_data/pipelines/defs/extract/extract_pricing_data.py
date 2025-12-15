@@ -84,8 +84,6 @@ def extract_card_name(full_name: str) -> str:
     # Remove known variant types in parentheses
     # e.g., "(Secret)", "(Full Art)", "(Reverse Holofoil)", etc.
     variant_types = [
-        "Poke Ball Pattern",
-        "Master Ball Pattern",
         "Full Art",
         "Secret",
         "Reverse Holofoil",
@@ -96,7 +94,6 @@ def extract_card_name(full_name: str) -> str:
         name = name.replace(f" ({variant})", "")
 
     # Normalize accented characters (é → e, ñ → n, etc.)
-    # NFD decomposes characters into base + diacritics, then we filter out diacritics
     name = unicodedata.normalize("NFD", name)
     name = "".join(char for char in name if unicodedata.category(char) != "Mn")
 
@@ -129,9 +126,14 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
         if not is_card(card):
             continue
 
+        # Skip ball pattern variants (unique to Prismatic Evolutions)
+        card_name = card.get("name", "")
+        if "(Poke Ball Pattern)" in card_name or "(Master Ball Pattern)" in card_name:
+            continue
+
         card_info = {
             "product_id": card["productId"],
-            "name": extract_card_name(card["name"]),
+            "name": extract_card_name(card_name),
             "card_number": get_card_number(card),
             "market_price": price_dict.get(card["productId"]),
         }
