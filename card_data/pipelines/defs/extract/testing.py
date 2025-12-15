@@ -1,7 +1,7 @@
 import pytest
 import polars as pl
 import responses
-from extract_data import extract_series_data
+from .extract_data import extract_series_data
 
 @pytest.fixture
 def mock_api_response():
