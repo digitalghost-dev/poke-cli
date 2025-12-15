@@ -101,7 +101,7 @@ type cardData struct {
 // CardsList creates and returns a new CardsModel with cards from a specific set
 func CardsList(setID string) (CardsModel, error) {
 	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url,illustrator&order=localId", setID)
-	body, err := CallCardData(url)
+	body, err := getCardData(url)
 	if err != nil {
 		return CardsModel{}, fmt.Errorf("failed to fetch card data: %w", err)
 	}
@@ -119,8 +119,18 @@ func CardsList(setID string) (CardsModel, error) {
 	illustratorMap := make(map[string]string)
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
-		priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
-		illustratorMap[card.NumberPlusName] = "Illustrator: " + card.Illustrator
+		if card.MarketPrice != 0 {
+			priceMap[card.NumberPlusName] = fmt.Sprintf("Price: $%.2f", card.MarketPrice)
+		} else {
+			priceMap[card.NumberPlusName] = "Pricing not available"
+		}
+
+		if card.Illustrator != "" {
+			illustratorMap[card.NumberPlusName] = "Illustrator: " + card.Illustrator
+		} else {
+			illustratorMap[card.NumberPlusName] = "Illustrator not available"
+		}
+
 		imageMap[card.NumberPlusName] = card.ImageURL
 	}
 
@@ -148,6 +158,9 @@ func CardsList(setID string) (CardsModel, error) {
 		Table:          t,
 	}, nil
 }
+
+// creating a function variable to swap the implementation in tests
+var getCardData = CallCardData
 
 func CallCardData(url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)

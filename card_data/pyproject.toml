@@ -31,6 +31,8 @@ dev = [
     "dagster-dg-cli",
     "dagster-dbt>=0.27.3",
     "dagster-postgres>=0.27.3",
+    "pytest>=9.0.2",
+    "responses>=0.25.8",
 ]
 
 [tool.dg]

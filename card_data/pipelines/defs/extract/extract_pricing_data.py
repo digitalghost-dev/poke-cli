@@ -1,4 +1,6 @@
 from typing import Optional
+import re
+import unicodedata
 
 import dagster as dg
 import polars as pl
@@ -8,24 +10,42 @@ from termcolor import colored
 
 
 SET_PRODUCT_MATCHING = {
-    "sv01": "22873",
-    "sv02": "23120",
-    "sv03": "23228",
-    "sv03.5": "23237",
-    "sv04": "23286",
-    "sv04.5": "23353",
-    "sv05": "23381",
-    "sv06": "23473",
-    "sv06.5": "23529",
-    "sv07": "23537",
-    "sv08": "23651",
-    "sv08.5": "23821",
-    "sv09": "24073",
-    "sv10": "24269",
+    "me02": "24448",
+    "me01": "24380",
+    # Scarlet & Violet
     "sv10.5b": "24325",
     "sv10.5w": "24326",
-    "me01": "24380",
-    "me02": "24448"
+    "sv10": "24269",
+    "sv09": "24073",
+    "sv08.5": "23821",
+    "sv08": "23651",
+    "sv07": "23537",
+    "sv06.5": "23529",
+    "sv06": "23473",
+    "sv05": "23381",
+    "sv04.5": "23353",
+    "sv04": "23286",
+    "sv03.5": "23237",
+    "sv03": "23228",
+    "sv02": "23120",
+    "sv01": "22873",
+    # Sword & Shield
+    "swsh12.5": "17688",
+    "swsh12": "3170",
+    "swsh11": "3118",
+    "swsh10.5": "3064",
+    "swsh10": "3040",
+    "swsh9": "2948",
+    "swsh8": "2906",
+    "swsh7": "2848",
+    "swsh6": "2807",
+    "swsh5": "2765",
+    "swsh4.5": "2754",
+    "swsh4": "2701",
+    "swsh3.5": "2685",
+    "swsh3": "2675",
+    "swsh2": "2626",
+    "swsh1": "2585",
 }
 
 
@@ -53,8 +73,31 @@ def get_card_number(card: dict) -> Optional[str]:
 
 
 def extract_card_name(full_name: str) -> str:
-    """Extract clean card name, removing variant information after dash"""
-    return full_name.partition("-")[0].strip() if "-" in full_name else full_name
+    """Extract clean card name, removing variant information after dash and parenthetical suffixes"""
+
+    name = full_name.partition("-")[0].strip() if "-" in full_name else full_name
+
+    # Remove parenthetical card numbers like "(010)" or "(1)"
+    # Pattern: space followed by parentheses containing only digits
+    name = re.sub(r"\s+\(\d+\)$", "", name)
+
+    # Remove known variant types in parentheses
+    # e.g., "(Secret)", "(Full Art)", "(Reverse Holofoil)", etc.
+    variant_types = [
+        "Full Art",
+        "Secret",
+        "Reverse Holofoil",
+        "Rainbow Rare",
+        "Gold",
+    ]
+    for variant in variant_types:
+        name = name.replace(f" ({variant})", "")
+
+    # Normalize accented characters (é → e, ñ → n, etc.)
+    name = unicodedata.normalize("NFD", name)
+    name = "".join(char for char in name if unicodedata.category(char) != "Mn")
+
+    return name.strip()
 
 
 def pull_product_information(set_number: str) -> pl.DataFrame:
@@ -83,9 +126,14 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
         if not is_card(card):
             continue
 
+        # Skip ball pattern variants (unique to Prismatic Evolutions)
+        card_name = card.get("name", "")
+        if "(Poke Ball Pattern)" in card_name or "(Master Ball Pattern)" in card_name:
+            continue
+
         card_info = {
             "product_id": card["productId"],
-            "name": extract_card_name(card["name"]),
+            "name": extract_card_name(card_name),
             "card_number": get_card_number(card),
             "market_price": price_dict.get(card["productId"]),
         }
@@ -115,8 +163,10 @@ def build_dataframe() -> pl.DataFrame:
 
         # Raise error if any DataFrame is empty
         if df is None or df.shape[1] == 0 or df.is_empty():
-            error_msg = f"Empty DataFrame returned for set '{set_number}'. " \
-                       f"Cannot proceed with drop+replace operation to avoid data loss."
+            error_msg = (
+                f"Empty DataFrame returned for set '{set_number}'. "
+                f"Cannot proceed with drop+replace operation to avoid data loss."
+            )
             print(colored(" ✖", "red"), error_msg)
             raise ValueError(error_msg)
 

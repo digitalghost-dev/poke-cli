@@ -142,3 +142,26 @@ func TestSeriesModelView(t *testing.T) {
 		t.Errorf("Expected non-empty view for choice, got empty string")
 	}
 }
+
+func TestSeriesList(t *testing.T) {
+	model := SeriesList()
+	items := model.List.Items()
+
+	// Check that list has 3 items
+	if items == nil {
+		t.Error("SeriesList() should create a list with items")
+	}
+
+	if len(items) != 3 {
+		t.Errorf("Expected 3 items, got %d", len(items))
+	}
+
+	// Verify all three series are present
+	expectedSeries := []string{"Mega Evolution", "Scarlet & Violet", "Sword & Shield"}
+	for i, expected := range expectedSeries {
+		itemStr := string(items[i].(item))
+		if itemStr != expected {
+			t.Errorf("Expected item %d to be '%s', got '%s'", i, expected, itemStr)
+		}
+	}
+}
