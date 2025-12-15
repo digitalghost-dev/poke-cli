@@ -14,9 +14,9 @@ def mock_api_response():
     return [
         {"id": "sv", "name": "Scarlet & Violet", "logo": "https://example.com/sv.png"},
         {"id": "swsh", "name": "Sword & Shield", "logo": "https://example.com/swsh.png"},
-        {"id": "xy", "name": "XY", "logo": "https://example.com/xy.png"},  # Should be filtered out
+        {"id": "xy", "name": "XY", "logo": "https://example.com/xy.png"},
         {"id": "me", "name": "McDonald's Collection", "logo": "https://example.com/me.png"},
-        {"id": "sm", "name": "Sun & Moon", "logo": None},  # Should be filtered out
+        {"id": "sm", "name": "Sun & Moon", "logo": None},
     ]
 
 @responses.activate
