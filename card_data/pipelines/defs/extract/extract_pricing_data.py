@@ -161,8 +161,10 @@ def build_dataframe() -> pl.DataFrame:
 
         # Raise error if any DataFrame is empty
         if df is None or df.shape[1] == 0 or df.is_empty():
-            error_msg = f"Empty DataFrame returned for set '{set_number}'. " \
-                       f"Cannot proceed with drop+replace operation to avoid data loss."
+            error_msg = (
+                f"Empty DataFrame returned for set '{set_number}'. "
+                f"Cannot proceed with drop+replace operation to avoid data loss."
+            )
             print(colored(" ✖", "red"), error_msg)
             raise ValueError(error_msg)
 

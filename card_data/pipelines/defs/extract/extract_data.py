@@ -10,6 +10,7 @@ from termcolor import colored
 
 import requests
 
+
 class Series(BaseModel):
     id: str
     name: str
@@ -42,7 +43,9 @@ def extract_series_data() -> pl.DataFrame:
         print(e)
         raise
 
-    filtered = [s.model_dump(mode="json") for s in validated if s.id in ["swsh", "sv", "me"]]
+    filtered = [
+        s.model_dump(mode="json") for s in validated if s.id in ["swsh", "sv", "me"]
+    ]
     return pl.DataFrame(filtered)
 
 
@@ -68,17 +71,14 @@ def extract_set_data() -> pl.DataFrame:
                 "official_card_count": s.get("cardCount", {}).get("official"),
                 "total_card_count": s.get("cardCount", {}).get("total"),
                 "logo": s.get("logo"),
-                "symbol": s.get("symbol")
+                "symbol": s.get("symbol"),
             }
             flat.append(entry)
 
     # Pydantic validation
     try:
         validated: list[Set] = [Set(**item) for item in flat]
-        print(
-            colored(" ✓", "green"),
-            "Pydantic validation passed for all set entries."
-        )
+        print(colored(" ✓", "green"), "Pydantic validation passed for all set entries.")
     except ValidationError as e:
         print(colored(" ✖", "red"), "Pydantic validation failed.")
         print(e)
@@ -89,9 +89,7 @@ def extract_set_data() -> pl.DataFrame:
 
 @dg.asset(kinds={"API"}, name="extract_card_url_from_set_data")
 def extract_card_url_from_set() -> list:
-    urls = [
-        "https://api.tcgdex.net/v2/en/sets/me02"
-    ]
+    urls = ["https://api.tcgdex.net/v2/en/sets/me02"]
 
     all_card_urls = []
 
@@ -105,7 +103,7 @@ def extract_card_url_from_set() -> list:
             set_card_urls = [
                 f"https://api.tcgdex.net/v2/en/cards/{card['id']}"
                 for card in data
-                if '-TG' not in card['id']
+                if "-TG" not in card["id"]
             ]
             all_card_urls.extend(set_card_urls)
 
@@ -146,8 +144,19 @@ def create_card_dataframe(extract_card_info: list) -> pl.DataFrame:
         flat = {}
 
         # Copy top-level scalar values
-        scalar_keys = ['category', 'hp', 'id', 'illustrator', 'image', 'localId',
-                       'name', 'rarity', 'regulationMark', 'retreat', 'stage']
+        scalar_keys = [
+            "category",
+            "hp",
+            "id",
+            "illustrator",
+            "image",
+            "localId",
+            "name",
+            "rarity",
+            "regulationMark",
+            "retreat",
+            "stage",
+        ]
         for key in scalar_keys:
             flat[key] = card.get(key)
 
@@ -169,7 +178,7 @@ def create_card_dataframe(extract_card_info: list) -> pl.DataFrame:
 
         attacks = card.get("attacks", [])
         for i, atk in enumerate(attacks):
-            prefix = f"attack_{i+1}"
+            prefix = f"attack_{i + 1}"
             flat[f"{prefix}_name"] = atk.get("name")
             flat[f"{prefix}_damage"] = atk.get("damage")
             flat[f"{prefix}_effect"] = atk.get("effect")
