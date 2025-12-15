@@ -192,7 +192,7 @@ Below is a list of the planned/completed commands and flags:
 - [ ] `card`: get data about a TCG card.
     - [x] add mega evolution data
     - [x] add scarlet & violet data
-    - [ ] add sword & shield data
+    - [x] add sword & shield data
     - [ ] add sun & moon data
     - [ ] add x & y data
 - [x] `item`: get data about an item.
