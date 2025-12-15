@@ -1,4 +1,6 @@
 from typing import Optional
+import re
+import unicodedata
 
 import dagster as dg
 import polars as pl
@@ -53,8 +55,34 @@ def get_card_number(card: dict) -> Optional[str]:
 
 
 def extract_card_name(full_name: str) -> str:
-    """Extract clean card name, removing variant information after dash"""
-    return full_name.partition("-")[0].strip() if "-" in full_name else full_name
+    """Extract clean card name, removing variant information after dash and parenthetical suffixes"""
+
+    name = full_name.partition("-")[0].strip() if "-" in full_name else full_name
+
+    # Remove parenthetical card numbers like "(010)" or "(1)"
+    # Pattern: space followed by parentheses containing only digits
+    name = re.sub(r"\s+\(\d+\)$", "", name)
+
+    # Remove known variant types in parentheses
+    # e.g., "(Secret)", "(Full Art)", "(Reverse Holofoil)", etc.
+    variant_types = [
+        "Poke Ball Pattern",
+        "Master Ball Pattern",
+        "Full Art",
+        "Secret",
+        "Reverse Holofoil",
+        "Rainbow Rare",
+        "Gold",
+    ]
+    for variant in variant_types:
+        name = name.replace(f" ({variant})", "")
+
+    # Normalize accented characters (é → e, ñ → n, etc.)
+    # NFD decomposes characters into base + diacritics, then we filter out diacritics
+    name = unicodedata.normalize("NFD", name)
+    name = "".join(char for char in name if unicodedata.category(char) != "Mn")
+
+    return name.strip()
 
 
 def pull_product_information(set_number: str) -> pl.DataFrame:
