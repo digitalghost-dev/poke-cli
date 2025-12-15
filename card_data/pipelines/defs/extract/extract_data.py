@@ -42,7 +42,7 @@ def extract_series_data() -> pl.DataFrame:
         print(e)
         raise
 
-    filtered = [s.model_dump(mode="json") for s in validated if s.id in ["sm", "swsh", "sv", "me"]]
+    filtered = [s.model_dump(mode="json") for s in validated if s.id in ["swsh", "sv", "me"]]
     return pl.DataFrame(filtered)
 
 
@@ -52,7 +52,6 @@ def extract_set_data() -> pl.DataFrame:
         "https://api.tcgdex.net/v2/en/series/me",
         "https://api.tcgdex.net/v2/en/series/sv",
         "https://api.tcgdex.net/v2/en/series/swsh",
-        "https://api.tcgdex.net/v2/en/series/sm",
     ]
 
     flat: list[dict] = []
