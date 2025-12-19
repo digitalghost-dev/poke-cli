@@ -57,8 +57,6 @@ func header(header string) string {
 }
 
 func SetupPokemonFlagSet() *PokemonFlags {
-	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
-
 	pf := &PokemonFlags{}
 	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
@@ -82,7 +80,7 @@ func SetupPokemonFlagSet() *PokemonFlags {
 
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
-	pokeFlags.Usage = func() {
+	pf.FlagSet.Usage = func() {
 		helpMessage := styling.HelpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
