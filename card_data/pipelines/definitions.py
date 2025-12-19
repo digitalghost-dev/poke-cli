@@ -22,7 +22,7 @@ pricing_pipeline_job: dg.UnresolvedAssetJobDefinition = dg.define_asset_job(
 
 price_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
     name="price_schedule",
-    cron_schedule="31 21 * * *",
+    cron_schedule="0 14 * * *",
     target=pricing_pipeline_job,
     execution_timezone="America/Los_Angeles",
 )
