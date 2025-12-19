@@ -25,6 +25,22 @@ import (
 	"golang.org/x/text/language"
 )
 
+type PokemonFlags struct {
+	FlagSet        *flag.FlagSet
+	Abilities      *bool
+	ShortAbilities *bool
+	Defense        *bool
+	ShortDefense   *bool
+	Image          *string
+	ShortImage     *string
+	Move           *bool
+	ShortMove      *bool
+	Stats          *bool
+	ShortStats     *bool
+	Types          *bool
+	ShortTypes     *bool
+}
+
 func header(header string) string {
 	var output strings.Builder
 
@@ -40,26 +56,29 @@ func header(header string) string {
 	return output.String()
 }
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool, *bool, *bool) {
+func SetupPokemonFlagSet() *PokemonFlags {
 	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
-	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the Pokémon's abilities")
-	shortAbilitiesFlag := pokeFlags.Bool("a", false, "Print the Pokémon's abilities")
+	pf := &PokemonFlags{}
+	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
-	defenseFlag := pokeFlags.Bool("defense", false, "Print the Pokémon's type defenses")
-	shortDefenseFlag := pokeFlags.Bool("d", false, "Print the Pokémon's type defenses")
+	pf.Abilities = pf.FlagSet.Bool("abilities", false, "Print the Pokémon's abilities")
+	pf.ShortAbilities = pf.FlagSet.Bool("a", false, "Print the Pokémon's abilities")
 
-	imageFlag := pokeFlags.String("image", "", "Print the Pokémon's default sprite")
-	shortImageFlag := pokeFlags.String("i", "", "Print the Pokémon's default sprite")
+	pf.Defense = pf.FlagSet.Bool("defense", false, "Print the Pokémon's type defenses")
+	pf.ShortDefense = pf.FlagSet.Bool("d", false, "Print the Pokémon's type defenses")
 
-	moveFlag := pokeFlags.Bool("moves", false, "Print the Pokémon's learnable moves")
-	shortMoveFlag := pokeFlags.Bool("m", false, "Print the Pokémon's learnable moves")
+	pf.Image = pf.FlagSet.String("image", "", "Print the Pokémon's default sprite")
+	pf.ShortImage = pf.FlagSet.String("i", "", "Print the Pokémon's default sprite")
 
-	statsFlag := pokeFlags.Bool("stats", false, "Print the Pokémon's base stats")
-	shortStatsFlag := pokeFlags.Bool("s", false, "Print the Pokémon's base stats")
+	pf.Move = pf.FlagSet.Bool("moves", false, "Print the Pokémon's learnable moves")
+	pf.ShortMove = pf.FlagSet.Bool("m", false, "Print the Pokémon's learnable moves")
 
-	typesFlag := pokeFlags.Bool("types", false, "Print the Pokémon's typing")
-	shortTypesFlag := pokeFlags.Bool("t", false, "Prints the Pokémon's typing")
+	pf.Stats = pf.FlagSet.Bool("stats", false, "Print the Pokémon's base stats")
+	pf.ShortStats = pf.FlagSet.Bool("s", false, "Print the Pokémon's base stats")
+
+	pf.Types = pf.FlagSet.Bool("types", false, "Print the Pokémon's typing")
+	pf.ShortTypes = pf.FlagSet.Bool("t", false, "Prints the Pokémon's typing")
 
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
@@ -78,7 +97,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *string, 
 		fmt.Println(helpMessage)
 	}
 
-	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, defenseFlag, shortDefenseFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
+	return pf
 }
 
 func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {

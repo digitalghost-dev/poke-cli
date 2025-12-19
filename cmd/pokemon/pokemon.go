@@ -45,7 +45,7 @@ func PokemonCommand() (string, error) {
 		output.WriteString(helpMessage)
 	}
 
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, defenseFlag, shortDefenseFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := flags.SetupPokemonFlagSet()
+	pf := flags.SetupPokemonFlagSet()
 
 	args := os.Args
 
@@ -65,9 +65,9 @@ func PokemonCommand() (string, error) {
 	endpoint := strings.ToLower(args[1])
 	pokemonName := strings.ToLower(args[2])
 
-	if err := pokeFlags.Parse(args[3:]); err != nil {
+	if err := pf.FlagSet.Parse(args[3:]); err != nil {
 		fmt.Printf("error parsing flags: %v\n", err)
-		pokeFlags.Usage()
+		pf.FlagSet.Usage()
 		os.Exit(1)
 	}
 
@@ -199,11 +199,11 @@ func PokemonCommand() (string, error) {
 		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(),
 	))
 
-	if *imageFlag != "" || *shortImageFlag != "" {
+	if *pf.Image != "" || *pf.ShortImage != "" {
 		// Determine the size based on the provided flags
-		size := *imageFlag
-		if *shortImageFlag != "" {
-			size = *shortImageFlag
+		size := *pf.Image
+		if *pf.ShortImage != "" {
+			size = *pf.ShortImage
 		}
 
 		// Call the ImageFlag function with the specified size
@@ -217,11 +217,11 @@ func PokemonCommand() (string, error) {
 		condition bool
 		flagFunc  func(io.Writer, string, string) error
 	}{
-		{*abilitiesFlag || *shortAbilitiesFlag, flags.AbilitiesFlag},
-		{*defenseFlag || *shortDefenseFlag, flags.DefenseFlag},
-		{*moveFlag || *shortMoveFlag, flags.MovesFlag},
-		{*typesFlag || *shortTypesFlag, flags.TypesFlag},
-		{*statsFlag || *shortStatsFlag, flags.StatsFlag},
+		{*pf.Abilities || *pf.ShortAbilities, flags.AbilitiesFlag},
+		{*pf.Defense || *pf.ShortDefense, flags.DefenseFlag},
+		{*pf.Move || *pf.ShortMove, flags.MovesFlag},
+		{*pf.Stats || *pf.ShortStats, flags.StatsFlag},
+		{*pf.Types || *pf.ShortTypes, flags.TypesFlag},
 	}
 
 	for _, check := range flagChecks {

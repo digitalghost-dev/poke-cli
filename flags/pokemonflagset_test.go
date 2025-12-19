@@ -13,28 +13,28 @@ import (
 )
 
 func TestSetupPokemonFlagSet(t *testing.T) {
-	pokeFlags, abilitiesFlag, shortAbilitiesFlag, defenseFlag, shortDefenseFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag := SetupPokemonFlagSet()
+	pf := SetupPokemonFlagSet()
 
-	assert.NotNil(t, pokeFlags, "Flag set should not be nil")
-	assert.Equal(t, "pokeFlags", pokeFlags.Name(), "Flag set name should be 'pokeFlags'")
+	assert.NotNil(t, pf, "Flag set should not be nil")
+	assert.Equal(t, "pokeFlags", pf.FlagSet.Name(), "Flag set name should be 'pokeFlags'")
 
 	flagTests := []struct {
 		flag     interface{}
 		expected interface{}
 		name     string
 	}{
-		{abilitiesFlag, false, "Abilities flag should be 'abilities'"},
-		{shortAbilitiesFlag, false, "Short abilities flag should be 'a'"},
-		{defenseFlag, false, "Defense flag should be 'defense'"},
-		{shortDefenseFlag, false, "Short Defense flag should be 'd'"},
-		{imageFlag, "", "Image flag default value should be 'md'"},
-		{shortImageFlag, "", "Short image flag default value should be 'md'"},
-		{moveFlag, false, "Move flag default value should be 'moves'"},
-		{shortMoveFlag, false, "Short move flag default value should be 'm'"},
-		{typesFlag, false, "Types flag should be 'types'"},
-		{shortTypesFlag, false, "Short types flag should be 't'"},
-		{statsFlag, false, "Stats flag should be 'stats'"},
-		{shortStatsFlag, false, "Short stats flag should be 's'"},
+		{pf.Abilities, false, "Abilities flag should be 'abilities'"},
+		{pf.ShortAbilities, false, "Short abilities flag should be 'a'"},
+		{pf.Defense, false, "Defense flag should be 'defense'"},
+		{pf.ShortDefense, false, "Short Defense flag should be 'd'"},
+		{pf.Image, "", "Image flag default value should be 'md'"},
+		{pf.ShortImage, "", "Short image flag default value should be 'md'"},
+		{pf.Move, false, "Move flag default value should be 'moves'"},
+		{pf.ShortMove, false, "Short move flag default value should be 'm'"},
+		{pf.Types, false, "Types flag should be 'types'"},
+		{pf.Stats, false, "Stats flag should be 'stats'"},
+		{pf.ShortStats, false, "Short stats flag should be 's'"},
+		{pf.ShortTypes, false, "Short types flag should be 't'"},
 	}
 
 	for _, tt := range flagTests {
