@@ -100,11 +100,18 @@ def extract_card_url_from_set() -> list:
 
             data = r.json()["cards"]
 
-            set_card_urls = [
-                f"https://api.tcgdex.net/v2/en/cards/{card['id']}"
-                for card in data
-                if "-TG" not in card["id"]
-            ]
+            # This could be a list comprehension, but I find those hard to read so, I prefer to use .append
+            set_card_urls = []
+            for card in data:
+                card_id = card['id']
+
+                # Skip special variant cards (Trainer Gallery and Shiny Vault)
+                if "-TG" in card_id or "-SV" in card_id or "-GG" in card_id:
+                    continue
+
+                url = f"https://api.tcgdex.net/v2/en/cards/{card_id}"
+                set_card_urls.append(url)
+
             all_card_urls.extend(set_card_urls)
 
             time.sleep(0.1)
