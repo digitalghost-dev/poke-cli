@@ -31,7 +31,7 @@ func AbilityCommand() (string, error) {
 		output.WriteString(helpMessage)
 	}
 
-	abilityFlags, pokemonFlag, shortPokemonFlag := flags.SetupAbilityFlagSet()
+	af := flags.SetupAbilityFlagSet()
 
 	args := os.Args
 
@@ -50,9 +50,9 @@ func AbilityCommand() (string, error) {
 	endpoint := strings.ToLower(args[1])
 	abilityName := strings.ToLower(args[2])
 
-	if err := abilityFlags.Parse(args[3:]); err != nil {
+	if err := af.FlagSet.Parse(args[3:]); err != nil {
 		output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
-		abilityFlags.Usage()
+		af.FlagSet.Usage()
 
 		return output.String(), err
 	}
@@ -100,7 +100,7 @@ func AbilityCommand() (string, error) {
 		output.WriteString(fmt.Sprintf("%s Effect: %s", styling.ColoredBullet, englishShortEffect))
 	}
 
-	if *pokemonFlag || *shortPokemonFlag {
+	if *af.Pokemon || *af.ShortPokemon {
 		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
 			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 			return output.String(), fmt.Errorf("error parsing flags: %w", err)

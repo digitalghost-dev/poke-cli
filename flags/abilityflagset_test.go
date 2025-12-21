@@ -3,28 +3,29 @@ package flags
 import (
 	"bytes"
 	"fmt"
-	"github.com/digitalghost-dev/poke-cli/styling"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSetupAbilityFlagSet(t *testing.T) {
-	abilityFlags, pokemonFlag, shortPokemonFlag := SetupAbilityFlagSet()
+	af := SetupAbilityFlagSet()
 
-	assert.NotNil(t, abilityFlags, "Flag set should not be nil")
-	assert.Equal(t, "AbilityFlagSet", abilityFlags.Name(), "Flag set name should be 'AbilityFlagSet'")
+	assert.NotNil(t, af, "Flag set should not be nil")
+	assert.Equal(t, "abilityFlags", af.FlagSet.Name(), "Flag set name should be 'abilityFlags'")
 
 	flagTests := []struct {
 		flag     interface{}
 		expected interface{}
 		name     string
 	}{
-		{pokemonFlag, false, "Pokemon flag should be 'pokemon'"},
-		{shortPokemonFlag, false, "Short pokemon flag should be 'p'"},
+		{af.Pokemon, false, "Pokemon flag should be 'pokemon'"},
+		{af.ShortPokemon, false, "Short pokemon flag should be 'p'"},
 	}
 
 	for _, tt := range flagTests {
