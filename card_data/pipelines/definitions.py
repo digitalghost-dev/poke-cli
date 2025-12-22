@@ -15,7 +15,7 @@ def defs() -> dg.Definitions:
     return dg.Definitions.merge(folder_defs, defs_pricing)
 
 # Define the pricing pipeline job that materializes the assets and downstream dbt model
-pricing_pipeline_job: dg.UnresolvedAssetJobDefinition = dg.define_asset_job(
+pricing_pipeline_job = dg.define_asset_job(
     name="pricing_pipeline_job",
     selection=dg.AssetSelection.assets(build_dataframe).downstream(include_self=True),
 )
