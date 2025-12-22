@@ -1,16 +1,13 @@
-import dagster as dg
-from dagster import RetryPolicy, Backoff
-from sqlalchemy.exc import OperationalError
-from ..extract.extract_data import (
-    extract_series_data,
-    extract_set_data,
-    create_card_dataframe,
-)
-from ...utils.secret_retriever import fetch_secret
-from termcolor import colored
-import subprocess
+import subprocess  # nosec
 from pathlib import Path
+
+import dagster as dg
 import polars as pl
+from dagster import Backoff, RetryPolicy
+from sqlalchemy.exc import OperationalError
+from termcolor import colored
+
+from ...utils.secret_retriever import fetch_secret
 
 
 @dg.asset(
