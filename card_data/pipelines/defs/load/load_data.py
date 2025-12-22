@@ -16,7 +16,7 @@ import polars as pl
 @dg.asset(
     kinds={"Supabase", "Postgres"},
     name="load_series_data",
-    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
+    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL),
 )
 def load_series_data(extract_series_data: pl.DataFrame) -> None:
     database_url: str = fetch_secret()
@@ -33,11 +33,7 @@ def load_series_data(extract_series_data: pl.DataFrame) -> None:
         raise
 
 
-@dg.asset(
-    deps=[load_series_data],
-    kinds={"Soda"},
-    name="quality_checks_series"
-)
+@dg.asset(deps=[load_series_data], kinds={"Soda"}, name="quality_checks_series")
 def data_quality_check_on_series() -> None:
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
@@ -64,13 +60,15 @@ def data_quality_check_on_series() -> None:
         print(result.stderr)
 
     if result.returncode != 0:
-        raise Exception(f"Soda data quality checks failed with return code {result.returncode}")
+        raise Exception(
+            f"Soda data quality checks failed with return code {result.returncode}"
+        )
 
 
 @dg.asset(
     kinds={"Supabase", "Postgres"},
     name="load_set_data",
-    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
+    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL),
 )
 def load_set_data(extract_set_data: pl.DataFrame) -> None:
     database_url: str = fetch_secret()
@@ -90,7 +88,7 @@ def load_set_data(extract_set_data: pl.DataFrame) -> None:
 @dg.asset(
     kinds={"Supabase", "Postgres"},
     name="load_card_data",
-    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL)
+    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL),
 )
 def load_card_data(create_card_dataframe: pl.DataFrame) -> None:
     database_url: str = fetch_secret()
