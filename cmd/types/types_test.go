@@ -159,3 +159,21 @@ func TestView(t *testing.T) {
 		assert.Contains(t, view, "move up", "View should contain the key menu")
 	})
 }
+
+func TestTypeSelection(t *testing.T) {
+	m := createTypeSelectionTable()
+
+	testModel := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(300, 500))
+
+	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
+	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
+	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
+	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
+
+	final := testModel.FinalModel(t).(model)
+
+	if final.selectedOption != "Water" {
+		t.Errorf("Expected selectedOption to be 'Water', got '%s'", final.selectedOption)
+	}
+}

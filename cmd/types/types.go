@@ -43,7 +43,10 @@ func TypesCommand() (string, error) {
 	}
 
 	endpoint := strings.ToLower(os.Args[1])[0:4]
-	tableGeneration(endpoint)
+	if err := runTypeSelectionTable(endpoint); err != nil {
+		output.WriteString(err.Error())
+		return output.String(), err
+	}
 
 	return output.String(), nil
 }
@@ -98,8 +101,7 @@ func (m model) View() string {
 		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)"))
 }
 
-// Function that generates and handles the type selection table
-func tableGeneration(endpoint string) {
+func createTypeSelectionTable() model {
 	types := []string{"Normal", "Fire", "Water", "Electric", "Grass", "Ice",
 		"Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Dark",
 		"Rock", "Ghost", "Dragon", "Steel", "Fairy"}
@@ -109,15 +111,13 @@ func tableGeneration(endpoint string) {
 		rows[i] = []string{t}
 	}
 
-	// Initialize table with configuration
-	t := table.New(
+	tbl := table.New(
 		table.WithColumns([]table.Column{{Title: "Type", Width: 16}}),
 		table.WithRows(rows),
 		table.WithFocused(true),
-		table.WithHeight(7),
+		table.WithHeight(10),
 	)
 
-	// Set table styles
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
@@ -126,18 +126,22 @@ func tableGeneration(endpoint string) {
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("#000")).
 		Background(lipgloss.Color("#FFCC00"))
-	t.SetStyles(s)
+	tbl.SetStyles(s)
 
-	m := model{table: t}
+	return model{table: tbl}
+}
+
+func runTypeSelectionTable(endpoint string) error {
+	m := createTypeSelectionTable()
+
 	programModel, err := tea.NewProgram(m).Run()
-
 	if err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+		return fmt.Errorf("error running program: %w", err)
 	}
 
-	// Only show damage table if a type was actually selected (not when quitting)
 	if finalModel, ok := programModel.(model); ok && finalModel.selectedOption != "" {
 		DamageTable(strings.ToLower(finalModel.selectedOption), endpoint)
 	}
+
+	return nil
 }
