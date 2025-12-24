@@ -4,7 +4,7 @@ weight: 5
 
 # 5 // Cloud Deployment
 Once the services are created and configured in AWS, the virtual machine can be set up with the needed 
-tools/libraries to run the data pipelines in Dagster.
+tools/libraries to run the data pipelines in Dagster on a schedule.
 
 ## Installing Tools and Libraries
 Connect to the virtual machine and run the following commands to get everything set up:
@@ -54,15 +54,15 @@ Connect to the virtual machine and run the following commands to get everything 
       ```shell
       git config core.sparseCheckout true
       ```
-    * Tell `git` which directory to check out. Then, pull that directory.
+    * Tell `git` which directory to check out. Then, pull that directory:
       ```shell
       echo "card_data/" >> .git/info/sparse-checkout
       ```
-    * Pull the repo into the local directory
+    * Pull the repository into the local directory:
       ```shell
       git pull origin main
       ```
-    * Verify that `card_data/` directory was created.
+    * Verify that `card_data/` directory was created:
       ```shell
       ls
       ```
