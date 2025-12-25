@@ -10,6 +10,8 @@ from termcolor import colored
 
 import requests
 
+from ...utils.json_retriever import fetch_json
+
 
 class Series(BaseModel):
     id: str
@@ -30,7 +32,7 @@ class Set(BaseModel):
 @dg.asset(kinds={"API", "Polars", "Pydantic"})
 def extract_series_data() -> pl.DataFrame:
     url: str = "https://api.tcgdex.net/v2/en/series"
-    data = requests.get(url).json()
+    data: dict = fetch_json(url)
 
     # Pydantic validation
     try:
@@ -60,7 +62,7 @@ def extract_set_data() -> pl.DataFrame:
     flat: list[dict] = []
 
     for url in url_list:
-        data = requests.get(url).json()
+        data: dict = fetch_json(url)
         series_id = data.get("id")
 
         for s in data.get("sets", []):
@@ -95,10 +97,7 @@ def extract_card_url_from_set() -> list:
 
     for url in urls:
         try:
-            r = requests.get(url)
-            r.raise_for_status()
-
-            data = r.json()["cards"]
+            data: dict = fetch_json(url)["cards"]
 
             # This could be a list comprehension, but I find those hard to read so, I prefer to use .append
             set_card_urls = []
@@ -116,7 +115,7 @@ def extract_card_url_from_set() -> list:
 
             time.sleep(0.1)
 
-        except requests.RequestException as e:
+        except (requests.RequestException, requests.Timeout, KeyError) as e:
             print(f"Failed to fetch set {url}: {e}")
 
     return all_card_urls
@@ -129,13 +128,11 @@ def extract_card_info(extract_card_url_from_set_data: list) -> list:
 
     for url in card_url_list:
         try:
-            r = requests.get(url)
-            r.raise_for_status()
-            data = r.json()
+            data: dict = fetch_json(url)
             cards_list.append(data)
             print(f"Retrieved card: {data['id']} - {data.get('name', 'Unknown')}")
             time.sleep(0.1)
-        except requests.RequestException as e:
+        except (requests.RequestException, requests.Timeout, KeyError) as e:
             print(f"Failed to fetch {url}: {e}")
 
     return cards_list
