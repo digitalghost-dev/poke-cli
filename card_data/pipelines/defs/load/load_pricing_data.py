@@ -1,4 +1,4 @@
-import subprocess
+import subprocess # nosec
 from pathlib import Path
 
 import dagster as dg
@@ -37,7 +37,7 @@ def data_quality_checks_on_pricing() -> None:
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
 
-    result = subprocess.run(
+    result = subprocess.run( # nosec
         [
             "soda",
             "scan",

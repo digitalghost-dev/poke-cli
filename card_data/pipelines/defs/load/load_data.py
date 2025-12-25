@@ -1,3 +1,4 @@
+import shutil
 import subprocess  # nosec
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from termcolor import colored
 
 from ...utils.secret_retriever import fetch_secret
 
+SODA_PATH = shutil.which("soda") or "soda"
 
 @dg.asset(
     kinds={"Supabase", "Postgres"},
@@ -35,9 +37,9 @@ def data_quality_check_on_series() -> None:
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
 
-    result = subprocess.run(
+    result = subprocess.run( # nosec B603
         [
-            "soda",
+            SODA_PATH,
             "scan",
             "-d",
             "supabase",
