@@ -1,0 +1,10 @@
+title = "Custom Gitleaks configuration"
+
+[extend]
+# Extends the default gitleaks config
+
+[allowlist]
+regexTarget = "match"
+regexes = [
+  '''sb_publishable_[A-Za-z0-9_-]+'''
+]
