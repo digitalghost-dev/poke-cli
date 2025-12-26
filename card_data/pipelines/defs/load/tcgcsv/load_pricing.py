@@ -7,7 +7,7 @@ from dagster import RetryPolicy, Backoff
 from sqlalchemy.exc import OperationalError
 from termcolor import colored
 
-from ...utils.secret_retriever import fetch_secret
+from ....utils.secret_retriever import fetch_secret
 
 
 @dg.asset(
@@ -44,8 +44,8 @@ def data_quality_checks_on_pricing() -> None:
             "-d",
             "supabase",
             "-c",
-            "../../soda/configuration.yml",
-            "../../soda/checks_pricing.yml",
+            "../../../soda/configuration.yml",
+            "../../../soda/checks_pricing.yml",
         ],
         capture_output=True,
         text=True,
