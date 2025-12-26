@@ -33,7 +33,7 @@ def load_series_data(extract_series_data: pl.DataFrame) -> None:
         raise
 
 
-@dg.asset(deps=[load_series_data], kinds={"Soda"}, name="quality_checks_series")
+@dg.asset(deps=[load_series_data], kinds={"Soda"}, name="data_quality_checks_on_series")
 def data_quality_check_on_series() -> None:
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
@@ -46,7 +46,7 @@ def data_quality_check_on_series() -> None:
             "supabase",
             "-c",
             "../../../soda/configuration.yml",
-            "../../../soda/checks.yml",
+            "../../../soda/series_checks.yml",
         ],
         capture_output=True,
         text=True,

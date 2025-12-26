@@ -13,8 +13,8 @@ class CustomDbtTranslator(DagsterDbtTranslator):
         if resource_type == "source":
             # Map staging sources to load assets
             source_mapping = {
-                "series": "quality_checks_series",
-                "sets": "load_set_data",
+                "series": "data_quality_checks_on_series",
+                "sets": "data_quality_checks_on_sets",
                 "cards": "load_card_data",
                 "pricing_data": "data_quality_checks_on_pricing",
             }
