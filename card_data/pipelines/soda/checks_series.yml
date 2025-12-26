@@ -23,4 +23,3 @@ checks for series:
   # Data format validation - URL pattern check
   - invalid_count(logo) = 0:
       valid regex: '^https://.*'
-

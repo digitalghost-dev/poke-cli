@@ -1,0 +1,37 @@
+checks for sets:
+  # Row count validation
+  - row_count = 39
+
+  # Schema validation checks
+  - schema:
+      fail:
+        when required column missing: [series_id, set_id, set_name, official_card_count, total_card_count]
+        when wrong column type:
+          series_id: text
+          set_id: text
+          set_name: text
+          official_card_count: bigint
+          total_card_count: bigint
+          logo: text
+          symbol: text
+
+  # Completeness checks (required fields should not be null)
+  - missing_count(series_id) = 0
+  - missing_count(set_id) = 0
+  - missing_count(set_name) = 0
+  - missing_count(total_card_count) = 0
+
+  # Data uniqueness checks
+  - duplicate_count(set_id) = 0
+  - duplicate_count(set_name) = 0
+
+  # Data validity checks
+  - invalid_count(total_card_count) = 0:
+      valid min: 1
+
+  # URL format validation (only for non-null logos)
+  - invalid_count(logo) = 0:
+      valid regex: '^https://.*'
+
+  # Foreign key check - series_id should reference existing series
+  - values in (series_id) must exist in series (id)
