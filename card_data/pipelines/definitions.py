@@ -4,8 +4,8 @@ from dagster import definitions, load_from_defs_folder
 
 import dagster as dg
 
-from .defs.extract.extract_pricing_data import build_dataframe
-from .defs.load.load_pricing_data import load_pricing_data, data_quality_checks_on_pricing
+from .defs.extract.tcgcsv.extract_pricing import build_dataframe
+from .defs.load.tcgcsv.load_pricing import load_pricing_data, data_quality_checks_on_pricing
 
 
 @definitions
