@@ -18,8 +18,8 @@ class Set(BaseModel):
     symbol: Optional[str] = None
 
 
-@dg.asset(kinds={"API", "Polars", "Pydantic"}, name="extract_set_data")
-def extract_set_data() -> pl.DataFrame:
+@dg.asset(kinds={"API", "Polars", "Pydantic"}, name="extract_sets_data")
+def extract_sets_data() -> pl.DataFrame:
     url_list = [
         "https://api.tcgdex.net/v2/en/series/me",
         "https://api.tcgdex.net/v2/en/series/sv",
