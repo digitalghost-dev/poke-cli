@@ -87,7 +87,12 @@ func TestSearchCommand(t *testing.T) {
 						}
 					}
 				}()
-				SearchCommand()
+				err := SearchCommand()
+				if tt.expectedError {
+					assert.Error(t, err)
+				} else {
+					assert.NoError(t, err)
+				}
 			})
 
 			strippedOutput := styling.StripANSI(output)
