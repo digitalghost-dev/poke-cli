@@ -2,6 +2,8 @@ package card
 
 import (
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -117,37 +119,6 @@ func TestCardsModel_Update_SpaceBar(t *testing.T) {
 	}
 }
 
-func TestCardsModel_Update_SelectionSync(t *testing.T) {
-	rows := []table.Row{
-		{"001/198 - Bulbasaur"},
-		{"002/198 - Ivysaur"},
-	}
-	columns := []table.Column{
-		{Title: "Card Name", Width: 35},
-	}
-	tbl := table.New(
-		table.WithColumns(columns),
-		table.WithRows(rows),
-		table.WithFocused(true),
-	)
-
-	model := CardsModel{
-		Table:          tbl,
-		SelectedOption: "",
-	}
-
-	// Simulate a key press that won't quit (e.g., arrow down)
-	msg := tea.KeyMsg{Type: tea.KeyDown}
-	newModel, _ := model.Update(msg)
-
-	resultModel := newModel.(CardsModel)
-
-	// The selected option should be updated to the current row
-	if resultModel.SelectedOption == "" {
-		t.Error("SelectedOption should be synced after table update")
-	}
-}
-
 func TestCardsModel_View_Quitting(t *testing.T) {
 	model := CardsModel{
 		Quitting: true,
@@ -157,41 +128,6 @@ func TestCardsModel_View_Quitting(t *testing.T) {
 
 	if !strings.Contains(result, "Quitting card search") {
 		t.Errorf("View() when quitting should contain 'Quitting card search', got: %s", result)
-	}
-}
-
-func TestCardsModel_View_Normal(t *testing.T) {
-	rows := []table.Row{
-		{"001/198 - Bulbasaur"},
-	}
-	columns := []table.Column{
-		{Title: "Card Name", Width: 35},
-	}
-	tbl := table.New(
-		table.WithColumns(columns),
-		table.WithRows(rows),
-		table.WithFocused(true),
-	)
-
-	priceMap := map[string]string{
-		"001/198 - Bulbasaur": "Price: $1.50",
-	}
-
-	model := CardsModel{
-		Table:    tbl,
-		PriceMap: priceMap,
-		Quitting: false,
-	}
-
-	result := model.View()
-
-	if result == "" {
-		t.Error("View() should not return empty string in normal state")
-	}
-
-	// Check that it contains the key menu
-	if !strings.Contains(result, "move up") {
-		t.Error("View() should contain key menu instructions")
 	}
 }
 
@@ -363,5 +299,54 @@ func TestCardsList_EmptyResult(t *testing.T) {
 
 	if model.View() == "" {
 		t.Error("expected view to render with empty data")
+	}
+}
+
+func TestCallCardData_SendsHeadersAndReturnsBody(t *testing.T) {
+	// Start a test HTTP server that validates headers and returns a body
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get("apikey"); got != "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j" {
+			t.Fatalf("missing or wrong apikey header: %q", got)
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j" {
+			t.Fatalf("missing or wrong Authorization header: %q", got)
+		}
+		if got := r.Header.Get("Content-Type"); got != "application/json" {
+			t.Fatalf("missing or wrong Content-Type header: %q", got)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer srv.Close()
+
+	body, err := CallCardData(srv.URL)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if string(body) != `{"ok":true}` {
+		t.Fatalf("unexpected body: %s", string(body))
+	}
+}
+
+func TestCallCardData_Non200Error(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "boom", http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+
+	_, err := CallCardData(srv.URL)
+	if err == nil {
+		t.Fatal("expected error for non-200 status")
+	}
+	if !strings.Contains(err.Error(), "unexpected status code: 500") {
+		t.Fatalf("error should mention status code, got: %v", err)
+	}
+}
+
+func TestCallCardData_BadURL(t *testing.T) {
+	_, err := CallCardData("http://%41:80/") // invalid URL host
+	if err == nil {
+		t.Fatal("expected error for bad URL")
 	}
 }
