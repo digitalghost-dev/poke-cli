@@ -44,7 +44,10 @@ func BerryCommand() (string, error) {
 		return output.String(), err
 	}
 
-	tableGeneration()
+	if err := tableGeneration(); err != nil {
+		output.WriteString(err.Error())
+		return output.String(), err
+	}
 
 	return output.String(), nil
 }
@@ -114,7 +117,7 @@ func (m model) View() string {
 		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit)"))
 }
 
-func tableGeneration() {
+func tableGeneration() error {
 	namesList, err := connections.QueryBerryData(`
 		SELECT 
 		    UPPER(SUBSTR(name, 1, 1)) || SUBSTR(name, 2)
@@ -152,7 +155,8 @@ func tableGeneration() {
 	_, err = tea.NewProgram(m).Run()
 
 	if err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+		return fmt.Errorf("error running program: %w", err)
 	}
+
+	return nil
 }

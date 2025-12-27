@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -391,14 +390,14 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	imageResp, err := http.Get(pokemonStruct.Sprites.FrontDefault)
 	if err != nil {
 		fmt.Println("Error downloading sprite image:", err)
-		os.Exit(1)
+		return err
 	}
 	defer imageResp.Body.Close()
 
 	img, err := imaging.Decode(imageResp.Body)
 	if err != nil {
 		fmt.Println("Error decoding image:", err)
-		os.Exit(1)
+		return err
 	}
 
 	// Define size map

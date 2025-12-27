@@ -11,7 +11,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func SearchCommand() {
+func SearchCommand() error {
 	flag.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Search for a resource by name or partial match.\n\n",
@@ -29,19 +29,21 @@ func SearchCommand() {
 
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
-		return
+		return nil
 	}
 
 	if err := utils.ValidateSearchArgs(os.Args); err != nil {
 		fmt.Println(err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		fmt.Println("could not start program:", err)
-		os.Exit(1)
+		return err
 	}
+
+	return nil
 }
 
 // Model structure

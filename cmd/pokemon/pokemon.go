@@ -68,7 +68,7 @@ func PokemonCommand() (string, error) {
 	if err := pf.FlagSet.Parse(args[3:]); err != nil {
 		fmt.Printf("error parsing flags: %v\n", err)
 		pf.FlagSet.Usage()
-		os.Exit(1)
+		return output.String(), err
 	}
 
 	pokemonStruct, pokemonName, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
