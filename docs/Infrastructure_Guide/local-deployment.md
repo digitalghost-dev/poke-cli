@@ -108,7 +108,7 @@ This project currently has 4 pipelines:
 2. On the top bar, click on **Assets**.
 3. Select the assets to materialize. For initial setup, select:
     - `extract_series_data`
-    - `extract_set_data`
+    - `extract_sets_data`
     - `load_series_data`
     - `load_set_data`
 4. Click **Materialize selected** in the top right.
