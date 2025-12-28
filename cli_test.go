@@ -137,6 +137,7 @@ func TestRunCLI_VariousCommands(t *testing.T) {
 		{"Latest flag short", []string{"-l"}, 0},
 		{"Version flag long", []string{"--version"}, 0},
 		{"Version flag short", []string{"-v"}, 0},
+		{"Search command with invalid args", []string{"search", "pokemon", "extra-arg"}, 1},
 		//{"Missing Pokémon name", []string{"pokemon"}, 1},
 		//{"Another invalid command", []string{"invalid"}, 1},
 	}
