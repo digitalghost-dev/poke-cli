@@ -50,7 +50,7 @@ Below is a list of all the tools and services used in this project's infrastruct
 
 ## Project Layout
 
-```
+```text
 .
 ├── infrastructure/
 │   ├── aws/

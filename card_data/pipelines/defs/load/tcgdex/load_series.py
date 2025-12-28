@@ -46,7 +46,7 @@ def data_quality_check_on_series() -> None:
             "supabase",
             "-c",
             "../../../soda/configuration.yml",
-            "../../../soda/series_checks.yml",
+            "../../../soda/checks_series.yml",
         ],
         capture_output=True,
         text=True,

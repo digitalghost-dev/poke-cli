@@ -262,6 +262,6 @@ func TestBerryCommandValidationError(t *testing.T) {
 	os.Args = []string{"poke-cli", "berry", "cheri", "extra-arg"}
 
 	output, err := BerryCommand()
-	require.Error(t, err, "TypesCommand should return error for invalid args")
+	require.Error(t, err, "BerryCommand should return error for invalid args")
 	assert.Contains(t, output, "Error", "Output should contain error message")
 }
