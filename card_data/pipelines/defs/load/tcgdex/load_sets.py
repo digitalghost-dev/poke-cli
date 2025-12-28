@@ -34,7 +34,7 @@ def load_sets_data(extract_sets_data: pl.DataFrame) -> None:
 
 
 @dg.asset(deps=[load_sets_data], kinds={"Soda"}, name="data_quality_checks_on_sets")
-def data_quality_check_on_series() -> None:
+def data_quality_check_on_sets() -> None:
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
 
