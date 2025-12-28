@@ -52,14 +52,31 @@ Below is a list of all the tools and services used in this project's infrastruct
 
 ```
 .
+├── infrastructure/
+│   ├── aws/
+│   │   ├── .terraform
+│   │   ├── ec2/
+│   │   ├── rds/
+│   │   └── vpc/
+│   ├── dagster.server
+│   ├── start-dagster.sh
+│   └── wait-for-rds.sh
 ├── pipelines/
 │   ├── defs/
 │   │   ├── extract/
-│   │   │   ├── extract_data.py
-│   │   │   └── extract_pricing_data.py
+│   │   │   ├── tcgcsv/
+│   │   │   │   └── extract_pricing.py
+│   │   │   └── tcgdex/
+│   │   │       ├── extract_cards.py
+│   │   │       ├── extract_series.py
+│   │   │       └── extract_sets.py
 │   │   ├── load/
-│   │   │   ├── load_data.py
-│   │   │   └── load_pricing_data.py
+│   │   │   ├── tcgcsv/
+│   │   │   │   └── load_pricing.py
+│   │   │   └── tcgdex/
+│   │   │       ├── load_cards.py
+│   │   │       ├── load_series.py
+│   │   │       └── load_sets.py
 │   │   └── transform/
 │   │       └── transform_data.py
 │   ├── poke_cli_dbt/
@@ -76,11 +93,13 @@ Below is a list of all the tools and services used in this project's infrastruct
 │   │   ├── dbt_project.yml
 │   │   └── profiles.yml
 │   ├── soda/
-│   │   ├── checks.yml
 │   │   ├── checks_pricing.yml
+│   │   ├── checks_series.yml
+│   │   ├── checks_sets.yml
 │   │   └── configuration.yml
-│   ├── tests
-│   └── utls/
+│   ├── tests/
+│   │   └── extract_series_test.py
+│   └── utils/
 │       ├── json_retriever.py
 │       └── secret_retriever.py
 ├── dagster.yaml
