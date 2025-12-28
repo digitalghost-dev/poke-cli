@@ -12,6 +12,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTypesCommand(t *testing.T) {
@@ -176,4 +177,16 @@ func TestTypeSelection(t *testing.T) {
 	if final.selectedOption != "Water" {
 		t.Errorf("Expected selectedOption to be 'Water', got '%s'", final.selectedOption)
 	}
+}
+
+func TestTypesCommandValidationError(t *testing.T) {
+	originalArgs := os.Args
+	defer func() { os.Args = originalArgs }()
+
+	// Set os.Args with extra argument to trigger validation error
+	os.Args = []string{"poke-cli", "types", "fire", "extra-arg"}
+
+	output, err := TypesCommand()
+	require.Error(t, err, "TypesCommand should return error for invalid args")
+	assert.Contains(t, output, "Error", "Output should contain error message")
 }

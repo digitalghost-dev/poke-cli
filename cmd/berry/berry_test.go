@@ -10,6 +10,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/exp/teatest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBerryCommand(t *testing.T) {
@@ -250,4 +252,16 @@ func TestTableInitialSelection(t *testing.T) {
 	if final.selectedOption != "Aguav" {
 		t.Errorf("Expected initial selectedOption to be 'Aguav', got %q", final.selectedOption)
 	}
+}
+
+func TestBerryCommandValidationError(t *testing.T) {
+	originalArgs := os.Args
+	defer func() { os.Args = originalArgs }()
+
+	// Set os.Args with extra argument to trigger validation error
+	os.Args = []string{"poke-cli", "berry", "cheri", "extra-arg"}
+
+	output, err := BerryCommand()
+	require.Error(t, err, "TypesCommand should return error for invalid args")
+	assert.Contains(t, output, "Error", "Output should contain error message")
 }

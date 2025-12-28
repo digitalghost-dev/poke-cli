@@ -124,3 +124,37 @@ func TestModelQuit(t *testing.T) {
 		t.Errorf("Expected tea.Quit command, but got nil")
 	}
 }
+
+func TestSearchCommandValidationError(t *testing.T) {
+	originalArgs := os.Args
+	defer func() { os.Args = originalArgs }()
+
+	// Set os.Args with extra argument to trigger validation error
+	os.Args = []string{"poke-cli", "search", "pokemon", "extra-arg"}
+
+	err := SearchCommand()
+	assert.Error(t, err, "SearchCommand should return error for invalid args")
+}
+
+func TestModelViewQuitting(t *testing.T) {
+	m := Model{Quitting: true}
+	view := m.View()
+	assert.Contains(t, view, "Quitting search", "View should show quitting message")
+}
+
+func TestModelViewShowResults(t *testing.T) {
+	m := Model{
+		ShowResults:   true,
+		SearchResults: "Test Results",
+	}
+	view := m.View()
+	// View calls RenderInput when ShowResults is true
+	assert.NotEmpty(t, view, "View should render results")
+}
+
+func TestModelViewNotChosen(t *testing.T) {
+	m := Model{Chosen: false}
+	view := m.View()
+	// View calls RenderSelection when not chosen
+	assert.Contains(t, view, "Search for a resource", "View should show selection prompt")
+}
