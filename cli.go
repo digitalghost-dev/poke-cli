@@ -117,7 +117,10 @@ func runCLI(args []string) int {
 		"speed":   utils.HandleCommandOutput(speed.SpeedCommand),
 		"types":   utils.HandleCommandOutput(types.TypesCommand),
 		"search": func() int {
-			search.SearchCommand()
+			if err := search.SearchCommand(); err != nil {
+				fmt.Println(styling.ErrorColor.Render("error:"), err)
+				return 1
+			}
 			return 0
 		},
 	}

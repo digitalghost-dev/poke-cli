@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import pytest
 import polars as pl
 import responses
-from pipelines.defs.extract.extract_data import extract_series_data
+from pipelines.defs.extract.tcgdex.extract_series import extract_series_data
 
 @pytest.fixture
 def mock_api_response():
@@ -19,6 +19,7 @@ def mock_api_response():
         {"id": "sm", "name": "Sun & Moon", "logo": None},
     ]
 
+@pytest.mark.benchmark
 @responses.activate
 def test_extract_series_data_success(mock_api_response):
     """Test successful extraction and filtering"""
@@ -33,8 +34,8 @@ def test_extract_series_data_success(mock_api_response):
     result = extract_series_data()
 
     # Assertions
-    assert isinstance(result, pl.DataFrame)
-    assert len(result) == 3  # Only swsh, sv, me
-    assert set(result["id"].to_list()) == {"swsh", "sv", "me"}
-    assert "name" in result.columns
-    assert "logo" in result.columns
+    assert isinstance(result, pl.DataFrame) # nosec
+    assert len(result) == 3   # nosec
+    assert set(result["id"].to_list()) == {"swsh", "sv", "me"} # nosec
+    assert "name" in result.columns # nosec
+    assert "logo" in result.columns # nosec

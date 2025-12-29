@@ -13,8 +13,8 @@ class CustomDbtTranslator(DagsterDbtTranslator):
         if resource_type == "source":
             # Map staging sources to load assets
             source_mapping = {
-                "series": "quality_checks_series",
-                "sets": "load_set_data",
+                "series": "data_quality_checks_on_series",
+                "sets": "data_quality_checks_on_sets",
                 "cards": "load_card_data",
                 "pricing_data": "data_quality_checks_on_pricing",
             }
@@ -28,7 +28,7 @@ class CustomDbtTranslator(DagsterDbtTranslator):
     manifest=DBT_PROJECT_PATH / "target" / "manifest.json",
     dagster_dbt_translator=CustomDbtTranslator()
 )
-def dbt_load_pricing_data(context: dg.AssetExecutionContext, dbt: DbtCliResource):
+def dbt_build_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     """
     dbt assets that transform staging data into final models.
     """
@@ -36,6 +36,6 @@ def dbt_load_pricing_data(context: dg.AssetExecutionContext, dbt: DbtCliResource
 
 dbt_resource = DbtCliResource(project_dir=DBT_PROJECT_PATH)
 defs = dg.Definitions(
-    assets=[dbt_load_pricing_data],
+    assets=[dbt_build_assets],
     resources={"dbt": dbt_resource}
 )

@@ -2,12 +2,13 @@ package main
 
 import (
 	"bytes"
-	"github.com/digitalghost-dev/poke-cli/cmd/utils"
-	"github.com/digitalghost-dev/poke-cli/styling"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"regexp"
 	"testing"
+
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
+	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCurrentVersion(t *testing.T) {
@@ -24,7 +25,7 @@ func TestCurrentVersion(t *testing.T) {
 		{
 			name:           "Version set to (devel)",
 			version:        "(devel)",
-			expectedOutput: "Version: (devel)\n", // Simplified assumption
+			expectedOutput: "Version: (devel)\n",
 		},
 	}
 
@@ -34,15 +35,12 @@ func TestCurrentVersion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set the version for this test case
 			version = tt.version
 
-			// Redirect stdout to capture the output
 			r, w, _ := os.Pipe()
 			oldStdout := os.Stdout
 			os.Stdout = w
 
-			// Call the function
 			currentVersion()
 
 			// Close the writer and restore stdout
@@ -58,7 +56,6 @@ func TestCurrentVersion(t *testing.T) {
 				t.Fatalf("Failed to read from pipe: %v", err)
 			}
 
-			// Compare the output with the expected result
 			got := buf.String()
 			if got != tt.expectedOutput {
 				t.Errorf("Expected %q, got %q", tt.expectedOutput, got)
@@ -140,6 +137,7 @@ func TestRunCLI_VariousCommands(t *testing.T) {
 		{"Latest flag short", []string{"-l"}, 0},
 		{"Version flag long", []string{"--version"}, 0},
 		{"Version flag short", []string{"-v"}, 0},
+		{"Search command with invalid args", []string{"search", "pokemon", "extra-arg"}, 1},
 		//{"Missing Pokémon name", []string{"pokemon"}, 1},
 		//{"Another invalid command", []string{"invalid"}, 1},
 	}
@@ -156,7 +154,7 @@ func TestRunCLI_VariousCommands(t *testing.T) {
 
 func TestMainFunction(t *testing.T) {
 	originalExit := exit
-	defer func() { exit = originalExit }() // Restore original exit after test
+	defer func() { exit = originalExit }()
 
 	tests := []struct {
 		name           string

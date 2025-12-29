@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,6 +23,22 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
+
+type PokemonFlags struct {
+	FlagSet        *flag.FlagSet
+	Abilities      *bool
+	ShortAbilities *bool
+	Defense        *bool
+	ShortDefense   *bool
+	Image          *string
+	ShortImage     *string
+	Move           *bool
+	ShortMove      *bool
+	Stats          *bool
+	ShortStats     *bool
+	Types          *bool
+	ShortTypes     *bool
+}
 
 func header(header string) string {
 	var output strings.Builder
@@ -40,30 +55,31 @@ func header(header string) string {
 	return output.String()
 }
 
-func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *string, *string, *bool, *bool, *bool, *bool, *bool, *bool) {
-	pokeFlags := flag.NewFlagSet("pokeFlags", flag.ExitOnError)
+func SetupPokemonFlagSet() *PokemonFlags {
+	pf := &PokemonFlags{}
+	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ExitOnError)
 
-	abilitiesFlag := pokeFlags.Bool("abilities", false, "Print the Pokémon's abilities")
-	shortAbilitiesFlag := pokeFlags.Bool("a", false, "Print the Pokémon's abilities")
+	pf.Abilities = pf.FlagSet.Bool("abilities", false, "Print the Pokémon's abilities")
+	pf.ShortAbilities = pf.FlagSet.Bool("a", false, "Print the Pokémon's abilities")
 
-	defenseFlag := pokeFlags.Bool("defense", false, "Print the Pokémon's type defenses")
-	shortDefenseFlag := pokeFlags.Bool("d", false, "Print the Pokémon's type defenses")
+	pf.Defense = pf.FlagSet.Bool("defense", false, "Print the Pokémon's type defenses")
+	pf.ShortDefense = pf.FlagSet.Bool("d", false, "Print the Pokémon's type defenses")
 
-	imageFlag := pokeFlags.String("image", "", "Print the Pokémon's default sprite")
-	shortImageFlag := pokeFlags.String("i", "", "Print the Pokémon's default sprite")
+	pf.Image = pf.FlagSet.String("image", "", "Print the Pokémon's default sprite")
+	pf.ShortImage = pf.FlagSet.String("i", "", "Print the Pokémon's default sprite")
 
-	moveFlag := pokeFlags.Bool("moves", false, "Print the Pokémon's learnable moves")
-	shortMoveFlag := pokeFlags.Bool("m", false, "Print the Pokémon's learnable moves")
+	pf.Move = pf.FlagSet.Bool("moves", false, "Print the Pokémon's learnable moves")
+	pf.ShortMove = pf.FlagSet.Bool("m", false, "Print the Pokémon's learnable moves")
 
-	statsFlag := pokeFlags.Bool("stats", false, "Print the Pokémon's base stats")
-	shortStatsFlag := pokeFlags.Bool("s", false, "Print the Pokémon's base stats")
+	pf.Stats = pf.FlagSet.Bool("stats", false, "Print the Pokémon's base stats")
+	pf.ShortStats = pf.FlagSet.Bool("s", false, "Print the Pokémon's base stats")
 
-	typesFlag := pokeFlags.Bool("types", false, "Print the Pokémon's typing")
-	shortTypesFlag := pokeFlags.Bool("t", false, "Prints the Pokémon's typing")
+	pf.Types = pf.FlagSet.Bool("types", false, "Print the Pokémon's typing")
+	pf.ShortTypes = pf.FlagSet.Bool("t", false, "Prints the Pokémon's typing")
 
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
-	pokeFlags.Usage = func() {
+	pf.FlagSet.Usage = func() {
 		helpMessage := styling.HelpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
@@ -78,7 +94,7 @@ func SetupPokemonFlagSet() (*flag.FlagSet, *bool, *bool, *bool, *bool, *string, 
 		fmt.Println(helpMessage)
 	}
 
-	return pokeFlags, abilitiesFlag, shortAbilitiesFlag, defenseFlag, shortDefenseFlag, imageFlag, shortImageFlag, moveFlag, shortMoveFlag, statsFlag, shortStatsFlag, typesFlag, shortTypesFlag
+	return pf
 }
 
 func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
@@ -374,14 +390,14 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	imageResp, err := http.Get(pokemonStruct.Sprites.FrontDefault)
 	if err != nil {
 		fmt.Println("Error downloading sprite image:", err)
-		os.Exit(1)
+		return err
 	}
 	defer imageResp.Body.Close()
 
 	img, err := imaging.Decode(imageResp.Body)
 	if err != nil {
 		fmt.Println("Error decoding image:", err)
-		os.Exit(1)
+		return err
 	}
 
 	// Define size map

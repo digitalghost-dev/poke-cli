@@ -48,10 +48,70 @@ Below is a list of all the tools and services used in this project's infrastruct
 - Supabase
 - Terraform
 
+## Project Layout
+
+```text
+.
+├── infrastructure/
+│   ├── aws/
+│   │   ├── .terraform
+│   │   ├── ec2/
+│   │   ├── rds/
+│   │   └── vpc/
+│   ├── dagster.server
+│   ├── start-dagster.sh
+│   └── wait-for-rds.sh
+├── pipelines/
+│   ├── defs/
+│   │   ├── extract/
+│   │   │   ├── tcgcsv/
+│   │   │   │   └── extract_pricing.py
+│   │   │   └── tcgdex/
+│   │   │       ├── extract_cards.py
+│   │   │       ├── extract_series.py
+│   │   │       └── extract_sets.py
+│   │   ├── load/
+│   │   │   ├── tcgcsv/
+│   │   │   │   └── load_pricing.py
+│   │   │   └── tcgdex/
+│   │   │       ├── load_cards.py
+│   │   │       ├── load_series.py
+│   │   │       └── load_sets.py
+│   │   └── transform/
+│   │       └── transform_data.py
+│   ├── poke_cli_dbt/
+│   │   ├── macros/
+│   │   │   ├── create_relationships.sql
+│   │   │   ├── create_rls.sql
+│   │   │   └── create_view.sql
+│   │   ├── models/
+│   │   │   ├── cards.sql
+│   │   │   ├── pricing_data.sql
+│   │   │   ├── series.sql
+│   │   │   ├── sets.sql
+│   │   │   └── sources.yml
+│   │   ├── dbt_project.yml
+│   │   └── profiles.yml
+│   ├── soda/
+│   │   ├── checks_pricing.yml
+│   │   ├── checks_series.yml
+│   │   ├── checks_sets.yml
+│   │   └── configuration.yml
+│   ├── tests/
+│   │   └── extract_series_test.py
+│   └── utils/
+│       ├── json_retriever.py
+│       └── secret_retriever.py
+├── dagster.yaml
+├── pyproject.toml
+└── uv.lock    
+```
+
 !!! note
 
-    Keep in mind that the purpose of this project is to explore and learn new tools, services, and programming languages.
-    Some design choices might be overkill or not make much sense at all, but included purely for learning.
-
-    I'm not an expert! If you notice anything strange or think something could be improved, 
-    please feel free to open a [GitHub Issue](https://github.com/digitalghost-dev/poke-cli/issues) and offer a suggestion.
+    This project is a learning playground for exploring new tools, services, and programming languages.
+    Some design choices are intentionally experimental or may not follow conventional patterns—
+    that's part of the learning process!
+    
+    Feedback and suggestions are always welcome! If you spot an issue or have ideas for improvement,
+    please open a [GitHub Issue](https://github.com/digitalghost-dev/poke-cli/issues).

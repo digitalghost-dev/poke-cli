@@ -17,7 +17,7 @@ func TestSelection(t *testing.T) {
 	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
 
 	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
-	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond)) // optional timeout safety
+	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(Model)
 
@@ -39,16 +39,16 @@ func TestChoiceClamping(t *testing.T) {
 	model := initialModel()
 	testModel := teatest.NewTestModel(t, model)
 
-	// Move down twice: this should attempt to exceed max Choice
+	// Move down twice, this should attempt to exceed max Choice
 	testModel.Send(tea.KeyMsg{Type: tea.KeyDown}) // 0 → 1
 	testModel.Send(tea.KeyMsg{Type: tea.KeyDown}) // 1 → 2, but should clamp to 1
 
-	// Move up three times: this should attempt to go below 0
+	// Move up three times, this should attempt to go below 0
 	testModel.Send(tea.KeyMsg{Type: tea.KeyUp}) // 1 → 0
 	testModel.Send(tea.KeyMsg{Type: tea.KeyUp}) // 0 → -1, clamp to 0
 	testModel.Send(tea.KeyMsg{Type: tea.KeyUp}) // stays at 0
 
-	// Now simulate enter and quit to finish
+	// Simulate enter and quit to finish
 	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
 	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
 	testModel.WaitFinished(t)

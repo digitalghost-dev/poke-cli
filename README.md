@@ -1,8 +1,8 @@
 <div align="center">
-    <img height="250" width="350" src="pokemon.svg" alt="pokemon-logo"/>
-    <h1>Pokémon CLI</h1>
+    <img width="425" src="poke-cli.png" alt="pokemon-logo"/>
+    <h4></h4>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.8.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.8.3?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -11,9 +11,10 @@
     <img src="https://img.shields.io/codecov/c/github/digitalghost-dev/poke-cli?token=05GBSAOQIT&style=flat-square&logo=codecov&logoColor=00ADD8&labelColor=EEE&color=00ADD8" alt="codecov"/>
 </div>
 
-## Overview
-`poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing data about Pokémon! This is my first Go project.
-View the [documentation](https://docs.poke-cli.com)!
+## Pokemon CLI
+`poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing VG and TCG data about Pokémon!
+
+View the [documentation](https://docs.poke-cli.com) on the data infrastructure in [card_data/](https://github.com/digitalghost-dev/poke-cli/tree/main/card_data) if you're interested.
 
 * [Demo](#demo)
 * [Installation](#installation)
@@ -95,11 +96,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.8.2 <command> [subcommand] [flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.8.3 <command> [subcommand] [flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.8.2 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.8.3 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```

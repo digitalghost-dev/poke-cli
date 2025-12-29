@@ -3,6 +3,11 @@ import botocore.session
 from aws_secretsmanager_caching import SecretCache, SecretCacheConfig
 
 import json
+from typing import TypedDict, cast
+
+
+class SupabaseSecret(TypedDict):
+    database_uri: str
 
 
 def fetch_secret() -> str:
@@ -10,9 +15,9 @@ def fetch_secret() -> str:
     cache_config = SecretCacheConfig()
     cache = SecretCache(config=cache_config, client=client)
 
-    secret = cache.get_secret_string("supabase")
+    secret = cast(str, cache.get_secret_string("supabase"))
 
     # convert to dictionary
-    secret_dict = json.loads(secret)
+    secret_dict: SupabaseSecret = json.loads(secret)
 
     return secret_dict["database_uri"]

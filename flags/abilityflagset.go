@@ -3,21 +3,29 @@ package flags
 import (
 	"flag"
 	"fmt"
+	"io"
+	"strings"
+
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"io"
-	"strings"
 )
 
-func SetupAbilityFlagSet() (*flag.FlagSet, *bool, *bool) {
-	abilityFlags := flag.NewFlagSet("AbilityFlagSet", flag.ExitOnError)
+type AbilityFlags struct {
+	FlagSet      *flag.FlagSet
+	Pokemon      *bool
+	ShortPokemon *bool
+}
 
-	pokemonFlag := abilityFlags.Bool("pokemon", false, "List all Pokémon with chosen ability")
-	shortPokemonFlag := abilityFlags.Bool("p", false, "List all Pokémon with chosen ability")
+func SetupAbilityFlagSet() *AbilityFlags {
+	af := &AbilityFlags{}
+	af.FlagSet = flag.NewFlagSet("abilityFlags", flag.ExitOnError)
 
-	abilityFlags.Usage = func() {
+	af.Pokemon = af.FlagSet.Bool("pokemon", false, "List all Pokémon with chosen ability")
+	af.ShortPokemon = af.FlagSet.Bool("p", false, "List all Pokémon with chosen ability")
+
+	af.FlagSet.Usage = func() {
 		helpMessage := styling.HelpBorder.Render("poke-cli ability <ability-name> [flags]\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-p, --pokemon", "List all Pokémon with chosen ability."),
@@ -25,7 +33,7 @@ func SetupAbilityFlagSet() (*flag.FlagSet, *bool, *bool) {
 		fmt.Println(helpMessage)
 	}
 
-	return abilityFlags, pokemonFlag, shortPokemonFlag
+	return af
 }
 
 func PokemonAbilitiesFlag(w io.Writer, endpoint string, abilityName string) error {
