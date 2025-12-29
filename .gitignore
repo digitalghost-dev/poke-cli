@@ -67,3 +67,4 @@ card_data/storage/
 /.claude/
 CLAUDE.md
 REFACTORING.md
+/card_data/.codspeed/
