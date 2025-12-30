@@ -22,7 +22,7 @@ func resizeImage(img image.Image, width, height int) image.Image {
 
 func CardImage(imageURL string) (string, error) {
 	client := &http.Client{
-		Timeout: time.Second * 15,
+		Timeout: time.Second * 60,
 	}
 	parsedURL, err := url.Parse(imageURL)
 	if err != nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
