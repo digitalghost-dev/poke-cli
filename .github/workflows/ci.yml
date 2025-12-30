@@ -261,7 +261,7 @@ jobs:
       - name: Check Links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: './docs/**/*.md' --verbose --config lychee.toml
+          args: --verbose --config lychee.toml ./docs/**/*.md
           fail: false
           output: ./lychee-report.md
 
