@@ -244,15 +244,38 @@ jobs:
           if [ "${{ needs.upload-deb-packages.result }}" != "success" ] || \
              [ "${{ needs.upload-rpm-packages.result }}" != "success" ] || \
              [ "${{ needs.upload-apk-packages.result }}" != "success" ]; then
-            echo "⚠️ Some uploads failed! ⚠️"
+            echo "⚠️ Some uploads failed"
             exit 1
           fi
-          echo "✅ All packages uploaded successfully! ✅"
+          echo "✅ All packages uploaded successfully"
 
-  build-docs-docker-image:
+  validate-links:
     runs-on: ubuntu-22.04
     needs: [gitleaks]
     if: needs.gitleaks.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check Links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: './docs/**/*.md' --verbose --config lychee.toml
+          fail: false
+          output: ./lychee-report.md
+
+      - name: Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: ./lychee-report.md
+
+  build-docs-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [validate-links]
+    if: needs.validate-links.result == 'success'
 
     steps:
       - name: Checkout

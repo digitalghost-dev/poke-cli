@@ -1,0 +1,9 @@
+timeout = 30
+threads = 2
+retry_wait_time = 2
+
+verbose = "info"
+
+mode = "color"
+
+accept = ["200", "429"]
