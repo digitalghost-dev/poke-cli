@@ -71,10 +71,10 @@ def mock_api_response():
 
 @pytest.mark.benchmark
 @responses.activate
-def test_extract_sets_data_success(mock_series_responses):
+def test_extract_sets_data_success(mock_api_response):
     """Test successful extraction of sets from multiple series"""
     # Mock all API calls
-    for url, response_data in mock_series_responses.items():
+    for url, response_data in mock_api_response.items():
         responses.add(
             responses.GET,
             url,
@@ -102,12 +102,12 @@ def test_extract_sets_data_success(mock_series_responses):
 
 @pytest.mark.benchmark
 @responses.activate
-def test_extract_sets_data_empty_sets(mock_series_responses):
+def test_extract_sets_data_empty_sets(mock_api_response):
     """Test extraction when a series has no sets"""
     # Modify one response to have empty sets
-    mock_series_responses["https://api.tcgdex.net/v2/en/series/me"]["sets"] = []
+    mock_api_response["https://api.tcgdex.net/v2/en/series/me"]["sets"] = []
 
-    for url, response_data in mock_series_responses.items():
+    for url, response_data in mock_api_response.items():
         responses.add(
             responses.GET,
             url,
