@@ -48,13 +48,13 @@ _Supabase has a premade dashboard ready for use in a `.json` format that can be 
 
 !!! warning
 
-    The `uid` for will need to be updated manually if the prompt for choosing a data souce does not appear. If so, the dashboard
+    The `uid` for will need to be updated manually if the prompt for choosing a data source does not appear. If so, the dashboard
     will have errors on each visual. To fix this, perform the steps below.
 
 
 1. Grab the `uid` for the Prometheus data source.
     * On the left side menu, click on the **Connections** dropdown. Then, choose **Data Sources**.
-    * Search for "prom" and then click on the default Promethesus data source.
+    * Search for "prom" and then click on the default Prometheus data source.
     * In the URL of that page, the last section is the `uid`: `/datasources/edit/<uid>`.
 
 2. Edit the JSON Model in the Dashboard.
