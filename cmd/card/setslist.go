@@ -71,8 +71,11 @@ type setData struct {
 	Symbol            string `json:"symbol"`
 }
 
+// creating a function variable to swap the implementation in tests
+var getSetsData = callSetsData
+
 func SetsList(seriesID string) (SetsModel, error) {
-	body, err := callSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
+	body, err := getSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
 	if err != nil {
 		return SetsModel{}, fmt.Errorf("error getting sets data: %v", err)
 	}
