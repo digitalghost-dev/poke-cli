@@ -71,8 +71,11 @@ type setData struct {
 	Symbol            string `json:"symbol"`
 }
 
+// creating a function variable to swap the implementation in tests
+var getSetsData = callSetsData
+
 func SetsList(seriesID string) (SetsModel, error) {
-	body, err := callSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
+	body, err := getSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
 	if err != nil {
 		return SetsModel{}, fmt.Errorf("error getting sets data: %v", err)
 	}
@@ -122,7 +125,7 @@ func callSetsData(url string) ([]byte, error) {
 	req.Header.Add("Authorization", "Bearer sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j")
 	req.Header.Add("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 15 * time.Second}
+	client := &http.Client{Timeout: 60 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error making GET request: %w", err)

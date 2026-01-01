@@ -22,7 +22,7 @@ func resizeImage(img image.Image, width, height int) image.Image {
 
 func CardImage(imageURL string) (string, error) {
 	client := &http.Client{
-		Timeout: time.Second * 15,
+		Timeout: time.Second * 60,
 	}
 	parsedURL, err := url.Parse(imageURL)
 	if err != nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
@@ -38,8 +38,14 @@ func CardImage(imageURL string) (string, error) {
 		return "", fmt.Errorf("non-200 response: %d", resp.StatusCode)
 	}
 
+	// Read body into memory first to avoid timeout during decode
 	limitedBody := io.LimitReader(resp.Body, 10*1024*1024)
-	img, _, err := image.Decode(limitedBody)
+	bodyBytes, err := io.ReadAll(limitedBody)
+	if err != nil {
+		return "", fmt.Errorf("failed to read image data: %w", err)
+	}
+
+	img, _, err := image.Decode(bytes.NewReader(bodyBytes))
 	if err != nil {
 		return "", fmt.Errorf("failed to decode image: %w", err)
 	}

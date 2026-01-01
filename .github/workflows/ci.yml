@@ -31,7 +31,7 @@ on:
       - main
 
 env:
-  VERSION_NUMBER: 'v1.8.3'
+  VERSION_NUMBER: 'v1.8.4'
   DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
   AWS_REGION: 'us-west-2'
 
@@ -55,7 +55,7 @@ jobs:
           args: '-no-fail -fmt sarif -out results.sarif ./...'
 
       - name: Upload SARIF Report
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
 
@@ -67,15 +67,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
-      - name: Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_CONFIG: ./gitleaks.toml
-          GITLEAKS_VERSION: 8.29.0
+      - name: Run Gitleaks
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/path \
+            ghcr.io/gitleaks/gitleaks:v8.29.0 \
+            dir /path -c /path/gitleaks.toml --redact -v \
+            --report-format sarif --report-path /path/gitleaks-results.sarif
+
+      - name: Upload SARIF Report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: gitleaks-results.sarif
 
   build-linux-packages:
     runs-on: ubuntu-22.04
@@ -240,15 +244,38 @@ jobs:
           if [ "${{ needs.upload-deb-packages.result }}" != "success" ] || \
              [ "${{ needs.upload-rpm-packages.result }}" != "success" ] || \
              [ "${{ needs.upload-apk-packages.result }}" != "success" ]; then
-            echo "⚠️ Some uploads failed! ⚠️"
+            echo "⚠️ Some uploads failed"
             exit 1
           fi
-          echo "✅ All packages uploaded successfully! ✅"
+          echo "✅ All packages uploaded successfully"
 
-  build-docs-docker-image:
+  validate-links:
     runs-on: ubuntu-22.04
     needs: [gitleaks]
     if: needs.gitleaks.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check Links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --config lychee.toml ./docs/**/*.md
+          fail: false
+          output: ./lychee-report.md
+
+      - name: Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: ./lychee-report.md
+
+  build-docs-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [validate-links]
+    if: needs.validate-links.result == 'success'
 
     steps:
       - name: Checkout

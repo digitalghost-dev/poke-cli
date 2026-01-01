@@ -156,7 +156,6 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pyarrow" },
     { name = "pydantic" },
-    { name = "pytest-codspeed" },
     { name = "requests" },
     { name = "soda-core-postgres" },
     { name = "sqlalchemy" },
@@ -170,6 +169,7 @@ dev = [
     { name = "dagster-postgres" },
     { name = "dagster-webserver" },
     { name = "pytest" },
+    { name = "pytest-codspeed" },
     { name = "responses" },
 ]
 
@@ -189,7 +189,6 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pyarrow", specifier = ">=20.0.0" },
     { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "pytest-codspeed", specifier = ">=4.2.0" },
     { name = "requests", specifier = ">=2.32.4" },
     { name = "soda-core-postgres", specifier = ">=3.5.5" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
@@ -203,6 +202,7 @@ dev = [
     { name = "dagster-postgres", specifier = ">=0.27.3" },
     { name = "dagster-webserver" },
     { name = "pytest", specifier = ">=9.0.2" },
+    { name = "pytest-codspeed", specifier = ">=4.2.0" },
     { name = "responses", specifier = ">=0.25.8" },
 ]
 
