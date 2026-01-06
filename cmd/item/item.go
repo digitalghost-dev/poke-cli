@@ -22,8 +22,8 @@ func ItemCommand() (string, error) {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific item.\n\n",
 			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("item"), "<item-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("item"), "<item-name>"),
+			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
 			"\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
