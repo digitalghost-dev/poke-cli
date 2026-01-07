@@ -26,6 +26,14 @@ func HandleFlagError(output *strings.Builder, err error) (string, error) {
 	return "", fmt.Errorf("error parsing flags: %w", err)
 }
 
+func CheckHelpFlag(output *strings.Builder, usageFunc func()) bool {
+	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+		usageFunc()
+		return true
+	}
+	return false
+}
+
 func WrapText(text string, width int) string {
 	words := strings.Fields(text)
 	if len(words) == 0 {

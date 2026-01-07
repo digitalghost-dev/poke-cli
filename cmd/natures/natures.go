@@ -3,12 +3,13 @@ package natures
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"os"
-	"strings"
 )
 
 func NaturesCommand() (string, error) {
@@ -25,8 +26,8 @@ func NaturesCommand() (string, error) {
 
 	flag.Parse()
 
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	// Handle help flag
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
 

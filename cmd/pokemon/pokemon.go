@@ -51,8 +51,8 @@ func PokemonCommand() (string, error) {
 
 	flag.Parse()
 
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	// Handle help flag
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
 

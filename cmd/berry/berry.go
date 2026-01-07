@@ -33,8 +33,7 @@ func BerryCommand() (string, error) {
 	flag.Parse()
 
 	// Handle help flag
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
 
