@@ -23,7 +23,7 @@
 │    speed           Calculate the speed of a Pokémon in battle │
 │    types           Get details about a typing                 │
 │                                                               │
-│ hint: when calling a resource with a space, use a hyphen      │
+│ Use a hyphen when typing a name with a space.                 │
 │ example: poke-cli ability strong-jaw                          │
 │ example: poke-cli pokemon flutter-mane                        │
 │                                                               │
