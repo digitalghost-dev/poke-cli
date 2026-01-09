@@ -61,7 +61,7 @@ func MoveCommand() (string, error) {
 }
 
 func moveInfoContainer(output *strings.Builder, moveStruct structs.MoveJSONStruct, moveName string) {
-	capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
+	capitalizedMove := styling.CapitalizeResourceName(moveName)
 
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).

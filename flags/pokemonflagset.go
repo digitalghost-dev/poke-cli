@@ -228,7 +228,7 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 		for _, ability := range pokemonStruct.Abilities {
 			abilityName := ability.Ability.Name
-			formattedAbilityName := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
+			formattedAbilityName := styling.CapitalizeResourceName(abilityName)
 
 			if types, exists := abilityImmunities[abilityName]; exists {
 				typeList := strings.Join(types, " and ")
@@ -465,7 +465,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 					return
 				}
 
-				capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
+				capitalizedMove := styling.CapitalizeResourceName(moveName)
 				capitalizedType := cases.Title(language.English).String(moveStruct.Type.Name)
 
 				movesChan <- MoveInfo{

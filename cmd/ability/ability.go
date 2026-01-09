@@ -10,8 +10,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 func AbilityCommand() (string, error) {
@@ -81,7 +79,7 @@ func AbilityCommand() (string, error) {
 		}
 	}
 
-	capitalizedAbility := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
+	capitalizedAbility := styling.CapitalizeResourceName(abilityName)
 	output.WriteString(styling.StyleBold.Render(capitalizedAbility) + "\n")
 
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")

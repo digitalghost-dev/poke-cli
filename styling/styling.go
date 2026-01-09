@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"image/color"
 	"regexp"
+	"strings"
 
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var (
@@ -76,6 +79,15 @@ func GetTypeColor(typeName string) string {
 func StripANSI(input string) string {
 	ansiRegex := regexp.MustCompile(`\x1b\[[0-9;]*m`)
 	return ansiRegex.ReplaceAllString(input, "")
+}
+
+// titleCaser is a reusable title caser for English
+var titleCaser = cases.Title(language.English)
+
+// CapitalizeResourceName converts hyphenated resource names to title case
+// Example: "strong-jaw" -> "Strong Jaw"
+func CapitalizeResourceName(name string) string {
+	return titleCaser.String(strings.ReplaceAll(name, "-", " "))
 }
 
 // Color To avoid unnecessary dependencies, I adapted the MakeColor function from

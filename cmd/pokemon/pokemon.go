@@ -83,7 +83,7 @@ func PokemonCommand() (string, error) {
 		return output.String(), err
 	}
 
-	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
+	capitalizedString := styling.CapitalizeResourceName(pokemonName)
 
 	entry := func(w io.Writer) {
 		for _, entry := range pokemonSpeciesStruct.FlavorTextEntries {
@@ -173,7 +173,7 @@ func PokemonCommand() (string, error) {
 		if pokemonSpeciesStruct.EvolvesFromSpecies.Name != "" {
 			evolvesFrom := pokemonSpeciesStruct.EvolvesFromSpecies.Name
 
-			capitalizedPokemonName := cases.Title(language.English).String(strings.ReplaceAll(evolvesFrom, "-", " "))
+			capitalizedPokemonName := styling.CapitalizeResourceName(evolvesFrom)
 			fmt.Fprintf(w, "%s %s %s", styling.ColoredBullet, "Evolves from:", capitalizedPokemonName)
 		} else {
 			fmt.Fprintf(w, "%s %s", styling.ColoredBullet, "Basic Pokémon")

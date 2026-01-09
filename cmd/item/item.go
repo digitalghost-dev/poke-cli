@@ -11,8 +11,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 func ItemCommand() (string, error) {
@@ -60,9 +58,9 @@ func ItemCommand() (string, error) {
 }
 
 func itemInfoContainer(output *strings.Builder, itemStruct structs.ItemJSONStruct, itemName string) {
-	capitalizedItem := styling.StyleBold.Render(cases.Title(language.English).String(strings.ReplaceAll(itemName, "-", " ")))
+	capitalizedItem := styling.StyleBold.Render(styling.CapitalizeResourceName(itemName))
 	itemCost := fmt.Sprintf("Cost: %d", itemStruct.Cost)
-	itemCategory := "Category: " + cases.Title(language.English).String(strings.ReplaceAll(itemStruct.Category.Name, "-", " "))
+	itemCategory := "Category: " + styling.CapitalizeResourceName(itemStruct.Category.Name)
 
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
