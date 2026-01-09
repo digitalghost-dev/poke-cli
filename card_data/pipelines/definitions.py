@@ -6,6 +6,7 @@ import dagster as dg
 
 from .defs.extract.tcgcsv.extract_pricing import build_dataframe
 from .defs.load.tcgcsv.load_pricing import load_pricing_data, data_quality_checks_on_pricing
+from .sensors import discord_success_sensor, discord_failure_sensor
 
 
 @definitions
@@ -31,4 +32,5 @@ defs_pricing: dg.Definitions = dg.Definitions(
     assets=[build_dataframe, load_pricing_data, data_quality_checks_on_pricing],
     jobs=[pricing_pipeline_job],
     schedules=[price_schedule],
+    sensors=[discord_success_sensor, discord_failure_sensor]
 )
