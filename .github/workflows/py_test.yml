@@ -32,4 +32,4 @@ jobs:
         with:
           mode: simulation
           working-directory: card_data
-          run: pytest pipelines/tests/ -v --codspeed
+          run: uv run pytest pipelines/tests/ -v --codspeed
