@@ -81,9 +81,6 @@ func StripANSI(input string) string {
 	return ansiRegex.ReplaceAllString(input, "")
 }
 
-// titleCaser is a reusable title caser for English
-var titleCaser = cases.Title(language.English)
-
 // smallWords are words that should remain lowercase in titles (unless first word)
 var smallWords = map[string]bool{
 	"of":  true,
@@ -95,6 +92,8 @@ var smallWords = map[string]bool{
 // CapitalizeResourceName converts hyphenated resource names to title case
 // Example: "strong-jaw" -> "Strong Jaw", "sword-of-ruin" -> "Sword of Ruin"
 func CapitalizeResourceName(name string) string {
+	caser := cases.Title(language.English)
+
 	name = strings.ReplaceAll(name, "-", " ")
 	words := strings.Split(name, " ")
 
@@ -102,7 +101,7 @@ func CapitalizeResourceName(name string) string {
 		if _, found := smallWords[strings.ToLower(word)]; found && i != 0 {
 			words[i] = strings.ToLower(word)
 		} else {
-			words[i] = titleCaser.String(word)
+			words[i] = caser.String(word)
 		}
 	}
 
