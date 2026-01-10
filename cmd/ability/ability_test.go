@@ -32,6 +32,11 @@ func TestAbilityCommand(t *testing.T) {
 			expectedOutput: utils.LoadGolden(t, "ability.golden"),
 		},
 		{
+			name:           "Ability command: beads-of-ruin",
+			args:           []string{"ability", "beads-of-ruin"},
+			expectedOutput: utils.LoadGolden(t, "ability-ii.golden"),
+		},
+		{
 			name:           "Misspelled ability name",
 			args:           []string{"ability", "bulletproff"},
 			expectedOutput: utils.LoadGolden(t, "ability_misspelled.golden"),
