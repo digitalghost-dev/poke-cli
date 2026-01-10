@@ -1,5 +1,10 @@
 name: Codspeed Benchmarks
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'card_data/**'
   pull_request:
     types: [ opened, reopened, synchronize ]
     paths:
