@@ -12,6 +12,10 @@ import (
 	"golang.org/x/text/language"
 )
 
+const (
+	HyphenHint = "Use a hyphen when typing a name with a space."
+)
+
 var (
 	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
 	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
@@ -26,8 +30,6 @@ var (
 	DocsLink = lipgloss.NewStyle().
 			Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFCC00"}).
 			Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
-
-	HyphenHint = "Use a hyphen when typing a name with a space."
 
 	StyleBold      = lipgloss.NewStyle().Bold(true)
 	StyleItalic    = lipgloss.NewStyle().Italic(true)
