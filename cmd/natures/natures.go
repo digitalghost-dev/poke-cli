@@ -24,12 +24,11 @@ func NaturesCommand() (string, error) {
 		output.WriteString(helpMessage)
 	}
 
-	flag.Parse()
-
-	// Handle help flag
 	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	if err := utils.ValidateNaturesArgs(os.Args); err != nil {
 		output.WriteString(err.Error())

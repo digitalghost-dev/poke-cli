@@ -33,12 +33,11 @@ func AbilityCommand() (string, error) {
 
 	args := os.Args
 
-	flag.Parse()
-
-	// Handle help flag
 	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	if err := utils.ValidateAbilityArgs(args); err != nil {
 		output.WriteString(err.Error())

@@ -49,12 +49,11 @@ func PokemonCommand() (string, error) {
 
 	args := os.Args
 
-	flag.Parse()
-
-	// Handle help flag
 	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	err := utils.ValidatePokemonArgs(args)
 	if err != nil {

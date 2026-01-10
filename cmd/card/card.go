@@ -26,12 +26,11 @@ func CardCommand() (string, error) {
 		output.WriteString(helpMessage)
 	}
 
-	flag.Parse()
-
-	// Handle help flag
 	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	// Validate arguments
 	if err := utils.ValidateCardArgs(os.Args); err != nil {

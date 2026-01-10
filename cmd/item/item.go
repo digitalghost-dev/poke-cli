@@ -31,12 +31,11 @@ func ItemCommand() (string, error) {
 
 	args := os.Args
 
-	flag.Parse()
-
-	// Handle help flag
 	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	if err := utils.ValidateItemArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
