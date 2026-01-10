@@ -3,6 +3,10 @@ package move
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
@@ -10,9 +14,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"os"
-	"strconv"
-	"strings"
 )
 
 func MoveCommand() (string, error) {
@@ -23,17 +24,19 @@ func MoveCommand() (string, error) {
 			"Get details about a specific move.\n\n",
 			styling.StyleBold.Render("USAGE:"),
 			"\n\t"+"poke-cli"+" "+styling.StyleBold.Render("move")+" <move-name>",
-			"\n\n"+styling.StyleItalic.Render("Use a hyphen when typing a name with a space."),
+			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
+			"\n\n",
+			styling.StyleBold.Render("FLAGS:"),
+			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
 		output.WriteString(helpMessage)
 	}
 
-	flag.Parse()
-
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	if err := utils.ValidateMoveArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
@@ -57,7 +60,7 @@ func MoveCommand() (string, error) {
 }
 
 func moveInfoContainer(output *strings.Builder, moveStruct structs.MoveJSONStruct, moveName string) {
-	capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
+	capitalizedMove := styling.CapitalizeResourceName(moveName)
 
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).

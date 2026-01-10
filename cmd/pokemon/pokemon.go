@@ -31,7 +31,7 @@ func PokemonCommand() (string, error) {
 			"Get details about a specific Pokémon.\n\n",
 			styling.StyleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("pokemon"), "<pokemon-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
+			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
 			"\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
@@ -49,12 +49,11 @@ func PokemonCommand() (string, error) {
 
 	args := os.Args
 
-	flag.Parse()
-
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	err := utils.ValidatePokemonArgs(args)
 	if err != nil {
@@ -83,7 +82,7 @@ func PokemonCommand() (string, error) {
 		return output.String(), err
 	}
 
-	capitalizedString := cases.Title(language.English).String(strings.ReplaceAll(pokemonName, "-", " "))
+	capitalizedString := styling.CapitalizeResourceName(pokemonName)
 
 	entry := func(w io.Writer) {
 		for _, entry := range pokemonSpeciesStruct.FlavorTextEntries {
@@ -173,7 +172,7 @@ func PokemonCommand() (string, error) {
 		if pokemonSpeciesStruct.EvolvesFromSpecies.Name != "" {
 			evolvesFrom := pokemonSpeciesStruct.EvolvesFromSpecies.Name
 
-			capitalizedPokemonName := cases.Title(language.English).String(strings.ReplaceAll(evolvesFrom, "-", " "))
+			capitalizedPokemonName := styling.CapitalizeResourceName(evolvesFrom)
 			fmt.Fprintf(w, "%s %s %s", styling.ColoredBullet, "Evolves from:", capitalizedPokemonName)
 		} else {
 			fmt.Fprintf(w, "%s %s", styling.ColoredBullet, "Basic Pokémon")

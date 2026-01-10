@@ -106,32 +106,8 @@ func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
 		return err
 	}
 
-	// Anonymous function to format ability names
-	formatAbilityName := func(name string) string {
-		exceptions := map[string]bool{
-			"of":  true,
-			"the": true,
-			"to":  true,
-			"as":  true,
-		}
-
-		name = strings.ReplaceAll(name, "-", " ")
-		words := strings.Split(name, " ")
-		titleCaser := cases.Title(language.English)
-
-		// Process each word
-		for i, word := range words {
-			if _, found := exceptions[strings.ToLower(word)]; found && i != 0 {
-				words[i] = strings.ToLower(word)
-			} else {
-				words[i] = titleCaser.String(word)
-			}
-		}
-		return strings.Join(words, " ")
-	}
-
 	for _, pokeAbility := range pokemonStruct.Abilities {
-		formattedName := formatAbilityName(pokeAbility.Ability.Name)
+		formattedName := styling.CapitalizeResourceName(pokeAbility.Ability.Name)
 
 		switch pokeAbility.Slot {
 		case 1, 2:
@@ -228,7 +204,7 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 		for _, ability := range pokemonStruct.Abilities {
 			abilityName := ability.Ability.Name
-			formattedAbilityName := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
+			formattedAbilityName := styling.CapitalizeResourceName(abilityName)
 
 			if types, exists := abilityImmunities[abilityName]; exists {
 				typeList := strings.Join(types, " and ")
@@ -465,7 +441,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 					return
 				}
 
-				capitalizedMove := cases.Title(language.English).String(strings.ReplaceAll(moveName, "-", " "))
+				capitalizedMove := styling.CapitalizeResourceName(moveName)
 				capitalizedType := cases.Title(language.English).String(moveStruct.Type.Name)
 
 				movesChan <- MoveInfo{

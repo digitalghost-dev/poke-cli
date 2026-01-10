@@ -80,7 +80,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
 			fmt.Sprintf("\n\t%-15s %s", "speed", "Calculate the speed of a Pokémon in battle"),
 			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
-			"\n\n", styling.StyleItalic.Render("hint: when calling a resource with a space, use a hyphen"),
+			"\n\n", styling.StyleItalic.Render(styling.HyphenHint),
 			"\n", styling.StyleItalic.Render("example: poke-cli ability strong-jaw"),
 			"\n", styling.StyleItalic.Render("example: poke-cli pokemon flutter-mane"),
 			"\n\n", fmt.Sprintf("%s %s", "↓ ctrl/cmd + click for docs/guides\n", styling.DocsLink),

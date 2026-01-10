@@ -25,12 +25,12 @@ func SearchCommand() error {
 		fmt.Println(helpMessage)
 	}
 
-	flag.Parse()
-
 	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
 		flag.Usage()
 		return nil
 	}
+
+	flag.Parse()
 
 	if err := utils.ValidateSearchArgs(os.Args); err != nil {
 		fmt.Println(err.Error())

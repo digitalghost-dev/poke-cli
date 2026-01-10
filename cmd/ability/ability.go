@@ -10,8 +10,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 func AbilityCommand() (string, error) {
@@ -22,7 +20,7 @@ func AbilityCommand() (string, error) {
 			"Get details about a specific ability.\n\n",
 			styling.StyleBold.Render("USAGE:"),
 			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("ability"), "<ability-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
+			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
 			"\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-p, --pokemon", "Prints Pokémon that learn this ability."),
@@ -35,12 +33,11 @@ func AbilityCommand() (string, error) {
 
 	args := os.Args
 
-	flag.Parse()
-
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	if err := utils.ValidateAbilityArgs(args); err != nil {
 		output.WriteString(err.Error())
@@ -81,7 +78,7 @@ func AbilityCommand() (string, error) {
 		}
 	}
 
-	capitalizedAbility := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
+	capitalizedAbility := styling.CapitalizeResourceName(abilityName)
 	output.WriteString(styling.StyleBold.Render(capitalizedAbility) + "\n")
 
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")

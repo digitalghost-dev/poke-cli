@@ -11,8 +11,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 func ItemCommand() (string, error) {
@@ -22,8 +20,8 @@ func ItemCommand() (string, error) {
 		helpMessage := styling.HelpBorder.Render(
 			"Get details about a specific item.\n\n",
 			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("item"), "<item-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render("Use a hyphen when typing a name with a space.")),
+			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("item"), "<item-name>"),
+			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
 			"\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
@@ -33,12 +31,11 @@ func ItemCommand() (string, error) {
 
 	args := os.Args
 
-	flag.Parse()
-
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	if err := utils.ValidateItemArgs(os.Args); err != nil {
 		output.WriteString(err.Error())
@@ -60,9 +57,9 @@ func ItemCommand() (string, error) {
 }
 
 func itemInfoContainer(output *strings.Builder, itemStruct structs.ItemJSONStruct, itemName string) {
-	capitalizedItem := styling.StyleBold.Render(cases.Title(language.English).String(strings.ReplaceAll(itemName, "-", " ")))
+	capitalizedItem := styling.StyleBold.Render(styling.CapitalizeResourceName(itemName))
 	itemCost := fmt.Sprintf("Cost: %d", itemStruct.Cost)
-	itemCategory := "Category: " + cases.Title(language.English).String(strings.ReplaceAll(itemStruct.Category.Name, "-", " "))
+	itemCategory := "Category: " + styling.CapitalizeResourceName(itemStruct.Category.Name)
 
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).

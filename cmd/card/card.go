@@ -26,13 +26,11 @@ func CardCommand() (string, error) {
 		output.WriteString(helpMessage)
 	}
 
-	flag.Parse()
-
-	// Handle help flag
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
+	if utils.CheckHelpFlag(&output, flag.Usage) {
 		return output.String(), nil
 	}
+
+	flag.Parse()
 
 	// Validate arguments
 	if err := utils.ValidateCardArgs(os.Args); err != nil {

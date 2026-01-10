@@ -4,9 +4,16 @@ import (
 	"fmt"
 	"image/color"
 	"regexp"
+	"strings"
 
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+)
+
+const (
+	HyphenHint = "Use a hyphen when typing a name with a space."
 )
 
 var (
@@ -74,6 +81,33 @@ func GetTypeColor(typeName string) string {
 func StripANSI(input string) string {
 	ansiRegex := regexp.MustCompile(`\x1b\[[0-9;]*m`)
 	return ansiRegex.ReplaceAllString(input, "")
+}
+
+// smallWords are words that should remain lowercase in titles (unless first word)
+var smallWords = map[string]bool{
+	"of":  true,
+	"the": true,
+	"to":  true,
+	"as":  true,
+}
+
+// CapitalizeResourceName converts hyphenated resource names to title case
+// Example: "strong-jaw" -> "Strong Jaw", "sword-of-ruin" -> "Sword of Ruin"
+func CapitalizeResourceName(name string) string {
+	caser := cases.Title(language.English)
+
+	name = strings.ReplaceAll(name, "-", " ")
+	words := strings.Split(name, " ")
+
+	for i, word := range words {
+		if _, found := smallWords[strings.ToLower(word)]; found && i != 0 {
+			words[i] = strings.ToLower(word)
+		} else {
+			words[i] = caser.String(word)
+		}
+	}
+
+	return strings.Join(words, " ")
 }
 
 // Color To avoid unnecessary dependencies, I adapted the MakeColor function from
