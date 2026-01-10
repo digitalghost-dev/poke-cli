@@ -106,32 +106,8 @@ func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
 		return err
 	}
 
-	// Anonymous function to format ability names
-	formatAbilityName := func(name string) string {
-		exceptions := map[string]bool{
-			"of":  true,
-			"the": true,
-			"to":  true,
-			"as":  true,
-		}
-
-		name = strings.ReplaceAll(name, "-", " ")
-		words := strings.Split(name, " ")
-		titleCaser := cases.Title(language.English)
-
-		// Process each word
-		for i, word := range words {
-			if _, found := exceptions[strings.ToLower(word)]; found && i != 0 {
-				words[i] = strings.ToLower(word)
-			} else {
-				words[i] = titleCaser.String(word)
-			}
-		}
-		return strings.Join(words, " ")
-	}
-
 	for _, pokeAbility := range pokemonStruct.Abilities {
-		formattedName := formatAbilityName(pokeAbility.Ability.Name)
+		formattedName := styling.CapitalizeResourceName(pokeAbility.Ability.Name)
 
 		switch pokeAbility.Slot {
 		case 1, 2:

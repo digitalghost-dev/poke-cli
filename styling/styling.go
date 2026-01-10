@@ -84,10 +84,29 @@ func StripANSI(input string) string {
 // titleCaser is a reusable title caser for English
 var titleCaser = cases.Title(language.English)
 
+// smallWords are words that should remain lowercase in titles (unless first word)
+var smallWords = map[string]bool{
+	"of":  true,
+	"the": true,
+	"to":  true,
+	"as":  true,
+}
+
 // CapitalizeResourceName converts hyphenated resource names to title case
-// Example: "strong-jaw" -> "Strong Jaw"
+// Example: "strong-jaw" -> "Strong Jaw", "sword-of-ruin" -> "Sword of Ruin"
 func CapitalizeResourceName(name string) string {
-	return titleCaser.String(strings.ReplaceAll(name, "-", " "))
+	name = strings.ReplaceAll(name, "-", " ")
+	words := strings.Split(name, " ")
+
+	for i, word := range words {
+		if _, found := smallWords[strings.ToLower(word)]; found && i != 0 {
+			words[i] = strings.ToLower(word)
+		} else {
+			words[i] = titleCaser.String(word)
+		}
+	}
+
+	return strings.Join(words, " ")
 }
 
 // Color To avoid unnecessary dependencies, I adapted the MakeColor function from
