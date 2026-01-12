@@ -24,6 +24,30 @@ import (
 
 var version = "(devel)"
 
+var commandDescriptions = []struct {
+	name string
+	desc string
+}{
+	{"ability", "Get details about an ability"},
+	{"berry", "Get details about a berry"},
+	{"card", "Get details about a TCG card"},
+	{"item", "Get details about an item"},
+	{"move", "Get details about a move"},
+	{"natures", "Get details about all natures"},
+	{"pokemon", "Get details about a Pokémon"},
+	{"search", "Search for a resource"},
+	{"speed", "Get details about a speed or speed"},
+	{"types", "Get details about a typing"},
+}
+
+func renderCommandList() string {
+	var sb strings.Builder
+	for _, cmd := range commandDescriptions {
+		sb.WriteString(fmt.Sprintf("\n\t%-15s %s", cmd.name, cmd.desc))
+	}
+	return sb.String()
+}
+
 func currentVersion() {
 	if version != "(devel)" {
 		// Use version injected by -ldflags
@@ -70,16 +94,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest version available"),
 			fmt.Sprintf("\n\t%-15s %s", "-v, --version", "Prints the current version"),
 			"\n\n", styling.StyleBold.Render("COMMANDS:"),
-			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
-			fmt.Sprintf("\n\t%-15s %s", "berry", "Get details about a berry"),
-			fmt.Sprintf("\n\t%-15s %s", "card", "Get details about a TCG card"),
-			fmt.Sprintf("\n\t%-15s %s", "item", "Get details about an item"),
-			fmt.Sprintf("\n\t%-15s %s", "move", "Get details about a move"),
-			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
-			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
-			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
-			fmt.Sprintf("\n\t%-15s %s", "speed", "Calculate the speed of a Pokémon in battle"),
-			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
+			renderCommandList(),
 			"\n\n", styling.StyleItalic.Render(styling.HyphenHint),
 			"\n", styling.StyleItalic.Render("example: poke-cli ability strong-jaw"),
 			"\n", styling.StyleItalic.Render("example: poke-cli pokemon flutter-mane"),
@@ -151,16 +166,7 @@ func runCLI(args []string) int {
 			styling.ErrorColor.Render("✖ Error!"),
 			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", cmdArg)),
 			styling.StyleBold.Render("\nCommands:"),
-			fmt.Sprintf("\n\t%-15s %s", "ability", "Get details about an ability"),
-			fmt.Sprintf("\n\t%-15s %s", "berry", "Get details about a berry"),
-			fmt.Sprintf("\n\t%-15s %s", "card", "Get details about a TCG card"),
-			fmt.Sprintf("\n\t%-15s %s", "item", "Get details about an item"),
-			fmt.Sprintf("\n\t%-15s %s", "move", "Get details about a move"),
-			fmt.Sprintf("\n\t%-15s %s", "natures", "Get details about all natures"),
-			fmt.Sprintf("\n\t%-15s %s", "pokemon", "Get details about a Pokémon"),
-			fmt.Sprintf("\n\t%-15s %s", "search", "Search for a resource"),
-			fmt.Sprintf("\n\t%-15s %s", "speed", "Calculate the speed of a Pokémon in battle"),
-			fmt.Sprintf("\n\t%-15s %s", "types", "Get details about a typing"),
+			renderCommandList(),
 			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h")),
 		)
 		output.WriteString(errMessage)
