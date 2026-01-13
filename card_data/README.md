@@ -7,7 +7,7 @@ and decided to process all the data myself, load it into Supabase, and read from
 
 ## Data Architecture
 Runs at 2:00PM PST daily.
-![data_diagram](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/data_infrastructure_v2.png)
+![data_diagram](data_infrastructure_v2.png)
 
 
 1. TCGPlayer pricing data and TCGDex card data are called and processed through a data pipeline orchestrated by Dagster and hosted on AWS.
