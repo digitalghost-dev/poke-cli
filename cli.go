@@ -36,7 +36,7 @@ var commandDescriptions = []struct {
 	{"natures", "Get details about all natures"},
 	{"pokemon", "Get details about a Pokémon"},
 	{"search", "Search for a resource"},
-	{"speed", "Get details about a speed or speed"},
+	{"speed", "Calculate the speed of a Pokémon in battle"},
 	{"types", "Get details about a typing"},
 }
 
