@@ -50,7 +50,7 @@ func parseFuzzy(results []Result, search string) []Result {
 	bagSizes := []int{2, 3, 4}
 	cm := closestmatch.New(name, bagSizes)
 
-	matches := cm.ClosestN(search, 20)
+	matches := cm.ClosestN(search, 10)
 
 	matchSet := make(map[string]struct{}, len(matches))
 	for _, m := range matches {
@@ -66,9 +66,32 @@ func parseFuzzy(results []Result, search string) []Result {
 	return filtered
 }
 
+func parseContains(results []Result, search string) []Result {
+	needle := strings.ToLower(strings.TrimSpace(search))
+	if needle == "" {
+		return results
+	}
+
+	filtered := make([]Result, 0)
+	for _, r := range results {
+		if strings.Contains(strings.ToLower(r.Name), needle) {
+			filtered = append(filtered, r)
+		}
+	}
+	return filtered
+}
+
 func parseSearch(results []Result, search string) ([]Result, error) {
+	if strings.TrimSpace(search) == "" {
+		return results, nil
+	}
+
 	if containsRegexChars(search) {
 		return parseRegex(results, search)
+	}
+
+	if filtered := parseContains(results, search); len(filtered) > 0 {
+		return filtered, nil
 	}
 
 	return parseFuzzy(results, search), nil
@@ -76,7 +99,7 @@ func parseSearch(results []Result, search string) ([]Result, error) {
 
 var apiCall = connections.ApiCallSetup // set as a var for testability
 
-// Search returns resources list, filtered by resources term.
+// Search returns a resources list, filtered by resources term.
 func query(endpoint string, search string) (result Resource, err error) {
 	url := connections.APIURL + endpoint + "/?offset=0&limit=9999"
 	err = apiCall(url, &result, false)

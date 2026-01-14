@@ -4,17 +4,33 @@ import "testing"
 
 func TestParseSearch(t *testing.T) {
 	mockResults := []Result{
+		{Name: "hariyama"},
 		{Name: "pikachu"},
 		{Name: "raichu"},
 		{Name: "pidgey"},
 		{Name: "sandshrew"},
 		{Name: "bulbasaur"},
 		{Name: "charmander"},
+		{Name: "charmeleon"},
 		{Name: "squirtle"},
+		{Name: "musharna"},
 		{Name: "caterpie"},
 		{Name: "weedle"},
 		{Name: "rattata"},
 	}
+
+	t.Run("Substring match prefers contains over fuzzy", func(t *testing.T) {
+		filtered, err := parseSearch(mockResults, "hari")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(filtered) != 1 {
+			t.Fatalf("expected 1 result, got %d", len(filtered))
+		}
+		if filtered[0].Name != "hariyama" {
+			t.Fatalf("expected hariyama, got %s", filtered[0].Name)
+		}
+	})
 
 	t.Run("Regex prefix match ^", func(t *testing.T) {
 		filtered, err := parseSearch(mockResults, "^pi")
@@ -96,7 +112,7 @@ func TestParseSearch(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		expected := []string{"pidgey", "sandshrew", "charmander", "squirtle", "caterpie", "weedle"}
+		expected := []string{"pidgey", "sandshrew", "charmander", "charmeleon", "squirtle", "caterpie", "weedle"}
 		if len(filtered) != len(expected) {
 			t.Fatalf("expected %d results, got %d", len(expected), len(filtered))
 		}
@@ -112,7 +128,7 @@ func TestParseSearch(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		expected := []string{"charmander"}
+		expected := []string{"charmander", "charmeleon"}
 		if len(filtered) != len(expected) {
 			t.Fatalf("expected %d results, got %d", len(expected), len(filtered))
 		}
