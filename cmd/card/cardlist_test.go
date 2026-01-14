@@ -11,6 +11,10 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+// testSupabaseKey is the publishable API key used in tests.
+// Extracted to a constant for easier maintenance if the key changes.
+const testSupabaseKey = "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j"
+
 func TestCardsModel_Init(t *testing.T) {
 	model := CardsModel{
 		SeriesName: "sv",
@@ -305,10 +309,10 @@ func TestCardsList_EmptyResult(t *testing.T) {
 func TestCallCardData_SendsHeadersAndReturnsBody(t *testing.T) {
 	// Start a test HTTP server that validates headers and returns a body
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if got := r.Header.Get("apikey"); got != "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j" {
+		if got := r.Header.Get("apikey"); got != testSupabaseKey {
 			t.Fatalf("missing or wrong apikey header: %q", got)
 		}
-		if got := r.Header.Get("Authorization"); got != "Bearer sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j" {
+		if got := r.Header.Get("Authorization"); got != "Bearer "+testSupabaseKey {
 			t.Fatalf("missing or wrong Authorization header: %q", got)
 		}
 		if got := r.Header.Get("Content-Type"); got != "application/json" {

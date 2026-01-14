@@ -192,10 +192,10 @@ func TestSetsModel_Update_EnterKey(t *testing.T) {
 
 func TestCallSetsData_SendsHeadersAndReturnsBody(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if got := r.Header.Get("apikey"); got != "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j" {
+		if got := r.Header.Get("apikey"); got != testSupabaseKey {
 			t.Fatalf("missing or wrong apikey header: %q", got)
 		}
-		if got := r.Header.Get("Authorization"); got != "Bearer sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j" {
+		if got := r.Header.Get("Authorization"); got != "Bearer "+testSupabaseKey {
 			t.Fatalf("missing or wrong Authorization header: %q", got)
 		}
 		if got := r.Header.Get("Content-Type"); got != "application/json" {

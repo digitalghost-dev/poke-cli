@@ -10,8 +10,8 @@ dependencies = [
     "dagster>=1.11.3",
     "dagster-dbt>=0.27.3",
     "dagster-dg-cli>=1.11.3",
-    "dagster-postgres>=0.27.3",
-    "dagster-webserver>=1.11.3",
+    "dagster-postgres==0.28.7",
+    "dagster-webserver==1.12.7",
     "dbt-core>=1.10.8",
     "dbt-postgres>=1.9.0",
     "pandas>=2.3.1",
@@ -27,10 +27,10 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "dagster-webserver",
+    "dagster-webserver==1.12.7",
     "dagster-dg-cli",
     "dagster-dbt>=0.27.3",
-    "dagster-postgres>=0.27.3",
+    "dagster-postgres==0.28.7",
     "pytest>=9.0.2",
     "pytest-codspeed>=4.2.0",
     "responses>=0.25.8",

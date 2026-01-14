@@ -14,15 +14,16 @@ import (
 )
 
 type CardsModel struct {
-	Choice         string
-	IllustratorMap map[string]string
-	ImageMap       map[string]string
-	PriceMap       map[string]string
-	Quitting       bool
-	SelectedOption string
-	SeriesName     string
-	Table          table.Model
-	ViewImage      bool
+	Choice            string
+	IllustratorMap    map[string]string
+	ImageMap          map[string]string
+	PriceMap          map[string]string
+	RegulationMarkMap map[string]string
+	Quitting          bool
+	SelectedOption    string
+	SeriesName        string
+	Table             table.Model
+	ViewImage         bool
 }
 
 func (m CardsModel) Init() tea.Cmd {
@@ -70,7 +71,8 @@ func (m CardsModel) View() string {
 			price = "Price: Not available"
 		}
 		illustrator := m.IllustratorMap[cardName]
-		selectedCard = cardName + "\n---\n" + price + "\n---\n" + illustrator
+		regulationMark := m.RegulationMarkMap[cardName]
+		selectedCard = cardName + "\n---\n" + price + "\n---\n" + illustrator + "\n---\n" + regulationMark
 	}
 
 	leftPanel := styling.TypesTableBorder.Render(m.Table.View())
@@ -96,11 +98,12 @@ type cardData struct {
 	MarketPrice    float64 `json:"market_price"`
 	Name           string  `json:"name"`
 	NumberPlusName string  `json:"number_plus_name"`
+	RegulationMark string  `json:"regulation_mark"`
 }
 
 // CardsList creates and returns a new CardsModel with cards from a specific set
 func CardsList(setID string) (CardsModel, error) {
-	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url,illustrator&order=localId", setID)
+	url := fmt.Sprintf("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/card_pricing_view?set_id=eq.%s&select=number_plus_name,market_price,image_url,illustrator,regulation_mark&order=localId", setID)
 	body, err := getCardData(url)
 	if err != nil {
 		return CardsModel{}, fmt.Errorf("failed to fetch card data: %w", err)
@@ -117,6 +120,7 @@ func CardsList(setID string) (CardsModel, error) {
 	priceMap := make(map[string]string)
 	imageMap := make(map[string]string)
 	illustratorMap := make(map[string]string)
+	regulationMarkMap := make(map[string]string)
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
 		if card.MarketPrice != 0 {
@@ -129,6 +133,12 @@ func CardsList(setID string) (CardsModel, error) {
 			illustratorMap[card.NumberPlusName] = "Illustrator: " + card.Illustrator
 		} else {
 			illustratorMap[card.NumberPlusName] = "Illustrator not available"
+		}
+
+		if card.RegulationMark != "" {
+			regulationMarkMap[card.NumberPlusName] = "Regulation: " + card.RegulationMark
+		} else {
+			regulationMarkMap[card.NumberPlusName] = "Regulation not available"
 		}
 
 		imageMap[card.NumberPlusName] = card.ImageURL
@@ -155,6 +165,7 @@ func CardsList(setID string) (CardsModel, error) {
 		IllustratorMap: illustratorMap,
 		ImageMap:       imageMap,
 		PriceMap:       priceMap,
+		RegulationMarkMap:  regulationMarkMap,
 		Table:          t,
 	}, nil
 }

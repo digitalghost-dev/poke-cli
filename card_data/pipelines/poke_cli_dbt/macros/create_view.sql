@@ -10,7 +10,8 @@
                 "localId",
                 "set_cardCount_official",
                 CONCAT(name, ' - ', LPAD("localId", 3, '0'), '/', LPAD("set_cardCount_official"::text, 3, '0')) AS card_combined_name,
-                set_name
+                set_name,
+                regulation_mark
             FROM public.cards
         ),
          cards_pricing_cte AS (
@@ -30,7 +31,8 @@
             LPAD(c."localId", 3, '0') AS "localId",
             p."market_price",
             COALESCE(p."card_number", LPAD(c."localId", 3, '0')) AS card_number,
-            c.illustrator
+            c.illustrator,
+            c.regulation_mark
         FROM
             cards_cte AS c
                 LEFT JOIN
