@@ -57,7 +57,7 @@ func parseFuzzy(results []Result, search string) []Result {
 		matchSet[m] = struct{}{}
 	}
 
-	filtered := results[:0]
+	filtered := make([]Result, 0, len(matches))
 	for _, r := range results {
 		if _, ok := matchSet[r.Name]; ok {
 			filtered = append(filtered, r)

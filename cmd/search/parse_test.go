@@ -32,6 +32,37 @@ func TestParseSearch(t *testing.T) {
 		}
 	})
 
+	t.Run("Contains is case-insensitive and trims whitespace", func(t *testing.T) {
+		filtered, err := parseSearch(mockResults, "  HARI  ")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(filtered) != 1 {
+			t.Fatalf("expected 1 result, got %d", len(filtered))
+		}
+		if filtered[0].Name != "hariyama" {
+			t.Fatalf("expected hariyama, got %s", filtered[0].Name)
+		}
+	})
+
+	t.Run("Fuzzy matching is used when contains has no matches", func(t *testing.T) {
+		filtered, err := parseSearch(mockResults, "charmender")
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(filtered) == 0 {
+			t.Fatalf("expected fuzzy results, got 0")
+		}
+
+		found := map[string]bool{}
+		for _, r := range filtered {
+			found[r.Name] = true
+		}
+		if !found["charmander"] {
+			t.Fatalf("expected fuzzy results to include charmander, got %#v", found)
+		}
+	})
+
 	t.Run("Regex prefix match ^", func(t *testing.T) {
 		filtered, err := parseSearch(mockResults, "^pi")
 		if err != nil {
