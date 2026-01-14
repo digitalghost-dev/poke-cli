@@ -99,7 +99,6 @@ func AbilityCommand() (string, error) {
 
 	if *af.Pokemon || *af.ShortPokemon {
 		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
-			output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
 			return utils.HandleFlagError(&output, err)
 		}
 	}
