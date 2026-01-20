@@ -14,7 +14,7 @@ builds:
       - windows
       - darwin
     ldflags:
-      - -s -w -X main.version=v1.8.6
+      - -s -w -X main.version=v1.8.7
 
 archives:
   - formats: [ 'zip' ]
