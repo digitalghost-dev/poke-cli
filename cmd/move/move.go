@@ -16,6 +16,12 @@ import (
 	"golang.org/x/text/language"
 )
 
+
+var (
+	sv string
+	swsh string
+)
+
 func MoveCommand() (string, error) {
 	var output strings.Builder
 
@@ -102,12 +108,27 @@ func moveEffectContainer(output *strings.Builder, moveStruct structs.MoveJSONStr
 		BorderForeground(lipgloss.Color(styling.GetTypeColor(moveStruct.Type.Name))).
 		Width(32)
 
-	var flavorTextEntry string
+
 	for _, entry := range moveStruct.FlavorTextEntries {
-		if entry.Language.Name == "en" && entry.VersionGroup.Name == "scarlet-violet" {
-			flavorTextEntry = entry.FlavorText
+		if entry.Language.Name != "en" {
+			continue
+		}
+
+		if entry.VersionGroup.Name == "scarlet-violet" {
+			sv = entry.FlavorText
 			break
 		}
+
+		if entry.VersionGroup.Name == "sword-shield" {
+			swsh = entry.FlavorText
+		}
+	}
+
+	flavorTextEntry := "API missing data."
+	if sv != "" {
+		flavorTextEntry = sv
+	} else if swsh != "" {
+		flavorTextEntry = swsh
 	}
 
 	effectBold := styling.StyleBold.Render("Effect:")
