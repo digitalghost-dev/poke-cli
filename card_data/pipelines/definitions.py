@@ -17,7 +17,12 @@ from .sensors import discord_success_sensor, discord_failure_sensor
 def defs() -> dg.Definitions:
     # load_from_defs_folder discovers dbt assets from transform_data.py
     folder_defs: dg.Definitions = load_from_defs_folder(project_root=Path(__file__).parent.parent)
-    return dg.Definitions.merge(folder_defs, defs_pricing, defs_sets, defs_series)
+    return dg.Definitions.merge(folder_defs, defs_discord_sensors, defs_pricing, defs_sets, defs_series)
+
+
+defs_discord_sensors: dg.Definitions = dg.Definitions(
+    sensors=[discord_success_sensor, discord_failure_sensor],
+)
 
 # Pricing pipeline
 pricing_pipeline_job = dg.define_asset_job(
@@ -36,7 +41,6 @@ defs_pricing: dg.Definitions = dg.Definitions(
     assets=[build_dataframe, load_pricing_data, data_quality_checks_on_pricing],
     jobs=[pricing_pipeline_job],
     schedules=[price_schedule],
-    sensors=[discord_success_sensor, discord_failure_sensor]
 )
 
 # Series pipeline
@@ -48,7 +52,6 @@ series_pipeline_job = dg.define_asset_job(
 defs_series: dg.Definitions = dg.Definitions(
     assets=[extract_series_data, load_series_data, data_quality_check_on_series],
     jobs=[series_pipeline_job],
-    sensors=[discord_success_sensor, discord_failure_sensor]
 )
 
 # Sets pipeline
@@ -60,5 +63,4 @@ sets_pipeline_job = dg.define_asset_job(
 defs_sets: dg.Definitions = dg.Definitions(
     assets=[extract_sets_data, load_sets_data, data_quality_check_on_sets],
     jobs=[sets_pipeline_job],
-    sensors=[discord_success_sensor, discord_failure_sensor]
 )
