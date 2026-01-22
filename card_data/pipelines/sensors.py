@@ -18,10 +18,10 @@ def discord_success_sensor(context: RunStatusSensorContext):
             timeout=10,
         )
         context.log.info(f"n8n response: {response.status_code}")
-    except Exception as e:
-        context.log.error(f"Failed to send notification: {e}")
     except requests.RequestException as e:
         context.log.error(f"Requests or network error: {e}")
+    except Exception as e:
+        context.log.error(f"Failed to send notification: {e}")
 
 
 @run_status_sensor(run_status=DagsterRunStatus.FAILURE, name="discord_failure_sensor")
@@ -38,7 +38,7 @@ def discord_failure_sensor(context: RunStatusSensorContext):
             timeout=10,
         )
         context.log.info(f"n8n response: {response.status_code}")
-    except Exception as e:
-        context.log.error(f"Failed to send notification: {e}")
     except requests.RequestException as e:
         context.log.error(f"Requests or network error: {e}")
+    except Exception as e:
+        context.log.error(f"Failed to send notification: {e}")
