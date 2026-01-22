@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/bubbles/table"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -19,11 +21,40 @@ type CardsModel struct {
 	ImageMap          map[string]string
 	PriceMap          map[string]string
 	RegulationMarkMap map[string]string
+	AllRows           []table.Row
 	Quitting          bool
+	Search            textinput.Model
 	SelectedOption    string
 	SeriesName        string
 	Table             table.Model
+	TableStyles       table.Styles
 	ViewImage         bool
+}
+
+const (
+	activeTableSelectedBg   lipgloss.Color = "#FFCC00"
+	inactiveTableSelectedBg lipgloss.Color = "#808080"
+)
+
+func cardTableStyles(selectedBg lipgloss.Color) table.Styles {
+	s := table.DefaultStyles()
+	s.Header = s.Header.
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("#FFCC00")).
+		BorderBottom(true)
+	s.Selected = s.Selected.
+		Foreground(lipgloss.Color("#000")).
+		Background(selectedBg)
+	return s
+}
+
+func (m *CardsModel) syncTableStylesForFocus() {
+	if m.Search.Focused() {
+		m.TableStyles = cardTableStyles(inactiveTableSelectedBg)
+	} else {
+		m.TableStyles = cardTableStyles(activeTableSelectedBg)
+	}
+	m.Table.SetStyles(m.TableStyles)
 }
 
 func (m CardsModel) Init() tea.Cmd {
@@ -36,16 +67,46 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "esc", "ctrl+c":
+		case "ctrl+c":
 			m.Quitting = true
 			return m, tea.Quit
-		case " ":
-			m.ViewImage = true
+		case "esc":
+			// If in the search bar, exit search mode instead of quitting.
+			if m.Search.Focused() {
+				m.Search.Blur()
+				m.Table.Focus()
+				m.syncTableStylesForFocus()
+				return m, nil
+			}
+			m.Quitting = true
 			return m, tea.Quit
+		case "?":
+			if !m.Search.Focused() {
+				m.ViewImage = true
+				return m, tea.Quit
+			}
+		case "tab":
+			if m.Search.Focused() {
+				m.Search.Blur()
+				m.Table.Focus()
+			} else {
+				m.Table.Blur()
+				m.Search.Focus()
+			}
+			m.syncTableStylesForFocus()
+			return m, nil
 		}
 	}
 
-	m.Table, bubbleCmd = m.Table.Update(msg)
+	if m.Search.Focused() {
+		prev := m.Search.Value()
+		m.Search, bubbleCmd = m.Search.Update(msg)
+		if m.Search.Value() != prev {
+			m.applyFilter()
+		}
+	} else {
+		m.Table, bubbleCmd = m.Table.Update(msg)
+	}
 
 	// Keep the selected option in sync on every update
 	if row := m.Table.SelectedRow(); len(row) > 0 {
@@ -56,6 +117,28 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, bubbleCmd
+}
+
+func (m *CardsModel) applyFilter() {
+	q := strings.TrimSpace(strings.ToLower(m.Search.Value()))
+	if q == "" {
+		m.Table.SetRows(m.AllRows)
+		m.Table.SetCursor(0)
+		return
+	}
+
+	filtered := make([]table.Row, 0, len(m.AllRows))
+	for _, r := range m.AllRows {
+		if len(r) == 0 {
+			continue
+		}
+		if strings.Contains(strings.ToLower(r[0]), q) {
+			filtered = append(filtered, r)
+		}
+	}
+
+	m.Table.SetRows(filtered)
+	m.Table.SetCursor(0)
 }
 
 func (m CardsModel) View() string {
@@ -75,7 +158,8 @@ func (m CardsModel) View() string {
 		selectedCard = cardName + "\n---\n" + price + "\n---\n" + illustrator + "\n---\n" + regulationMark
 	}
 
-	leftPanel := styling.TypesTableBorder.Render(m.Table.View())
+	leftContent := lipgloss.JoinVertical(lipgloss.Left, m.Search.View(), m.Table.View())
+	leftPanel := styling.TypesTableBorder.Render(leftContent)
 
 	rightPanel := lipgloss.NewStyle().
 		Width(40).
@@ -87,9 +171,10 @@ func (m CardsModel) View() string {
 
 	screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
 
-	return fmt.Sprintf("Highlight a card!\n%s\n%s",
+	return fmt.Sprintf(
+		"Highlight a card!\n%s\n%s",
 		screen,
-		styling.KeyMenu.Render("↑ (move up)\n↓ (move down)\nspace (view image)\nctrl+c | esc (quit)"))
+		styling.KeyMenu.Render("↑ (move up)\n↓ (move down)\n? (view image)\ntab (toggle search)\nctrl+c | esc (quit)"))
 }
 
 type cardData struct {
@@ -117,10 +202,13 @@ func CardsList(setID string) (CardsModel, error) {
 
 	// Extract card names and build table rows + price map
 	rows := make([]table.Row, len(allCards))
+	allRows := rows
+
 	priceMap := make(map[string]string)
 	imageMap := make(map[string]string)
 	illustratorMap := make(map[string]string)
 	regulationMarkMap := make(map[string]string)
+
 	for i, card := range allCards {
 		rows[i] = []string{card.NumberPlusName}
 		if card.MarketPrice != 0 {
@@ -144,29 +232,32 @@ func CardsList(setID string) (CardsModel, error) {
 		imageMap[card.NumberPlusName] = card.ImageURL
 	}
 
+	ti := textinput.New()
+	ti.Placeholder = "type name..."
+	ti.Prompt = "🔎 "
+	ti.CharLimit = 24
+	ti.Width = 30
+	ti.Blur()
+
 	t := table.New(
 		table.WithColumns([]table.Column{{Title: "Card Name", Width: 35}}),
 		table.WithRows(rows),
 		table.WithFocused(true),
-		table.WithHeight(28),
+		table.WithHeight(27),
 	)
 
-	s := table.DefaultStyles()
-	s.Header = s.Header.
-		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00")).
-		BorderBottom(true)
-	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
-		Background(lipgloss.Color("#FFCC00"))
-	t.SetStyles(s)
+	styles := cardTableStyles(activeTableSelectedBg)
+	t.SetStyles(styles)
 
 	return CardsModel{
-		IllustratorMap: illustratorMap,
-		ImageMap:       imageMap,
-		PriceMap:       priceMap,
-		RegulationMarkMap:  regulationMarkMap,
-		Table:          t,
+		AllRows:           allRows,
+		IllustratorMap:    illustratorMap,
+		ImageMap:          imageMap,
+		PriceMap:          priceMap,
+		RegulationMarkMap: regulationMarkMap,
+		Search:            ti,
+		Table:             t,
+		TableStyles:       styles,
 	}, nil
 }
 
