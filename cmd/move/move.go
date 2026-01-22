@@ -16,12 +16,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-
-var (
-	sv string
-	swsh string
-)
-
 func MoveCommand() (string, error) {
 	var output strings.Builder
 
@@ -102,12 +96,14 @@ func moveInfoContainer(output *strings.Builder, moveStruct structs.MoveJSONStruc
 }
 
 func moveEffectContainer(output *strings.Builder, moveStruct structs.MoveJSONStruct) {
+	var sv string
+	var	swsh string
+
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
 		BorderForeground(lipgloss.Color(styling.GetTypeColor(moveStruct.Type.Name))).
 		Width(32)
-
 
 	for _, entry := range moveStruct.FlavorTextEntries {
 		if entry.Language.Name != "en" {
