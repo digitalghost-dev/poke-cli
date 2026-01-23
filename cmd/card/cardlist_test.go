@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/charmbracelet/bubbles/table"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -91,7 +92,58 @@ func TestCardsModel_Update_CtrlC(t *testing.T) {
 	}
 }
 
-func TestCardsModel_Update_SpaceBar(t *testing.T) {
+func TestCardsModel_Update_TabTogglesSearchFocusAndTableSelectedBackground(t *testing.T) {
+	rows := []table.Row{{"001/198 - Bulbasaur"}}
+	columns := []table.Column{{Title: "Card Name", Width: 35}}
+
+	tbl := table.New(
+		table.WithColumns(columns),
+		table.WithRows(rows),
+		table.WithFocused(true),
+	)
+
+	search := textinput.New()
+	search.Blur()
+
+	initialStyles := cardTableStyles(activeTableSelectedBg)
+	tbl.SetStyles(initialStyles)
+
+	model := CardsModel{
+		Search:      search,
+		Table:       tbl,
+		TableStyles: initialStyles,
+	}
+
+	// Tab into the search bar.
+	newModel, _ := model.Update(tea.KeyMsg{Type: tea.KeyTab})
+	m1 := newModel.(CardsModel)
+	if !m1.Search.Focused() {
+		t.Fatal("expected search to be focused after tab")
+	}
+
+	bg1 := m1.TableStyles.Selected.GetBackground()
+	r1, g1, b1, a1 := bg1.RGBA()
+	re, ge, be, ae := inactiveTableSelectedBg.RGBA()
+	if r1 != re || g1 != ge || b1 != be || a1 != ae {
+		t.Fatalf("expected selected background to be gray when searching; got RGBA(%d,%d,%d,%d)", r1, g1, b1, a1)
+	}
+
+	// Tab back to the table.
+	newModel2, _ := m1.Update(tea.KeyMsg{Type: tea.KeyTab})
+	m2 := newModel2.(CardsModel)
+	if m2.Search.Focused() {
+		t.Fatal("expected search to be blurred after tabbing back")
+	}
+
+	bg2 := m2.TableStyles.Selected.GetBackground()
+	r2, g2, b2, a2 := bg2.RGBA()
+	re2, ge2, be2, ae2 := activeTableSelectedBg.RGBA()
+	if r2 != re2 || g2 != ge2 || b2 != be2 || a2 != ae2 {
+		t.Fatalf("expected selected background to be yellow when table is focused; got RGBA(%d,%d,%d,%d)", r2, g2, b2, a2)
+	}
+}
+
+func TestCardsModel_Update_ViewImageKey_QuestionMark(t *testing.T) {
 	rows := []table.Row{
 		{"001/198 - Bulbasaur"},
 	}
@@ -109,17 +161,51 @@ func TestCardsModel_Update_SpaceBar(t *testing.T) {
 		ViewImage: false,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeySpace}
+	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'?'}}
 	newModel, cmd := model.Update(msg)
 
 	resultModel := newModel.(CardsModel)
 
 	if !resultModel.ViewImage {
-		t.Error("ViewImage should be set to true when SPACE is pressed")
+		t.Error("ViewImage should be set to true when '?' is pressed")
 	}
 
 	if cmd == nil {
-		t.Error("Update with SPACE should return tea.Quit command")
+		t.Error("Update with '?' should return tea.Quit command")
+	}
+}
+
+func TestCardsModel_Update_ViewImageKey_DoesNotOverrideSearch(t *testing.T) {
+	rows := []table.Row{{"001/198 - Bulbasaur"}}
+	columns := []table.Column{{Title: "Card Name", Width: 35}}
+
+	tbl := table.New(
+		table.WithColumns(columns),
+		table.WithRows(rows),
+		table.WithFocused(true),
+	)
+
+	search := textinput.New()
+	search.Focus()
+
+	model := CardsModel{
+		Search:    search,
+		Table:     tbl,
+		ViewImage: false,
+	}
+
+	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'?'}}
+	newModel, _ := model.Update(msg)
+	resultModel := newModel.(CardsModel)
+
+	if resultModel.ViewImage {
+		t.Fatal("expected ViewImage to remain false when typing '?' in the search field")
+	}
+	if resultModel.Quitting {
+		t.Fatal("expected Quitting to remain false when typing in the search field")
+	}
+	if got := resultModel.Search.Value(); got != "?" {
+		t.Fatalf("expected search input to receive '?'; got %q", got)
 	}
 }
 
