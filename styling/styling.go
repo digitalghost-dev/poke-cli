@@ -14,21 +14,33 @@ import (
 
 const (
 	HyphenHint = "Use a hyphen when typing a name with a space."
+
+	// Brand colors - use these instead of hardcoding hex values
+	PrimaryYellow = "#FFCC00" // Main accent color for borders, highlights
+	LightYellow   = "#FFDE00" // Used in dark mode adaptive colors
+	DarkYellow    = "#E1AD01" // Used in light mode adaptive colors
+)
+
+// Pre-defined lipgloss colors for convenience
+var (
+	YellowColor     = lipgloss.Color(PrimaryYellow)
+	YellowAdaptive  = lipgloss.AdaptiveColor{Light: DarkYellow, Dark: LightYellow}
+	YellowAdaptive2 = lipgloss.AdaptiveColor{Light: DarkYellow, Dark: PrimaryYellow}
 )
 
 var (
 	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
 	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
 	Gray          = lipgloss.Color("#777777")
-	Yellow        = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFDE00"})
+	Yellow        = lipgloss.NewStyle().Foreground(YellowAdaptive)
 	ColoredBullet = lipgloss.NewStyle().
 			SetString("•").
-			Foreground(lipgloss.Color("#FFCC00"))
-	CheckboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FFCC00"))
+			Foreground(YellowColor)
+	CheckboxStyle = lipgloss.NewStyle().Foreground(YellowColor)
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
 
 	DocsLink = lipgloss.NewStyle().
-			Foreground(lipgloss.AdaptiveColor{Light: "#E1AD01", Dark: "#FFCC00"}).
+			Foreground(YellowAdaptive2).
 			Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
 
 	StyleBold      = lipgloss.NewStyle().Bold(true)
@@ -36,7 +48,7 @@ var (
 	StyleUnderline = lipgloss.NewStyle().Underline(true)
 	HelpBorder     = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#FFCC00"))
+			BorderForeground(YellowColor)
 	ErrorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	ErrorBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
@@ -47,7 +59,7 @@ var (
 			BorderForeground(lipgloss.Color("#FF8C00"))
 	TypesTableBorder = lipgloss.NewStyle().
 				BorderStyle(lipgloss.NormalBorder()).
-				BorderForeground(lipgloss.Color("#FFCC00"))
+				BorderForeground(YellowColor)
 	ColorMap = map[string]string{
 		"normal":   "#B7B7A9",
 		"fire":     "#FF4422",
@@ -146,7 +158,7 @@ func (col Color) Hex() string {
 
 func FormTheme() *huh.Theme {
 	var (
-		yellow   = lipgloss.Color("#FFDE00")
+		yellow   = lipgloss.Color(LightYellow)
 		blue     = lipgloss.Color("#3B4CCA")
 		red      = lipgloss.Color("#D00000")
 		black    = lipgloss.Color("#000000")

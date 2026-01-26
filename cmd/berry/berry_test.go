@@ -10,6 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/exp/teatest"
+	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -186,11 +187,11 @@ func createTestModel() model {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00")).
+		BorderForeground(styling.YellowColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("#000")).
-		Background(lipgloss.Color("#FFCC00"))
+		Background(styling.YellowColor)
 	t.SetStyles(s)
 
 	return model{table: t}

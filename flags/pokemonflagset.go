@@ -45,7 +45,7 @@ func header(header string) string {
 
 	HeaderBold := lipgloss.NewStyle().
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00")).
+		BorderForeground(styling.YellowColor).
 		BorderTop(true).
 		Bold(true).
 		Render(header)
