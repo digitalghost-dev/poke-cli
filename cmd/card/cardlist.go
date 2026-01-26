@@ -31,16 +31,16 @@ type CardsModel struct {
 	ViewImage         bool
 }
 
-const (
-	activeTableSelectedBg   lipgloss.Color = "#FFCC00"
-	inactiveTableSelectedBg lipgloss.Color = "#808080"
+var (
+	activeTableSelectedBg   = styling.YellowColor
+	inactiveTableSelectedBg = lipgloss.Color("#808080")
 )
 
 func cardTableStyles(selectedBg lipgloss.Color) table.Styles {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00")).
+		BorderForeground(styling.YellowColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("#000")).
@@ -82,6 +82,10 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "?":
 			if !m.Search.Focused() {
+				// Sync the selected option before quitting to ensure the correct card is shown
+				if row := m.Table.SelectedRow(); len(row) > 0 {
+					m.SelectedOption = row[0]
+				}
 				m.ViewImage = true
 				return m, tea.Quit
 			}
@@ -165,7 +169,7 @@ func (m CardsModel) View() string {
 		Width(40).
 		Height(29).
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00")).
+		BorderForeground(styling.YellowColor).
 		Padding(1).
 		Render(selectedCard)
 
