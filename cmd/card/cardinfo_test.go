@@ -6,6 +6,7 @@ import (
 	"image/png"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
@@ -90,20 +91,19 @@ func TestCardImage_Success(t *testing.T) {
 	}))
 	defer server.Close()
 
-	result, err := CardImage(server.URL)
+	// Set up a supported terminal environment (Sixel)
+	os.Setenv("TERM_PROGRAM", "iTerm.app")
+	defer os.Unsetenv("TERM_PROGRAM")
+
+	result, protocol, err := CardImage(server.URL)
 
 	if err != nil {
 		t.Errorf("CardImage() error = %v, want nil", err)
 		return
 	}
 
-	// Check that result is a valid Sixel string
-	if !strings.HasPrefix(result, "\x1bPq") {
-		t.Error("CardImage() should return string starting with Sixel header")
-	}
-
-	if !strings.HasSuffix(result, "\x1b\\") {
-		t.Error("CardImage() should return string ending with Sixel terminator")
+	if protocol == "" {
+		t.Error("CardImage() should return a protocol name")
 	}
 
 	if len(result) == 0 {
@@ -123,7 +123,7 @@ func TestCardImage_EncodingError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	result, err := CardImage(server.URL)
+	result, protocol, err := CardImage(server.URL)
 
 	if err == nil {
 		t.Error("CardImage() should return error for invalid image data")
@@ -131,6 +131,10 @@ func TestCardImage_EncodingError(t *testing.T) {
 
 	if result != "" {
 		t.Errorf("CardImage() on error should return empty string, got %v", result)
+	}
+
+	if protocol != "" {
+		t.Errorf("CardImage() on error should return empty protocol, got %v", protocol)
 	}
 
 	if !strings.Contains(err.Error(), "failed to decode image") {
@@ -145,7 +149,7 @@ func TestCardImage_Non200Response(t *testing.T) {
 	}))
 	defer server.Close()
 
-	result, err := CardImage(server.URL)
+	result, protocol, err := CardImage(server.URL)
 
 	if err == nil {
 		t.Error("CardImage() should return error for non-200 response")
@@ -155,7 +159,289 @@ func TestCardImage_Non200Response(t *testing.T) {
 		t.Errorf("CardImage() on error should return empty string, got %v", result)
 	}
 
+	if protocol != "" {
+		t.Errorf("CardImage() on error should return empty protocol, got %v", protocol)
+	}
+
 	if !strings.Contains(err.Error(), "non-200 response") {
 		t.Errorf("Error message should mention 'non-200 response', got: %v", err)
+	}
+}
+
+func TestSupportsKittyGraphics(t *testing.T) {
+	tests := []struct {
+		name        string
+		envVars     map[string]string
+		wantSupport bool
+	}{
+		{
+			name: "kitty terminal via KITTY_WINDOW_ID",
+			envVars: map[string]string{
+				"KITTY_WINDOW_ID": "1",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "kitty via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "kitty",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "kitty via TERM_PROGRAM uppercase",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "KITTY",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "ghostty via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "ghostty",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "ghostty via TERM_PROGRAM uppercase",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "Ghostty",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "wezterm via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "WezTerm",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "ghostty via TERM variable",
+			envVars: map[string]string{
+				"TERM": "xterm-ghostty",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "kitty via TERM variable",
+			envVars: map[string]string{
+				"TERM": "xterm-kitty",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "unsupported terminal - Apple Terminal",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "Apple_Terminal",
+				"TERM":         "xterm-256color",
+			},
+			wantSupport: false,
+		},
+		{
+			name: "unsupported terminal - iTerm2",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "iTerm.app",
+				"TERM":         "xterm-256color",
+			},
+			wantSupport: false,
+		},
+		{
+			name: "unsupported terminal - GNOME Terminal",
+			envVars: map[string]string{
+				"TERM": "xterm",
+			},
+			wantSupport: false,
+		},
+		{
+			name:        "no environment variables set",
+			envVars:     map[string]string{},
+			wantSupport: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Save original env vars
+			origVars := map[string]string{
+				"KITTY_WINDOW_ID": os.Getenv("KITTY_WINDOW_ID"),
+				"TERM_PROGRAM":    os.Getenv("TERM_PROGRAM"),
+				"TERM":            os.Getenv("TERM"),
+			}
+
+			// Clear all relevant env vars first
+			os.Unsetenv("KITTY_WINDOW_ID")
+			os.Unsetenv("TERM_PROGRAM")
+			os.Unsetenv("TERM")
+
+			// Set test env vars
+			for key, val := range tt.envVars {
+				os.Setenv(key, val)
+			}
+
+			// Cleanup after test
+			defer func() {
+				for key, val := range origVars {
+					if val == "" {
+						os.Unsetenv(key)
+					} else {
+						os.Setenv(key, val)
+					}
+				}
+			}()
+
+			got := supportsKittyGraphics()
+			if got != tt.wantSupport {
+				t.Errorf("supportsKittyGraphics() = %v, want %v", got, tt.wantSupport)
+			}
+		})
+	}
+}
+
+func TestSupportsSixelGraphics(t *testing.T) {
+	tests := []struct {
+		name        string
+		envVars     map[string]string
+		wantSupport bool
+	}{
+		{
+			name: "iterm2 via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "iTerm.app",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "wezterm via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "WezTerm",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "wezterm lowercase",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "wezterm",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "mintty via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "mintty",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "konsole via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "Konsole",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "foot via TERM",
+			envVars: map[string]string{
+				"TERM": "foot",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "foot with suffix",
+			envVars: map[string]string{
+				"TERM": "foot-extra",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "mlterm via TERM",
+			envVars: map[string]string{
+				"TERM": "mlterm",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "xterm-sixel via TERM",
+			envVars: map[string]string{
+				"TERM": "xterm-sixel",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "yaft via TERM",
+			envVars: map[string]string{
+				"TERM": "yaft-256color",
+			},
+			wantSupport: true,
+		},
+		{
+			name: "unsupported terminal - Apple Terminal",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "Apple_Terminal",
+				"TERM":         "xterm-256color",
+			},
+			wantSupport: false,
+		},
+		{
+			name: "unsupported terminal - Alacritty",
+			envVars: map[string]string{
+				"TERM": "alacritty",
+			},
+			wantSupport: false,
+		},
+		{
+			name: "unsupported terminal - standard xterm",
+			envVars: map[string]string{
+				"TERM": "xterm",
+			},
+			wantSupport: false,
+		},
+		{
+			name: "unsupported terminal - xterm-256color",
+			envVars: map[string]string{
+				"TERM": "xterm-256color",
+			},
+			wantSupport: false,
+		},
+		{
+			name:        "no environment variables set",
+			envVars:     map[string]string{},
+			wantSupport: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Save original env vars
+			origVars := map[string]string{
+				"TERM_PROGRAM": os.Getenv("TERM_PROGRAM"),
+				"TERM":         os.Getenv("TERM"),
+			}
+
+			// Clear all relevant env vars first
+			os.Unsetenv("TERM_PROGRAM")
+			os.Unsetenv("TERM")
+
+			// Set test env vars
+			for key, val := range tt.envVars {
+				os.Setenv(key, val)
+			}
+
+			// Cleanup after test
+			defer func() {
+				for key, val := range origVars {
+					if val == "" {
+						os.Unsetenv(key)
+					} else {
+						os.Setenv(key, val)
+					}
+				}
+			}()
+
+			got := supportsSixelGraphics()
+			if got != tt.wantSupport {
+				t.Errorf("supportsSixelGraphics() = %v, want %v", got, tt.wantSupport)
+			}
+		})
 	}
 }

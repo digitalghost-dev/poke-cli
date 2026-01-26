@@ -136,7 +136,7 @@ func TestImageRenderer_InitializesCorrectly(t *testing.T) {
 func TestImageModel_Update_ImageReady(t *testing.T) {
 	model := ImageRenderer("Charizard", "http://example.com/charizard.png")
 
-	msg := imageReadyMsg{sixelData: "test-sixel-data-456"}
+	msg := imageReadyMsg{imageData: "test-image-data-456", protocol: "Kitty"}
 	newModel, cmd := model.Update(msg)
 
 	if cmd != nil {
@@ -148,8 +148,12 @@ func TestImageModel_Update_ImageReady(t *testing.T) {
 		t.Error(`Update with imageReadyMsg should set Loading to false`)
 	}
 
-	if updatedModel.ImageData != "test-sixel-data-456" {
+	if updatedModel.ImageData != "test-image-data-456" {
 		t.Errorf("Update with imageReadyMsg should set ImageData, got %v", updatedModel.ImageData)
+	}
+
+	if updatedModel.Protocol != "Kitty" {
+		t.Errorf("Update with imageReadyMsg should set Protocol, got %v", updatedModel.Protocol)
 	}
 }
 
