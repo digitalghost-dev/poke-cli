@@ -2,8 +2,6 @@ package card
 
 import (
 	"errors"
-	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -11,10 +9,6 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
-
-// testSupabaseKey is the publishable API key used in tests.
-// Extracted to a constant for easier maintenance if the key changes.
-const testSupabaseKey = "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j"
 
 func TestCardsModel_Init(t *testing.T) {
 	model, _ := CardsList("sv01")
@@ -401,51 +395,3 @@ func TestCardDataMsg_EmptyResult(t *testing.T) {
 	}
 }
 
-func TestCallCardData_SendsHeadersAndReturnsBody(t *testing.T) {
-	// Start a test HTTP server that validates headers and returns a body
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if got := r.Header.Get("apikey"); got != testSupabaseKey {
-			t.Fatalf("missing or wrong apikey header: %q", got)
-		}
-		if got := r.Header.Get("Authorization"); got != "Bearer "+testSupabaseKey {
-			t.Fatalf("missing or wrong Authorization header: %q", got)
-		}
-		if got := r.Header.Get("Content-Type"); got != "application/json" {
-			t.Fatalf("missing or wrong Content-Type header: %q", got)
-		}
-
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"ok":true}`))
-	}))
-	defer srv.Close()
-
-	body, err := CallCardData(srv.URL)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if string(body) != `{"ok":true}` {
-		t.Fatalf("unexpected body: %s", string(body))
-	}
-}
-
-func TestCallCardData_Non200Error(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "boom", http.StatusInternalServerError)
-	}))
-	defer srv.Close()
-
-	_, err := CallCardData(srv.URL)
-	if err == nil {
-		t.Fatal("expected error for non-200 status")
-	}
-	if !strings.Contains(err.Error(), "unexpected status code: 500") {
-		t.Fatalf("error should mention status code, got: %v", err)
-	}
-}
-
-func TestCallCardData_BadURL(t *testing.T) {
-	_, err := CallCardData("http://%41:80/") // invalid URL host
-	if err == nil {
-		t.Fatal("expected error for bad URL")
-	}
-}

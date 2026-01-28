@@ -2,8 +2,6 @@ package card
 
 import (
 	"errors"
-	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -184,54 +182,6 @@ func TestSetsModel_Update_EnterKey(t *testing.T) {
 
 	if cmd == nil {
 		t.Error("Update with Enter should return tea.Quit command")
-	}
-}
-
-func TestCallSetsData_SendsHeadersAndReturnsBody(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if got := r.Header.Get("apikey"); got != testSupabaseKey {
-			t.Fatalf("missing or wrong apikey header: %q", got)
-		}
-		if got := r.Header.Get("Authorization"); got != "Bearer "+testSupabaseKey {
-			t.Fatalf("missing or wrong Authorization header: %q", got)
-		}
-		if got := r.Header.Get("Content-Type"); got != "application/json" {
-			t.Fatalf("missing or wrong Content-Type header: %q", got)
-		}
-
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"ok":true}`))
-	}))
-	defer srv.Close()
-
-	body, err := callSetsData(srv.URL)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if string(body) != `{"ok":true}` {
-		t.Fatalf("unexpected body: %s", string(body))
-	}
-}
-
-func TestCallSetsData_Non200Error(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "boom", http.StatusInternalServerError)
-	}))
-	defer srv.Close()
-
-	_, err := callSetsData(srv.URL)
-	if err == nil {
-		t.Fatal("expected error for non-200 status")
-	}
-	if !strings.Contains(err.Error(), "unexpected status code: 500") {
-		t.Fatalf("error should mention status code, got: %v", err)
-	}
-}
-
-func TestCallSetsData_BadURL(t *testing.T) {
-	_, err := callSetsData("http://%41:80/") // invalid URL host
-	if err == nil {
-		t.Fatal("expected error for bad URL")
 	}
 }
 

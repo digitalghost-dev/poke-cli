@@ -329,3 +329,47 @@ func TestPokemonSpeciesApiCall(t *testing.T) {
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
 	})
 }
+
+// testSupabaseKey is the publishable API key used in tests.
+const testSupabaseKey = "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j"
+
+func TestCallTCGData(t *testing.T) {
+	t.Run("sends correct headers and returns body", func(t *testing.T) {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Validate headers
+			if got := r.Header.Get("apikey"); got != testSupabaseKey {
+				t.Fatalf("missing or wrong apikey header: %q", got)
+			}
+			if got := r.Header.Get("Authorization"); got != "Bearer "+testSupabaseKey {
+				t.Fatalf("missing or wrong Authorization header: %q", got)
+			}
+			if got := r.Header.Get("Content-Type"); got != "application/json" {
+				t.Fatalf("missing or wrong Content-Type header: %q", got)
+			}
+
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"ok":true}`))
+		}))
+		defer srv.Close()
+
+		body, err := CallTCGData(srv.URL)
+		require.NoError(t, err)
+		assert.Equal(t, `{"ok":true}`, string(body))
+	})
+
+	t.Run("returns error for non-200 status", func(t *testing.T) {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Error(w, "boom", http.StatusInternalServerError)
+		}))
+		defer srv.Close()
+
+		_, err := CallTCGData(srv.URL)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "unexpected status code: 500")
+	})
+
+	t.Run("returns error for bad URL", func(t *testing.T) {
+		_, err := CallTCGData("http://%41:80/") // invalid URL host
+		require.Error(t, err)
+	})
+}
