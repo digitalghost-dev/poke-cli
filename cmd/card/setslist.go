@@ -3,16 +3,16 @@ package card
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"time"
 
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
+
+var getSetsData = connections.CallTCGData
 
 type SetsModel struct {
 	Choice     string
@@ -157,9 +157,6 @@ type setData struct {
 	Symbol            string `json:"symbol"`
 }
 
-// creating a function variable to swap the implementation in tests
-var getSetsData = callSetsData
-
 // SetsList returns a minimal model - data fetching happens via Init()
 func SetsList(seriesID string) (SetsModel, error) {
 	s := spinner.New()
@@ -173,31 +170,3 @@ func SetsList(seriesID string) (SetsModel, error) {
 	}, nil
 }
 
-func callSetsData(url string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %w", err)
-	}
-
-	req.Header.Add("apikey", "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j")
-	req.Header.Add("Authorization", "Bearer sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j")
-	req.Header.Add("Content-Type", "application/json")
-
-	client := &http.Client{Timeout: 60 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error making GET request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading response body: %w", err)
-	}
-
-	return body, nil
-}
