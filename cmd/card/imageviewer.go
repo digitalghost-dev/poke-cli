@@ -14,21 +14,26 @@ type ImageModel struct {
 	Loading   bool
 	Spinner   spinner.Model
 	ImageData string
+	Protocol  string
 }
 
 type imageReadyMsg struct {
-	sixelData string
+	imageData string
+	protocol  string
 	err       error
 }
 
 // fetchImageCmd downloads and renders the image asynchronously
 func fetchImageCmd(imageURL string) tea.Cmd {
 	return func() tea.Msg {
-		sixelData, err := CardImage(imageURL)
+		imageData, protocol, err := CardImage(imageURL)
 		if err != nil {
 			return imageReadyMsg{err: err}
 		}
-		return imageReadyMsg{sixelData: sixelData}
+		return imageReadyMsg{
+			imageData: imageData,
+			protocol: protocol,
+		}
 	}
 }
 
@@ -48,13 +53,16 @@ func (m ImageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.ImageData = ""
 		} else {
 			m.Error = nil
-			m.ImageData = msg.sixelData
+			m.ImageData = msg.imageData
+			m.Protocol = msg.protocol
 		}
 		return m, nil
+
 	case spinner.TickMsg:
 		var cmd tea.Cmd
 		m.Spinner, cmd = m.Spinner.Update(msg)
 		return m, cmd
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
@@ -71,8 +79,14 @@ func (m ImageModel) View() string {
 		)
 	}
 	if m.Error != nil {
-		return styling.Red.Render(m.Error.Error())
+		// Styling the error message with padding for better readability
+		return lipgloss.NewStyle().
+			Padding(2).
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(styling.YellowColor).
+			Render(styling.Red.Render(m.Error.Error()))
 	}
+
 	return m.ImageData
 }
 
