@@ -50,21 +50,22 @@ func supportsKittyGraphics() bool {
 
 // supportsSixelGraphics checks if the terminal supports the Sixel graphics protocol
 func supportsSixelGraphics() bool {
+	session := os.Getenv("WT_SESSION")
 	termProgram := strings.ToLower(os.Getenv("TERM_PROGRAM"))
 	term := strings.ToLower(os.Getenv("TERM"))
 
+	if session != "" {
+		return true
+	}
+
 	// Check TERM_PROGRAM for known Sixel-supporting terminals
 	switch termProgram {
-	case "iterm.app", "wezterm", "mintty", "konsole":
+	case "iterm.app", "wezterm", "konsole", "tabby":
 		return true
 	}
 
 	// Check TERM variable for known Sixel-supporting terminals
 	switch {
-	case strings.Contains(term, "mlterm"):
-		return true
-	case strings.Contains(term, "yaft"):
-		return true
 	case term == "foot" || strings.HasPrefix(term, "foot-"):
 		return true
 	case term == "xterm-sixel" || strings.Contains(term, "sixel"):
