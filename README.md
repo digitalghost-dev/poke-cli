@@ -217,16 +217,17 @@ Below is a list of the planned/completed commands and flags:
 
 ---
 ## Tested Terminals
-| Terminal          |                OS                | Status | Issues                                                                              |
-|-------------------|:--------------------------------:|:------:|-------------------------------------------------------------------------------------|
-| Alacritty         |    macOS, Ubuntu,<br>Windows     |   🟡   | - No support for TCG images.                                                        |
-| Kitty             | macOS, Ubuntu,<br>Debian, Fedora |   🟢   | - None                                                                              |
-| Ghostty           |              macOS               |   🟢   | - None                                                                              |
-| iTerm2            |              macOS               |   🟢   | - None                                                                              |
-| Built-in Terminal |    Ubuntu, Debian,<br>Fedora     |   🟡   | - No support for TCG images.                                                        |
-| Built-in Terminal |              Alpine              |   🟡   | - Some colors aren't supported.<br>- `pokemon <name> --image=xx` flag pixel issues. |             
-| Built-in Terminal |              macOS               |   🟠   | - No support for TCG images.<br>- `pokemon <name> --image=xx` flag pixel issues.    |
-| Foot              |          Ubuntu, Fedora          |   🟢   | - None                                                                              |
-| Tabby             |              Ubuntu              |   🟢   | - None                                                                              |
-| WezTerm           |          macOS, Windows          |   🟡   | - Windows version has issues with displaying TCG images.                            |
-| Built-in Terminal |             Windows              |   🟢   | - None                                                                              |
+| Terminal           | OS                            | Status | Issues                                                                            |
+|--------------------|-------------------------------|:------:|-----------------------------------------------------------------------------------|
+| Alacritty          | macOS, Ubuntu, Windows        |   🟡   | No support for TCG images                                                         |
+| Foot               | Ubuntu, Fedora                |   🟢   | None                                                                              |
+| Ghostty            | macOS                         |   🟢   | None                                                                              |
+| iTerm2             | macOS                         |   🟢   | None                                                                              |
+| Kitty              | macOS, Ubuntu, Debian, Fedora |   🟢   | None                                                                              |
+| Rio                | macOS                         |   🟢   | None                                                                              |
+| Tabby              | Ubuntu                        |   🟢   | None                                                                              |
+| Terminal (Alpine)  | Alpine                        |   🟡   | Some colors aren't supported<br>`pokemon <name> --image=xx` flag has pixel issues |
+| Terminal (Linux)   | Ubuntu, Debian, Fedora        |   🟡   | No support for TCG images                                                         |
+| Terminal (macOS)   | macOS                         |   🟠   | No support for TCG images<br>`pokemon <name> --image=xx` flag has pixel issues    |
+| Terminal (Windows) | Windows                       |   🟢   | None                                                                              |
+| WezTerm            | macOS, Windows                |   🟡   | Windows version has issues with displaying TCG images                             |

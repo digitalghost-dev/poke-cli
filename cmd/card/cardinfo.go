@@ -61,7 +61,7 @@ func supportsSixelGraphics() bool {
 
 	// Check TERM_PROGRAM for known Sixel-supporting terminals
 	switch termProgram {
-	case "iterm.app", "wezterm", "konsole", "tabby":
+	case "iterm.app", "wezterm", "konsole", "tabby", "rio":
 		return true
 	}
 

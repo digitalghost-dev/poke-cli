@@ -326,6 +326,13 @@ func TestSupportsSixelGraphics(t *testing.T) {
 			wantSupport: true,
 		},
 		{
+			name: "rio via TERM_PROGRAM",
+			envVars: map[string]string{
+				"TERM_PROGRAM": "rio",
+			},
+			wantSupport: true,
+		},
+		{
 			name: "konsole via TERM_PROGRAM",
 			envVars: map[string]string{
 				"TERM_PROGRAM": "Konsole",
@@ -406,7 +413,7 @@ func TestSupportsSixelGraphics(t *testing.T) {
 				os.Setenv(key, val)
 			}
 
-			// Cleanup after test
+			// Cleanup
 			defer func() {
 				for key, val := range origVars {
 					if val == "" {
