@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -31,9 +32,12 @@ func supportsKittyGraphics() bool {
 	}
 
 	// Check TERM_PROGRAM for known Kitty-compatible terminals
-	switch strings.ToLower(os.Getenv("TERM_PROGRAM")) {
-	case "kitty", "ghostty", "wezterm":
+	termProgram := strings.ToLower(os.Getenv("TERM_PROGRAM"))
+	switch termProgram {
+	case "kitty", "ghostty":
 		return true
+	case "wezterm":
+		return runtime.GOOS != "windows"
 	}
 
 	// Check TERM variable for kitty or ghostty
