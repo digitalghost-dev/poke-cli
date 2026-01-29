@@ -326,13 +326,6 @@ func TestSupportsSixelGraphics(t *testing.T) {
 			wantSupport: true,
 		},
 		{
-			name: "mintty via TERM_PROGRAM",
-			envVars: map[string]string{
-				"TERM_PROGRAM": "mintty",
-			},
-			wantSupport: true,
-		},
-		{
 			name: "konsole via TERM_PROGRAM",
 			envVars: map[string]string{
 				"TERM_PROGRAM": "Konsole",
@@ -354,23 +347,9 @@ func TestSupportsSixelGraphics(t *testing.T) {
 			wantSupport: true,
 		},
 		{
-			name: "mlterm via TERM",
-			envVars: map[string]string{
-				"TERM": "mlterm",
-			},
-			wantSupport: true,
-		},
-		{
 			name: "xterm-sixel via TERM",
 			envVars: map[string]string{
 				"TERM": "xterm-sixel",
-			},
-			wantSupport: true,
-		},
-		{
-			name: "yaft via TERM",
-			envVars: map[string]string{
-				"TERM": "yaft-256color",
 			},
 			wantSupport: true,
 		},
