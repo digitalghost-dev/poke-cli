@@ -2,8 +2,6 @@ package card
 
 import (
 	"errors"
-	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -12,18 +10,12 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// testSupabaseKey is the publishable API key used in tests.
-// Extracted to a constant for easier maintenance if the key changes.
-const testSupabaseKey = "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j"
-
 func TestCardsModel_Init(t *testing.T) {
-	model := CardsModel{
-		SeriesName: "sv",
-	}
+	model, _ := CardsList("sv01")
 
 	cmd := model.Init()
-	if cmd != nil {
-		t.Error("Init() should return nil")
+	if cmd == nil {
+		t.Error("Init() should return commands (spinner tick + fetch)")
 	}
 }
 
@@ -282,161 +274,124 @@ func TestCardsModel_View_MissingPrice(t *testing.T) {
 	}
 }
 
-func TestCardsList_SuccessAndFallbacks(t *testing.T) {
-	// Save and restore getCardData stub
-	original := getCardData
-	defer func() { getCardData = original }()
-
-	var capturedURL string
-	getCardData = func(url string) ([]byte, error) {
-		capturedURL = url
-		// Return two cards: one with price + illustrator, one with fallbacks
-		json := `[
-            {"number_plus_name":"001/198 - Bulbasaur","market_price":1.5,"image_url":"https://example.com/bulba.png","illustrator":"Ken Sugimori"},
-            {"number_plus_name":"002/198 - Ivysaur","market_price":0,"image_url":"https://example.com/ivy.png","illustrator":""}
-        ]`
-		return []byte(json), nil
-	}
-
+func TestCardsList_ReturnsLoadingModel(t *testing.T) {
 	model, err := CardsList("set123")
 	if err != nil {
 		t.Fatalf("CardsList returned error: %v", err)
 	}
 
-	// URL should target the correct set id and select fields
-	if !strings.Contains(capturedURL, "set_id=eq.set123") {
-		t.Errorf("expected URL to contain set_id filter, got %s", capturedURL)
+	if model.SetID != "set123" {
+		t.Errorf("expected SetID 'set123', got %s", model.SetID)
 	}
-	if !strings.Contains(capturedURL, "select=number_plus_name,market_price,image_url,illustrator") {
-		t.Errorf("expected URL to contain select fields, got %s", capturedURL)
+
+	if !model.Loading {
+		t.Error("expected Loading to be true")
+	}
+
+	// View should show loading spinner
+	view := model.View()
+	if !strings.Contains(view, "Loading cards") {
+		t.Errorf("expected view to show loading state, got: %s", view)
+	}
+}
+
+func TestCardDataMsg_PopulatesModel(t *testing.T) {
+	model, _ := CardsList("set123")
+
+	// Simulate receiving data via cardDataMsg
+	msg := cardDataMsg{
+		allRows: []table.Row{
+			{"001/198 - Bulbasaur"},
+			{"002/198 - Ivysaur"},
+		},
+		priceMap: map[string]string{
+			"001/198 - Bulbasaur": "Price: $1.50",
+			"002/198 - Ivysaur":   "Pricing not available",
+		},
+		imageMap: map[string]string{
+			"001/198 - Bulbasaur": "https://example.com/bulba.png",
+			"002/198 - Ivysaur":   "https://example.com/ivy.png",
+		},
+		illustratorMap: map[string]string{
+			"001/198 - Bulbasaur": "Illustrator: Ken Sugimori",
+			"002/198 - Ivysaur":   "Illustrator not available",
+		},
+		regulationMarkMap: map[string]string{},
+	}
+
+	newModel, _ := model.Update(msg)
+	resultModel := newModel.(CardsModel)
+
+	if resultModel.Loading {
+		t.Error("Loading should be false after receiving data")
 	}
 
 	// PriceMap expectations
-	if got := model.PriceMap["001/198 - Bulbasaur"]; got != "Price: $1.50" {
+	if got := resultModel.PriceMap["001/198 - Bulbasaur"]; got != "Price: $1.50" {
 		t.Errorf("unexpected price for Bulbasaur: %s", got)
 	}
-	if got := model.PriceMap["002/198 - Ivysaur"]; got != "Pricing not available" {
+	if got := resultModel.PriceMap["002/198 - Ivysaur"]; got != "Pricing not available" {
 		t.Errorf("unexpected price for Ivysaur: %s", got)
 	}
 
 	// IllustratorMap expectations
-	if got := model.IllustratorMap["001/198 - Bulbasaur"]; got != "Illustrator: Ken Sugimori" {
+	if got := resultModel.IllustratorMap["001/198 - Bulbasaur"]; got != "Illustrator: Ken Sugimori" {
 		t.Errorf("unexpected illustrator for Bulbasaur: %s", got)
 	}
-	if got := model.IllustratorMap["002/198 - Ivysaur"]; got != "Illustrator not available" {
+	if got := resultModel.IllustratorMap["002/198 - Ivysaur"]; got != "Illustrator not available" {
 		t.Errorf("unexpected illustrator for Ivysaur: %s", got)
 	}
 
 	// Image map
-	if model.ImageMap["001/198 - Bulbasaur"] != "https://example.com/bulba.png" {
-		t.Errorf("unexpected image url for Bulbasaur: %s", model.ImageMap["001/198 - Bulbasaur"])
+	if resultModel.ImageMap["001/198 - Bulbasaur"] != "https://example.com/bulba.png" {
+		t.Errorf("unexpected image url for Bulbasaur: %s", resultModel.ImageMap["001/198 - Bulbasaur"])
 	}
-	if model.ImageMap["002/198 - Ivysaur"] != "https://example.com/ivy.png" {
-		t.Errorf("unexpected image url for Ivysaur: %s", model.ImageMap["002/198 - Ivysaur"])
-	}
-
-	if row := model.Table.SelectedRow(); len(row) == 0 {
-		if model.View() == "" {
-			t.Error("model view should render even if no row is selected")
-		}
+	if resultModel.ImageMap["002/198 - Ivysaur"] != "https://example.com/ivy.png" {
+		t.Errorf("unexpected image url for Ivysaur: %s", resultModel.ImageMap["002/198 - Ivysaur"])
 	}
 }
 
-func TestCardsList_FetchError(t *testing.T) {
-	original := getCardData
-	defer func() { getCardData = original }()
+func TestCardDataMsg_Error_QuitsModel(t *testing.T) {
+	model, _ := CardsList("set123")
 
-	getCardData = func(url string) ([]byte, error) {
-		return nil, errors.New("network error")
+	// Simulate receiving an error via cardDataMsg
+	msg := cardDataMsg{
+		err: errors.New("network error"),
 	}
 
-	_, err := CardsList("set123")
-	if err == nil {
-		t.Fatal("expected error when fetch fails")
-	}
-}
+	newModel, cmd := model.Update(msg)
+	resultModel := newModel.(CardsModel)
 
-func TestCardsList_BadJSON(t *testing.T) {
-	original := getCardData
-	defer func() { getCardData = original }()
-
-	getCardData = func(url string) ([]byte, error) {
-		return []byte("not-json"), nil
+	if !resultModel.Quitting {
+		t.Error("Quitting should be true when error received")
 	}
 
-	_, err := CardsList("set123")
-	if err == nil {
-		t.Fatal("expected error for bad JSON payload")
+	if cmd == nil {
+		t.Error("Should return tea.Quit command on error")
 	}
 }
 
-func TestCardsList_EmptyResult(t *testing.T) {
-	original := getCardData
-	defer func() { getCardData = original }()
+func TestCardDataMsg_EmptyResult(t *testing.T) {
+	model, _ := CardsList("set123")
 
-	getCardData = func(url string) ([]byte, error) {
-		return []byte("[]"), nil
+	// Simulate receiving empty data
+	msg := cardDataMsg{
+		allRows:           []table.Row{},
+		priceMap:          map[string]string{},
+		imageMap:          map[string]string{},
+		illustratorMap:    map[string]string{},
+		regulationMarkMap: map[string]string{},
 	}
 
-	model, err := CardsList("set123")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+	newModel, _ := model.Update(msg)
+	resultModel := newModel.(CardsModel)
+
+	if resultModel.Loading {
+		t.Error("Loading should be false after receiving data")
 	}
 
-	if len(model.PriceMap) != 0 || len(model.IllustratorMap) != 0 || len(model.ImageMap) != 0 {
-		t.Errorf("expected empty maps, got price:%d illus:%d image:%d", len(model.PriceMap), len(model.IllustratorMap), len(model.ImageMap))
-	}
-
-	if model.View() == "" {
-		t.Error("expected view to render with empty data")
-	}
-}
-
-func TestCallCardData_SendsHeadersAndReturnsBody(t *testing.T) {
-	// Start a test HTTP server that validates headers and returns a body
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if got := r.Header.Get("apikey"); got != testSupabaseKey {
-			t.Fatalf("missing or wrong apikey header: %q", got)
-		}
-		if got := r.Header.Get("Authorization"); got != "Bearer "+testSupabaseKey {
-			t.Fatalf("missing or wrong Authorization header: %q", got)
-		}
-		if got := r.Header.Get("Content-Type"); got != "application/json" {
-			t.Fatalf("missing or wrong Content-Type header: %q", got)
-		}
-
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"ok":true}`))
-	}))
-	defer srv.Close()
-
-	body, err := CallCardData(srv.URL)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if string(body) != `{"ok":true}` {
-		t.Fatalf("unexpected body: %s", string(body))
+	if len(resultModel.PriceMap) != 0 || len(resultModel.IllustratorMap) != 0 || len(resultModel.ImageMap) != 0 {
+		t.Errorf("expected empty maps, got price:%d illus:%d image:%d", len(resultModel.PriceMap), len(resultModel.IllustratorMap), len(resultModel.ImageMap))
 	}
 }
 
-func TestCallCardData_Non200Error(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "boom", http.StatusInternalServerError)
-	}))
-	defer srv.Close()
-
-	_, err := CallCardData(srv.URL)
-	if err == nil {
-		t.Fatal("expected error for non-200 status")
-	}
-	if !strings.Contains(err.Error(), "unexpected status code: 500") {
-		t.Fatalf("error should mention status code, got: %v", err)
-	}
-}
-
-func TestCallCardData_BadURL(t *testing.T) {
-	_, err := CallCardData("http://%41:80/") // invalid URL host
-	if err == nil {
-		t.Fatal("expected error for bad URL")
-	}
-}

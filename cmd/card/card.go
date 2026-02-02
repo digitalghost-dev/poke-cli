@@ -40,7 +40,7 @@ func CardCommand() (string, error) {
 
 	seriesModel := SeriesList()
 	// Program 1: Series selection
-	finalModel, err := tea.NewProgram(seriesModel).Run()
+	finalModel, err := tea.NewProgram(seriesModel, tea.WithAltScreen()).Run()
 	if err != nil {
 		return "", fmt.Errorf("error running series selection program: %w", err)
 	}
@@ -58,7 +58,7 @@ func CardCommand() (string, error) {
 			return "", fmt.Errorf("error loading sets: %w", err)
 		}
 
-		finalSetsModel, err := tea.NewProgram(setsModel).Run()
+		finalSetsModel, err := tea.NewProgram(setsModel, tea.WithAltScreen()).Run()
 		if err != nil {
 			return "", fmt.Errorf("error running sets selection program: %w", err)
 		}

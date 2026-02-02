@@ -2,7 +2,7 @@
     <img width="425" src="poke-cli.png" alt="pokemon-logo"/>
     <h4></h4>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.8.7?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.8.8?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -96,11 +96,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.8.7 <command> [subcommand] [flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.8.8 <command> [subcommand] [flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.8.7 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.8.8 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -217,16 +217,17 @@ Below is a list of the planned/completed commands and flags:
 
 ---
 ## Tested Terminals
-| Terminal          |            OS             | Status | Issues                                                                                       |
-|-------------------|:-------------------------:|:------:|----------------------------------------------------------------------------------------------|
-| Alacritty         | macOS, Ubuntu,<br>Windows |   🟡   | - Does not support sixel for TCG images.                                                     |
-| Ghostty           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                     |
-| HyperJS           |           macOS           |   🟡   | - Does not support sixel for TCG images.                                                     |
-| iTerm2            |           macOS           |   🟢   | - None                                                                                       |
-| Built-in Terminal | Ubuntu, Debian,<br>Fedora |   🟡   | - Does not support sixel for TCG images.                                                     |
-| Built-in Terminal |          Alpine           |   🟡   | - Some colors aren't supported.<br>- `pokemon <name> --image=xx` flag pixel issues.          |             
-| Built-in Terminal |           macOS           |   🟠   | - Does not support sixel for TCG images.<br>- `pokemon <name> --image=xx` flag pixel issues. |
-| Foot              |          Ubuntu           |   🟢   | - None                                                                                       |
-| Tabby             |          Ubuntu           |   🟢   | - None                                                                                       |
-| WezTerm           |      macOS, Windows       |   🟡   | - Windows version has issues with displaying TCG images.                                     |
-| Built-in Terminal |          Windows          |   🟢   | - None                                                                                       |
+| Terminal           | OS                            | Status | Issues                                                                            |
+|--------------------|-------------------------------|:------:|-----------------------------------------------------------------------------------|
+| Alacritty          | macOS, Ubuntu, Windows        |   🟡   | No support for TCG images                                                         |
+| Foot               | Ubuntu, Fedora                |   🟢   | None                                                                              |
+| Ghostty            | macOS                         |   🟢   | None                                                                              |
+| iTerm2             | macOS                         |   🟢   | None                                                                              |
+| Kitty              | macOS, Ubuntu, Debian, Fedora |   🟢   | None                                                                              |
+| Rio                | macOS                         |   🟢   | None                                                                              |
+| Tabby              | Ubuntu                        |   🟢   | None                                                                              |
+| Terminal (Alpine)  | Alpine                        |   🟡   | Some colors aren't supported<br>`pokemon <name> --image=xx` flag has pixel issues |
+| Terminal (Linux)   | Ubuntu, Debian, Fedora        |   🟡   | No support for TCG images                                                         |
+| Terminal (macOS)   | macOS                         |   🟠   | No support for TCG images<br>`pokemon <name> --image=xx` flag has pixel issues    |
+| Terminal (Windows) | Windows                       |   🟢   | None                                                                              |
+| WezTerm            | macOS, Windows                |   🟡   | Windows version has issues with displaying TCG images                             |

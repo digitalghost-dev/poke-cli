@@ -3,25 +3,72 @@ package card
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"time"
 
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
+var getSetsData = connections.CallTCGData
+
 type SetsModel struct {
-	List       list.Model
 	Choice     string
-	SetID      string
+	Loading    bool
+	List       list.Model
 	Quitting   bool
 	SeriesName string
-	setsIDMap  map[string]string // Maps set name -> set_id
+	SetID      string
+	SetsIDMap  map[string]string // Maps set name -> set_id
+	Spinner    spinner.Model
+}
+
+// Message type to carry fetched data back to Update()
+type setsDataMsg struct {
+	items     []list.Item
+	setsIDMap map[string]string
+	seriesID  string
+	err       error
+}
+
+func fetchSetsCmd(seriesID string) tea.Cmd {
+	return func() tea.Msg {
+		body, err := getSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
+		if err != nil {
+			return setsDataMsg{err: err}
+		}
+
+		var allSets []setData
+		err = json.Unmarshal(body, &allSets)
+		if err != nil {
+			return setsDataMsg{err: err}
+		}
+
+		// Filter sets by series_id and build ID map
+		var items []list.Item
+		setsIDMap := make(map[string]string)
+		for _, set := range allSets {
+			if set.SeriesID == seriesID {
+				items = append(items, item(set.SetName))
+				setsIDMap[set.SetName] = set.SetID
+			}
+		}
+
+		return setsDataMsg{
+			items:     items,
+			setsIDMap: setsIDMap,
+			seriesID:  seriesID,
+		}
+	}
 }
 
 func (m SetsModel) Init() tea.Cmd {
-	return nil
+	return tea.Batch(
+		m.Spinner.Tick,
+		fetchSetsCmd(m.SeriesName),
+	)
 }
 
 func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -35,27 +82,66 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			i, ok := m.List.SelectedItem().(item)
 			if ok {
 				m.Choice = string(i)
-				m.SetID = m.setsIDMap[string(i)] // Look up the set_id
+				m.SetID = m.SetsIDMap[string(i)]
 			}
 			return m, tea.Quit
 		}
 
+	case setsDataMsg:
+		// Data arrived - stop loading and build the list
+		if msg.err != nil {
+			m.Quitting = true
+			return m, tea.Quit
+		}
+
+		const listWidth = 20
+		const listHeight = 20
+
+		l := list.New(msg.items, itemDelegate{}, listWidth, listHeight)
+		l.Title = fmt.Sprintf("Pick a set from the %s series", msg.seriesID)
+		l.SetShowStatusBar(false)
+		l.SetFilteringEnabled(false)
+		l.Styles.Title = titleStyle
+		l.Styles.PaginationStyle = paginationStyle
+		l.Styles.HelpStyle = helpStyle
+
+		m.List = l
+		m.SetsIDMap = msg.setsIDMap
+		m.Loading = false
+		return m, nil
+
+	case spinner.TickMsg:
+		var cmd tea.Cmd
+		m.Spinner, cmd = m.Spinner.Update(msg)
+		return m, cmd
+
 	case tea.WindowSizeMsg:
-		m.List.SetWidth(msg.Width)
+		if !m.Loading {
+			m.List.SetWidth(msg.Width)
+		}
 		return m, nil
 	}
 
-	var cmd tea.Cmd
-	m.List, cmd = m.List.Update(msg)
-	return m, cmd
+	// Only update the list if it's been initialized
+	if !m.Loading {
+		var cmd tea.Cmd
+		m.List, cmd = m.List.Update(msg)
+		return m, cmd
+	}
+	return m, nil
 }
 
 func (m SetsModel) View() string {
-	if m.Quitting {
-		return "\n  Quitting card search...\n\n"
-	}
 	if m.Choice != "" {
 		return quitTextStyle.Render("Set selected:", m.Choice)
+	}
+	if m.Loading {
+		return lipgloss.NewStyle().Padding(2).Render(
+			m.Spinner.View() + "Loading sets...",
+		)
+	}
+	if m.Quitting {
+		return "\n  Quitting card search...\n\n"
 	}
 
 	return "\n" + m.List.View()
@@ -71,75 +157,16 @@ type setData struct {
 	Symbol            string `json:"symbol"`
 }
 
-// creating a function variable to swap the implementation in tests
-var getSetsData = callSetsData
-
+// SetsList returns a minimal model - data fetching happens via Init()
 func SetsList(seriesID string) (SetsModel, error) {
-	body, err := getSetsData("https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/sets")
-	if err != nil {
-		return SetsModel{}, fmt.Errorf("error getting sets data: %v", err)
-	}
-	var allSets []setData
-
-	err = json.Unmarshal(body, &allSets)
-	if err != nil {
-		return SetsModel{}, fmt.Errorf("error parsing sets data: %v", err)
-	}
-
-	// Filter sets by series_id and build ID map
-	var items []list.Item
-	setsIDMap := make(map[string]string)
-	for _, set := range allSets {
-		if set.SeriesID == seriesID {
-			items = append(items, item(set.SetName))
-			setsIDMap[set.SetName] = set.SetID // Map name -> ID
-		}
-	}
-
-	const listWidth = 20
-	const listHeight = 20
-
-	l := list.New(items, itemDelegate{}, listWidth, listHeight)
-	l.Title = fmt.Sprintf("Pick a set from the %s series", seriesID)
-	l.SetShowStatusBar(false)
-	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.PaginationStyle = paginationStyle
-	l.Styles.HelpStyle = helpStyle
+	s := spinner.New()
+	s.Spinner = spinner.Dot
+	s.Style = styling.Yellow
 
 	return SetsModel{
-			List:       l,
-			SeriesName: seriesID,
-			setsIDMap:  setsIDMap,
-		},
-		nil
+		SeriesName: seriesID,
+		Loading:    true,
+		Spinner:    s,
+	}, nil
 }
 
-func callSetsData(url string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %w", err)
-	}
-
-	req.Header.Add("apikey", "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j")
-	req.Header.Add("Authorization", "Bearer sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j")
-	req.Header.Add("Content-Type", "application/json")
-
-	client := &http.Client{Timeout: 60 * time.Second}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error making GET request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading response body: %w", err)
-	}
-
-	return body, nil
-}

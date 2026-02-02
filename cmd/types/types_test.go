@@ -74,11 +74,11 @@ func createTestModel() model {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#FFCC00")).
+		BorderForeground(styling.YellowColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("#000")).
-		Background(lipgloss.Color("#FFCC00"))
+		Background(styling.YellowColor)
 	t.SetStyles(s)
 
 	return model{table: t}
