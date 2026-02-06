@@ -295,7 +295,7 @@ func (m CardsModel) View() string {
 	screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
 
 	return fmt.Sprintf(
-		"Highlight a card!\n%s\n%s",
+		"Highlight a card!\n\nNote: Prices are for normal variations of cards.\n%s\n%s",
 		screen,
 		styling.KeyMenu.Render("↑ (move up)\n↓ (move down)\n? (view image)\ntab (toggle search)\nctrl+c | esc (quit)"))
 }
