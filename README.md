@@ -23,6 +23,7 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 * [Tested Terminals](#tested-terminals)
 
 ---
+
 ## Demo
 ### Video Game Data
 
@@ -31,7 +32,9 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 ### Trading Card Game Data
 
 ![demo-tcg](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/poke-cli-card-v1.8.8.gif)
+
 ---
+
 ## Installation
 
 * [Homebrew](#homebrew)
