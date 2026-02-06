@@ -2,7 +2,7 @@ from typing import Optional
 
 import dagster as dg
 import polars as pl
-from pydantic import BaseModel, HttpUrl, ValidationError
+from pydantic import BaseModel, ValidationError
 from termcolor import colored
 
 from ....utils.json_retriever import fetch_json
