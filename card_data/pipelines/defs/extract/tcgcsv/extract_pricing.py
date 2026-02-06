@@ -147,10 +147,14 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
         if any(variant in card_name for variant in skip_variants):
             continue
 
+        card_number = get_card_number(card)
+        if card_number is None:
+            continue
+
         card_info = {
             "product_id": card["productId"],
             "name": extract_card_name(card_name),
-            "card_number": get_card_number(card),
+            "card_number": card_number,
             "market_price": price_dict.get(card["productId"]),
         }
         cards_data.append(card_info)
