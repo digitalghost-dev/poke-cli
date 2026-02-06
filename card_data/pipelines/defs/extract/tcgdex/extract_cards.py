@@ -10,7 +10,7 @@ from ....utils.json_retriever import fetch_json
 
 @dg.asset(kinds={"API"}, name="extract_card_url_from_set_data")
 def extract_card_url_from_set() -> list:
-    urls = ["https://api.tcgdex.net/v2/en/sets/me02"]
+    urls = ["https://api.tcgdex.net/v2/en/sets/me02.5"]
 
     all_card_urls = []
 
