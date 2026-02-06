@@ -24,8 +24,8 @@ defs_discord_sensors: dg.Definitions = dg.Definitions(
     sensors=[discord_success_sensor, discord_failure_sensor],
 )
 
-# Pricing pipeline
-pricing_pipeline_job = dg.define_asset_job(
+# Pricing pipeline job
+pricing_pipeline = dg.define_asset_job(
     name="pricing_pipeline_job",
     selection=dg.AssetSelection.assets(build_dataframe).downstream(include_self=True),
 )
@@ -33,34 +33,34 @@ pricing_pipeline_job = dg.define_asset_job(
 price_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
     name="price_schedule",
     cron_schedule="0 14 * * *",
-    target=pricing_pipeline_job,
+    target=pricing_pipeline,
     execution_timezone="America/Los_Angeles",
 )
 
 defs_pricing: dg.Definitions = dg.Definitions(
     assets=[build_dataframe, load_pricing_data, data_quality_checks_on_pricing],
-    jobs=[pricing_pipeline_job],
+    jobs=[pricing_pipeline],
     schedules=[price_schedule],
 )
 
-# Series pipeline
-series_pipeline_job = dg.define_asset_job(
+# Series pipeline job
+series_pipeline = dg.define_asset_job(
     name="series_pipeline_job",
     selection=dg.AssetSelection.assets(extract_series_data).downstream(include_self=True),
 )
 
 defs_series: dg.Definitions = dg.Definitions(
     assets=[extract_series_data, load_series_data, data_quality_check_on_series],
-    jobs=[series_pipeline_job],
+    jobs=[series_pipeline],
 )
 
-# Sets pipeline
-sets_pipeline_job = dg.define_asset_job(
+# Sets pipeline job
+sets_pipeline = dg.define_asset_job(
     name="sets_pipeline_job",
     selection=dg.AssetSelection.assets(extract_sets_data).downstream(include_self=True),
 )
 
 defs_sets: dg.Definitions = dg.Definitions(
     assets=[extract_sets_data, load_sets_data, data_quality_check_on_sets],
-    jobs=[sets_pipeline_job],
+    jobs=[sets_pipeline],
 )
