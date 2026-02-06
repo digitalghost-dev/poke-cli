@@ -32,7 +32,7 @@ func fetchImageCmd(imageURL string) tea.Cmd {
 		}
 		return imageReadyMsg{
 			imageData: imageData,
-			protocol: protocol,
+			protocol:  protocol,
 		}
 	}
 }
