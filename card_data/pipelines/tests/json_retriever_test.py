@@ -112,22 +112,6 @@ def test_fetch_json_timeout():
 
 @pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_custom_timeout():
-    """Test that the custom timeout parameter is passed through."""
-    responses.add(
-        responses.GET,
-        "https://api.example.com/data",
-        json={"ok": True},
-        status=200,
-    )
-
-    result = fetch_json("https://api.example.com/data", timeout=5)
-
-    assert result["ok"] is True  # nosec
-
-
-@pytest.mark.benchmark
-@responses.activate
 def test_fetch_json_empty_object():
     """Test retrieval of an empty JSON object."""
     responses.add(

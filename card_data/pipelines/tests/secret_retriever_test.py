@@ -163,4 +163,3 @@ def test_fetch_n8n_webhook_secret_cache_raises(
 
     with pytest.raises(Exception, match="Access denied"):
         fetch_n8n_webhook_secret()
-        
