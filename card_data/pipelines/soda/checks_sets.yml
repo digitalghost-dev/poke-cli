@@ -1,6 +1,6 @@
 checks for sets:
   # Row count validation
-  - row_count = 39
+  - row_count = 40
 
   # Schema validation checks
   - schema:

@@ -97,7 +97,7 @@ func moveInfoContainer(output *strings.Builder, moveStruct structs.MoveJSONStruc
 
 func moveEffectContainer(output *strings.Builder, moveStruct structs.MoveJSONStruct) {
 	var sv string
-	var	swsh string
+	var swsh string
 
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).

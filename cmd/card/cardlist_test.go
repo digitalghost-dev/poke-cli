@@ -394,4 +394,3 @@ func TestCardDataMsg_EmptyResult(t *testing.T) {
 		t.Errorf("expected empty maps, got price:%d illus:%d image:%d", len(resultModel.PriceMap), len(resultModel.IllustratorMap), len(resultModel.ImageMap))
 	}
 }
-

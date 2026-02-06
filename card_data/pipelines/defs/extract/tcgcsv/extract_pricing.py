@@ -10,6 +10,8 @@ from termcolor import colored
 
 
 SET_PRODUCT_MATCHING = {
+    # Mega Evolution
+    "me02.5": "24541",
     "me02": "24448",
     "me01": "24380",
     # Scarlet & Violet
@@ -57,7 +59,7 @@ class CardPricing(BaseModel):
 
 
 def is_card(item: dict) -> bool:
-    """Check if item has a 'Number' field in extendedData"""
+    """Check if an item has a 'Number' field in extendedData"""
     return any(
         data_field.get("name") == "Number"
         for data_field in item.get("extendedData", [])
@@ -126,15 +128,33 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
         if not is_card(card):
             continue
 
-        # Skip ball pattern variants (unique to Prismatic Evolutions)
+        # Skip cosmetic holofoil pattern variants.
+        # Prismatic Evolutions (SV08.5) uses Poke Ball / Master Ball patterns.
+        # Ascended Heroes (ME2.5) uses ball-type and energy symbol patterns.
         card_name = card.get("name", "")
-        if "(Poke Ball Pattern)" in card_name or "(Master Ball Pattern)" in card_name:
+        skip_variants = [
+            "(Poke Ball Pattern)",
+            "(Master Ball Pattern)",
+            "(Love Ball)",
+            "(Energy Symbol Pattern)",
+            "(Poke Ball)",
+            "(Dusk Ball)",
+            "(Quick Ball)",
+            "(Friend Ball)",
+            "(Team Rocket)",
+            "(Exclusive)",
+        ]
+        if any(variant in card_name for variant in skip_variants):
+            continue
+
+        card_number = get_card_number(card)
+        if card_number is None:
             continue
 
         card_info = {
             "product_id": card["productId"],
             "name": extract_card_name(card_name),
-            "card_number": get_card_number(card),
+            "card_number": card_number,
             "market_price": price_dict.get(card["productId"]),
         }
         cards_data.append(card_info)

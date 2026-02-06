@@ -169,4 +169,3 @@ func SetsList(seriesID string) (SetsModel, error) {
 		Spinner:    s,
 	}, nil
 }
-
