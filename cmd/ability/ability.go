@@ -37,7 +37,7 @@ func AbilityCommand() (string, error) {
 		return output.String(), nil
 	}
 
-	if err := utils.ValidateAbilityArgs(args); err != nil {
+	if err := utils.ValidateArgs(args, utils.Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true}); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}

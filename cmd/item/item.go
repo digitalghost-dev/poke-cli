@@ -37,7 +37,7 @@ func ItemCommand() (string, error) {
 
 	flag.Parse()
 
-	if err := utils.ValidateItemArgs(os.Args); err != nil {
+	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false}); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
