@@ -1,6 +1,6 @@
 [project]
 name = "card-data"
-version = "1.5.2"
+version = "1.8.10"
 description = "File directory to store all data related processes for the Pokémon TCG."
 readme = "README.md"
 requires-python = ">=3.12"
