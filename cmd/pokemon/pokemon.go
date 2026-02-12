@@ -53,11 +53,9 @@ func PokemonCommand() (string, error) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
 	err := utils.ValidatePokemonArgs(args)
 	if err != nil {
-		output.WriteString(err.Error()) // This is the styled error
+		output.WriteString(err.Error())
 		return output.String(), err
 	}
 

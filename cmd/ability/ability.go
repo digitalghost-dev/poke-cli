@@ -37,8 +37,6 @@ func AbilityCommand() (string, error) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
 	if err := utils.ValidateAbilityArgs(args); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
