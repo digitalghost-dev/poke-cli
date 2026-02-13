@@ -73,7 +73,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateAbilityArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -83,7 +83,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateAbilityArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -95,7 +95,7 @@ func TestValidateAbilityArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateAbilityArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
@@ -114,7 +114,7 @@ func TestValidateNaturesArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateNaturesArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -125,7 +125,7 @@ func TestValidateNaturesArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateNaturesArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 		assert.Error(t, err, "Expected error for invalid input")
 	}
 }
@@ -191,7 +191,7 @@ func TestValidateBerryArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateBerryArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -200,7 +200,7 @@ func TestValidateBerryArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateBerryArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -211,7 +211,7 @@ func TestValidateBerryArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateBerryArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
@@ -230,7 +230,7 @@ func TestValidateCardArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateCardArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -239,7 +239,7 @@ func TestValidateCardArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateCardArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -250,7 +250,7 @@ func TestValidateCardArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateCardArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
@@ -270,7 +270,7 @@ func TestValidateItemArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateItemArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -279,7 +279,7 @@ func TestValidateItemArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateItemArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -290,7 +290,7 @@ func TestValidateItemArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateItemArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
@@ -310,7 +310,7 @@ func TestValidateMoveArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateMoveArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -319,7 +319,7 @@ func TestValidateMoveArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateMoveArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -330,7 +330,7 @@ func TestValidateMoveArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateMoveArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
@@ -349,7 +349,7 @@ func TestValidateSearchArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateSearchArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -358,7 +358,7 @@ func TestValidateSearchArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateSearchArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -369,7 +369,7 @@ func TestValidateSearchArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateSearchArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
@@ -389,7 +389,7 @@ func TestValidateTypesArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateTypesArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -399,7 +399,7 @@ func TestValidateTypesArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateTypesArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -411,7 +411,7 @@ func TestValidateTypesArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateTypesArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
@@ -430,7 +430,7 @@ func TestValidateSpeedArgs(t *testing.T) {
 	}
 
 	for _, input := range validInputs {
-		err := ValidateSpeedArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 		require.NoError(t, err, "Expected no error for valid input")
 	}
 
@@ -439,7 +439,7 @@ func TestValidateSpeedArgs(t *testing.T) {
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateSpeedArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 		require.Error(t, err, "Expected error for invalid input")
 	}
 
@@ -450,7 +450,7 @@ func TestValidateSpeedArgs(t *testing.T) {
 	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
 
 	for _, input := range tooManyArgs {
-		err := ValidateSpeedArgs(input)
+		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
 
 		if err == nil {
 			t.Fatalf("Expected an error for input %v, but got nil", input)
