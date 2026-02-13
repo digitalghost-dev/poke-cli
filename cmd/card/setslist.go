@@ -16,6 +16,7 @@ var getSetsData = connections.CallTCGData
 
 type SetsModel struct {
 	Choice     string
+	Error      error
 	Loading    bool
 	List       list.Model
 	Quitting   bool
@@ -90,8 +91,9 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case setsDataMsg:
 		// Data arrived - stop loading and build the list
 		if msg.err != nil {
-			m.Quitting = true
-			return m, tea.Quit
+			m.Error = msg.err
+			m.Loading = false
+			return m, nil
 		}
 
 		const listWidth = 20
@@ -132,6 +134,13 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SetsModel) View() string {
+	if m.Error != nil {
+		return styling.ApiErrorStyle.Render(
+			"Error loading sets from Supabase:\n" +
+				m.Error.Error() + "\n\n" +
+				"Press ctrl+c or esc to exit.",
+		)
+	}
 	if m.Choice != "" {
 		return quitTextStyle.Render("Set selected:", m.Choice)
 	}

@@ -19,6 +19,7 @@ var getCardData = connections.CallTCGData
 type CardsModel struct {
 	AllRows           []table.Row
 	Choice            string
+	Error             error
 	IllustratorMap    map[string]string
 	ImageMap          map[string]string
 	Loading           bool
@@ -62,7 +63,7 @@ func cardTableStyles(selectedBg lipgloss.Color) table.Styles {
 	return s
 }
 
-func (m *CardsModel) syncTableStylesForFocus() {
+func syncTableStylesForFocus(m *CardsModel) {
 	if m.Search.Focused() {
 		m.TableStyles = cardTableStyles(inactiveTableSelectedBg)
 	} else {
@@ -146,7 +147,7 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.Search.Focused() {
 				m.Search.Blur()
 				m.Table.Focus()
-				m.syncTableStylesForFocus()
+				syncTableStylesForFocus(&m)
 				return m, nil
 			}
 			m.Quitting = true
@@ -168,15 +169,16 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Table.Blur()
 				m.Search.Focus()
 			}
-			m.syncTableStylesForFocus()
+			syncTableStylesForFocus(&m)
 			return m, nil
 		}
 
 	case cardDataMsg:
 		// Data arrived - stop loading and build the table
 		if msg.err != nil {
-			m.Quitting = true
-			return m, tea.Quit
+			m.Error = msg.err
+			m.Loading = false
+			return m, nil
 		}
 
 		ti := textinput.New()
@@ -219,7 +221,7 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			prev := m.Search.Value()
 			m.Search, bubbleCmd = m.Search.Update(msg)
 			if m.Search.Value() != prev {
-				m.applyFilter()
+				applyFilter(&m)
 			}
 		} else {
 			m.Table, bubbleCmd = m.Table.Update(msg)
@@ -237,7 +239,7 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, bubbleCmd
 }
 
-func (m *CardsModel) applyFilter() {
+func applyFilter(m *CardsModel) {
 	q := strings.TrimSpace(strings.ToLower(m.Search.Value()))
 	if q == "" {
 		m.Table.SetRows(m.AllRows)
@@ -262,6 +264,13 @@ func (m *CardsModel) applyFilter() {
 func (m CardsModel) View() string {
 	if m.Quitting {
 		return "\n  Quitting card search...\n\n"
+	}
+	if m.Error != nil {
+		return styling.ApiErrorStyle.Render(
+			"Error loading cards from Supabase:\n" +
+				m.Error.Error() + "\n\n" +
+				"Press ctrl+c or esc to exit.",
+		)
 	}
 	if m.Loading {
 		return lipgloss.NewStyle().Padding(2).Render(
