@@ -53,6 +53,10 @@ var (
 	ErrorBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#F2055C"))
+	ApiErrorStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#FF0000")).
+			Bold(true).
+			Padding(1, 2)
 	WarningColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8C00"))
 	WarningBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
