@@ -118,14 +118,14 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case tea.WindowSizeMsg:
-		if !m.Loading {
+		if !m.Loading && m.Error == nil {
 			m.List.SetWidth(msg.Width)
 		}
 		return m, nil
 	}
 
 	// Only update the list if it's been initialized
-	if !m.Loading {
+	if !m.Loading && m.Error == nil {
 		var cmd tea.Cmd
 		m.List, cmd = m.List.Update(msg)
 		return m, cmd
