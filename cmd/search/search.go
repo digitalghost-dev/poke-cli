@@ -32,7 +32,7 @@ func SearchCommand() error {
 
 	flag.Parse()
 
-	if err := utils.ValidateSearchArgs(os.Args); err != nil {
+	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false}); err != nil {
 		fmt.Println(err.Error())
 		return err
 	}

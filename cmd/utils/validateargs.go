@@ -7,6 +7,13 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
+type Validator struct {
+	MaxArgs     int
+	CmdName     string
+	RequireName bool
+	HasFlags    bool
+}
+
 // checkLength checks if the number of arguments is lower than the max value.  Helper Function.
 func checkLength(args []string, max int) error {
 	if len(args) > max {
@@ -22,90 +29,24 @@ func checkLength(args []string, max int) error {
 func checkNoOtherOptions(args []string, max int, commandName string) error {
 	if len(args) == max && args[2] != "-h" && args[2] != "--help" {
 		errMsg := styling.ErrorColor.Render("✖ Error!") +
-			"\nThe only available options after the\n" + commandName + " command are '-h' or '--help'"
+			"\nThe only available options after the\n" + "<" + commandName + "> command are '-h' or '--help'"
 		return fmt.Errorf("%s", styling.ErrorBorder.Render(errMsg))
 	}
 	return nil
 }
 
-// ValidateAbilityArgs validates the command line arguments
-func ValidateAbilityArgs(args []string) error {
-	if err := checkLength(args, 4); err != nil {
+func ValidateArgs(args []string, v Validator) error {
+	if err := checkLength(args, v.MaxArgs); err != nil {
 		return err
 	}
-
-	if len(args) == 2 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nPlease specify an ability")
-		return fmt.Errorf("%s", errMessage)
+	if v.RequireName && len(args) == 2 {
+		return fmt.Errorf("✖ Error! Please specify a(n) %s", v.CmdName)
 	}
-
-	return nil
-}
-
-// ValidateBerryArgs validates the command line arguments
-func ValidateBerryArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
+	if !v.HasFlags && !v.RequireName {
+		if err := checkNoOtherOptions(args, v.MaxArgs, v.CmdName); err != nil {
+			return err
+		}
 	}
-
-	if err := checkNoOtherOptions(args, 3, "<berry>"); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ValidateCardArgs validates the command line arguments
-func ValidateCardArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
-	}
-
-	if err := checkNoOtherOptions(args, 3, "<card>"); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ValidateItemArgs validates the command line arguments
-func ValidateItemArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
-	}
-
-	if len(args) == 2 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nPlease specify an item ")
-		return fmt.Errorf("%s", errMessage)
-	}
-
-	return nil
-}
-
-// ValidateMoveArgs validates the command line arguments
-func ValidateMoveArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
-	}
-
-	if len(args) == 2 {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nPlease specify a move ")
-		return fmt.Errorf("%s", errMessage)
-	}
-
-	return nil
-}
-
-// ValidateNaturesArgs validates the command line arguments
-func ValidateNaturesArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
-	}
-
-	if err := checkNoOtherOptions(args, 3, "<natures>"); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -172,45 +113,6 @@ func ValidatePokemonArgs(args []string) error {
 				return fmt.Errorf("%s", renderedError)
 			}
 		}
-	}
-
-	return nil
-}
-
-// ValidateSearchArgs validates the command line arguments
-func ValidateSearchArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
-	}
-
-	if err := checkNoOtherOptions(args, 3, "<search>"); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ValidateSpeedArgs validates the command line arguments
-func ValidateSpeedArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
-	}
-
-	if err := checkNoOtherOptions(args, 3, "<speed>"); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// ValidateTypesArgs validates the command line arguments
-func ValidateTypesArgs(args []string) error {
-	if err := checkLength(args, 3); err != nil {
-		return err
-	}
-
-	if err := checkNoOtherOptions(args, 3, "<types>"); err != nil {
-		return err
 	}
 
 	return nil

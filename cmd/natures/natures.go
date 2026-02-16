@@ -30,7 +30,7 @@ func NaturesCommand() (string, error) {
 
 	flag.Parse()
 
-	if err := utils.ValidateNaturesArgs(os.Args); err != nil {
+	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "natures", RequireName: false, HasFlags: false}); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}

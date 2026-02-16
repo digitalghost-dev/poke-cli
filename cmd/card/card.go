@@ -33,7 +33,7 @@ func CardCommand() (string, error) {
 	flag.Parse()
 
 	// Validate arguments
-	if err := utils.ValidateCardArgs(os.Args); err != nil {
+	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "card", RequireName: false, HasFlags: false}); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}

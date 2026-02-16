@@ -2,7 +2,6 @@ package card
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -16,6 +15,7 @@ var getSetsData = connections.CallTCGData
 
 type SetsModel struct {
 	Choice     string
+	Error      error
 	Loading    bool
 	List       list.Model
 	Quitting   bool
@@ -79,6 +79,9 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Quitting = true
 			return m, tea.Quit
 		case "enter":
+			if m.Error != nil {
+				return m, nil
+			}
 			i, ok := m.List.SelectedItem().(item)
 			if ok {
 				m.Choice = string(i)
@@ -90,15 +93,16 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case setsDataMsg:
 		// Data arrived - stop loading and build the list
 		if msg.err != nil {
-			m.Quitting = true
-			return m, tea.Quit
+			m.Error = msg.err
+			m.Loading = false
+			return m, nil
 		}
 
 		const listWidth = 20
 		const listHeight = 20
 
 		l := list.New(msg.items, itemDelegate{}, listWidth, listHeight)
-		l.Title = fmt.Sprintf("Pick a set from the %s series", msg.seriesID)
+		l.Title = "Choose a set!"
 		l.SetShowStatusBar(false)
 		l.SetFilteringEnabled(false)
 		l.Styles.Title = titleStyle
@@ -116,14 +120,14 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, cmd
 
 	case tea.WindowSizeMsg:
-		if !m.Loading {
+		if !m.Loading && m.Error == nil {
 			m.List.SetWidth(msg.Width)
 		}
 		return m, nil
 	}
 
 	// Only update the list if it's been initialized
-	if !m.Loading {
+	if !m.Loading && m.Error == nil {
 		var cmd tea.Cmd
 		m.List, cmd = m.List.Update(msg)
 		return m, cmd
@@ -132,6 +136,13 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SetsModel) View() string {
+	if m.Error != nil {
+		return styling.ApiErrorStyle.Render(
+			"Error loading sets from Supabase:\n" +
+				m.Error.Error() + "\n\n" +
+				"Press ctrl+c or esc to exit.",
+		)
+	}
 	if m.Choice != "" {
 		return quitTextStyle.Render("Set selected:", m.Choice)
 	}

@@ -238,7 +238,7 @@ func TestSetsDataMsg_PopulatesModel(t *testing.T) {
 	}
 }
 
-func TestSetsDataMsg_Error_QuitsModel(t *testing.T) {
+func TestSetsDataMsg_Error_StoresError(t *testing.T) {
 	model, _ := SetsList("sv")
 
 	// Simulate receiving an error via setsDataMsg
@@ -249,12 +249,20 @@ func TestSetsDataMsg_Error_QuitsModel(t *testing.T) {
 	newModel, cmd := model.Update(msg)
 	resultModel := newModel.(SetsModel)
 
-	if !resultModel.Quitting {
-		t.Error("Quitting should be true when error received")
+	if resultModel.Error == nil {
+		t.Error("Error should be set when error received")
 	}
 
-	if cmd == nil {
-		t.Error("Should return tea.Quit command on error")
+	if resultModel.Error.Error() != "network error" {
+		t.Errorf("Expected error message 'network error', got '%s'", resultModel.Error.Error())
+	}
+
+	if resultModel.Loading {
+		t.Error("Loading should be false after error")
+	}
+
+	if cmd != nil {
+		t.Error("Should not return a command on error (stays in view to show error)")
 	}
 }
 
