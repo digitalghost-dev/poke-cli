@@ -2,7 +2,6 @@ package card
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
@@ -103,7 +102,7 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		const listHeight = 20
 
 		l := list.New(msg.items, itemDelegate{}, listWidth, listHeight)
-		l.Title = fmt.Sprintf("Choose a set!")
+		l.Title = "Choose a set!"
 		l.SetShowStatusBar(false)
 		l.SetFilteringEnabled(false)
 		l.Styles.Title = titleStyle
