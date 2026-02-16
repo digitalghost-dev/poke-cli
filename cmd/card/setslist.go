@@ -80,6 +80,9 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Quitting = true
 			return m, tea.Quit
 		case "enter":
+			if m.Error != nil {
+				return m, nil
+			}
 			i, ok := m.List.SelectedItem().(item)
 			if ok {
 				m.Choice = string(i)
@@ -100,7 +103,7 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		const listHeight = 20
 
 		l := list.New(msg.items, itemDelegate{}, listWidth, listHeight)
-		l.Title = fmt.Sprintf("Pick a set from the %s series", msg.seriesID)
+		l.Title = fmt.Sprintf("Choose a set!")
 		l.SetShowStatusBar(false)
 		l.SetFilteringEnabled(false)
 		l.Styles.Title = titleStyle
