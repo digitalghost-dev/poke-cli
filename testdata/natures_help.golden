@@ -1,6 +1,9 @@
-╭──────────────────────────────╮
-│Get details about all natures.│
-│                              │
-│ USAGE:                       │
-│    poke-cli natures          │
-╰──────────────────────────────╯
+╭─────────────────────────────────────────────────────────╮
+│Get details about all natures.                           │
+│                                                         │
+│ USAGE:                                                  │
+│    poke-cli natures                                     │
+│                                                         │
+│ FLAGS:                                                  │
+│    -h, --help                     Prints the help menu. │
+╰─────────────────────────────────────────────────────────╯
