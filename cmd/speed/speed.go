@@ -94,15 +94,14 @@ func SpeedCommand() (string, error) {
 	output.Reset()
 
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Calculate the speed of a Pokémon.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("speed"), "[flag]"),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu"),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description:    "Calculate the speed of a Pokémon.",
+					CmdName:        "speed",
+				},
+			),
 		)
-		output.WriteString(helpMessage)
 	}
 
 	if utils.CheckHelpFlag(&output, flag.Usage) {

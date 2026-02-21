@@ -20,16 +20,16 @@ func MoveCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Get details about a specific move.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			"\n\t"+"poke-cli"+" "+styling.StyleBold.Render("move")+" <move-name>",
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description:    "Get details about a specific move.",
+					CmdName:        "move",
+					SubCmdName:     "<move-name>",
+					ShowHyphenHint: true,
+				},
+			),
 		)
-		output.WriteString(helpMessage)
 	}
 
 	if utils.CheckHelpFlag(&output, flag.Usage) {

@@ -17,15 +17,14 @@ func TypesCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Get details about a specific typing.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("types"), "[flag]"),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints out the help menu"),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description:    "Get details about a specific typing.",
+					CmdName:        "types",
+				},
+			),
 		)
-		output.WriteString(helpMessage)
 	}
 
 	if utils.CheckHelpFlag(&output, flag.Usage) {

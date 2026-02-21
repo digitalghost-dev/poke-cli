@@ -2,30 +2,26 @@ package search
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
-	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 func SearchCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Search for a resource by name or partial match.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("search"), "[flag]"),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Prints out the help menu.\n\n"),
-			styling.StyleItalic.Render("Supports prefix matching using ^ (example: ^char → charizard)"),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description: "Search for a resource by name or partial match.",
+					CmdName:     "search",
+				},
+			),
 		)
-		fmt.Println(helpMessage)
 	}
 
 	if utils.CheckHelpFlag(&output, flag.Usage) {

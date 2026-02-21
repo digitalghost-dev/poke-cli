@@ -23,26 +23,24 @@ import (
 func PokemonCommand() (string, error) {
 	var output strings.Builder
 
-	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
-
 	flag.Usage = func() {
-		styledFlag := styling.ErrorColor.Render(fmt.Sprintf("%-30s", "-t, --types"))
-		helpMessage := styling.HelpBorder.Render(
-			"Get details about a specific Pokémon.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("pokemon"), "<pokemon-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
-			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
-			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
-			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokemon's learnable moves."),
-			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
-			fmt.Sprintf("\n\t%s %s", styledFlag, styling.ErrorColor.Render("Deprecated. Types are included with each Pokémon.")),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description:    "Get details about a specific Pokémon.",
+					CmdName:        "pokemon",
+					SubCmdName:     "<pokemon-name> [flag]",
+					ShowHyphenHint: true,
+					Flags: []utils.FlagHelp{
+						{Short: "-a", Long: "--abilities", Description: "Prints the Pokémon's abilities."},
+						{Short: "-i=xx", Long: "--image=xx", Description: "Prints out the Pokémon's default sprite.\n\t     " + styling.StyleItalic.Render("options: [sm, md, lg]")},
+						{Short: "-m", Long: "--moves", Description: "Prints the Pokemon's learnable moves."},
+						{Short: "-s", Long: "--stats", Description: "Prints the Pokémon's base stats."},
+						{Short: "-t", Long: "--types", Description: styling.ErrorColor.Render("Deprecated. Types are included with each Pokémon.")},
+					},
+				},
+			),
 		)
-		output.WriteString(helpMessage)
 	}
 
 	pf := flags.SetupPokemonFlagSet()
