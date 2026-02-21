@@ -131,13 +131,7 @@ func runCLI(args []string) int {
 		"pokemon": utils.HandleCommandOutput(pokemon.PokemonCommand),
 		"speed":   utils.HandleCommandOutput(speed.SpeedCommand),
 		"types":   utils.HandleCommandOutput(types.TypesCommand),
-		"search": func() int {
-			if err := search.SearchCommand(); err != nil {
-				fmt.Println(styling.ErrorColor.Render("error:"), err)
-				return 1
-			}
-			return 0
-		},
+		"search": utils.HandleCommandOutput(search.SearchCommand),
 	}
 
 	cmdArg := ""
