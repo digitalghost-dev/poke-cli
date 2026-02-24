@@ -9,3 +9,14 @@ dependencies = [
     "supabase==2.28.0",
     "streamlit==1.54.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning:supabase",
+]

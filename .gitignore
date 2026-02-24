@@ -32,6 +32,7 @@ go.work.sum
 # web
 web/.venv
 web/.streamlit/
+web/.coverage
 
 # Python
 card_data/.venv

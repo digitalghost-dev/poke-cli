@@ -1,14 +1,50 @@
 import polars as pl
 import streamlit as st
-from st_supabase_connection import SupabaseConnection
+from supabase import create_client, Client
 
-conn = st.connection("supabase", type=SupabaseConnection)
 
-# Use the Supabase client's table API
-rows = conn.table("sets").select("*").execute()
+@st.cache_resource
+def init_connection() -> Client:
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
 
-data = rows.data
 
-df = pl.from_dicts(data)
+supabase = init_connection()
 
-st.write(df)
+
+@st.cache_data(ttl=86400)
+def run_query(location: str) -> list:
+    return (
+        supabase.table("standings").select("*").eq("location", location).execute().data
+    )
+
+
+@st.cache_data(ttl=86400)
+def unique_locations() -> list:
+    result = supabase.table("standings").select("location").execute()
+    return sorted({row["location"] for row in result.data})
+
+
+st.set_page_config(page_title="Pokémon Tournament Results", layout="wide")
+
+
+def display_latest_tournament() -> None:
+    tourney_list = unique_locations()
+    tourney_filter = st.selectbox(
+        "Filter by tournament",
+        tourney_list,
+    )
+
+    df = pl.from_dicts(run_query(tourney_filter))
+    st.dataframe(
+        df,
+        column_config={
+            "decklist": st.column_config.LinkColumn(
+                label="Decklist", display_text=":material/open_in_new:"
+            )
+        },
+    )
+
+
+display_latest_tournament()
