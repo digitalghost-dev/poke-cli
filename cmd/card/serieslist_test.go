@@ -152,12 +152,12 @@ func TestSeriesList(t *testing.T) {
 		t.Error("SeriesList() should create a list with items")
 	}
 
-	if len(items) != 3 {
-		t.Errorf("Expected 3 items, got %d", len(items))
+	if len(items) != 4 {
+		t.Errorf("Expected 4 items, got %d", len(items))
 	}
 
-	// Verify all three series are present
-	expectedSeries := []string{"Mega Evolution", "Scarlet & Violet", "Sword & Shield"}
+	// Verify all four series are present
+	expectedSeries := []string{"Mega Evolution", "Scarlet & Violet", "Sword & Shield", "Sun & Moon"}
 	for i, expected := range expectedSeries {
 		itemStr := string(items[i].(item))
 		if itemStr != expected {

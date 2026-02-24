@@ -24,6 +24,7 @@ def extract_sets_data() -> pl.DataFrame:
         "https://api.tcgdex.net/v2/en/series/me",
         "https://api.tcgdex.net/v2/en/series/sv",
         "https://api.tcgdex.net/v2/en/series/swsh",
+        "https://api.tcgdex.net/v2/en/series/sm",
     ]
 
     flat: list[dict] = []

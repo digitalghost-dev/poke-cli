@@ -5,4 +5,4 @@
 
 SELECT *
 FROM {{ source('staging', 'sets') }}
-WHERE set_id NOT IN ('fut2020', 'mep', 'svp', 'swshp')
+WHERE set_id NOT IN ('fut2020', 'mep', 'svp', 'swshp', 'cel25', 'sma', 'smp', 'det1')
