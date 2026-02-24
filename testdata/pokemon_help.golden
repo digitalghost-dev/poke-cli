@@ -10,7 +10,7 @@
 │    -a, --abilities                Prints the Pokémon's abilities.                  │
 │    -i=xx, --image=xx              Prints out the Pokémon's default sprite.         │
 │         options: [sm, md, lg]                                                      │
-│    -m, --moves                    Prints the Pokemon's learnable moves.            │
+│    -m, --moves                    Prints the Pokémon's learnable moves.            │
 │    -s, --stats                    Prints the Pokémon's base stats.                 │
 │    -t, --types                    Deprecated. Types are included with each Pokémon.│
 ╰────────────────────────────────────────────────────────────────────────────────────╯
