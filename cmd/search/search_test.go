@@ -7,6 +7,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -43,9 +44,9 @@ func TestSearchCommand(t *testing.T) {
 			cleanOutput := styling.StripANSI(output)
 
 			if tt.expectedError {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 
 			if !strings.Contains(cleanOutput, tt.contains) {

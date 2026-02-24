@@ -31,7 +31,7 @@ func GenerateHelpMessage(cfg HelpConfig) string {
 	}
 
 	helpMessage := styling.HelpBorder.Render(
-		fmt.Sprintf("%s\n\n", cfg.Description),
+		cfg.Description+"\n\n",
 		styling.StyleBold.Render("USAGE:"),
 		fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render(cfg.CmdName), cfg.SubCmdName),
 		hyphenHint,
