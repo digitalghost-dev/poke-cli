@@ -102,6 +102,15 @@ sources:
           - name: attack_3_cost
             description: "Third attack energy cost"
 
+      - name: standings
+        description: "Tournament standings data"
+
+      - name: tournaments
+        description: "Tournament metadata"
+
+      - name: country_codes
+        description: "Country code to country name mapping"
+
       - name: pricing_data
         description: "Card pricing data"
         meta:
