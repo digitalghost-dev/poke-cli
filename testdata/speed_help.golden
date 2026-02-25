@@ -1,9 +1,9 @@
-╭───────────────────────────────────────────────────────────╮
-│Calculate the speed of a Pokémon.                          │
-│                                                           │
-│ USAGE:                                                    │
-│    poke-cli speed [flag]                                  │
-│                                                           │
-│ FLAGS:                                                    │
-│    -h, --help                     Prints out the help menu│
-╰───────────────────────────────────────────────────────────╯
+╭─────────────────────────────────────────────────────────╮
+│Calculate the speed of a Pokémon.                        │
+│                                                         │
+│ USAGE:                                                  │
+│    poke-cli speed                                       │
+│                                                         │
+│ FLAGS:                                                  │
+│    -h, --help                     Prints the help menu. │
+╰─────────────────────────────────────────────────────────╯

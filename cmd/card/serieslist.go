@@ -9,6 +9,7 @@ var seriesIDMap = map[string]string{
 	"Mega Evolution":   "me",
 	"Scarlet & Violet": "sv",
 	"Sword & Shield":   "swsh",
+	"Sun & Moon":       "sm",
 }
 
 type SeriesModel struct {
@@ -64,6 +65,7 @@ func SeriesList() SeriesModel {
 		item("Mega Evolution"),
 		item("Scarlet & Violet"),
 		item("Sword & Shield"),
+		item("Sun & Moon"),
 	}
 
 	const listWidth = 20

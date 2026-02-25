@@ -93,6 +93,23 @@ sources:
             description: "Second attack effect"
           - name: attack_2_cost
             description: "Second attack energy cost"
+          - name: attack_3_name
+            description: "Third attack name"
+          - name: attack_3_damage
+            description: "Third attack damage"
+          - name: attack_3_effect
+            description: "Third attack effect"
+          - name: attack_3_cost
+            description: "Third attack energy cost"
+
+      - name: standings
+        description: "Tournament standings data"
+
+      - name: tournaments
+        description: "Tournament metadata"
+
+      - name: country_codes
+        description: "Country code to country name mapping"
 
       - name: pricing_data
         description: "Card pricing data"

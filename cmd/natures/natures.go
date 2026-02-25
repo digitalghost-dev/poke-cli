@@ -2,7 +2,6 @@ package natures
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"strings"
 
@@ -16,12 +15,14 @@ func NaturesCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Get details about all natures.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s", "poke-cli", styling.StyleBold.Render("natures")),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description: "Get details about all natures.",
+					CmdName:     "natures",
+				},
+			),
 		)
-		output.WriteString(helpMessage)
 	}
 
 	if utils.CheckHelpFlag(&output, flag.Usage) {

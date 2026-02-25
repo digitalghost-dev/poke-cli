@@ -16,17 +16,19 @@ func AbilityCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Get details about a specific ability.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s %s", "poke-cli", styling.StyleBold.Render("ability"), "<ability-name>", "[flag]"),
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-p, --pokemon", "Prints Pokémon that learn this ability."),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description:    "Get details about a specific ability.",
+					CmdName:        "ability",
+					SubCmdName:     "<ability-name>",
+					ShowHyphenHint: true,
+					Flags: []utils.FlagHelp{
+						{Short: "-p", Long: "--pokemon", Description: "Prints Pokémon that learn this ability."},
+					},
+				},
+			),
 		)
-		output.WriteString(helpMessage)
 	}
 
 	af := flags.SetupAbilityFlagSet()

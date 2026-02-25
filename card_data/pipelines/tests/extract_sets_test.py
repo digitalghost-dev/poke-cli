@@ -66,6 +66,19 @@ def mock_api_response():
                 },
             ],
         },
+        "https://api.tcgdex.net/v2/en/series/sm": {
+            "id": "sm",
+            "name": "Sun & Moon",
+            "sets": [
+                {
+                    "id": "sm1",
+                    "name": "Sun & Moon",
+                    "cardCount": {"official": 149, "total": 172},
+                    "logo": "https://example.com/sm1.png",
+                    "symbol": "https://example.com/sm1-symbol.png",
+                },
+            ],
+        },
     }
 
 
@@ -86,7 +99,7 @@ def test_extract_sets_data_success(mock_api_response):
 
     # Assertions
     assert isinstance(result, pl.DataFrame)  # nosec
-    assert len(result) == 5  # nosec (2 + 2 + 1 sets)
+    assert len(result) == 6  # nosec (2 + 2 + 1 + 1 sets)
     assert set(result.columns) == {  # nosec
         "series_id",
         "set_id",
@@ -96,8 +109,8 @@ def test_extract_sets_data_success(mock_api_response):
         "logo",
         "symbol",
     }
-    assert set(result["series_id"].to_list()) == {"me", "sv", "swsh"}  # nosec
-    assert set(result["set_id"].to_list()) == {"me01", "me02", "sv01", "sv02", "swsh1"}  # nosec
+    assert set(result["series_id"].to_list()) == {"me", "sv", "swsh", "sm"}  # nosec
+    assert set(result["set_id"].to_list()) == {"me01", "me02", "sv01", "sv02", "swsh1", "sm1"}  # nosec
 
 
 @pytest.mark.benchmark
@@ -118,7 +131,7 @@ def test_extract_sets_data_empty_sets(mock_api_response):
     result = extract_sets_data()
 
     assert isinstance(result, pl.DataFrame)  # nosec
-    assert len(result) == 3  # nosec (0 + 2 + 1 sets)
+    assert len(result) == 4  # nosec (0 + 2 + 1 + 1 sets)
     assert "me" not in result["series_id"].to_list()  # nosec
 
 
@@ -148,6 +161,11 @@ def test_extract_sets_data_null_card_counts():
         "https://api.tcgdex.net/v2/en/series/swsh": {
             "id": "swsh",
             "name": "Sword & Shield",
+            "sets": [],
+        },
+        "https://api.tcgdex.net/v2/en/series/sm": {
+            "id": "sm",
+            "name": "Sun & Moon",
             "sets": [],
         },
     }

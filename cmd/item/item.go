@@ -17,16 +17,16 @@ func ItemCommand() (string, error) {
 	var output strings.Builder
 
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Get details about a specific item.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("item"), "<item-name>"),
-			fmt.Sprintf("\n\t%-30s", styling.StyleItalic.Render(styling.HyphenHint)),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description: "Get details about a specific item.",
+					CmdName: "item",
+					SubCmdName: "<item-name>",
+					ShowHyphenHint: true,
+				},
+			),
 		)
-		output.WriteString(helpMessage)
 	}
 
 	args := os.Args

@@ -31,6 +31,6 @@ def extract_series_data() -> pl.DataFrame:
         raise
 
     filtered = [
-        s.model_dump(mode="json") for s in validated if s.id in ["swsh", "sv", "me"]
+        s.model_dump(mode="json") for s in validated if s.id in ["me", "sv", "swsh", "sm"]
     ]
     return pl.DataFrame(filtered)

@@ -48,6 +48,22 @@ SET_PRODUCT_MATCHING = {
     "swsh3": "2675",
     "swsh2": "2626",
     "swsh1": "2585",
+    # Sun & Moon
+    "sm12": "2534",
+    "sm115": "2480",
+    "sm11": "2464",
+    "sm10": "2420",
+    "sm9": "2377",
+    "sm8": "2328",
+    "sm7.5": "2295",
+    "sm7": "2278",
+    "sm6": "2209",
+    "sm5": "2178",
+    "sm4": "2071",
+    "sm3.5": "2054",
+    "sm3": "1957",
+    "sm2": "1919",
+    "sm1": "1863"
 }
 
 
@@ -72,6 +88,18 @@ def get_card_number(card: dict) -> Optional[str]:
         if data_field.get("name") == "Number":
             return data_field.get("value")
     return None
+
+
+def normalize_card_number(card_number: str) -> str:
+    """Zero-pad numeric parts of a card number to 3 digits.
+    e.g. '1/149' -> '001/149', '10/149' -> '010/149'.
+    """
+    if "/" in card_number:
+        left, right = card_number.split("/", 1)
+        left = left.zfill(3) if left.isdigit() else left
+        right = right.zfill(3) if right.isdigit() else right
+        return f"{left}/{right}"
+    return card_number
 
 
 def extract_card_name(full_name: str) -> str:
@@ -150,6 +178,9 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
         card_number = get_card_number(card)
         if card_number is None:
             continue
+
+        if set_number.startswith("sm"):
+            card_number = normalize_card_number(card_number)
 
         card_info = {
             "product_id": card["productId"],

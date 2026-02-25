@@ -97,13 +97,13 @@ def create_card_dataframe(extract_card_info: list) -> pl.DataFrame:
         # Flatten types (list of strings)
         flat["types"] = ", ".join(card.get("types", []))
 
-        flat["attacks_json"] = json.dumps(card.get("attacks", []), ensure_ascii=False)
-
-        attacks = card.get("attacks", [])
+        attacks = [atk for atk in card.get("attacks", []) if atk.get("name")]
+        flat["attacks_json"] = json.dumps(attacks, ensure_ascii=False)
         for i, atk in enumerate(attacks):
             prefix = f"attack_{i + 1}"
             flat[f"{prefix}_name"] = atk.get("name")
-            flat[f"{prefix}_damage"] = atk.get("damage")
+            damage = atk.get("damage")
+            flat[f"{prefix}_damage"] = str(damage) if damage is not None else None
             flat[f"{prefix}_effect"] = atk.get("effect")
             flat[f"{prefix}_cost"] = ", ".join(atk.get("cost", []))
 

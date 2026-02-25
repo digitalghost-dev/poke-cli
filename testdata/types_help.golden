@@ -1,9 +1,9 @@
-╭───────────────────────────────────────────────────────────╮
-│Get details about a specific typing.                       │
-│                                                           │
-│ USAGE:                                                    │
-│    poke-cli types [flag]                                  │
-│                                                           │
-│ FLAGS:                                                    │
-│    -h, --help                     Prints out the help menu│
-╰───────────────────────────────────────────────────────────╯
+╭─────────────────────────────────────────────────────────╮
+│Get details about a specific typing.                     │
+│                                                         │
+│ USAGE:                                                  │
+│    poke-cli types                                       │
+│                                                         │
+│ FLAGS:                                                  │
+│    -h, --help                     Prints the help menu. │
+╰─────────────────────────────────────────────────────────╯

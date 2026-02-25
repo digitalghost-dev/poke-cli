@@ -2,59 +2,56 @@ package search
 
 import (
 	"flag"
-	"fmt"
 	"os"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
-	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func SearchCommand() error {
+func SearchCommand() (string, error) {
+	var output strings.Builder
+
 	flag.Usage = func() {
-		helpMessage := styling.HelpBorder.Render(
-			"Search for a resource by name or partial match.\n\n",
-			styling.StyleBold.Render("USAGE:"),
-			fmt.Sprintf("\n\t%s %s %s", "poke-cli", styling.StyleBold.Render("search"), "[flag]"),
-			"\n\n",
-			styling.StyleBold.Render("FLAGS:"),
-			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Prints out the help menu.\n\n"),
-			styling.StyleItalic.Render("Supports prefix matching using ^ (example: ^char → charizard)"),
+		output.WriteString(
+			utils.GenerateHelpMessage(
+				utils.HelpConfig{
+					Description: "Search for a resource by name or partial match.",
+					CmdName:     "search",
+				},
+			),
 		)
-		fmt.Println(helpMessage)
 	}
 
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
-		flag.Usage()
-		return nil
+	if utils.CheckHelpFlag(&output, flag.Usage) {
+		return output.String(), nil
 	}
 
 	flag.Parse()
 
 	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false}); err != nil {
-		fmt.Println(err.Error())
-		return err
+		output.WriteString(err.Error())
+		return output.String(), err
 	}
 
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
-		fmt.Println("could not start program:", err)
-		return err
+		return "", err
 	}
 
-	return nil
+	return output.String(), nil
 }
 
 // Model structure
 type Model struct {
-	Choice         int             // Index of the selected search category (e.g., 0 = Pokémon, 1 = Ability)
-	Chosen         bool            // Whether a category has been chosen yet
-	Quitting       bool            // Flag to indicate if the program is quitting
-	TextInput      textinput.Model // The text input field used for search input
-	ShowResults    bool            // Whether to display the search results screen
-	SearchResults  string          // The formatted search results to be displayed
-	WarningMessage string          // A warning message to show (e.g., empty input)
+	Choice         int
+	Chosen         bool
+	Quitting       bool
+	TextInput      textinput.Model
+	ShowResults    bool
+	SearchResults  string
+	WarningMessage string
 }
 
 func initialModel() Model {
