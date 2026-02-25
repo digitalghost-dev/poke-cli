@@ -35,7 +35,7 @@ def test_extract_series_data_success(mock_api_response):
 
     # Assertions
     assert isinstance(result, pl.DataFrame) # nosec
-    assert len(result) == 3   # nosec
-    assert set(result["id"].to_list()) == {"swsh", "sv", "me"} # nosec
+    assert len(result) == 4   # nosec
+    assert set(result["id"].to_list()) == {"swsh", "sv", "me", "sm"} # nosec
     assert "name" in result.columns # nosec
     assert "logo" in result.columns # nosec
