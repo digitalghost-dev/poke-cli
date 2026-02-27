@@ -19,3 +19,19 @@ def test_selectbox_change():
     at.selectbox[0].select(second_option).run()
 
     assert at.selectbox[0].value == second_option
+
+
+def test_selectbox_label():
+    assert at.selectbox[0].label == "Filter by Tournament *(ordered by date)*"
+
+
+def test_tournament_info():
+    assert not at.exception
+    assert "•" in at.markdown[0].value
+
+
+def test_metrics():
+    assert at.metric[0].label == "Total Players"
+    assert at.metric[1].label == "Winner"
+    assert at.metric[0].value is not None
+    assert at.metric[1].value is not None
