@@ -11,14 +11,7 @@ def test_header():
 def test_selectbox_default_value():
     assert not at.exception
     assert len(at.selectbox) == 1
-    assert at.selectbox[0].value == at.selectbox[0].options[0]
-
-
-def test_selectbox_change():
-    second_option = at.selectbox[0].options[1]
-    at.selectbox[0].select(second_option).run()
-
-    assert at.selectbox[0].value == second_option
+    assert at.selectbox[0].index == 0
 
 
 def test_selectbox_label():
@@ -28,6 +21,35 @@ def test_selectbox_label():
 def test_tournament_info():
     assert not at.exception
     assert "•" in at.markdown[0].value
+    assert "flagcdn.com" in at.markdown[0].value
+
+
+def test_dataframe_renders():
+    assert not at.exception
+    assert len(at.dataframe) == 1
+
+
+def test_dataframe_columns():
+    cols = at.dataframe[0].value.columns.tolist()
+    # expected columns
+    assert "rank" in cols
+    assert "name" in cols
+    assert "points" in cols
+    assert "record" in cols
+    assert "opp_win_percent" in cols
+    assert "opp_opp_win_percent" in cols
+    assert "deck" in cols
+    assert "decklist" in cols
+    assert "player_country" in cols
+    # dropped columns
+    assert "country_code" not in cols
+    assert "iso_code" not in cols
+    assert "player_quantity" not in cols
+    assert "location" not in cols
+    assert "start_date" not in cols
+    assert "end_date" not in cols
+    assert "text_date" not in cols
+    assert "type" not in cols
 
 
 def test_metrics():

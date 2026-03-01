@@ -58,9 +58,12 @@ def header() -> str:
 def tournament_info(tourney_filter: str):
     df = data_table(tourney_filter)
 
+    iso_code = df["iso_code"][0]
+    flag = f'<img src="https://flagcdn.com/w40/{iso_code}.png"> ' if iso_code else ""
+
     date_text = df["text_date"][0]
     location = df["location"][0]
-    st.markdown(f"### {location} • {date_text}")
+    st.markdown(f"### {flag} {location} • {date_text}", unsafe_allow_html=True)
 
 
 def tournament_stats(tourney_filter: str) -> None:
@@ -82,15 +85,50 @@ def tournament_stats(tourney_filter: str) -> None:
 
 def display_latest_tournament(tourney_filter: str) -> None:
     df = data_table(tourney_filter)
-    df = df.drop(["country_code", "player_quantity", "location", "start_date", "end_date", "text_date", "type"])
+    df = df.drop(["country_code", "player_quantity", "iso_code", "location", "start_date", "end_date", "text_date", "type"])
 
     df = df.sort("rank")
 
     st.dataframe(
         df,
         column_config={
+            "rank": st.column_config.NumberColumn(
+                label="Rank",
+                format="plain",
+                help="The player's placement in the tournament.",
+            ),
+            "name": st.column_config.TextColumn(
+                label="Name",
+            ),
+            "points": st.column_config.NumberColumn(
+                label="Points",
+                format="plain",
+                help="The player's total points in the tournament.",
+            ),
+            "record": st.column_config.TextColumn(
+                label="Record",
+                help="The player's record in the tournament.",
+            ),
+            "opp_win_percent": st.column_config.NumberColumn(
+                label="OPW%",
+                format="percent",
+                help="The player's opponent's win percentage in the tournament.",
+            ),
+            "opp_opp_win_percent": st.column_config.NumberColumn(
+                label="OOPW%",
+                format="percent",
+                help="The player's opponent's opponent's win percentage in the tournament.",
+            ),
+            "deck": st.column_config.TextColumn(
+                label="Deck",
+                help="The player's deck in the tournament.",
+            ),
             "decklist": st.column_config.LinkColumn(
                 label="Decklist", display_text=":material/open_in_new:"
+            ),
+            "player_country": st.column_config.TextColumn(
+                label="Country",
+                help="The player's home country.",
             )
         },
     )
