@@ -44,6 +44,7 @@ def test_dataframe_columns():
     # dropped columns
     assert "country_code" not in cols
     assert "iso_code" not in cols
+    assert "logo" not in cols
     assert "player_quantity" not in cols
     assert "location" not in cols
     assert "start_date" not in cols
@@ -55,5 +56,12 @@ def test_dataframe_columns():
 def test_metrics():
     assert at.metric[0].label == "Total Players"
     assert at.metric[1].label == "Winner"
+    assert at.metric[2].label == "Winning Deck"
     assert at.metric[0].value is not None
     assert at.metric[1].value is not None
+    assert at.metric[2].value is not None
+
+
+def test_dataframe_sorted_by_rank():
+    ranks = at.dataframe[0].value["rank"].to_list()
+    assert ranks == sorted(ranks)

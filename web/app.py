@@ -60,21 +60,26 @@ def tournament_info(tourney_filter: str):
 
     iso_code = df["iso_code"][0]
     flag = f'<img src="https://flagcdn.com/w40/{iso_code}.png"> ' if iso_code else ""
-
+    logo = df["logo"][0]
     date_text = df["text_date"][0]
     location = df["location"][0]
-    st.markdown(f"### {flag} {location} • {date_text}", unsafe_allow_html=True)
 
+    with st.container(horizontal=True):
+        st.markdown(f"### {flag} • {location}\n{date_text}", unsafe_allow_html=True)
+        st.space("stretch")
+        if logo:
+            st.image(logo, width=100)
 
 def tournament_stats(tourney_filter: str) -> None:
     df = data_table(tourney_filter)
 
     players = df["player_quantity"].to_list()
     winner = df.filter(pl.col("rank") == 1)["name"][0]
+    winning_deck = df.filter(pl.col("rank") == 1)["deck"][0]
 
     with st.container():
 
-        col1, col2, col3, col4 = st.columns(4, border=True)
+        col1, col2, col3 = st.columns(3, border=True)
 
         with col1:
             st.metric(label="Total Players", value=players[0])
@@ -82,10 +87,13 @@ def tournament_stats(tourney_filter: str) -> None:
         with col2:
             st.metric(label="Winner", value=winner)
 
+        with col3:
+            st.metric(label="Winning Deck", value=winning_deck.capitalize())
+
 
 def display_latest_tournament(tourney_filter: str) -> None:
     df = data_table(tourney_filter)
-    df = df.drop(["country_code", "player_quantity", "iso_code", "location", "start_date", "end_date", "text_date", "type"])
+    df = df.drop(["country_code", "player_quantity", "iso_code", "logo", "location", "start_date", "end_date", "text_date", "type"])
 
     df = df.sort("rank")
 
