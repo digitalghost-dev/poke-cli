@@ -103,15 +103,6 @@ sources:
             description: "Third attack energy cost"
 
       - name: standings
-        description: "Tournament standings data"
-
-      - name: tournaments
-        description: "Tournament metadata"
-
-      - name: country_codes
-        description: "Country code to country name mapping"
-
-      - name: standings
         description: "Player standings data for tournaments"
         columns:
           - name: rank
@@ -150,14 +141,24 @@ sources:
             description: "Tournament type"
           - name: player_quantity
             description: "Number of players in the tournament"
+          - name: text_date
+            description: "Tournament date in text format"
+          - name: country_code
+            description: "Country ISO code"
+          - name: logo
+            description: "Tournament type logo URL"
 
       - name: country_codes
-        description: "Country code to country name mapping"
+        description: "Country code to country name mapping with geographic centroids"
         columns:
           - name: code
             description: "ISO country code"
           - name: country_name
             description: "Full country name"
+          - name: latitude
+            description: "Country centroid latitude"
+          - name: longitude
+            description: "Country centroid longitude"
 
       - name: pricing_data
         description: "Card pricing data"

@@ -13,14 +13,20 @@ SELECT
     s.deck,
     s.decklist,
     c.country_name AS player_country,
+    LOWER(c.code) AS country_code,
+    c.latitude,
+    c.longitude,
     t.location,
+    t.country_code AS iso_code,
+    t.logo,
     t.start_date,
     t.end_date,
+    t.text_date,
     t.type,
     t.player_quantity
 FROM
     {{ source('staging', 'standings') }} AS s
 INNER JOIN {{ source('staging', 'tournaments') }} AS t
    ON s.tournament_id = t.tournament_id
-INNER JOIN {{ source('staging', 'country_codes') }} AS c
+LEFT JOIN {{ source('staging', 'country_codes') }} AS c
    ON s.country = c.code
