@@ -31,7 +31,7 @@ go.work.sum
 
 # web
 web/.venv
-web/.streamlit/
+web/.streamlit/secrets.toml
 web/.coverage
 
 # Python
