@@ -147,6 +147,10 @@ sources:
             description: "Country ISO code"
           - name: logo
             description: "Tournament type logo URL"
+          - name: latitude
+            description: "Tournament city latitude"
+          - name: longitude
+            description: "Tournament city longitude"
 
       - name: country_codes
         description: "Country code to country name mapping with geographic centroids"
@@ -155,10 +159,6 @@ sources:
             description: "ISO country code"
           - name: country_name
             description: "Full country name"
-          - name: latitude
-            description: "Country centroid latitude"
-          - name: longitude
-            description: "Country centroid longitude"
 
       - name: pricing_data
         description: "Card pricing data"

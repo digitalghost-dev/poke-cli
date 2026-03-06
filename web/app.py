@@ -1,5 +1,7 @@
+import altair as alt
 import polars as pl
 import streamlit as st
+import pydeck
 from supabase import create_client, Client
 
 
@@ -24,6 +26,8 @@ def run_query(location: str) -> list:
 def unique_locations() -> list:
     result = supabase.table("standings").select("location, text_date").order("start_date").execute()
     return list(dict.fromkeys((row["location"], row["text_date"]) for row in result.data))
+
+
 
 
 st.set_page_config(page_title="Pokémon Tournament Results", layout="wide")
@@ -70,6 +74,50 @@ def tournament_info(tourney_filter: str):
         if logo:
             st.image(logo, width=100)
 
+
+def tournament_locations() -> None:
+    st.divider()
+
+    st.header("Season Events")
+
+    tournaments = (
+        supabase.table("standings")
+        .select("location, tournament_latitude, tournament_longitude, type, text_date, player_quantity")
+        .eq("rank", 1)
+        .order("start_date")
+        .execute()
+        .data
+    )
+    type_colors = {
+        "International": [220, 50, 50, 200],
+        "Regional": [255, 204, 0, 200],
+        "Special Event": [50, 100, 220, 200],
+        "World": [150, 50, 220, 200],
+    }
+    for t in tournaments:
+        t["color"] = type_colors.get(t["type"], [200, 200, 200, 200])
+
+    point_layer = pydeck.Layer(
+        "ScatterplotLayer",
+        data=tournaments,
+        id="tournament-layer",
+        get_position=["tournament_longitude", "tournament_latitude"],
+        get_radius=200000,
+        get_fill_color="color",
+        pickable=True,
+        auto_highlight=True,
+    )
+
+    view_state = pydeck.ViewState(latitude=20, longitude=0, zoom=1.5, controller=True)
+    deck = pydeck.Deck(
+        point_layer,
+        initial_view_state=view_state,
+        tooltip={"text": "{location}\n{type}\n{text_date}\nPlayers: {player_quantity}"},
+    )
+
+    st.pydeck_chart(deck, on_select="rerun", selection_mode="single-object")
+
+
 def tournament_stats(tourney_filter: str) -> None:
     df = data_table(tourney_filter)
 
@@ -93,16 +141,17 @@ def tournament_stats(tourney_filter: str) -> None:
 
 def display_latest_tournament(tourney_filter: str) -> None:
     df = data_table(tourney_filter)
-    df = df.drop(["country_code", "player_quantity", "iso_code", "logo", "location", "start_date", "end_date", "text_date", "type"])
+    df = df.drop(["country_code", "player_quantity", "iso_code", "logo", "location", "start_date", "end_date", "text_date", "type", "tournament_latitude", "tournament_longitude"])
 
     df = df.sort("rank")
+
+    st.header("Raw Standings - Top 512")
 
     st.dataframe(
         df,
         column_config={
             "rank": st.column_config.NumberColumn(
                 label="Rank",
-                format="plain",
                 help="The player's placement in the tournament.",
             ),
             "name": st.column_config.TextColumn(
@@ -110,7 +159,6 @@ def display_latest_tournament(tourney_filter: str) -> None:
             ),
             "points": st.column_config.NumberColumn(
                 label="Points",
-                format="plain",
                 help="The player's total points in the tournament.",
             ),
             "record": st.column_config.TextColumn(
@@ -146,7 +194,10 @@ def main():
     tourney_filter = header()
     tournament_info(tourney_filter)
     tournament_stats(tourney_filter)
+    # player_country_chart(tourney_filter)
+    tournament_locations()
     display_latest_tournament(tourney_filter)
+
 
 main()
 

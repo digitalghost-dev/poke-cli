@@ -8,6 +8,7 @@ dependencies = [
     "polars==1.31.0",
     "supabase==2.28.0",
     "streamlit==1.54.0",
+    "pydeck==0.9.1",
 ]
 
 [dependency-groups]

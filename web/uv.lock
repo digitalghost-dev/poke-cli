@@ -1791,6 +1791,7 @@ version = "1.9.0"
 source = { virtual = "." }
 dependencies = [
     { name = "polars" },
+    { name = "pydeck" },
     { name = "streamlit" },
     { name = "supabase" },
 ]
@@ -1804,6 +1805,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "polars", specifier = "==1.31.0" },
+    { name = "pydeck", specifier = ">=0.9.1" },
     { name = "streamlit", specifier = "==1.54.0" },
     { name = "supabase", specifier = "==2.28.0" },
 ]
