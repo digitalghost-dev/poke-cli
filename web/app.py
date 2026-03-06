@@ -28,8 +28,6 @@ def unique_locations() -> list:
     return list(dict.fromkeys((row["location"], row["text_date"]) for row in result.data))
 
 
-
-
 st.set_page_config(page_title="Pokémon Tournament Results", layout="wide")
 
 
@@ -39,23 +37,14 @@ def data_table(tourney_filter: str) -> pl.DataFrame:
     return standings_table
 
 
+
 def header() -> str:
-    with st.container():
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.header("Pokémon TCG Tournament Results")
-
-        with col2:
-            tourney_list = unique_locations()
-            tournament_filter = st.selectbox(
-                "Filter by Tournament *(ordered by date)*",
-                tourney_list,
-                format_func=lambda x: f"{x[0]} - {x[1]}",
-            )
-
-        st.divider()
-
+    tourney_list = unique_locations()
+    tournament_filter = st.selectbox(
+        "Filter by Tournament *(ordered by date)*",
+        tourney_list,
+        format_func=lambda x: f"{x[0]} - {x[1]}",
+    )
     return tournament_filter[0]
 
 
@@ -75,10 +64,28 @@ def tournament_info(tourney_filter: str):
             st.image(logo, width=100)
 
 
-def tournament_locations() -> None:
+def player_country_chart(tourney_filter: str) -> None:
+    df = data_table(tourney_filter)
+
     st.divider()
 
-    st.header("Season Events")
+    st.header("Player Countries - Top 512")
+
+    countries_df = (
+        df.group_by("player_country")
+        .agg(pl.len().alias("player_count"))
+        .sort("player_count", descending=True)
+    )
+
+    chart = alt.Chart(countries_df.to_pandas()).mark_bar().encode(
+        x=alt.X("player_country:N", sort="-y", title="Country"),
+        y=alt.Y("player_count:Q", title="Players"),
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+
+def tournament_locations() -> None:
+    st.header("Tournament Locations")
 
     tournaments = (
         supabase.table("standings")
@@ -92,7 +99,7 @@ def tournament_locations() -> None:
         "International": [220, 50, 50, 200],
         "Regional": [255, 204, 0, 200],
         "Special Event": [50, 100, 220, 200],
-        "World": [150, 50, 220, 200],
+        "World": [50, 200, 100, 200],
     }
     for t in tournaments:
         t["color"] = type_colors.get(t["type"], [200, 200, 200, 200])
@@ -108,7 +115,7 @@ def tournament_locations() -> None:
         auto_highlight=True,
     )
 
-    view_state = pydeck.ViewState(latitude=20, longitude=0, zoom=1.5, controller=True)
+    view_state = pydeck.ViewState(latitude=15, longitude=10, zoom=1.3, controller=True)
     deck = pydeck.Deck(
         point_layer,
         initial_view_state=view_state,
@@ -191,12 +198,19 @@ def display_latest_tournament(tourney_filter: str) -> None:
 
 
 def main():
-    tourney_filter = header()
-    tournament_info(tourney_filter)
-    tournament_stats(tourney_filter)
-    # player_country_chart(tourney_filter)
-    tournament_locations()
-    display_latest_tournament(tourney_filter)
+    st.header("Pokémon TCG Tournament Data")
+
+    overview_tab, regionals_tab = st.tabs(["Overview", "Regionals"])
+
+    with overview_tab:
+        tournament_locations()
+
+    with regionals_tab:
+        tourney_filter = header()
+        tournament_info(tourney_filter)
+        tournament_stats(tourney_filter)
+        player_country_chart(tourney_filter)
+        display_latest_tournament(tourney_filter)
 
 
 main()
