@@ -1,11 +1,21 @@
 from streamlit.testing.v1 import AppTest
 
 at = AppTest.from_file("app.py").run(timeout=10)
-at.run()
 
 
 def test_header():
-    assert at.header[0].value == "Pokémon TCG Tournament Results"
+    assert at.header[0].value == "Pokémon TCG Tournament Data"
+
+
+def test_tabs():
+    assert len(at.tabs) == 2
+    tab_labels = [t.label for t in at.tabs]
+    assert "Overview" in tab_labels
+    assert "Regionals" in tab_labels
+
+
+def test_overview_tab_header():
+    assert at.header[1].value == "Tournament Locations"
 
 
 def test_selectbox_default_value():
