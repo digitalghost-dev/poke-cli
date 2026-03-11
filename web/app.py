@@ -22,6 +22,7 @@ def run_query(location: str) -> list:
         supabase.table("standings").select("*").eq("location", location).execute().data
     )
 
+
 @st.cache_data(ttl=86400)
 def unique_locations() -> list:
     result = (
@@ -31,7 +32,9 @@ def unique_locations() -> list:
         .execute()
     )
     return list(
-        dict.fromkeys((row["location"], row["text_date"]) for row in result.data)  # pyrefly: ignore[bad-index, unsupported-operation]
+        dict.fromkeys(
+            (row["location"], row["text_date"]) for row in result.data
+        )  # pyrefly: ignore[bad-index, unsupported-operation]
     )
 
 
@@ -160,7 +163,9 @@ def tournament_locations() -> None:
         "World": [50, 200, 100, 200],
     }
     for t in tournaments:
-        t["color"] = type_colors.get(t["type"], [200, 200, 200, 200])  # pyrefly: ignore[bad-index, unsupported-operation, no-matching-overload]
+        t["color"] = type_colors.get(
+            t["type"], [200, 200, 200, 200]
+        )  # pyrefly: ignore[bad-index, unsupported-operation, no-matching-overload]
 
     point_layer = pydeck.Layer(
         "ScatterplotLayer",
@@ -206,7 +211,10 @@ def tournament_stats(tourney_filter: str) -> None:
 
     st.header("Tournament Statistics")
 
-    st.write("**Note**: *All data points are from the top 512 players for each tournament.*")
+    st.write(
+        "**Note**: *All data points are from the top 512 players for each tournament.*"
+    )
+
 
 class RawStandingsSection:
     def __init__(self, df: pl.DataFrame, tourney_filter: str):
@@ -281,11 +289,10 @@ class RawStandingsSection:
         )
 
 
-
 def main():
     st.header("Pokémon TCG Tournament Data")
 
-    overview_tab, regionals_tab = st.tabs(["Overview", "Tournaments"])
+    overview_tab, regionals_tab = st.tabs(["Season Overview", "Tournaments"])
 
     with overview_tab:
         tournament_locations()
@@ -298,5 +305,6 @@ def main():
         df = data_table(tourney_filter)
         PlayersCountrySection(df).render()
         RawStandingsSection(df, tourney_filter).render()
+
 
 main()
