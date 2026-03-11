@@ -37,7 +37,6 @@ def data_table(tourney_filter: str) -> pl.DataFrame:
     return standings_table
 
 
-
 def header() -> str:
     tourney_list = unique_locations()
     tournament_filter = st.selectbox(
@@ -64,24 +63,77 @@ def tournament_info(tourney_filter: str):
             st.image(logo, width=100)
 
 
+def top_countries_by_count(df: pl.DataFrame, n: int = 10) -> list[str]:
+    return (
+        df.group_by("player_country")
+        .agg(pl.len().alias("player_count"))
+        .sort("player_count", descending=True)
+        .head(n)
+        .get_column("player_country")
+        .to_list()
+    )
+
+
+def median_order_by_country(df: pl.DataFrame, countries: list[str]) -> list[str]:
+    return (
+        df.filter(pl.col("player_country").is_in(countries))
+        .group_by("player_country")
+        .agg(pl.median("points").alias("median_points"))
+        .sort("median_points", descending=True)
+        .get_column("player_country")
+        .to_list()
+    )
+
+
+def build_bar_chart(df: pl.DataFrame) -> alt.Chart:
+    countries_df = (
+        df.group_by("player_country")
+        .agg(pl.len().alias("player_count"))
+        .head(15)
+        .sort("player_count", descending=True)
+    )
+    return (
+        alt.Chart(countries_df.to_pandas())
+        .mark_bar()
+        .encode(
+            x=alt.X("player_country:N", sort="-y", title="Country"),
+            y=alt.Y("player_count:Q", title="Players"),
+        )
+        .properties(title="Player Count by Country")
+    )
+
+
+def build_box_chart(df: pl.DataFrame, countries: list[str], median_order: list[str]) -> alt.Chart:
+    box_df = df.filter(pl.col("player_country").is_in(countries))
+    return (
+        alt.Chart(box_df.to_pandas())
+        .mark_boxplot(extent="min-max")
+        .encode(
+            x=alt.X("player_country:N", sort=median_order, title="Country"),
+            y=alt.Y("points:Q", title="Points"),
+        )
+        .properties(title="Points Spread by Country")
+    )
+
+
 def player_country_chart(tourney_filter: str) -> None:
     df = data_table(tourney_filter)
 
     st.divider()
 
-    st.header("Player Countries - Top 512")
+    st.header("Stats per Country")
+    st.subheader("Top 512 players", divider="blue")
 
-    countries_df = (
-        df.group_by("player_country")
-        .agg(pl.len().alias("player_count"))
-        .sort("player_count", descending=True)
-    )
+    countries = top_countries_by_count(df)
+    order = median_order_by_country(df, countries)
 
-    chart = alt.Chart(countries_df.to_pandas()).mark_bar().encode(
-        x=alt.X("player_country:N", sort="-y", title="Country"),
-        y=alt.Y("player_count:Q", title="Players"),
-    )
-    st.altair_chart(chart, use_container_width=True)
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.altair_chart(build_bar_chart(df), width="stretch")
+
+    with col2:
+        st.altair_chart(build_box_chart(df, countries, order), width="stretch")
 
 
 def tournament_locations() -> None:
@@ -200,7 +252,7 @@ def display_latest_tournament(tourney_filter: str) -> None:
 def main():
     st.header("Pokémon TCG Tournament Data")
 
-    overview_tab, regionals_tab = st.tabs(["Overview", "Regionals"])
+    overview_tab, regionals_tab = st.tabs(["Overview", "Tournaments"])
 
     with overview_tab:
         tournament_locations()
@@ -214,4 +266,3 @@ def main():
 
 
 main()
-
