@@ -1,7 +1,6 @@
 import polars as pl
+from app import PlayersCountrySection
 from streamlit.testing.v1 import AppTest
-
-from app import build_bar_chart, build_box_chart, median_order_by_country, top_countries_by_count
 
 at = AppTest.from_file("app.py").run(timeout=10)
 
@@ -80,80 +79,79 @@ def test_dataframe_sorted_by_rank():
     assert ranks == sorted(ranks)
 
 
-SAMPLE_DF = pl.DataFrame({
-    "player_country": ["US", "US", "US", "JP", "JP", "KR", "KR", "AU"],
-    "points": [30, 20, 10, 25, 15, 18, 12, 5],
-})
+SAMPLE_DF = pl.DataFrame(
+    {
+        "player_country": ["US", "US", "US", "JP", "JP", "KR", "KR", "AU"],
+        "points": [30, 20, 10, 25, 15, 18, 12, 5],
+    }
+)
 
 
 def test_top_countries_by_count_order():
-    result = top_countries_by_count(SAMPLE_DF, n=3)
-    assert result[0] == "US"  # 3 players
-    assert result[1] in ("JP", "KR")  # 2 players each
-    assert len(result) == 3
+    section = PlayersCountrySection(SAMPLE_DF)
+    assert section.countries[0] == "US"  # 3 players
+    assert section.countries[1] in ("JP", "KR")  # 2 players each
 
 
 def test_top_countries_by_count_limit():
-    result = top_countries_by_count(SAMPLE_DF, n=2)
-    assert len(result) == 2
+    section = PlayersCountrySection(SAMPLE_DF)
+    section.n = 2
+    section.countries = section._top_countries_by_count()
+    assert len(section.countries) == 2
 
 
 def test_median_order_sorted_descending():
-    countries = ["US", "JP", "KR", "AU"]
-    result = median_order_by_country(SAMPLE_DF, countries)
-    # Rebuild medians in the returned order to verify descending sort
+    section = PlayersCountrySection(SAMPLE_DF)
     median_map = (
-        SAMPLE_DF.filter(pl.col("player_country").is_in(countries))
+        SAMPLE_DF.filter(pl.col("player_country").is_in(section.countries))
         .group_by("player_country")
         .agg(pl.median("points").alias("median_points"))
         .to_pandas()
         .set_index("player_country")["median_points"]
         .to_dict()
     )
-    ordered_medians = [median_map[c] for c in result]
+    ordered_medians = [median_map[c] for c in section.median_order]
     assert ordered_medians == sorted(ordered_medians, reverse=True)
-    assert "AU" == result[-1]  # AU median 5 — always last
+    assert section.median_order[-1] == "AU"  # AU median 5 — always last
 
 
-def test_median_order_filters_to_given_countries():
-    result = median_order_by_country(SAMPLE_DF, ["US", "JP"])
-    assert "KR" not in result
-    assert "AU" not in result
+def test_median_order_excludes_countries_not_in_top():
+    section = PlayersCountrySection(SAMPLE_DF)
+    assert all(c in section.countries for c in section.median_order)
 
 
 def test_bar_chart_title():
-    chart = build_bar_chart(SAMPLE_DF)
-    assert chart.to_dict()["title"] == "Player Count by Country"
+    section = PlayersCountrySection(SAMPLE_DF)
+    assert section._build_bar_chart().to_dict()["title"] == "Player Count by Country"
 
 
 def test_bar_chart_encoding():
-    spec = build_bar_chart(SAMPLE_DF).to_dict()
+    section = PlayersCountrySection(SAMPLE_DF)
+    spec = section._build_bar_chart().to_dict()
     assert spec["encoding"]["x"]["field"] == "player_country"
     assert spec["encoding"]["y"]["field"] == "player_count"
 
 
 def test_box_chart_title():
-    order = ["JP", "US", "KR", "AU"]
-    chart = build_box_chart(SAMPLE_DF, ["US", "JP", "KR", "AU"], order)
-    assert chart.to_dict()["title"] == "Points Spread by Country"
+    section = PlayersCountrySection(SAMPLE_DF)
+    assert section._build_box_chart().to_dict()["title"] == "Points Spread by Country"
 
 
 def test_box_chart_encoding():
-    order = ["JP", "US", "KR", "AU"]
-    spec = build_box_chart(SAMPLE_DF, ["US", "JP", "KR", "AU"], order).to_dict()
+    section = PlayersCountrySection(SAMPLE_DF)
+    spec = section._build_box_chart().to_dict()
     assert spec["encoding"]["x"]["field"] == "player_country"
     assert spec["encoding"]["y"]["field"] == "points"
 
 
 def test_box_chart_sort_order():
-    order = ["JP", "US", "KR"]
-    spec = build_box_chart(SAMPLE_DF, ["US", "JP", "KR"], order).to_dict()
-    assert spec["encoding"]["x"]["sort"] == order
+    section = PlayersCountrySection(SAMPLE_DF)
+    spec = section._build_box_chart().to_dict()
+    assert spec["encoding"]["x"]["sort"] == section.median_order
 
 
-def test_box_chart_filters_to_given_countries():
-    order = ["JP", "US"]
-    chart = build_box_chart(SAMPLE_DF, ["JP", "US"], order)
+def test_box_chart_filters_to_top_countries():
+    section = PlayersCountrySection(SAMPLE_DF)
+    chart = section._build_box_chart()
     data_countries = set(chart.data["player_country"].tolist())
-    assert data_countries == {"JP", "US"}
-    assert "KR" not in data_countries
+    assert data_countries == set(section.countries)
