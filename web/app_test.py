@@ -1,5 +1,5 @@
 import polars as pl
-from app import PlayersCountrySection
+from app import PlayersCountrySection, RawStandingsSection
 from streamlit.testing.v1 import AppTest
 
 at = AppTest.from_file("app.py").run(timeout=10)
@@ -77,6 +77,37 @@ def test_metrics():
 def test_dataframe_sorted_by_rank():
     ranks = at.dataframe[0].value["rank"].to_list()
     assert ranks == sorted(ranks)
+
+
+def test_raw_standings_subheader():
+    assert not at.exception
+    subheader_values = [s.value for s in at.subheader]
+    assert "Raw Standings" in subheader_values
+
+
+SAMPLE_RAW_DF = pl.DataFrame(
+    {
+        "rank": [2, 1, 3],
+        "name": ["Alice", "Bob", "Charlie"],
+        "points": [20, 30, 10],
+        "record": ["4-2", "5-1", "3-3"],
+        "opp_win_percent": [0.6, 0.7, 0.5],
+        "opp_opp_win_percent": [0.55, 0.65, 0.45],
+        "deck": ["DeckA", "DeckB", "DeckC"],
+        "decklist": ["http://a.com", "http://b.com", "http://c.com"],
+        "player_country": ["US", "JP", "KR"],
+    }
+)
+
+
+def test_raw_standings_init_stores_df():
+    section = RawStandingsSection(SAMPLE_RAW_DF, "some-tourney-id")
+    assert section.df.shape == SAMPLE_RAW_DF.shape
+
+
+def test_raw_standings_init_stores_tourney_filter():
+    section = RawStandingsSection(SAMPLE_RAW_DF, "some-tourney-id")
+    assert section.tourney_filter == "some-tourney-id"
 
 
 SAMPLE_DF = pl.DataFrame(

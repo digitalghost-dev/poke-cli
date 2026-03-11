@@ -22,7 +22,6 @@ def run_query(location: str) -> list:
         supabase.table("standings").select("*").eq("location", location).execute().data
     )
 
-
 @st.cache_data(ttl=86400)
 def unique_locations() -> list:
     result = (
@@ -32,7 +31,7 @@ def unique_locations() -> list:
         .execute()
     )
     return list(
-        dict.fromkeys((row["location"], row["text_date"]) for row in result.data)
+        dict.fromkeys((row["location"], row["text_date"]) for row in result.data)  # pyrefly: ignore[bad-index, unsupported-operation]
     )
 
 
@@ -52,6 +51,8 @@ def header() -> str:
         tourney_list,
         format_func=lambda x: f"{x[0]} - {x[1]}",
     )
+    if tournament_filter is None:
+        st.stop()
     return tournament_filter[0]
 
 
@@ -128,10 +129,7 @@ class PlayersCountrySection:
         )
 
     def render(self) -> None:
-        st.divider()
-
-        st.header("Stats per Country")
-        st.subheader("Top 512 players", divider="blue")
+        st.subheader("Stats per Country", divider="blue")
 
         col1, col2 = st.columns(2)
 
@@ -162,7 +160,7 @@ def tournament_locations() -> None:
         "World": [50, 200, 100, 200],
     }
     for t in tournaments:
-        t["color"] = type_colors.get(t["type"], [200, 200, 200, 200])
+        t["color"] = type_colors.get(t["type"], [200, 200, 200, 200])  # pyrefly: ignore[bad-index, unsupported-operation, no-matching-overload]
 
     point_layer = pydeck.Layer(
         "ScatterplotLayer",
@@ -204,70 +202,84 @@ def tournament_stats(tourney_filter: str) -> None:
         with col3:
             st.metric(label="Winning Deck", value=winning_deck.capitalize())
 
+    st.divider()
 
-def display_latest_tournament(tourney_filter: str) -> None:
-    df = data_table(tourney_filter)
-    df = df.drop(
-        [
-            "country_code",
-            "player_quantity",
-            "iso_code",
-            "logo",
-            "location",
-            "start_date",
-            "end_date",
-            "text_date",
-            "type",
-            "tournament_latitude",
-            "tournament_longitude",
-        ]
-    )
+    st.header("Tournament Statistics")
 
-    df = df.sort("rank")
+    st.write("**Note**: *All data points are from the top 512 players for each tournament.*")
 
-    st.header("Raw Standings - Top 512")
+class RawStandingsSection:
+    def __init__(self, df: pl.DataFrame, tourney_filter: str):
+        self.df = df
+        self.tourney_filter = tourney_filter
 
-    st.dataframe(
-        df,
-        column_config={
-            "rank": st.column_config.NumberColumn(
-                label="Rank",
-                help="The player's placement in the tournament.",
-            ),
-            "name": st.column_config.TextColumn(
-                label="Name",
-            ),
-            "points": st.column_config.NumberColumn(
-                label="Points",
-                help="The player's total points in the tournament.",
-            ),
-            "record": st.column_config.TextColumn(
-                label="Record",
-                help="The player's record in the tournament.",
-            ),
-            "opp_win_percent": st.column_config.NumberColumn(
-                label="OPW%",
-                format="percent",
-                help="The player's opponent's win percentage in the tournament.",
-            ),
-            "opp_opp_win_percent": st.column_config.NumberColumn(
-                label="OOPW%",
-                format="percent",
-                help="The player's opponent's opponent's win percentage in the tournament.",
-            ),
-            "deck": st.column_config.TextColumn(
-                label="Deck",
-                help="The player's deck in the tournament.",
-            ),
-            "decklist": st.column_config.LinkColumn(
-                label="Decklist", display_text=":material/open_in_new:"
-            ),
-            "player_country": st.column_config.TextColumn(
-                label="Country",
-                help="The player's home country.",
-            ),
-        },
-    )
+    def _raw_standings_table(self) -> pl.DataFrame:
+        df = data_table(self.tourney_filter)
+        df = df.drop(
+            [
+                "country_code",
+                "player_quantity",
+                "iso_code",
+                "logo",
+                "location",
+                "start_date",
+                "end_date",
+                "text_date",
+                "type",
+                "tournament_latitude",
+                "tournament_longitude",
+            ]
+        )
+
+        df = df.sort("rank")
+
+        return df
+
+    def render(self) -> None:
+        st.subheader("Raw Standings", divider="blue")
+
+        st.dataframe(
+            self._raw_standings_table(),
+            column_config={
+                "rank": st.column_config.NumberColumn(
+                    label="Rank",
+                    help="The player's placement in the tournament.",
+                ),
+                "name": st.column_config.TextColumn(
+                    label="Name",
+                ),
+                "points": st.column_config.NumberColumn(
+                    label="Points",
+                    help="The player's total points in the tournament.",
+                ),
+                "record": st.column_config.TextColumn(
+                    label="Record",
+                    help="The player's record in the tournament.",
+                ),
+                "opp_win_percent": st.column_config.NumberColumn(
+                    label="OPW%",
+                    format="percent",
+                    help="The player's opponent's win percentage in the tournament.",
+                ),
+                "opp_opp_win_percent": st.column_config.NumberColumn(
+                    label="OOPW%",
+                    format="percent",
+                    help="The player's opponent's opponent's win percentage in the tournament.",
+                ),
+                "deck": st.column_config.TextColumn(
+                    label="Deck",
+                    help="The player's deck in the tournament.",
+                ),
+                "decklist": st.column_config.LinkColumn(
+                    label="Decklist", display_text=":material/open_in_new:"
+                ),
+                "player_country": st.column_config.TextColumn(
+                    label="Country",
+                    help="The player's home country.",
+                ),
+            },
+        )
+
 
 
 def main():
@@ -282,9 +294,9 @@ def main():
         tourney_filter = header()
         tournament_info(tourney_filter)
         tournament_stats(tourney_filter)
-        section = PlayersCountrySection(data_table(tourney_filter))
-        section.render()
-        display_latest_tournament(tourney_filter)
 
+        df = data_table(tourney_filter)
+        PlayersCountrySection(df).render()
+        RawStandingsSection(df, tourney_filter).render()
 
 main()
