@@ -1,4 +1,5 @@
 import altair as alt
+import plotly.express as px
 import polars as pl
 import pydeck
 import streamlit as st
@@ -73,6 +74,71 @@ def tournament_info(tourney_filter: str):
         st.space("stretch")
         if logo:
             st.image(logo, width=100)
+
+
+class DeckStats:
+    def __init__(self, df: pl.DataFrame):
+        self.df = df
+        self.top_n = 10
+        self.conversion_threshold = 32
+
+    def _build_popularity_chart(self) -> px.treemap:
+        deck_counts = (
+            self.df.group_by("deck")
+            .agg(pl.len().alias("player_count"))
+            .sort("player_count", descending=True)
+            .head(self.top_n)
+        )
+
+        fig = px.treemap(
+            deck_counts.to_pandas(),
+            path=["deck"],
+            values="player_count",
+            title="Deck Popularity (Top 10)",
+            color="player_count",
+            color_continuous_scale="Blues",
+            hover_data={"player_count": True},
+        )
+
+        fig.update_traces(marker=dict(cornerradius=10))
+
+        return fig
+
+    def _build_performance_chart(self) -> alt.Chart:
+        deck_perf = (
+            self.df.group_by("deck")
+            .agg(
+                pl.mean("points").alias("avg_points"),
+                pl.len().alias("player_count"),
+            )
+            .sort("avg_points", descending=True)
+            .head(self.top_n)
+        )
+
+        fig = alt.Chart(deck_perf.to_pandas()).mark_circle().encode(
+            x=alt.X("avg_points:Q", title="Avg Points"),
+            y=alt.Y("player_count:Q", title="Players"),
+            size=alt.Size("player_count:Q", scale=alt.Scale(range=[100, 2000]), legend=None),
+            color=alt.Color("deck:N", legend=None),
+            tooltip=[
+                "deck",
+                alt.Tooltip("avg_points:Q", title="Average Points", format=".1f"),
+                alt.Tooltip("player_count:Q", title="Players"),
+            ],
+        ).properties(title="Deck Performance vs. Popularity")
+
+        return fig
+
+    def render(self) -> None:
+        st.subheader("Deck Stats", divider="blue")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.empty()
+        with col2:
+            st.altair_chart(self._build_performance_chart(), width="stretch")
+
+        st.plotly_chart(self._build_popularity_chart(), width="stretch")
 
 
 class PlayersCountrySection:
@@ -303,6 +369,7 @@ def main():
         tournament_stats(tourney_filter)
 
         df = data_table(tourney_filter)
+        DeckStats(df).render()
         PlayersCountrySection(df).render()
         RawStandingsSection(df, tourney_filter).render()
 

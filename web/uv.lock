@@ -982,6 +982,19 @@ wheels = [
 ]
 
 [[package]]
+name = "plotly"
+version = "6.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "narwhals" },
+    { name = "packaging" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/24/fb/41efe84970cfddefd4ccf025e2cbfafe780004555f583e93dba3dac2cdef/plotly-6.6.0.tar.gz", hash = "sha256:b897f15f3b02028d69f755f236be890ba950d0a42d7dfc619b44e2d8cea8748c", size = 7027956, upload-time = "2026-03-02T21:10:25.321Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/52/d2/c6e44dba74f17c6216ce1b56044a9b93a929f1c2d5bdaff892512b260f5e/plotly-6.6.0-py3-none-any.whl", hash = "sha256:8d6daf0f87412e0c0bfe72e809d615217ab57cc715899a1e5145135a7800d1d0", size = 9910315, upload-time = "2026-03-02T21:10:18.131Z" },
+]
+
+[[package]]
 name = "pluggy"
 version = "1.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1790,6 +1803,7 @@ name = "web"
 version = "1.9.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "plotly" },
     { name = "polars" },
     { name = "pydeck" },
     { name = "streamlit" },
@@ -1804,6 +1818,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "plotly", specifier = ">=6.6.0" },
     { name = "polars", specifier = "==1.31.0" },
     { name = "pydeck", specifier = "==0.9.1" },
     { name = "streamlit", specifier = "==1.54.0" },

@@ -9,6 +9,7 @@ dependencies = [
     "supabase==2.28.0",
     "streamlit==1.54.0",
     "pydeck==0.9.1",
+    "plotly==6.6.0",
 ]
 
 [dependency-groups]
