@@ -1,5 +1,6 @@
+import plotly.graph_objects as go
 import polars as pl
-from app import PlayersCountrySection, RawStandingsSection
+from app import DeckStats, PlayersCountrySection, RawStandingsSection
 from streamlit.testing.v1 import AppTest
 
 at = AppTest.from_file("app.py").run(timeout=10)
@@ -12,7 +13,7 @@ def test_header():
 def test_tabs():
     assert len(at.tabs) == 2
     tab_labels = [t.label for t in at.tabs]
-    assert "Overview" in tab_labels
+    assert "Season Overview" in tab_labels
     assert "Tournaments" in tab_labels
 
 
@@ -121,7 +122,7 @@ SAMPLE_DF = pl.DataFrame(
 def test_top_countries_by_count_order():
     section = PlayersCountrySection(SAMPLE_DF)
     assert section.countries[0] == "US"  # 3 players
-    assert section.countries[1] in ("JP", "KR")  # 2 players each
+    assert section.countries[1] == "JP"  # 2 players each, JP < KR alphabetically
 
 
 def test_top_countries_by_count_limit():
@@ -186,3 +187,97 @@ def test_box_chart_filters_to_top_countries():
     chart = section._build_box_chart()
     data_countries = set(chart.data["player_country"].tolist())
     assert data_countries == set(section.countries)
+
+
+# charizard: 10/12=83.3%, 8/12=66.7%, 9/12=75.0% → avg 75.0%
+# gardevoir: 6/12=50.0%, 7/12=58.3% → avg 54.2%
+# raichu: 1 player with "1drop" → filtered out
+# pikachu: 1 player, not in top 2 → filtered out when top_n=2
+SAMPLE_DECK_DF = pl.DataFrame(
+    {
+        "deck": [
+            "charizard", "charizard", "charizard",
+            "gardevoir", "gardevoir",
+            "raichu",
+            "pikachu",
+        ],
+        "record": [
+            "10 - 2 - 0", "8 - 4 - 0", "9 - 3 - 0",
+            "6 - 6 - 0", "7 - 5 - 0",
+            "1drop",
+            "12 - 0 - 0",
+        ],
+        "points": [35, 28, 32, 20, 25, 5, 40],
+    }
+)
+
+
+def test_deck_stats_init():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    assert stats.top_n == 10
+    assert stats.conversion_threshold == 32
+    assert stats.df.shape == SAMPLE_DECK_DF.shape
+
+
+def test_win_rate_chart_filters_drops():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    stats.top_n = 4
+    chart_data = chart_data = chart = stats._build_win_rate_chart()
+    decks_in_chart = set(chart.data["deck"].tolist())
+    assert "raichu" not in decks_in_chart
+
+
+def test_win_rate_chart_filters_to_top_decks():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    stats.top_n = 2
+    chart = stats._build_win_rate_chart()
+    decks_in_chart = set(chart.data["deck"].tolist())
+    assert decks_in_chart == {"charizard", "gardevoir"}
+    assert "pikachu" not in decks_in_chart
+
+
+def test_win_rate_chart_calculation():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    stats.top_n = 2
+    chart = stats._build_win_rate_chart()
+    df = chart.data.set_index("deck")
+    assert abs(df.loc["charizard", "avg_win_rate"] - 75.0) < 0.1
+    assert abs(df.loc["gardevoir", "avg_win_rate"] - 54.2) < 0.1
+
+
+def test_win_rate_chart_sorted_descending():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    stats.top_n = 2
+    chart = stats._build_win_rate_chart()
+    rates = chart.data["avg_win_rate"].tolist()
+    assert rates == sorted(rates, reverse=True)
+
+
+def test_win_rate_chart_encoding():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    spec = stats._build_win_rate_chart().to_dict()
+    assert spec["encoding"]["x"]["field"] == "avg_win_rate"
+    assert spec["encoding"]["y"]["field"] == "deck"
+    assert spec["title"] == "Win Rate by Deck (Top 10)"
+
+
+def test_popularity_chart_returns_plotly_figure():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    fig = stats._build_popularity_chart()
+    assert isinstance(fig, go.Figure)
+
+
+def test_popularity_chart_top_n():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    stats.top_n = 2
+    fig = stats._build_popularity_chart()
+    labels = fig.data[0]["labels"].tolist()
+    assert len(labels) == 2
+
+
+def test_performance_chart_encoding():
+    stats = DeckStats(SAMPLE_DECK_DF)
+    spec = stats._build_performance_chart().to_dict()
+    assert spec["encoding"]["x"]["field"] == "avg_points"
+    assert spec["encoding"]["y"]["field"] == "player_count"
+    assert spec["title"] == "Deck Performance vs. Popularity"

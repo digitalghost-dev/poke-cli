@@ -82,6 +82,44 @@ class DeckStats:
         self.top_n = 10
         self.conversion_threshold = 32
 
+    def _build_win_rate_chart(self) -> alt.Chart:
+        top_decks = (
+            self.df.group_by("deck")
+            .agg(pl.len().alias("player_count"))
+            .sort("player_count", descending=True)
+            .head(self.top_n)
+            .get_column("deck")
+        )
+
+        win_rate_df = (
+            self.df.filter(
+                ~pl.col("record").str.contains("drop")
+                & pl.col("deck").is_in(top_decks.to_list())
+            )
+            .with_columns(
+                pl.col("record").str.split(" - ").list.get(0).cast(pl.Int32).alias("wins"),
+                pl.col("record").str.split(" - ").list.get(1).cast(pl.Int32).alias("losses"),
+                pl.col("record").str.split(" - ").list.get(2).cast(pl.Int32).alias("ties"),
+            )
+            .with_columns(
+                (pl.col("wins") / (pl.col("wins") + pl.col("losses") + pl.col("ties")) * 100).alias("win_rate")
+            )
+            .group_by("deck")
+            .agg(pl.mean("win_rate").alias("avg_win_rate"))
+            .sort("avg_win_rate", descending=True)
+        )
+
+        fig = alt.Chart(win_rate_df.to_pandas()).mark_bar().encode(
+            x=alt.X("avg_win_rate:Q", title="Avg Win Rate (%)"),
+            y=alt.Y("deck:N", sort="-x", title="Deck"),
+            tooltip=[
+                "deck",
+                alt.Tooltip("avg_win_rate:Q", title="Avg Win Rate", format=".1f"),
+            ],
+        ).properties(title="Win Rate by Deck (Top 10)")
+
+        return fig
+
     def _build_popularity_chart(self) -> px.treemap:
         deck_counts = (
             self.df.group_by("deck")
@@ -134,7 +172,7 @@ class DeckStats:
 
         col1, col2 = st.columns(2)
         with col1:
-            st.empty()
+            st.altair_chart(self._build_win_rate_chart(), width="stretch")
         with col2:
             st.altair_chart(self._build_performance_chart(), width="stretch")
 
@@ -152,7 +190,7 @@ class PlayersCountrySection:
         return (
             self.df.group_by("player_country")
             .agg(pl.len().alias("player_count"))
-            .sort("player_count", descending=True)
+            .sort(["player_count", "player_country"], descending=[True, False])
             .head(self.n)
             .get_column("player_country")
             .to_list()
@@ -172,8 +210,8 @@ class PlayersCountrySection:
         countries_df = (
             self.df.group_by("player_country")
             .agg(pl.len().alias("player_count"))
+            .sort(["player_count", "player_country"], descending=[True, False])
             .head(15)
-            .sort("player_count", descending=True)
         )
         return (
             alt.Chart(countries_df.to_pandas())

@@ -1818,7 +1818,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "plotly", specifier = ">=6.6.0" },
+    { name = "plotly", specifier = "==6.6.0" },
     { name = "polars", specifier = "==1.31.0" },
     { name = "pydeck", specifier = "==0.9.1" },
     { name = "streamlit", specifier = "==1.54.0" },
