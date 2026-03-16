@@ -38,6 +38,15 @@ def unique_locations() -> list:
         )  # pyrefly: ignore[bad-index, unsupported-operation]
     )
 
+@st.cache_data(ttl=86400)
+def tournament_locations() -> list[dict[str, str]]:
+    tournaments = supabase.table("standings").select(
+            "location, tournament_latitude, tournament_longitude, type, text_date, player_quantity"
+        ).eq("rank", 1).order("start_date").execute().data
+
+
+    return tournaments
+
 
 st.set_page_config(page_title="Pokémon Tournament Results", layout="wide")
 
@@ -74,6 +83,52 @@ def tournament_info(tourney_filter: str):
         st.space("stretch")
         if logo:
             st.image(logo, width=100)
+
+class SeasonTournamentLocations:
+    def __init__(self, tournaments: list[dict[str,str]]):
+        self.tournaments = tournaments
+
+    def _build_map(self) -> pydeck.Deck:
+        st.header("Tournament Locations")
+
+        tournaments = self.tournaments
+
+        type_colors = {
+            "International": [220, 50, 50, 200],
+            "Regional": [255, 204, 0, 200],
+            "Special Event": [50, 100, 220, 200],
+            "World": [50, 200, 100, 200],
+        }
+
+        for t in tournaments:
+            t["color"] = type_colors.get(
+                t["type"], [200, 200, 200, 200]
+            )  # pyrefly: ignore[bad-index, unsupported-operation, no-matching-overload]
+
+        point_layer = pydeck.Layer(
+            "ScatterplotLayer",
+            data=tournaments,
+            id="tournament-layer",
+            get_position=["tournament_longitude", "tournament_latitude"],
+            get_radius=200000,
+            get_fill_color="color",
+            pickable=True,
+            auto_highlight=True,
+        )
+
+        view_state = pydeck.ViewState(latitude=15, longitude=10, zoom=1.3, controller=True)
+        deck = pydeck.Deck(
+            point_layer,
+            initial_view_state=view_state,
+            tooltip={"text": "{location}\n{type}\n{text_date}\nPlayers: {player_quantity}"},
+        )
+
+        fig = st.pydeck_chart(deck, on_select="rerun", selection_mode="single-object")
+
+        return fig
+
+    def render(self):
+        self._build_map()
 
 
 class DeckStats:
@@ -247,51 +302,6 @@ class PlayersCountrySection:
             st.altair_chart(self._build_box_chart(), width="stretch")
 
 
-def tournament_locations() -> None:
-    st.header("Tournament Locations")
-
-    tournaments = (
-        supabase.table("standings")
-        .select(
-            "location, tournament_latitude, tournament_longitude, type, text_date, player_quantity"
-        )
-        .eq("rank", 1)
-        .order("start_date")
-        .execute()
-        .data
-    )
-    type_colors = {
-        "International": [220, 50, 50, 200],
-        "Regional": [255, 204, 0, 200],
-        "Special Event": [50, 100, 220, 200],
-        "World": [50, 200, 100, 200],
-    }
-    for t in tournaments:
-        t["color"] = type_colors.get(
-            t["type"], [200, 200, 200, 200]
-        )  # pyrefly: ignore[bad-index, unsupported-operation, no-matching-overload]
-
-    point_layer = pydeck.Layer(
-        "ScatterplotLayer",
-        data=tournaments,
-        id="tournament-layer",
-        get_position=["tournament_longitude", "tournament_latitude"],
-        get_radius=200000,
-        get_fill_color="color",
-        pickable=True,
-        auto_highlight=True,
-    )
-
-    view_state = pydeck.ViewState(latitude=15, longitude=10, zoom=1.3, controller=True)
-    deck = pydeck.Deck(
-        point_layer,
-        initial_view_state=view_state,
-        tooltip={"text": "{location}\n{type}\n{text_date}\nPlayers: {player_quantity}"},
-    )
-
-    st.pydeck_chart(deck, on_select="rerun", selection_mode="single-object")
-
-
 def tournament_stats(tourney_filter: str) -> None:
     df = data_table(tourney_filter)
 
@@ -399,7 +409,7 @@ def main():
     overview_tab, regionals_tab = st.tabs(["Season Overview", "Tournaments"])
 
     with overview_tab:
-        tournament_locations()
+        SeasonTournamentLocations(tournament_locations()).render()
 
     with regionals_tab:
         tourney_filter = header()
@@ -407,6 +417,7 @@ def main():
         tournament_stats(tourney_filter)
 
         df = data_table(tourney_filter)
+
         DeckStats(df).render()
         PlayersCountrySection(df).render()
         RawStandingsSection(df, tourney_filter).render()
