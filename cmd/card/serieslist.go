@@ -3,6 +3,7 @@ package card
 import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 var seriesIDMap = map[string]string{
@@ -31,7 +32,7 @@ func (m SeriesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Quitting = true
 			return m, tea.Quit
 		case "enter":
-			i, ok := m.List.SelectedItem().(item)
+			i, ok := m.List.SelectedItem().(styling.Item)
 			if ok {
 				m.Choice = string(i)
 				m.SeriesID = seriesIDMap[string(i)]
@@ -54,7 +55,7 @@ func (m SeriesModel) View() string {
 		return "\n  Quitting card search...\n\n"
 	}
 	if m.Choice != "" {
-		return quitTextStyle.Render("Series selected:", m.Choice)
+		return styling.QuitTextStyle.Render("Series selected:", m.Choice)
 	}
 
 	return "\n" + m.List.View()
@@ -62,22 +63,22 @@ func (m SeriesModel) View() string {
 
 func SeriesList() SeriesModel {
 	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
-		item("Sun & Moon"),
+		styling.Item("Mega Evolution"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Sword & Shield"),
+		styling.Item("Sun & Moon"),
 	}
 
 	const listWidth = 20
 	const listHeight = 12
 
-	l := list.New(items, itemDelegate{}, listWidth, listHeight)
+	l := list.New(items, styling.ItemDelegate{}, listWidth, listHeight)
 	l.Title = "First, pick a series"
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.PaginationStyle = paginationStyle
-	l.Styles.HelpStyle = helpStyle
+	l.Styles.Title = styling.TitleStyle
+	l.Styles.PaginationStyle = styling.PaginationStyle
+	l.Styles.HelpStyle = styling.HelpStyle
 
 	return SeriesModel{List: l}
 }

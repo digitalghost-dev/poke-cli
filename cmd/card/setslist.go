@@ -51,7 +51,7 @@ func fetchSetsCmd(seriesID string) tea.Cmd {
 		setsIDMap := make(map[string]string)
 		for _, set := range allSets {
 			if set.SeriesID == seriesID {
-				items = append(items, item(set.SetName))
+				items = append(items, styling.Item(set.SetName))
 				setsIDMap[set.SetName] = set.SetID
 			}
 		}
@@ -82,7 +82,7 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.Error != nil {
 				return m, nil
 			}
-			i, ok := m.List.SelectedItem().(item)
+			i, ok := m.List.SelectedItem().(styling.Item)
 			if ok {
 				m.Choice = string(i)
 				m.SetID = m.SetsIDMap[string(i)]
@@ -90,8 +90,8 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
+	// Once the data arrives, stop loading and build the list
 	case setsDataMsg:
-		// Data arrived - stop loading and build the list
 		if msg.err != nil {
 			m.Error = msg.err
 			m.Loading = false
@@ -101,13 +101,13 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		const listWidth = 20
 		const listHeight = 20
 
-		l := list.New(msg.items, itemDelegate{}, listWidth, listHeight)
+		l := list.New(msg.items, styling.ItemDelegate{}, listWidth, listHeight)
 		l.Title = "Choose a set!"
 		l.SetShowStatusBar(false)
 		l.SetFilteringEnabled(false)
-		l.Styles.Title = titleStyle
-		l.Styles.PaginationStyle = paginationStyle
-		l.Styles.HelpStyle = helpStyle
+		l.Styles.Title = styling.TitleStyle
+		l.Styles.PaginationStyle = styling.PaginationStyle
+		l.Styles.HelpStyle = styling.HelpStyle
 
 		m.List = l
 		m.SetsIDMap = msg.setsIDMap
@@ -144,7 +144,7 @@ func (m SetsModel) View() string {
 		)
 	}
 	if m.Choice != "" {
-		return quitTextStyle.Render("Set selected:", m.Choice)
+		return styling.QuitTextStyle.Render("Set selected:", m.Choice)
 	}
 	if m.Loading {
 		return lipgloss.NewStyle().Padding(2).Render(

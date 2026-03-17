@@ -7,6 +7,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 func TestSetsModel_Init(t *testing.T) {
@@ -20,10 +21,10 @@ func TestSetsModel_Init(t *testing.T) {
 
 func TestSetsModel_Update_EscKey(t *testing.T) {
 	items := []list.Item{
-		item("Scarlet & Violet"),
-		item("Paldea Evolved"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Paldea Evolved"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 20)
+	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
 	model := SetsModel{
 		List:       l,
@@ -50,9 +51,9 @@ func TestSetsModel_Update_EscKey(t *testing.T) {
 
 func TestSetsModel_Update_CtrlC(t *testing.T) {
 	items := []list.Item{
-		item("Scarlet & Violet"),
+		styling.Item("Scarlet & Violet"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 20)
+	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
 	model := SetsModel{
 		List:       l,
@@ -79,9 +80,9 @@ func TestSetsModel_Update_CtrlC(t *testing.T) {
 
 func TestSetsModel_Update_WindowSizeMsg(t *testing.T) {
 	items := []list.Item{
-		item("Scarlet & Violet"),
+		styling.Item("Scarlet & Violet"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 20)
+	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
 	model := SetsModel{
 		List:       l,
@@ -107,9 +108,9 @@ func TestSetsModel_Update_WindowSizeMsg(t *testing.T) {
 
 func TestSetsModel_View_Quitting(t *testing.T) {
 	items := []list.Item{
-		item("Scarlet & Violet"),
+		styling.Item("Scarlet & Violet"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 20)
+	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
 	model := SetsModel{
 		List:     l,
@@ -125,9 +126,9 @@ func TestSetsModel_View_Quitting(t *testing.T) {
 
 func TestSetsModel_View_ChoiceMade(t *testing.T) {
 	items := []list.Item{
-		item("Scarlet & Violet"),
+		styling.Item("Scarlet & Violet"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 20)
+	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
 	model := SetsModel{
 		List:   l,
@@ -143,9 +144,9 @@ func TestSetsModel_View_ChoiceMade(t *testing.T) {
 
 func TestSetsModel_View_Normal(t *testing.T) {
 	items := []list.Item{
-		item("Scarlet & Violet"),
+		styling.Item("Scarlet & Violet"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 20)
+	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
 	model := SetsModel{
 		List:     l,
@@ -162,10 +163,10 @@ func TestSetsModel_View_Normal(t *testing.T) {
 
 func TestSetsModel_Update_EnterKey(t *testing.T) {
 	items := []list.Item{
-		item("Scarlet & Violet"),
-		item("Paldea Evolved"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Paldea Evolved"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 20)
+	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
 	setsIDMap := map[string]string{
 		"Scarlet & Violet": "sv01",
@@ -213,8 +214,8 @@ func TestSetsDataMsg_PopulatesModel(t *testing.T) {
 	// Simulate receiving data via setsDataMsg
 	msg := setsDataMsg{
 		items: []list.Item{
-			item("Scarlet & Violet"),
-			item("Paldea Evolved"),
+			styling.Item("Scarlet & Violet"),
+			styling.Item("Paldea Evolved"),
 		},
 		setsIDMap: map[string]string{
 			"Scarlet & Violet": "sv01",
