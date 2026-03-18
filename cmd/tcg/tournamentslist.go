@@ -96,7 +96,7 @@ func (m TournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		const listWidth = 20
-		const listHeight = 12
+		const listHeight = 16
 
 		l := list.New(msg.items, styling.ItemDelegate{}, listWidth, listHeight)
 
