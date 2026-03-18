@@ -50,7 +50,7 @@ func fetchTournaments() tea.Cmd {
 	}
 }
 
-func TournamentsList() tournamentsModel {
+func tournamentsList() tournamentsModel {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = styling.Yellow

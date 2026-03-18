@@ -40,23 +40,23 @@ func TcgCommand() (string, error) {
 
 	for {
 		// Program 1: Tournament selection
-		finalModel, err := tea.NewProgram(TournamentsList(), tea.WithAltScreen()).Run()
+		finalModel, err := tea.NewProgram(tournamentsList(), tea.WithAltScreen()).Run()
 		if err != nil {
 			return "", fmt.Errorf("error running tournament selection program: %w", err)
 		}
 
-		result, ok := finalModel.(TournamentsModel)
+		result, ok := finalModel.(tournamentsModel)
 		if !ok {
 			return "", fmt.Errorf("unexpected model type from tournament selection: got %T, want TournamentsModel", finalModel)
 		}
 
-		if result.Choice == "" {
+		if result.choice == "" {
 			break
 		}
 
 		// Program 2: Dashboard
 		// result.Choice is "Location · Date", extract just the location
-		location := strings.TrimSpace(strings.Split(result.Choice, "·")[0])
+		location := strings.TrimSpace(strings.Split(result.choice, "·")[0])
 		tabs := []string{"Overview", "Standings", "Decks", "Countries"}
 		dashboardFinal, err := tea.NewProgram(model{
 			tabs:       tabs,
