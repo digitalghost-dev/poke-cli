@@ -6,20 +6,16 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-var getTournamentsData = connections.CallTCGData
-
-type TournamentsModel struct {
-	Choice     string
-	Error      error
-	List       list.Model
-	Loading    bool
-	Spinner    spinner.Model
-	Tournament string
-	Quitting   bool
+type tournamentsModel struct {
+	choice   string
+	error    error
+	list     list.Model
+	loading  bool
+	spinner  spinner.Model
+	quitting bool
 }
 
 type tournamentData struct {
@@ -32,10 +28,10 @@ type tournamentsDataMsg struct {
 	err   error
 }
 
-func fetchTournaments(tournament string) tea.Cmd {
+func fetchTournaments() tea.Cmd {
 	return func() tea.Msg {
 		url := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=location,text_date&rank=eq.1&order=start_date"
-		body, err := getTournamentsData(url)
+		body, err := supabaseConn(url)
 		if err != nil {
 			return tournamentsDataMsg{err: err}
 		}
@@ -54,35 +50,35 @@ func fetchTournaments(tournament string) tea.Cmd {
 	}
 }
 
-func TournamentsList() TournamentsModel {
+func TournamentsList() tournamentsModel {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = styling.Yellow
 
-	return TournamentsModel{
-		Loading: true,
-		Spinner: s,
+	return tournamentsModel{
+		loading: true,
+		spinner: s,
 	}
 }
 
-func (m TournamentsModel) Init() tea.Cmd {
+func (m tournamentsModel) Init() tea.Cmd {
 	return tea.Batch(
-		m.Spinner.Tick,
-		fetchTournaments(m.Tournament),
+		m.spinner.Tick,
+		fetchTournaments(),
 	)
 }
 
-func (m TournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
-			m.Quitting = true
+			m.quitting = true
 			return m, tea.Quit
 		case "enter":
-			i, ok := m.List.SelectedItem().(styling.Item)
+			i, ok := m.list.SelectedItem().(styling.Item)
 			if ok {
-				m.Choice = string(i)
+				m.choice = string(i)
 			}
 			return m, tea.Quit
 		}
@@ -90,8 +86,8 @@ func (m TournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// Once the data arrives, stop loading and build the list
 	case tournamentsDataMsg:
 		if msg.err != nil {
-			m.Error = msg.err
-			m.Loading = false
+			m.error = msg.err
+			m.loading = false
 			return m, nil
 		}
 
@@ -100,54 +96,54 @@ func (m TournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		l := list.New(msg.items, styling.ItemDelegate{}, listWidth, listHeight)
 
-		l.Title = "First, pick a series"
+		l.Title = "First, pick a tournament"
 		l.SetShowStatusBar(false)
 		l.SetFilteringEnabled(false)
 		l.Styles.Title = styling.TitleStyle
 		l.Styles.PaginationStyle = styling.PaginationStyle
 		l.Styles.HelpStyle = styling.HelpStyle
 
-		m.List = l
-		m.Loading = false
+		m.list = l
+		m.loading = false
 		return m, nil
 
 	case spinner.TickMsg:
 		var cmd tea.Cmd
-		m.Spinner, cmd = m.Spinner.Update(msg)
+		m.spinner, cmd = m.spinner.Update(msg)
 		return m, cmd
 
 	case tea.WindowSizeMsg:
-		if !m.Loading && m.Error == nil {
-			m.List.SetWidth(msg.Width)
+		if !m.loading && m.error == nil {
+			m.list.SetWidth(msg.Width)
 		}
 		return m, nil
 	}
 
-	if !m.Loading && m.Error == nil {
+	if !m.loading && m.error == nil {
 		var cmd tea.Cmd
-		m.List, cmd = m.List.Update(msg)
+		m.list, cmd = m.list.Update(msg)
 		return m, cmd
 	}
 	return m, nil
 }
 
-func (m TournamentsModel) View() string {
-	if m.Quitting {
+func (m tournamentsModel) View() string {
+	if m.quitting {
 		return "\n  Quitting...\n\n"
 	}
-	if m.Error != nil {
+	if m.error != nil {
 		return styling.ApiErrorStyle.Render(
 			"Error loading tournaments from Supabase:\n" +
-				m.Error.Error() + "\n\n" +
+				m.error.Error() + "\n\n" +
 				"Press ctrl+c or esc to exit.",
 		)
 	}
-	if m.Loading {
-		return "\n  " + m.Spinner.View() + " Loading tournaments...\n\n"
+	if m.loading {
+		return "\n  " + m.spinner.View() + " Loading tournaments...\n\n"
 	}
-	if m.Choice != "" {
-		return styling.QuitTextStyle.Render("Tournament selected:", m.Choice)
+	if m.choice != "" {
+		return styling.QuitTextStyle.Render("Tournament selected:", m.choice)
 	}
 
-	return "\n" + m.List.View()
+	return "\n" + m.list.View()
 }
