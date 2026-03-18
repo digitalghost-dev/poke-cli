@@ -15,13 +15,11 @@ import (
 const (
 	HyphenHint = "Use a hyphen when typing a name with a space."
 
-	// Brand colors - use these instead of hardcoding hex values
-	PrimaryYellow = "#FFCC00" // Main accent color for borders, highlights
-	LightYellow   = "#FFDE00" // Used in dark mode adaptive colors
-	DarkYellow    = "#E1AD01" // Used in light mode adaptive colors
+	PrimaryYellow = "#FFCC00"
+	LightYellow   = "#FFDE00"
+	DarkYellow    = "#E1AD01"
 )
 
-// Pre-defined lipgloss colors for convenience
 var (
 	YellowColor     = lipgloss.Color(PrimaryYellow)
 	YellowAdaptive  = lipgloss.AdaptiveColor{Light: DarkYellow, Dark: LightYellow}
