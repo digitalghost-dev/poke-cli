@@ -50,18 +50,16 @@ func TcgCommand() (string, error) {
 			return "", fmt.Errorf("unexpected model type from tournament selection: got %T, want TournamentsModel", finalModel)
 		}
 
-		if result.choice == "" {
+		if result.selected == nil {
 			break
 		}
 
 		// Program 2: Dashboard
-		// result.Choice is "Location · Date", extract just the location
-		location := strings.TrimSpace(strings.Split(result.choice, "·")[0])
 		tabs := []string{"Overview", "Standings", "Decks", "Countries"}
 		dashboardFinal, err := tea.NewProgram(model{
 			tabs:       tabs,
 			styles:     newStyles(),
-			tournament: location,
+			tournament: result.selected.Location,
 		}, tea.WithAltScreen()).Run()
 		if err != nil {
 			return "", fmt.Errorf("error running dashboard program: %w", err)

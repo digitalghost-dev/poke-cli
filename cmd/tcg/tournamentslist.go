@@ -10,12 +10,13 @@ import (
 )
 
 type tournamentsModel struct {
-	choice   string
-	error    error
-	list     list.Model
-	loading  bool
-	spinner  spinner.Model
-	quitting bool
+	tournaments []tournamentData
+	selected    *tournamentData
+	error       error
+	list        list.Model
+	loading     bool
+	spinner     spinner.Model
+	quitting    bool
 }
 
 type tournamentData struct {
@@ -24,14 +25,14 @@ type tournamentData struct {
 }
 
 type tournamentsDataMsg struct {
-	items []list.Item
-	err   error
+	tournaments []tournamentData
+	err         error
 }
 
 func fetchTournaments() tea.Cmd {
 	return func() tea.Msg {
-		url := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=location,text_date&rank=eq.1&order=start_date"
-		body, err := supabaseConn(url)
+		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=location,text_date&rank=eq.1&order=start_date"
+		body, err := supabaseConn(endpoint)
 		if err != nil {
 			return tournamentsDataMsg{err: err}
 		}
@@ -41,12 +42,7 @@ func fetchTournaments() tea.Cmd {
 			return tournamentsDataMsg{err: err}
 		}
 
-		var items []list.Item
-		for _, t := range allTournaments {
-			items = append(items, styling.Item(t.Location+" · "+t.TextDate))
-		}
-
-		return tournamentsDataMsg{items: items}
+		return tournamentsDataMsg{tournaments: allTournaments}
 	}
 }
 
@@ -76,14 +72,13 @@ func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			return m, tea.Quit
 		case "enter":
-			i, ok := m.list.SelectedItem().(styling.Item)
-			if ok {
-				m.choice = string(i)
+			idx := m.list.Index()
+			if idx >= 0 && idx < len(m.tournaments) {
+				m.selected = &m.tournaments[idx]
 			}
 			return m, tea.Quit
 		}
 
-	// Once the data arrives, stop loading and build the list
 	case tournamentsDataMsg:
 		if msg.err != nil {
 			m.error = msg.err
@@ -91,10 +86,17 @@ func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 
+		m.tournaments = msg.tournaments
+
+		var items []list.Item
+		for _, t := range msg.tournaments {
+			items = append(items, styling.Item(t.Location+" · "+t.TextDate))
+		}
+
 		const listWidth = 20
 		const listHeight = 16
 
-		l := list.New(msg.items, styling.ItemDelegate{}, listWidth, listHeight)
+		l := list.New(items, styling.ItemDelegate{}, listWidth, listHeight)
 
 		l.Title = "First, pick a tournament"
 		l.SetShowStatusBar(false)
@@ -141,8 +143,8 @@ func (m tournamentsModel) View() string {
 	if m.loading {
 		return "\n  " + m.spinner.View() + " Loading tournaments...\n\n"
 	}
-	if m.choice != "" {
-		return styling.QuitTextStyle.Render("Tournament selected:", m.choice)
+	if m.selected != nil {
+		return styling.QuitTextStyle.Render("Tournament selected:", m.selected.Location+" · "+m.selected.TextDate)
 	}
 
 	return "\n" + m.list.View()
