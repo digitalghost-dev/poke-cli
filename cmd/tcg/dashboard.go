@@ -75,17 +75,6 @@ type model struct {
 	err            error
 }
 
-func formatInt(n int) string {
-	s := fmt.Sprintf("%d", n)
-	var result strings.Builder
-	for i, c := range s {
-		if i > 0 && (len(s)-i)%3 == 0 {
-			result.WriteRune(',')
-		}
-		result.WriteRune(c)
-	}
-	return result.String()
-}
 
 func overviewView(m model, contentWidth int) string {
 	if len(m.standings) == 0 {
@@ -99,7 +88,7 @@ func countriesView(s []CountryStats, width int) string {
 }
 
 func (m model) Init() tea.Cmd {
-	return fetchStandings(m.tournament)
+	return fetchData(m.tournament)
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
