@@ -8,32 +8,74 @@ import (
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
-type metricsData struct {
+type standingRow struct {
+	Rank          int    `json:"rank"`
+	Name          string `json:"name"`
+	Points        int    `json:"points"`
+	Record        string `json:"record"`
+	Deck          string `json:"deck"`
 	PlayerCountry string `json:"player_country"`
+	CountryCode   string `json:"country_code"`
+	Location      string `json:"location"`
+	TextDate      string `json:"text_date"`
+	Type          string `json:"type"`
+	ISOCode       string `json:"iso_code"`
+	PlayerQty     int    `json:"player_quantity"`
 }
 
-type metricsDataMsg struct {
-	items []metricsData
+type standingsDataMsg struct {
+	items []standingRow
 	err   error
 }
 
-func fetchMetrics(tournament string) tea.Cmd {
+func fetchStandings(tournament string) tea.Cmd {
 	return func() tea.Msg {
-		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=player_country&location=eq." + url.QueryEscape(tournament)
+		cols := "rank,name,points,record,deck,player_country,country_code,location,text_date,type,iso_code,player_quantity"
+		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=" + cols + "&location=eq." + url.QueryEscape(tournament) + "&order=rank"
 		body, err := supabaseConn(endpoint)
 		if err != nil {
-			return metricsDataMsg{err: err}
+			return standingsDataMsg{err: err}
 		}
 
-		var allMetrics []metricsData
-		if err = json.Unmarshal(body, &allMetrics); err != nil {
-			return metricsDataMsg{err: err}
+		var rows []standingRow
+		if err = json.Unmarshal(body, &rows); err != nil {
+			return standingsDataMsg{err: err}
 		}
 
-		return metricsDataMsg{items: allMetrics}
+		return standingsDataMsg{items: rows}
 	}
+}
+
+func countryFlag(isoCode string) string {
+	code := strings.ToUpper(isoCode)
+	if len(code) != 2 {
+		return ""
+	}
+	return string(rune(0x1F1E6+(rune(code[0])-'A'))) + string(rune(0x1F1E6+(rune(code[1])-'A')))
+}
+
+func OverviewContent(flag, tournament, tournamentType, tournamentDate, winner, winningDeck string, totalPlayers, contentWidth int) string {
+	highlightColor := lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
+	header := fmt.Sprintf("%s  %s · %s · %s", flag, tournament, tournamentType, tournamentDate)
+
+	statBox := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(highlightColor).
+		Padding(1, 2).
+		Width(26).
+		Align(lipgloss.Center)
+
+	totalBox := statBox.Render(fmt.Sprintf("Total Players\n\n%s", formatInt(totalPlayers)))
+	winnerBox := statBox.Render(fmt.Sprintf("Winner\n\n%s", winner))
+	deckBox := statBox.Render(fmt.Sprintf("Winning Deck\n\n%s", winningDeck))
+
+	boxes := lipgloss.JoinHorizontal(lipgloss.Top, totalBox, "  ", winnerBox, "  ", deckBox)
+
+	content := header + "\n\n" + boxes
+	return lipgloss.NewStyle().Width(contentWidth).Align(lipgloss.Center).Render(content)
 }
 
 func CountryBarChart(s []CountryStats, width int) string {
