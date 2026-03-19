@@ -11,6 +11,7 @@
 │    natures         Get details about all natures             │
 │    pokemon         Get details about a Pokémon               │
 │    search          Search for a resource                     │
+│    tcg             Get details about TCG tournaments         │
 │    speed           Calculate the speed of a Pokémon in battle│
 │    types           Get details about a typing                │
 │                                                              │
