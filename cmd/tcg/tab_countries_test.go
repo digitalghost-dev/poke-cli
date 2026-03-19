@@ -12,6 +12,21 @@ func TestCountryBarChart_Empty(t *testing.T) {
 	}
 }
 
+func TestCountryBarChart_AllZeroTotals(t *testing.T) {
+	stats := []CountryStats{
+		{Country: "USA", Total: 0},
+		{Country: "Japan", Total: 0},
+	}
+	// should not panic (division by zero)
+	result := CountryBarChart(stats, 80)
+	if result == "" {
+		t.Error("expected non-empty output for non-empty input")
+	}
+	if !strings.Contains(result, "USA") {
+		t.Error("expected output to contain country name")
+	}
+}
+
 func TestCountryBarChart_SingleEntry(t *testing.T) {
 	stats := []CountryStats{
 		{Country: "USA", Total: 10},

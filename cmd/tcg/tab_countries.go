@@ -42,7 +42,10 @@ func CountryBarChart(s []CountryStats, width int) string {
 
 	var sb strings.Builder
 	for _, stat := range display {
-		barWidth := stat.Total * maxBarWidth / maxVal
+		barWidth := 0
+		if maxVal > 0 {
+			barWidth = stat.Total * maxBarWidth / maxVal
+		}
 		bar := strings.Repeat("█", barWidth) + strings.Repeat(" ", maxBarWidth-barWidth)
 		sb.WriteString(fmt.Sprintf("%-*s %s %*d\n", labelWidth, stat.Country, bar, countWidth, stat.Total))
 	}
