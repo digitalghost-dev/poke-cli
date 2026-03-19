@@ -14,7 +14,7 @@ func TestFetchStandings_ConnectionError(t *testing.T) {
 		return nil, errors.New("connection refused")
 	}
 
-	cmd := fetchStandings("London")
+	cmd := fetchData("London")
 	msg := cmd()
 
 	result, ok := msg.(standingsDataMsg)
@@ -37,7 +37,7 @@ func TestFetchStandings_InvalidJSON(t *testing.T) {
 		return []byte("not json"), nil
 	}
 
-	cmd := fetchStandings("London")
+	cmd := fetchData("London")
 	msg := cmd()
 
 	result, ok := msg.(standingsDataMsg)
@@ -57,7 +57,7 @@ func TestFetchStandings_Success(t *testing.T) {
 		return []byte(`[{"rank":1,"name":"Alice","player_country":"USA"},{"rank":2,"name":"Bob","player_country":"Japan"}]`), nil
 	}
 
-	cmd := fetchStandings("London")
+	cmd := fetchData("London")
 	msg := cmd()
 
 	result, ok := msg.(standingsDataMsg)
@@ -85,7 +85,7 @@ func TestFetchStandings_URLEncoding(t *testing.T) {
 		return []byte(`[]`), nil
 	}
 
-	cmd := fetchStandings("São Paulo")
+	cmd := fetchData("São Paulo")
 	cmd()
 
 	if !strings.Contains(capturedURL, "S%C3%A3o") {
