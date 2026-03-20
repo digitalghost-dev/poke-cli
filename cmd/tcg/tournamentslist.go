@@ -31,7 +31,7 @@ type tournamentsDataMsg struct {
 
 func fetchTournaments() tea.Cmd {
 	return func() tea.Msg {
-		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=location,text_date&rank=eq.1&order=start_date"
+		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=location,text_date&rank=eq.1&order=start_date.desc"
 		body, err := supabaseConn(endpoint)
 		if err != nil {
 			return tournamentsDataMsg{err: err}
@@ -93,7 +93,7 @@ func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			items = append(items, styling.Item(t.Location+" · "+t.TextDate))
 		}
 
-		const listWidth = 20
+		const listWidth = 40
 		const listHeight = 16
 
 		l := list.New(items, styling.ItemDelegate{}, listWidth, listHeight)
