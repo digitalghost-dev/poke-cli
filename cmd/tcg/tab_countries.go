@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func CountryBarChart(s []CountryStats, width int) string {
+func CountriesContent(s []CountryStats, width int) string {
 	if len(s) == 0 {
 		return ""
 	}
@@ -26,7 +26,7 @@ func CountryBarChart(s []CountryStats, width int) string {
 		display = append(sorted[:9], CountryStats{Country: "Other", Total: other})
 	}
 
-	const labelWidth = 16
+	const labelWidth = 20
 	const countWidth = 5
 	maxBarWidth := width - labelWidth - countWidth - 4
 	if maxBarWidth < 10 {
@@ -45,6 +45,9 @@ func CountryBarChart(s []CountryStats, width int) string {
 		barWidth := 0
 		if maxVal > 0 {
 			barWidth = stat.Total * maxBarWidth / maxVal
+			if barWidth == 0 && stat.Total > 0 {
+				barWidth = 1
+			}
 		}
 		bar := strings.Repeat("█", barWidth) + strings.Repeat(" ", maxBarWidth-barWidth)
 		sb.WriteString(fmt.Sprintf("%-*s %s %*d\n", labelWidth, stat.Country, bar, countWidth, stat.Total))

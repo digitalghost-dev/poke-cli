@@ -6,7 +6,7 @@ import (
 )
 
 func TestCountryBarChart_Empty(t *testing.T) {
-	result := CountryBarChart([]CountryStats{}, 80)
+	result := CountriesContent([]CountryStats{}, 80)
 	if result != "" {
 		t.Errorf("expected empty string for empty input, got %q", result)
 	}
@@ -18,7 +18,7 @@ func TestCountryBarChart_AllZeroTotals(t *testing.T) {
 		{Country: "Japan", Total: 0},
 	}
 	// should not panic (division by zero)
-	result := CountryBarChart(stats, 80)
+	result := CountriesContent(stats, 80)
 	if result == "" {
 		t.Error("expected non-empty output for non-empty input")
 	}
@@ -31,7 +31,7 @@ func TestCountryBarChart_SingleEntry(t *testing.T) {
 	stats := []CountryStats{
 		{Country: "USA", Total: 10},
 	}
-	result := CountryBarChart(stats, 80)
+	result := CountriesContent(stats, 80)
 	if result == "" {
 		t.Error("expected non-empty output for single entry")
 	}
@@ -49,7 +49,7 @@ func TestCountryBarChart_SortsDescending(t *testing.T) {
 		{Country: "USA", Total: 20},
 		{Country: "Japan", Total: 10},
 	}
-	result := CountryBarChart(stats, 80)
+	result := CountriesContent(stats, 80)
 	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
 
 	if len(lines) != 3 {
@@ -77,7 +77,7 @@ func TestCountryBarChart_TopNineWithOther(t *testing.T) {
 		{Country: "J", Total: 10},
 		{Country: "K", Total: 5},
 	}
-	result := CountryBarChart(stats, 80)
+	result := CountriesContent(stats, 80)
 	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
 
 	if len(lines) != 10 {
@@ -93,7 +93,7 @@ func TestCountryBarChart_ExactlyNine(t *testing.T) {
 	for i := range stats {
 		stats[i] = CountryStats{Country: "X", Total: i + 1}
 	}
-	result := CountryBarChart(stats, 80)
+	result := CountriesContent(stats, 80)
 	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
 
 	if len(lines) != 9 {
@@ -113,7 +113,7 @@ func TestCountryBarChart_DoesNotMutateInput(t *testing.T) {
 	original := make([]CountryStats, len(stats))
 	copy(original, stats)
 
-	CountryBarChart(stats, 80)
+	CountriesContent(stats, 80)
 
 	for i, s := range stats {
 		if s != original[i] {
@@ -126,7 +126,7 @@ func TestCountryBarChart_NarrowWidth(t *testing.T) {
 	stats := []CountryStats{
 		{Country: "USA", Total: 10},
 	}
-	result := CountryBarChart(stats, 5)
+	result := CountriesContent(stats, 5)
 	if result == "" {
 		t.Error("expected non-empty output even for very narrow width")
 	}
@@ -148,7 +148,7 @@ func TestCountryBarChart_OtherExceedsTopCountry(t *testing.T) {
 		{Country: "J", Total: 50},
 		{Country: "K", Total: 50},
 	}
-	result := CountryBarChart(stats, 80)
+	result := CountriesContent(stats, 80)
 	if result == "" {
 		t.Error("expected non-empty output")
 	}
