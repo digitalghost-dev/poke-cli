@@ -1,0 +1,9 @@
+╭─────────────────────────────────────────────────────────╮
+│Get details about TCG tournaments.                       │
+│                                                         │
+│ USAGE:                                                  │
+│    poke-cli tcg                                         │
+│                                                         │
+│ FLAGS:                                                  │
+│    -h, --help                     Prints the help menu. │
+╰─────────────────────────────────────────────────────────╯
