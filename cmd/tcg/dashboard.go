@@ -47,16 +47,6 @@ func newStyles() *styles {
 	return s
 }
 
-type CountryStats struct {
-	Country string
-	Total   int
-}
-
-type DeckStats struct {
-	Deck  string
-	Total int
-}
-
 type model struct {
 	tabs           []string
 	styles         *styles
@@ -68,8 +58,8 @@ type model struct {
 	tournamentDate string
 	tournamentType string
 	standings      []standingRows
-	countryStats   []CountryStats
-	deckStats      []DeckStats
+	countryStats   []countryStats
+	deckStats      []deckStats
 	totalPlayers   int
 	winner         string
 	winningDeck    string
@@ -85,7 +75,7 @@ func overviewView(m model, contentWidth int) string {
 	return overviewContent(m.flag, m.tournament, m.tournamentType, m.tournamentDate, m.winner, m.winningDeck, m.totalPlayers, contentWidth)
 }
 
-func countriesView(s []CountryStats, width int) string {
+func countriesView(s []countryStats, width int) string {
 	return countriesContent(s, width)
 }
 
@@ -145,14 +135,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		for country, count := range countryCounts {
-			m.countryStats = append(m.countryStats, CountryStats{Country: country, Total: count})
+			m.countryStats = append(m.countryStats, countryStats{Country: country, Total: count})
 		}
 		deckCounts := map[string]int{}
 		for _, row := range msg.items {
 			deckCounts[row.Deck]++
 		}
 		for deck, count := range deckCounts {
-			m.deckStats = append(m.deckStats, DeckStats{Deck: deck, Total: count})
+			m.deckStats = append(m.deckStats, deckStats{Deck: deck, Total: count})
 		}
 		m.standingsTable = standingsTable(msg.items, m.width-8, m.height)
 	}
@@ -227,6 +217,14 @@ func (m model) View() string {
 			content = "  Loading..."
 		} else {
 			content = m.standingsTable.View()
+		}
+
+	// Decks Tab
+	case 2:
+		if m.err != nil {
+			content = fmt.Sprintf("fetch error: %v", m.err)
+		} else {
+			content = decksContent(m.deckStats, contentWidth)
 		}
 
 	// Countries Tab
