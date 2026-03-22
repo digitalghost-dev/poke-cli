@@ -11,8 +11,6 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 )
 
-var supabaseConn = connections.CallTCGData
-
 func TcgCommand() (string, error) {
 	var output strings.Builder
 
@@ -38,9 +36,11 @@ func TcgCommand() (string, error) {
 		return output.String(), err
 	}
 
+	conn := connections.CallTCGData
+
 	for {
 		// Program 1: Tournament selection
-		finalModel, err := tea.NewProgram(tournamentsList(), tea.WithAltScreen()).Run()
+		finalModel, err := tea.NewProgram(tournamentsList(conn), tea.WithAltScreen()).Run()
 		if err != nil {
 			return "", fmt.Errorf("error running tournament selection program: %w", err)
 		}
@@ -57,6 +57,7 @@ func TcgCommand() (string, error) {
 		// Program 2: Dashboard
 		tabs := []string{"Overview", "Standings", "Decks", "Countries"}
 		dashboardFinal, err := tea.NewProgram(model{
+			conn:       conn,
 			tabs:       tabs,
 			styles:     newStyles(),
 			tournament: result.selected.Location,

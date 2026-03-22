@@ -10,6 +10,7 @@ import (
 )
 
 type tournamentsModel struct {
+	conn        func(string) ([]byte, error)
 	tournaments []tournamentData
 	selected    *tournamentData
 	error       error
@@ -29,10 +30,10 @@ type tournamentsDataMsg struct {
 	err         error
 }
 
-func fetchTournaments() tea.Cmd {
+func fetchTournaments(conn func(string) ([]byte, error)) tea.Cmd {
 	return func() tea.Msg {
 		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=location,text_date&rank=eq.1&order=start_date.desc"
-		body, err := supabaseConn(endpoint)
+		body, err := conn(endpoint)
 		if err != nil {
 			return tournamentsDataMsg{err: err}
 		}
@@ -46,12 +47,13 @@ func fetchTournaments() tea.Cmd {
 	}
 }
 
-func tournamentsList() tournamentsModel {
+func tournamentsList(conn func(string) ([]byte, error)) tournamentsModel {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = styling.Yellow
 
 	return tournamentsModel{
+		conn:    conn,
 		loading: true,
 		spinner: s,
 	}
@@ -60,7 +62,7 @@ func tournamentsList() tournamentsModel {
 func (m tournamentsModel) Init() tea.Cmd {
 	return tea.Batch(
 		m.spinner.Tick,
-		fetchTournaments(),
+		fetchTournaments(m.conn),
 	)
 }
 

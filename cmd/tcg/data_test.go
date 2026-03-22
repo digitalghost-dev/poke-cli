@@ -7,16 +7,10 @@ import (
 )
 
 func TestFetchStandings_ConnectionError(t *testing.T) {
-	orig := supabaseConn
-	defer func() { supabaseConn = orig }()
-
-	supabaseConn = func(_ string) ([]byte, error) {
+	mock := func(_ string) ([]byte, error) {
 		return nil, errors.New("connection refused")
 	}
-
-	cmd := fetchData("London")
-	msg := cmd()
-
+	msg := fetchData("London", mock)()
 	result, ok := msg.(standingsDataMsg)
 	if !ok {
 		t.Fatalf("expected standingsDataMsg, got %T", msg)
@@ -30,16 +24,10 @@ func TestFetchStandings_ConnectionError(t *testing.T) {
 }
 
 func TestFetchStandings_InvalidJSON(t *testing.T) {
-	orig := supabaseConn
-	defer func() { supabaseConn = orig }()
-
-	supabaseConn = func(_ string) ([]byte, error) {
+	mock := func(_ string) ([]byte, error) {
 		return []byte("not json"), nil
 	}
-
-	cmd := fetchData("London")
-	msg := cmd()
-
+	msg := fetchData("London", mock)()
 	result, ok := msg.(standingsDataMsg)
 	if !ok {
 		t.Fatalf("expected standingsDataMsg, got %T", msg)
@@ -50,16 +38,10 @@ func TestFetchStandings_InvalidJSON(t *testing.T) {
 }
 
 func TestFetchStandings_Success(t *testing.T) {
-	orig := supabaseConn
-	defer func() { supabaseConn = orig }()
-
-	supabaseConn = func(_ string) ([]byte, error) {
+	mock := func(_ string) ([]byte, error) {
 		return []byte(`[{"rank":1,"name":"Alice","player_country":"USA"},{"rank":2,"name":"Bob","player_country":"Japan"}]`), nil
 	}
-
-	cmd := fetchData("London")
-	msg := cmd()
-
+	msg := fetchData("London", mock)()
 	result, ok := msg.(standingsDataMsg)
 	if !ok {
 		t.Fatalf("expected standingsDataMsg, got %T", msg)
@@ -76,18 +58,12 @@ func TestFetchStandings_Success(t *testing.T) {
 }
 
 func TestFetchStandings_URLEncoding(t *testing.T) {
-	orig := supabaseConn
-	defer func() { supabaseConn = orig }()
-
 	var capturedURL string
-	supabaseConn = func(url string) ([]byte, error) {
+	mock := func(url string) ([]byte, error) {
 		capturedURL = url
 		return []byte(`[]`), nil
 	}
-
-	cmd := fetchData("São Paulo")
-	cmd()
-
+	fetchData("São Paulo", mock)()
 	if !strings.Contains(capturedURL, "S%C3%A3o") {
 		t.Errorf("expected URL-encoded tournament name in URL, got %q", capturedURL)
 	}

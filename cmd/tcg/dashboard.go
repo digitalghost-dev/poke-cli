@@ -48,6 +48,7 @@ func newStyles() *styles {
 }
 
 type model struct {
+	conn           func(string) ([]byte, error)
 	tabs           []string
 	styles         *styles
 	activeTab      int
@@ -80,7 +81,7 @@ func countriesView(s []countryStats, width int) string {
 }
 
 func (m model) Init() tea.Cmd {
-	return fetchData(m.tournament)
+	return fetchData(m.tournament, m.conn)
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

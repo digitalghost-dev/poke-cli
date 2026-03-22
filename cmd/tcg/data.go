@@ -30,11 +30,11 @@ type standingsDataMsg struct {
 	err   error
 }
 
-func fetchData(tournament string) tea.Cmd {
+func fetchData(tournament string, conn func(string) ([]byte, error)) tea.Cmd {
 	return func() tea.Msg {
 		cols := "rank,name,points,record,opp_win_percent,opp_opp_win_percent,deck,player_country,country_code,location,text_date,type,iso_code,player_quantity"
 		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=" + cols + "&location=eq." + url.QueryEscape(tournament) + "&order=rank"
-		body, err := supabaseConn(endpoint)
+		body, err := conn(endpoint)
 		if err != nil {
 			return standingsDataMsg{err: err}
 		}
@@ -55,4 +55,3 @@ func countryFlag(isoCode string) string {
 	}
 	return string(rune(0x1F1E6+(rune(code[0])-'A'))) + string(rune(0x1F1E6+(rune(code[1])-'A')))
 }
-
