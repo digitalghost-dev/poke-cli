@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -61,10 +62,12 @@ type model struct {
 	styles         *styles
 	activeTab      int
 	width          int
+	height         int
+	standingsTable table.Model
 	tournament     string
 	tournamentDate string
 	tournamentType string
-	standings      []standingRow
+	standings      []standingRows
 	countryStats   []CountryStats
 	deckStats      []DeckStats
 	totalPlayers   int
@@ -75,16 +78,15 @@ type model struct {
 	err            error
 }
 
-
 func overviewView(m model, contentWidth int) string {
 	if len(m.standings) == 0 {
 		return "  Loading..."
 	}
-	return OverviewContent(m.flag, m.tournament, m.tournamentType, m.tournamentDate, m.winner, m.winningDeck, m.totalPlayers, contentWidth)
+	return overviewContent(m.flag, m.tournament, m.tournamentType, m.tournamentDate, m.winner, m.winningDeck, m.totalPlayers, contentWidth)
 }
 
 func countriesView(s []CountryStats, width int) string {
-	return CountryBarChart(s, width)
+	return countriesContent(s, width)
 }
 
 func (m model) Init() tea.Cmd {
@@ -107,9 +109,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.activeTab = max(m.activeTab-1, 0)
 			return m, nil
 		}
+		if m.activeTab == 1 {
+			var cmd tea.Cmd
+			m.standingsTable, cmd = m.standingsTable.Update(msg)
+			return m, cmd
+		}
 
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
+		m.height = msg.Height
+		if len(m.standings) > 0 {
+			m.standingsTable = standingsTable(m.standings, m.width-8, m.height)
+		}
 		return m, nil
 
 	case standingsDataMsg:
@@ -129,7 +140,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		countryCounts := map[string]int{}
 		for _, row := range msg.items {
-			countryCounts[row.PlayerCountry]++
+			if row.PlayerCountry != "" {
+				countryCounts[row.PlayerCountry]++
+			}
 		}
 		for country, count := range countryCounts {
 			m.countryStats = append(m.countryStats, CountryStats{Country: country, Total: count})
@@ -141,6 +154,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		for deck, count := range deckCounts {
 			m.deckStats = append(m.deckStats, DeckStats{Deck: deck, Total: count})
 		}
+		m.standingsTable = standingsTable(msg.items, m.width-8, m.height)
 	}
 
 	return m, nil
@@ -197,12 +211,25 @@ func (m model) View() string {
 
 	var content string
 	switch m.activeTab {
+	// Overview Tab
 	case 0:
 		if m.err != nil {
 			content = fmt.Sprintf("fetch error: %v", m.err)
 		} else {
 			content = overviewView(m, contentWidth)
 		}
+
+	// Standings Tab
+	case 1:
+		if m.err != nil {
+			content = fmt.Sprintf("fetch error: %v", m.err)
+		} else if len(m.standings) == 0 {
+			content = "  Loading..."
+		} else {
+			content = m.standingsTable.View()
+		}
+
+	// Countries Tab
 	case 3:
 		if m.err != nil {
 			content = fmt.Sprintf("fetch error: %v", m.err)
