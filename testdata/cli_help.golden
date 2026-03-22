@@ -20,8 +20,8 @@
 │    natures         Get details about all natures             │
 │    pokemon         Get details about a Pokémon               │
 │    search          Search for a resource                     │
-│    tcg             Get details about TCG tournaments         │
 │    speed           Calculate the speed of a Pokémon in battle│
+│    tcg             Get details about TCG tournaments         │
 │    types           Get details about a typing                │
 │                                                              │
 │ Use a hyphen when typing a name with a space.                │
