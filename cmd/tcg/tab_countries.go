@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func CountriesContent(s []CountryStats, width int) string {
+func countriesContent(s []CountryStats, width int) string {
 	if len(s) == 0 {
 		return ""
 	}
