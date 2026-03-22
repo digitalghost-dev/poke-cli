@@ -13,15 +13,6 @@ func sampleRows() []standingRows {
 	}
 }
 
-func TestStandingsTable_ReturnsModel(t *testing.T) {
-	rows := sampleRows()
-	m := standingsTable(rows, 120, 40)
-	view := m.View()
-	if view == "" {
-		t.Fatal("expected non-empty table view")
-	}
-}
-
 func TestStandingsTable_ContainsHeaders(t *testing.T) {
 	m := standingsTable(sampleRows(), 120, 40)
 	view := m.View()

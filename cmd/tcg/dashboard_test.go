@@ -12,7 +12,7 @@ import (
 
 func newTestModel() model {
 	return model{
-		conn:       func(_ string) ([]byte, error) { return []byte("[]"), nil },
+		conn:       noopConn,
 		tabs:       []string{"Overview", "Standings", "Decks", "Countries"},
 		styles:     newStyles(),
 		tournament: "London",
