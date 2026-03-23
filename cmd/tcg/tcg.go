@@ -38,43 +38,64 @@ func TcgCommand() (string, error) {
 
 	conn := connections.CallTCGData
 
-	for {
-		// Program 1: Tournament selection
-		finalModel, err := tea.NewProgram(tournamentsList(conn), tea.WithAltScreen()).Run()
+	runTournaments := func(m tournamentsModel) (tournamentsModel, error) {
+		final, err := tea.NewProgram(m, tea.WithAltScreen()).Run()
 		if err != nil {
-			return "", fmt.Errorf("error running tournament selection program: %w", err)
+			return tournamentsModel{}, err
 		}
-
-		result, ok := finalModel.(tournamentsModel)
+		result, ok := final.(tournamentsModel)
 		if !ok {
-			return "", fmt.Errorf("unexpected model type from tournament selection: got %T, want TournamentsModel", finalModel)
+			return tournamentsModel{}, fmt.Errorf("unexpected model type from tournament selection: got %T, want tournamentsModel", final)
 		}
+		return result, nil
+	}
 
+	runDashboard := func(m model) (model, error) {
+		final, err := tea.NewProgram(m, tea.WithAltScreen()).Run()
+		if err != nil {
+			return model{}, err
+		}
+		result, ok := final.(model)
+		if !ok {
+			return model{}, fmt.Errorf("unexpected model type from dashboard: got %T, want model", final)
+		}
+		return result, nil
+	}
+
+	if err := runTcgLoop(conn, runTournaments, runDashboard); err != nil {
+		return "", err
+	}
+
+	return output.String(), nil
+}
+
+func runTcgLoop(
+	conn func(string) ([]byte, error),
+	runTournaments func(tournamentsModel) (tournamentsModel, error),
+	runDashboard func(model) (model, error),
+) error {
+	for {
+		result, err := runTournaments(tournamentsList(conn))
+		if err != nil {
+			return fmt.Errorf("error running tournament selection program: %w", err)
+		}
 		if result.selected == nil {
 			break
 		}
 
-		// Program 2: Dashboard
 		tabs := []string{"Overview", "Standings", "Decks", "Countries"}
-		dashboardFinal, err := tea.NewProgram(model{
+		dashboard, err := runDashboard(model{
 			conn:       conn,
 			tabs:       tabs,
 			styles:     newStyles(),
 			tournament: result.selected.Location,
-		}, tea.WithAltScreen()).Run()
+		})
 		if err != nil {
-			return "", fmt.Errorf("error running dashboard program: %w", err)
+			return fmt.Errorf("error running dashboard program: %w", err)
 		}
-
-		dashboard, ok := dashboardFinal.(model)
-		if !ok {
-			return "", fmt.Errorf("unexpected model type from dashboard: got %T, want model", dashboardFinal)
-		}
-
 		if !dashboard.goBack {
 			break
 		}
 	}
-
-	return output.String(), nil
+	return nil
 }
