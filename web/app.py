@@ -9,8 +9,8 @@ from supabase import Client, create_client
 
 @st.cache_resource
 def init_connection() -> Client:
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
+    url = "https://uoddayfnfkebrijlpfbh.supabase.co"
+    key = "sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j"
     return create_client(url, key)
 
 
