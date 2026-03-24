@@ -12,6 +12,7 @@ COPY pyproject.toml uv.lock ./
 
 RUN uv sync --frozen --no-dev --no-cache
 
+COPY --chown=streamlit_user:streamlit_group .streamlit .streamlit
 COPY --chown=streamlit_user:streamlit_group app.py .
 
 RUN chown -R streamlit_user:streamlit_group /app
