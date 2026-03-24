@@ -1,9 +1,10 @@
-╭─────────────────────────────────────────────────────────╮
-│Get details about TCG tournaments.                       │
-│                                                         │
-│ USAGE:                                                  │
-│    poke-cli tcg                                         │
-│                                                         │
-│ FLAGS:                                                  │
-│    -h, --help                     Prints the help menu. │
-╰─────────────────────────────────────────────────────────╯
+╭─────────────────────────────────────────────────────────────────────────────────────────╮
+│Get details about TCG tournaments.                                                       │
+│                                                                                         │
+│ USAGE:                                                                                  │
+│    poke-cli tcg                                                                         │
+│                                                                                         │
+│ FLAGS:                                                                                  │
+│    -h, --help                     Prints the help menu.                                 │
+│    -w, --web                      Opens the Streamlit dashboard in your default browser.│
+╰─────────────────────────────────────────────────────────────────────────────────────────╯
