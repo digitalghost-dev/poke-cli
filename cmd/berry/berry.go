@@ -22,8 +22,8 @@ func BerryCommand() (string, error) {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
-					Description:    "Get details about a specific berry.",
-					CmdName:        "berry",
+					Description: "Get details about a specific berry.",
+					CmdName:     "berry",
 				},
 			),
 		)

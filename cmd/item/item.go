@@ -20,9 +20,9 @@ func ItemCommand() (string, error) {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
-					Description: "Get details about a specific item.",
-					CmdName: "item",
-					SubCmdName: "<item-name>",
+					Description:    "Get details about a specific item.",
+					CmdName:        "item",
+					SubCmdName:     "<item-name>",
 					ShowHyphenHint: true,
 				},
 			),

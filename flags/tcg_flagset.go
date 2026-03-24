@@ -10,8 +10,8 @@ import (
 )
 
 type TcgFlags struct {
-	FlagSet *flag.FlagSet
-	Web *bool
+	FlagSet  *flag.FlagSet
+	Web      *bool
 	ShortWeb *bool
 }
 
@@ -39,17 +39,17 @@ func WebFlag(url string) error {
 	var args []string
 
 	switch runtime.GOOS {
-		case "windows":
-			cmd = "cmd"
-			args = []string{"/c", "start", url}
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start", url}
 
-		case "darwin":
-			cmd = "open"
-			args = []string{url}
+	case "darwin":
+		cmd = "open"
+		args = []string{url}
 
-		default:
-			cmd = "xdg-open"
-			args = []string{url}
+	default:
+		cmd = "xdg-open"
+		args = []string{url}
 	}
 
 	return exec.Command(cmd, args...).Start()

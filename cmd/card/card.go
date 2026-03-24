@@ -16,11 +16,11 @@ func CardCommand() (string, error) {
 	flag.Usage = func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
-					utils.HelpConfig{
-						Description: "Get details about a specific card.",
-						CmdName: "card",
-					},
-				),
+				utils.HelpConfig{
+					Description: "Get details about a specific card.",
+					CmdName:     "card",
+				},
+			),
 		)
 	}
 
