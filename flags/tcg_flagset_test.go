@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSetupTcgFlagSet(t *testing.T) {
@@ -43,7 +44,7 @@ func TestSetupTcgFlagSet_ParseWebFlag(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tf := SetupTcgFlagSet()
 			err := tf.FlagSet.Parse(tt.args)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.web, *tf.Web || *tf.ShortWeb)
 		})
 	}
