@@ -37,15 +37,15 @@ var commandDescriptions = []struct {
 	{"natures", "Get details about all natures"},
 	{"pokemon", "Get details about a Pokémon"},
 	{"search", "Search for a resource"},
-	{"tcg", "Get details about TCG tournaments"},
 	{"speed", "Calculate the speed of a Pokémon in battle"},
+	{"tcg", "Get details about TCG tournaments"},
 	{"types", "Get details about a typing"},
 }
 
 func renderCommandList() string {
 	var sb strings.Builder
 	for _, cmd := range commandDescriptions {
-		sb.WriteString(fmt.Sprintf("\n\t%-15s %s", cmd.name, cmd.desc))
+		fmt.Fprintf(&sb, "\n\t%-15s %s", cmd.name, cmd.desc)
 	}
 	return sb.String()
 }
