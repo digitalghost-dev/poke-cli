@@ -45,10 +45,11 @@ func UpdateInput(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 				}
 
 				// Format results
-				var resultsDisplay string
+				var sb strings.Builder
 				for _, r := range result.Results {
-					resultsDisplay += fmt.Sprintf("%s %s\n", styling.ColoredBullet, r.Name)
+					sb.WriteString(styling.ColoredBullet.String() + " " + r.Name + "\n")
 				}
+				resultsDisplay := sb.String()
 
 				m.SearchResults = resultsDisplay
 				m.ShowResults = true

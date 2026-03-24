@@ -2,13 +2,14 @@ package tcg
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 )
 
 func formatInt(n int) string {
-	s := fmt.Sprintf("%d", n)
+	s := strconv.Itoa(n)
 	var result strings.Builder
 	for i, c := range s {
 		if i > 0 && (len(s)-i)%3 == 0 {
@@ -30,9 +31,9 @@ func overviewContent(flag, tournament, tournamentType, tournamentDate, winner, w
 		Width(26).
 		Align(lipgloss.Center)
 
-	totalBox := statBox.Render(fmt.Sprintf("Total Players\n\n%s", formatInt(totalPlayers)))
-	winnerBox := statBox.Render(fmt.Sprintf("Winner\n\n%s", winner))
-	deckBox := statBox.Render(fmt.Sprintf("Winning Deck\n\n%s", winningDeck))
+	totalBox := statBox.Render("Total Players\n\n" + formatInt(totalPlayers))
+	winnerBox := statBox.Render("Winner\n\n" + winner)
+	deckBox := statBox.Render("Winning Deck\n\n" + winningDeck)
 
 	boxes := lipgloss.JoinHorizontal(lipgloss.Top, totalBox, "  ", winnerBox, "  ", deckBox)
 

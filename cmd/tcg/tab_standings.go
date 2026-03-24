@@ -1,7 +1,7 @@
 package tcg
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/charmbracelet/bubbles/table"
 	"github.com/charmbracelet/lipgloss"
@@ -27,9 +27,9 @@ func standingsTable(rows []standingRows, width, height int) table.Model {
 	tableRows := make([]table.Row, len(rows))
 	for i, r := range rows {
 		tableRows[i] = table.Row{
-			fmt.Sprintf("%d", r.Rank),
+			strconv.Itoa(r.Rank),
 			r.Name,
-			fmt.Sprintf("%d", r.Points),
+			strconv.Itoa(r.Points),
 			r.Record,
 			r.OppWinPct,
 			r.OppOppWinPct,

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -20,10 +21,11 @@ type FlagHelp struct {
 }
 
 func GenerateHelpMessage(cfg HelpConfig) string {
-	flagsList := ""
+	var flagsBuilder strings.Builder
 	for _, f := range cfg.Flags {
-		flagsList += fmt.Sprintf("\n\t%-30s %s", f.Short+", "+f.Long, f.Description)
+		fmt.Fprintf(&flagsBuilder, "\n\t%-30s %s", f.Short+", "+f.Long, f.Description)
 	}
+	flagsList := flagsBuilder.String()
 
 	hyphenHint := ""
 	if cfg.ShowHyphenHint {

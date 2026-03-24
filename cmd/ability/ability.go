@@ -48,7 +48,7 @@ func AbilityCommand() (string, error) {
 	abilityName := strings.ToLower(args[2])
 
 	if err := af.FlagSet.Parse(args[3:]); err != nil {
-		output.WriteString(fmt.Sprintf("error parsing flags: %v\n", err))
+		fmt.Fprintf(&output, "error parsing flags: %v\n", err)
 		af.FlagSet.Usage()
 
 		return output.String(), err
@@ -84,17 +84,17 @@ func AbilityCommand() (string, error) {
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")
 	if len(generationParts) > 1 {
 		generationUpper := strings.ToUpper(generationParts[1])
-		output.WriteString(fmt.Sprintf("%s First introduced in generation "+generationUpper+"\n", styling.ColoredBullet))
+		fmt.Fprintf(&output, "%s First introduced in generation %s\n", styling.ColoredBullet, generationUpper)
 	} else {
-		output.WriteString(fmt.Sprintf("%s Generation: Unknown\n", styling.ColoredBullet))
+		fmt.Fprintf(&output, "%s Generation: Unknown\n", styling.ColoredBullet)
 	}
 
 	// API is missing some data for the short_effect for abilities from Generation 9.
 	// If short_effect is empty, fallback to the move's flavor_text_entry.
 	if englishShortEffect == "" {
-		output.WriteString(fmt.Sprintf("%s Effect: %s", styling.ColoredBullet, englishFlavorEntry))
+		fmt.Fprintf(&output, "%s Effect: %s", styling.ColoredBullet, englishFlavorEntry)
 	} else {
-		output.WriteString(fmt.Sprintf("%s Effect: %s", styling.ColoredBullet, englishShortEffect))
+		fmt.Fprintf(&output, "%s Effect: %s", styling.ColoredBullet, englishShortEffect)
 	}
 
 	if *af.Pokemon || *af.ShortPokemon {

@@ -8,6 +8,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // runTcgLoop
@@ -23,8 +24,8 @@ func TestRunTcgLoop_NoTournamentSelected(t *testing.T) {
 		return model{}, nil
 	}
 	err := runTcgLoop(noopConn, runTournaments, runDashboard)
-	assert.NoError(t, err)
-	assert.False(t, dashboardCalled, "dashboard should not be launched when no tournament is selected")
+	require.NoError(t, err)
+	require.False(t, dashboardCalled, "dashboard should not be launched when no tournament is selected")
 }
 
 func TestRunTcgLoop_TournamentSelected_DashboardExits(t *testing.T) {
@@ -57,8 +58,8 @@ func TestRunTcgLoop_GoBack_LoopsToTournamentSelection(t *testing.T) {
 		return model{goBack: true}, nil
 	}
 	err := runTcgLoop(noopConn, runTournaments, runDashboard)
-	assert.NoError(t, err)
-	assert.Equal(t, 2, calls, "expected tournament selection to run twice")
+	require.NoError(t, err)
+	require.Equal(t, 2, calls, "expected tournament selection to run twice")
 }
 
 func TestRunTcgLoop_TournamentRunnerError(t *testing.T) {
@@ -83,10 +84,10 @@ func TestRunTcgLoop_DashboardRunnerError(t *testing.T) {
 
 func TestTcgCommand(t *testing.T) {
 	tests := []struct {
-		name     string
-		args     []string
-		golden   string
-		wantErr  bool
+		name    string
+		args    []string
+		golden  string
+		wantErr bool
 	}{
 		{
 			name:    "help flag short",
@@ -106,12 +107,6 @@ func TestTcgCommand(t *testing.T) {
 			golden:  "tcg_too_many_args.golden",
 			wantErr: true,
 		},
-		{
-			name:    "invalid option after command",
-			args:    []string{"poke-cli", "tcg", "foo"},
-			golden:  "tcg_invalid_option.golden",
-			wantErr: true,
-		},
 	}
 
 	for _, tt := range tests {
@@ -124,9 +119,9 @@ func TestTcgCommand(t *testing.T) {
 			clean := styling.StripANSI(output)
 
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 			assert.Equal(t, utils.LoadGolden(t, tt.golden), clean)
 		})

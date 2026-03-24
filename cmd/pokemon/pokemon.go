@@ -189,10 +189,10 @@ func PokemonCommand() (string, error) {
 	metrics(&metricsOutput)
 	species(&speciesOutput)
 
-	output.WriteString(fmt.Sprintf(
+	fmt.Fprintf(&output,
 		"Your selected Pokémon: %s\n%s\n%s%s%s%s\n",
 		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(),
-	))
+	)
 
 	if *pf.Image != "" || *pf.ShortImage != "" {
 		// Determine the size based on the provided flags
@@ -203,7 +203,7 @@ func PokemonCommand() (string, error) {
 
 		// Call the ImageFlag function with the specified size
 		if err := flags.ImageFlag(&output, endpoint, pokemonName, size); err != nil {
-			output.WriteString(fmt.Sprintf("%v\n", err))
+			fmt.Fprintf(&output, "%v\n", err)
 			return output.String(), fmt.Errorf("%w", err)
 		}
 	}

@@ -54,7 +54,7 @@ func barChart(s []barChartItem, width, labelWidth int) string {
 			}
 		}
 		bar := strings.Repeat("█", barWidth) + strings.Repeat(" ", maxBarWidth-barWidth)
-		sb.WriteString(fmt.Sprintf("%-*s %s %*d\n", labelWidth, stat.Label, bar, countWidth, stat.Total))
+		fmt.Fprintf(&sb, "%-*s %s %*d\n", labelWidth, stat.Label, bar, countWidth, stat.Total)
 	}
 	return sb.String()
 }

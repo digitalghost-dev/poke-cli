@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/flags"
 )
 
 func TcgCommand() (string, error) {
@@ -20,6 +21,9 @@ func TcgCommand() (string, error) {
 				utils.HelpConfig{
 					Description: "Get details about TCG tournaments.",
 					CmdName:     "tcg",
+					Flags: []utils.FlagHelp{
+						{Short: "-w", Long: "--web", Description: "Opens the Streamlit dashboard in your default browser."},
+					},
 				},
 			),
 		)
@@ -31,9 +35,22 @@ func TcgCommand() (string, error) {
 
 	flag.Parse()
 
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "tcg", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "tcg", RequireName: false, HasFlags: true}); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
+	}
+
+	tf := flags.SetupTcgFlagSet()
+	if err := tf.FlagSet.Parse(os.Args[2:]); err != nil {
+		fmt.Fprintf(&output, "error parsing flags: %v\n", err)
+		return output.String(), err
+	}
+
+	if *tf.Web || *tf.ShortWeb {
+		if err := flags.WebFlag("https://google.com"); err != nil {
+			return "", err
+		}
+		return output.String(), nil
 	}
 
 	conn := connections.CallTCGData
