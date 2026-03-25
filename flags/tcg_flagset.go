@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -34,7 +35,9 @@ func SetupTcgFlagSet() *TcgFlags {
 	return tf
 }
 
-func WebFlag(url string) error {
+func WebFlag(url string) (string, error) {
+	var output strings.Builder
+
 	var cmd string
 	var args []string
 
@@ -52,5 +55,16 @@ func WebFlag(url string) error {
 		args = []string{url}
 	}
 
-	return exec.Command(cmd, args...).Start()
+	if _, err := exec.LookPath(cmd); err != nil {
+		fmt.Fprintf(&output, "Can't open a browser in this environment. Visit manually:\n%s\n", url)
+		return output.String(), nil
+	}
+
+	if err := exec.Command(cmd, args...).Start(); err != nil {
+		fmt.Fprintf(&output, "Failed to open browser: %v\nVisit manually:\n%s\n", err, url)
+		return output.String(), nil
+	}
+
+	fmt.Fprintf(&output, "Opening: %s\n", url)
+	return output.String(), nil
 }

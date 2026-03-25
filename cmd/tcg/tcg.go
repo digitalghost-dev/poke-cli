@@ -47,9 +47,11 @@ func TcgCommand() (string, error) {
 	}
 
 	if *tf.Web || *tf.ShortWeb {
-		if err := flags.WebFlag("https://poke-cli-production.up.railway.app/"); err != nil {
+		msg, err := flags.WebFlag("https://web.poke-cli.com/")
+		if err != nil {
 			return "", err
 		}
+		output.WriteString(msg)
 		return output.String(), nil
 	}
 
