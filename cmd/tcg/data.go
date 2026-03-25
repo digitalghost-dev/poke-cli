@@ -53,5 +53,8 @@ func countryFlag(isoCode string) string {
 	if len(code) != 2 {
 		return ""
 	}
+	if code[0] < 'A' || code[0] > 'Z' || code[1] < 'A' || code[1] > 'Z' {
+		return ""
+	}
 	return string(rune(0x1F1E6+(rune(code[0])-'A'))) + string(rune(0x1F1E6+(rune(code[1])-'A')))
 }
