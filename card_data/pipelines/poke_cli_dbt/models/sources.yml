@@ -103,13 +103,62 @@ sources:
             description: "Third attack energy cost"
 
       - name: standings
-        description: "Tournament standings data"
+        description: "Player standings data for tournaments"
+        columns:
+          - name: rank
+            description: "Player rank in the tournament"
+          - name: name
+            description: "Player name"
+          - name: points
+            description: "Player points"
+          - name: record
+            description: "Player win/loss record"
+          - name: opp_win_percent
+            description: "Opponent win percentage"
+          - name: opp_opp_win_percent
+            description: "Opponent's opponent win percentage"
+          - name: deck
+            description: "Deck name used by player"
+          - name: decklist
+            description: "Decklist URL"
+          - name: country
+            description: "Player country code"
+          - name: tournament_id
+            description: "Foreign key to tournaments"
 
       - name: tournaments
         description: "Tournament metadata"
+        columns:
+          - name: tournament_id
+            description: "Unique tournament identifier"
+          - name: location
+            description: "Tournament location"
+          - name: start_date
+            description: "Tournament start date"
+          - name: end_date
+            description: "Tournament end date"
+          - name: type
+            description: "Tournament type"
+          - name: player_quantity
+            description: "Number of players in the tournament"
+          - name: text_date
+            description: "Tournament date in text format"
+          - name: country_code
+            description: "Country ISO code"
+          - name: logo
+            description: "Tournament type logo URL"
+          - name: latitude
+            description: "Tournament city latitude"
+          - name: longitude
+            description: "Tournament city longitude"
 
       - name: country_codes
-        description: "Country code to country name mapping"
+        description: "Country code to country name mapping with geographic centroids"
+        columns:
+          - name: code
+            description: "ISO country code"
+          - name: country_name
+            description: "Full country name"
 
       - name: pricing_data
         description: "Card pricing data"

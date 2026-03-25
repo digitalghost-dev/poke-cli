@@ -1,39 +1,39 @@
 [project]
 name = "card-data"
-version = "1.8.11"
+version = "1.9.0"
 description = "File directory to store all data related processes for the Pokémon TCG."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aws-secretsmanager-caching>=1.1.3",
-    "beautifulsoup4>=4.13.5",
-    "dagster>=1.11.3",
-    "dagster-dbt>=0.27.3",
-    "dagster-dg-cli>=1.11.3",
+    "aws-secretsmanager-caching==1.1.3",
+    "beautifulsoup4==4.13.5",
+    "dagster==1.12.7",
+    "dagster-dbt==0.28.7",
+    "dagster-dg-cli==1.12.7",
     "dagster-postgres==0.28.7",
     "dagster-webserver==1.12.7",
-    "dbt-core>=1.10.8",
-    "dbt-postgres>=1.9.0",
-    "pandas>=2.3.1",
-    "polars>=1.31.0",
-    "psycopg2-binary>=2.9.10",
-    "pyarrow>=20.0.0",
-    "pydantic>=2.11.7",
-    "requests>=2.32.4",
-    "soda-core-postgres>=3.5.5",
-    "sqlalchemy>=2.0.41",
-    "termcolor>=3.1.0",
+    "dbt-core==1.10.8",
+    "dbt-postgres==1.9.0",
+    "pandas==2.3.1",
+    "polars==1.31.0",
+    "psycopg2-binary==2.9.10",
+    "pyarrow==20.0.0",
+    "pydantic==2.11.7",
+    "requests==2.32.4",
+    "soda-core-postgres==3.5.5",
+    "sqlalchemy==2.0.41",
+    "termcolor==3.1.0",
 ]
 
 [dependency-groups]
 dev = [
     "dagster-webserver==1.12.7",
     "dagster-dg-cli",
-    "dagster-dbt>=0.27.3",
+    "dagster-dbt==0.28.7",
     "dagster-postgres==0.28.7",
-    "pytest>=9.0.2",
-    "pytest-codspeed>=4.2.0",
-    "responses>=0.25.8",
+    "pytest==9.0.2",
+    "pytest-codspeed==4.2.0",
+    "responses==0.25.8",
 ]
 
 [tool.dg]

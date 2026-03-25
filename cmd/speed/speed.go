@@ -97,8 +97,8 @@ func SpeedCommand() (string, error) {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
-					Description:    "Calculate the speed of a Pokémon.",
-					CmdName:        "speed",
+					Description: "Calculate the speed of a Pokémon.",
+					CmdName:     "speed",
 				},
 			),
 		)

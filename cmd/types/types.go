@@ -20,8 +20,8 @@ func TypesCommand() (string, error) {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
-					Description:    "Get details about a specific typing.",
-					CmdName:        "types",
+					Description: "Get details about a specific typing.",
+					CmdName:     "types",
 				},
 			),
 		)

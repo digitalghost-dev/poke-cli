@@ -16,6 +16,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/speed"
+	"github.com/digitalghost-dev/poke-cli/cmd/tcg"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -37,13 +38,14 @@ var commandDescriptions = []struct {
 	{"pokemon", "Get details about a Pokémon"},
 	{"search", "Search for a resource"},
 	{"speed", "Calculate the speed of a Pokémon in battle"},
+	{"tcg", "Get details about TCG tournaments"},
 	{"types", "Get details about a typing"},
 }
 
 func renderCommandList() string {
 	var sb strings.Builder
 	for _, cmd := range commandDescriptions {
-		sb.WriteString(fmt.Sprintf("\n\t%-15s %s", cmd.name, cmd.desc))
+		fmt.Fprintf(&sb, "\n\t%-15s %s", cmd.name, cmd.desc)
 	}
 	return sb.String()
 }
@@ -130,8 +132,9 @@ func runCLI(args []string) int {
 		"natures": utils.HandleCommandOutput(natures.NaturesCommand),
 		"pokemon": utils.HandleCommandOutput(pokemon.PokemonCommand),
 		"speed":   utils.HandleCommandOutput(speed.SpeedCommand),
+		"tcg":     utils.HandleCommandOutput(tcg.TcgCommand),
 		"types":   utils.HandleCommandOutput(types.TypesCommand),
-		"search": utils.HandleCommandOutput(search.SearchCommand),
+		"search":  utils.HandleCommandOutput(search.SearchCommand),
 	}
 
 	cmdArg := ""

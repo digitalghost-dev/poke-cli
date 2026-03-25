@@ -29,6 +29,11 @@ go.work.sum
 # env file
 .env
 
+# web
+web/.venv
+web/.streamlit/secrets.toml
+web/.coverage
+
 # Python
 card_data/.venv
 __pycache__/
@@ -55,7 +60,6 @@ card_data/infrastructure/supabase/access-token
 **/.terraform/
 
 card_data/.tmp*/**
-
 
 card_data/pipelines/poke_cli_dbt/.user.yml
 /card_data/supabase/

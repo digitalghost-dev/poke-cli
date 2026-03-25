@@ -2,7 +2,7 @@
     <img width="425" src="poke-cli.png" alt="pokemon-logo"/>
     <h4></h4>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.8.11?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.9.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -27,11 +27,11 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 ## Demo
 ### Video Game Data
 
-![demo-vg](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.6.0.gif)
+![demo-vg](https://dc8hq8aq7pr04.cloudfront.net/demo-v1.6.0.gif)
 
 ### Trading Card Game Data
 
-![demo-tcg](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/poke-cli-card-v1.8.8.gif)
+![demo-tcg](https://dc8hq8aq7pr04.cloudfront.net/poke-cli-card-v1.8.8.gif)
 
 ---
 
@@ -99,11 +99,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.8.11 <command> [subcommand] [flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.9.0 <command> [subcommand] [flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.8.11 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.9.0 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -118,7 +118,7 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 6. Run the tool!
 
 > [!IMPORTANT]
-> For macOS, you may have to allow the executable to run as it is not signed. Head to System Settings > Privacy & Security > scroll down and allow the executable to run.
+> For macOS, you may have to allow the executable to run as it is not signed. Head to System Settings > Privacy & Security > scroll down and allow executable to run.
 
 <details>
 
@@ -174,6 +174,7 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │    pokemon         Get details about a Pokémon                │
 │    search          Search for a resource                      │
 │    speed           Calculate the speed of a Pokémon in battle │
+│    tcg             Get details about TCG tournaments          │
 │    types           Get details about a typing                 │
 │                                                               │
 │ hint: when calling a resource with a space, use a hyphen      │
@@ -197,7 +198,7 @@ Below is a list of the planned/completed commands and flags:
     - [x] add mega evolution data
     - [x] add scarlet & violet data
     - [x] add sword & shield data
-    - [ ] add sun & moon data
+    - [x] add sun & moon data
     - [ ] add x & y data
 - [x] `item`: get data about an item.
 - [x] `move`: get data about a move.
@@ -216,6 +217,7 @@ Below is a list of the planned/completed commands and flags:
     - [x] `move`
     - [x] `pokemon`
 - [x] `speed`: compare speed stats between two Pokémon.
+- [x] `tcg`: get data about TCG tournaments.
 - [x] `types`: get data about a specific typing.
 
 ---

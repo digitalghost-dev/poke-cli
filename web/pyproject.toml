@@ -1,0 +1,24 @@
+[project]
+name = "web"
+version = "1.9.0"
+description = "Streamlit dashboard for browsing and visualizing Pokémon TCG tournament standings and results."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "polars==1.31.0",
+    "supabase==2.28.0",
+    "streamlit==1.54.0",
+    "pydeck==0.9.1",
+    "plotly==6.6.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning:supabase",
+]

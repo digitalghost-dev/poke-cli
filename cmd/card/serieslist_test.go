@@ -7,15 +7,16 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/x/exp/teatest"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 func TestSeriesModelInit(t *testing.T) {
 	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
+		styling.Item("Mega Evolution"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Sword & Shield"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 12)
+	l := list.New(items, styling.ItemDelegate{}, 20, 12)
 	model := SeriesModel{List: l}
 
 	cmd := model.Init()
@@ -26,11 +27,11 @@ func TestSeriesModelInit(t *testing.T) {
 
 func TestSeriesModelQuit(t *testing.T) {
 	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
+		styling.Item("Mega Evolution"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Sword & Shield"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 12)
+	l := list.New(items, styling.ItemDelegate{}, 20, 12)
 	model := SeriesModel{List: l}
 
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
@@ -48,11 +49,11 @@ func TestSeriesModelQuit(t *testing.T) {
 
 func TestSeriesModelEscQuit(t *testing.T) {
 	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
+		styling.Item("Mega Evolution"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Sword & Shield"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 12)
+	l := list.New(items, styling.ItemDelegate{}, 20, 12)
 	model := SeriesModel{List: l}
 
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
@@ -70,11 +71,11 @@ func TestSeriesModelEscQuit(t *testing.T) {
 
 func TestSeriesModelSelection(t *testing.T) {
 	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
+		styling.Item("Mega Evolution"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Sword & Shield"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 12)
+	l := list.New(items, styling.ItemDelegate{}, 20, 12)
 	model := SeriesModel{List: l}
 
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
@@ -96,11 +97,11 @@ func TestSeriesModelSelection(t *testing.T) {
 
 func TestSeriesModelWindowResize(t *testing.T) {
 	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
+		styling.Item("Mega Evolution"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Sword & Shield"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 12)
+	l := list.New(items, styling.ItemDelegate{}, 20, 12)
 	model := SeriesModel{List: l}
 
 	// Send window resize message
@@ -114,11 +115,11 @@ func TestSeriesModelWindowResize(t *testing.T) {
 
 func TestSeriesModelView(t *testing.T) {
 	items := []list.Item{
-		item("Mega Evolution"),
-		item("Scarlet & Violet"),
-		item("Sword & Shield"),
+		styling.Item("Mega Evolution"),
+		styling.Item("Scarlet & Violet"),
+		styling.Item("Sword & Shield"),
 	}
-	l := list.New(items, itemDelegate{}, 20, 12)
+	l := list.New(items, styling.ItemDelegate{}, 20, 12)
 
 	// Test normal view
 	model := SeriesModel{List: l}
@@ -159,7 +160,7 @@ func TestSeriesList(t *testing.T) {
 	// Verify all four series are present
 	expectedSeries := []string{"Mega Evolution", "Scarlet & Violet", "Sword & Shield", "Sun & Moon"}
 	for i, expected := range expectedSeries {
-		itemStr := string(items[i].(item))
+		itemStr := string(items[i].(styling.Item))
 		if itemStr != expected {
 			t.Errorf("Expected item %d to be '%s', got '%s'", i, expected, itemStr)
 		}

@@ -55,9 +55,9 @@ func TestGenerateHelpMessage_AlwaysContainsHelpFlag(t *testing.T) {
 
 func TestGenerateHelpMessage_HyphenHint(t *testing.T) {
 	tests := []struct {
-		name            string
-		showHyphenHint  bool
-		wantHyphenHint  bool
+		name           string
+		showHyphenHint bool
+		wantHyphenHint bool
 	}{
 		{
 			name:           "hyphen hint shown when enabled",

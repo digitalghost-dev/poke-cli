@@ -1,4 +1,4 @@
-package card
+package styling
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestItemFilterValue(t *testing.T) {
-	testItem := item("Test Item")
+	testItem := Item("Test Item")
 	filterValue := testItem.FilterValue()
 
 	if filterValue != "" {
@@ -18,7 +18,7 @@ func TestItemFilterValue(t *testing.T) {
 }
 
 func TestItemDelegateHeight(t *testing.T) {
-	delegate := itemDelegate{}
+	delegate := ItemDelegate{}
 	height := delegate.Height()
 
 	if height != 1 {
@@ -27,7 +27,7 @@ func TestItemDelegateHeight(t *testing.T) {
 }
 
 func TestItemDelegateSpacing(t *testing.T) {
-	delegate := itemDelegate{}
+	delegate := ItemDelegate{}
 	spacing := delegate.Spacing()
 
 	if spacing != 0 {
@@ -36,7 +36,7 @@ func TestItemDelegateSpacing(t *testing.T) {
 }
 
 func TestItemDelegateUpdate(t *testing.T) {
-	delegate := itemDelegate{}
+	delegate := ItemDelegate{}
 	cmd := delegate.Update(tea.KeyMsg{}, &list.Model{})
 
 	if cmd != nil {
@@ -45,12 +45,12 @@ func TestItemDelegateUpdate(t *testing.T) {
 }
 
 func TestItemDelegateRender(t *testing.T) {
-	delegate := itemDelegate{}
+	delegate := ItemDelegate{}
 
 	items := []list.Item{
-		item("First Item"),
-		item("Second Item"),
-		item("Third Item"),
+		Item("First Item"),
+		Item("Second Item"),
+		Item("Third Item"),
 	}
 
 	l := list.New(items, delegate, 20, 10)
@@ -65,11 +65,11 @@ func TestItemDelegateRender(t *testing.T) {
 }
 
 func TestItemDelegateRenderSelected(t *testing.T) {
-	delegate := itemDelegate{}
+	delegate := ItemDelegate{}
 
 	items := []list.Item{
-		item("First Item"),
-		item("Second Item"),
+		Item("First Item"),
+		Item("Second Item"),
 	}
 
 	l := list.New(items, delegate, 20, 10)
