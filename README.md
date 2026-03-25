@@ -174,6 +174,7 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │    pokemon         Get details about a Pokémon                │
 │    search          Search for a resource                      │
 │    speed           Calculate the speed of a Pokémon in battle │
+│    tcg             Get details about TCG tournaments          │
 │    types           Get details about a typing                 │
 │                                                               │
 │ hint: when calling a resource with a space, use a hyphen      │
@@ -197,7 +198,7 @@ Below is a list of the planned/completed commands and flags:
     - [x] add mega evolution data
     - [x] add scarlet & violet data
     - [x] add sword & shield data
-    - [ ] add sun & moon data
+    - [x] add sun & moon data
     - [ ] add x & y data
 - [x] `item`: get data about an item.
 - [x] `move`: get data about a move.
@@ -216,6 +217,7 @@ Below is a list of the planned/completed commands and flags:
     - [x] `move`
     - [x] `pokemon`
 - [x] `speed`: compare speed stats between two Pokémon.
+- [x] `tcg`: get data about TCG tournaments.
 - [x] `types`: get data about a specific typing.
 
 ---
