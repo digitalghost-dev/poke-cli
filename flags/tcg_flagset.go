@@ -38,29 +38,27 @@ func SetupTcgFlagSet() *TcgFlags {
 func WebFlag(url string) (string, error) {
 	var output strings.Builder
 
-	var cmd string
-	var args []string
+	var openCmd *exec.Cmd
+	var browserCmd string
 
 	switch runtime.GOOS {
 	case "windows":
-		cmd = "cmd"
-		args = []string{"/c", "start", url}
-
+		browserCmd = "cmd"
+		openCmd = exec.Command("cmd", "/c", "start", url) //nolint:gosec
 	case "darwin":
-		cmd = "open"
-		args = []string{url}
-
+		browserCmd = "open"
+		openCmd = exec.Command("open", url)
 	default:
-		cmd = "xdg-open"
-		args = []string{url}
+		browserCmd = "xdg-open"
+		openCmd = exec.Command("xdg-open", url)
 	}
 
-	if _, err := exec.LookPath(cmd); err != nil {
+	if _, err := exec.LookPath(browserCmd); err != nil {
 		fmt.Fprintf(&output, "Can't open a browser in this environment. Visit manually:\n%s\n", url)
 		return output.String(), nil
 	}
 
-	if err := exec.Command(cmd, args...).Start(); err != nil {
+	if err := openCmd.Start(); err != nil {
 		fmt.Fprintf(&output, "Failed to open browser: %v\nVisit manually:\n%s\n", err, url)
 		return output.String(), nil
 	}
