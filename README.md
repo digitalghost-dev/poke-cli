@@ -27,11 +27,11 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 ## Demo
 ### Video Game Data
 
-![demo-vg](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.6.0.gif)
+![demo-vg](https://dc8hq8aq7pr04.cloudfront.net/demo-v1.6.0.gif)
 
 ### Trading Card Game Data
 
-![demo-tcg](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/poke-cli-card-v1.8.8.gif)
+![demo-tcg](https://dc8hq8aq7pr04.cloudfront.net/poke-cli-card-v1.8.8.gif)
 
 ---
 
