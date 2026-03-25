@@ -1,7 +1,7 @@
 [project]
 name = "web"
 version = "1.9.0"
-description = "Add your description here"
+description = "Streamlit dashboard for browsing and visualizing Pokémon TCG tournament standings and results."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
