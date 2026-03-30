@@ -17,19 +17,13 @@ USER docsuser
 
 RUN mkdocs build
 
-# --- Serve with lightweight HTTP server ---
-FROM python:3.12-slim
+# --- Serve with nginx ---
+FROM nginx:alpine
 
-# Create non-root user for runtime
-RUN groupadd -r -g 10001 docsuser && \
-    useradd -r -u 10001 -g docsuser -m -s /sbin/nologin docsuser
+COPY --from=builder /build/site /usr/share/nginx/html
 
-WORKDIR /site
-
-COPY --from=builder --chown=docsuser:docsuser /build/site /site
-
-USER docsuser
+COPY docs/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
 
-CMD ["python3", "-m", "http.server", "8080"]
+CMD ["nginx", "-g", "daemon off;"]
