@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from pipelines.utils.secret_retriever import fetch_secret, fetch_n8n_webhook_secret
 
-@pytest.mark.benchmark
+
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_secret_success(mock_get_session, mock_secret_cache_cls):
@@ -25,7 +25,6 @@ def test_fetch_secret_success(mock_get_session, mock_secret_cache_cls):
     mock_cache_instance.get_secret_string.assert_called_once_with("supabase")
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_secret_missing_key(mock_get_session, mock_secret_cache_cls):
@@ -40,7 +39,6 @@ def test_fetch_secret_missing_key(mock_get_session, mock_secret_cache_cls):
         fetch_secret()
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_secret_invalid_json(mock_get_session, mock_secret_cache_cls):
@@ -53,7 +51,6 @@ def test_fetch_secret_invalid_json(mock_get_session, mock_secret_cache_cls):
         fetch_secret()
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_secret_empty_json_object(mock_get_session, mock_secret_cache_cls):
@@ -66,7 +63,6 @@ def test_fetch_secret_empty_json_object(mock_get_session, mock_secret_cache_cls)
         fetch_secret()
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_secret_cache_raises(mock_get_session, mock_secret_cache_cls):
@@ -86,7 +82,6 @@ def test_fetch_secret_cache_raises(mock_get_session, mock_secret_cache_cls):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_n8n_webhook_secret_success(mock_get_session, mock_secret_cache_cls):
@@ -103,7 +98,6 @@ def test_fetch_n8n_webhook_secret_success(mock_get_session, mock_secret_cache_cl
     mock_cache_instance.get_secret_string.assert_called_once_with("n8n_webhook")
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_n8n_webhook_secret_missing_key(mock_get_session, mock_secret_cache_cls):
@@ -118,7 +112,6 @@ def test_fetch_n8n_webhook_secret_missing_key(mock_get_session, mock_secret_cach
         fetch_n8n_webhook_secret()
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_n8n_webhook_secret_invalid_json(
@@ -133,7 +126,6 @@ def test_fetch_n8n_webhook_secret_invalid_json(
         fetch_n8n_webhook_secret()
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_n8n_webhook_secret_empty_json_object(
@@ -148,7 +140,6 @@ def test_fetch_n8n_webhook_secret_empty_json_object(
         fetch_n8n_webhook_secret()
 
 
-@pytest.mark.benchmark
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_n8n_webhook_secret_cache_raises(

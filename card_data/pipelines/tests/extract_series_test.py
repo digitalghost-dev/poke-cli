@@ -8,6 +8,7 @@ import polars as pl
 import responses
 from pipelines.defs.extract.tcgdex.extract_series import extract_series_data
 
+
 @pytest.fixture
 def mock_api_response():
     """Sample API response matching tcgdex format"""
@@ -19,11 +20,10 @@ def mock_api_response():
         {"id": "sm", "name": "Sun & Moon", "logo": None},
     ]
 
-@pytest.mark.benchmark
+
 @responses.activate
-def test_extract_series_data_success(mock_api_response):
+def test_extract_series_data_success(benchmark, mock_api_response):
     """Test successful extraction and filtering"""
-    # Mock the API call
     responses.add(
         responses.GET,
         "https://api.tcgdex.net/v2/en/series",
@@ -31,11 +31,10 @@ def test_extract_series_data_success(mock_api_response):
         status=200
     )
 
-    result = extract_series_data()
+    result = benchmark(extract_series_data)
 
-    # Assertions
-    assert isinstance(result, pl.DataFrame) # nosec
-    assert len(result) == 4   # nosec
-    assert set(result["id"].to_list()) == {"swsh", "sv", "me", "sm"} # nosec
-    assert "name" in result.columns # nosec
-    assert "logo" in result.columns # nosec
+    assert isinstance(result, pl.DataFrame)  # nosec
+    assert len(result) == 4  # nosec
+    assert set(result["id"].to_list()) == {"swsh", "sv", "me", "sm"}  # nosec
+    assert "name" in result.columns  # nosec
+    assert "logo" in result.columns  # nosec
