@@ -9,8 +9,8 @@ import (
 )
 
 func TestSelection(t *testing.T) {
-	model := initialModel()
-	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(500, 600))
+	m := initialModel()
+	testModel := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(500, 600))
 
 	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
 	testModel.Send(tea.KeyMsg{Type: tea.KeyUp})
@@ -19,7 +19,7 @@ func TestSelection(t *testing.T) {
 	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
-	final := testModel.FinalModel(t).(Model)
+	final := testModel.FinalModel(t).(model)
 
 	if !final.Chosen {
 		t.Errorf("Expected model to be in Chosen state after pressing enter")
@@ -36,8 +36,8 @@ func TestSelection(t *testing.T) {
 }
 
 func TestChoiceClamping(t *testing.T) {
-	model := initialModel()
-	testModel := teatest.NewTestModel(t, model)
+	m := initialModel()
+	testModel := teatest.NewTestModel(t, m)
 
 	// Move down twice, this should attempt to exceed max Choice
 	testModel.Send(tea.KeyMsg{Type: tea.KeyDown}) // 0 → 1
@@ -53,7 +53,7 @@ func TestChoiceClamping(t *testing.T) {
 	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
 	testModel.WaitFinished(t)
 
-	final := testModel.FinalModel(t).(Model)
+	final := testModel.FinalModel(t).(model)
 
 	if final.Choice != 0 && final.Choice != 1 {
 		t.Errorf("Choice should be clamped between 0 and 1, got %d", final.Choice)

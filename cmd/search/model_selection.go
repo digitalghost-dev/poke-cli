@@ -9,7 +9,7 @@ import (
 )
 
 // UpdateSelection handles navigation in the selection menu.
-func UpdateSelection(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
+func UpdateSelection(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -33,7 +33,7 @@ func UpdateSelection(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 }
 
 // RenderSelection renders the selection menu.
-func RenderSelection(m Model) string {
+func RenderSelection(m model) string {
 	c := m.Choice
 	greeting := styling.StyleItalic.Render("Search for a resource and return a matching selection table")
 	choices := fmt.Sprintf(

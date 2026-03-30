@@ -17,7 +17,7 @@ func TestSeriesModelInit(t *testing.T) {
 		styling.Item("Sword & Shield"),
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 12)
-	model := SeriesModel{List: l}
+	model := seriesModel{List: l}
 
 	cmd := model.Init()
 	if cmd != nil {
@@ -32,7 +32,7 @@ func TestSeriesModelQuit(t *testing.T) {
 		styling.Item("Sword & Shield"),
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 12)
-	model := SeriesModel{List: l}
+	model := seriesModel{List: l}
 
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
 
@@ -40,7 +40,7 @@ func TestSeriesModelQuit(t *testing.T) {
 	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
-	final := testModel.FinalModel(t).(SeriesModel)
+	final := testModel.FinalModel(t).(seriesModel)
 
 	if !final.Quitting {
 		t.Errorf("Expected model to be quitting after ctrl+c")
@@ -54,7 +54,7 @@ func TestSeriesModelEscQuit(t *testing.T) {
 		styling.Item("Sword & Shield"),
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 12)
-	model := SeriesModel{List: l}
+	model := seriesModel{List: l}
 
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
 
@@ -62,7 +62,7 @@ func TestSeriesModelEscQuit(t *testing.T) {
 	testModel.Send(tea.KeyMsg{Type: tea.KeyEsc})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
-	final := testModel.FinalModel(t).(SeriesModel)
+	final := testModel.FinalModel(t).(seriesModel)
 
 	if !final.Quitting {
 		t.Errorf("Expected model to be quitting after esc")
@@ -76,7 +76,7 @@ func TestSeriesModelSelection(t *testing.T) {
 		styling.Item("Sword & Shield"),
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 12)
-	model := SeriesModel{List: l}
+	model := seriesModel{List: l}
 
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
 
@@ -85,7 +85,7 @@ func TestSeriesModelSelection(t *testing.T) {
 	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter}) // Select it
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
-	final := testModel.FinalModel(t).(SeriesModel)
+	final := testModel.FinalModel(t).(seriesModel)
 
 	if final.Choice == "" {
 		t.Errorf("Expected a choice to be made, got empty string")
@@ -102,11 +102,11 @@ func TestSeriesModelWindowResize(t *testing.T) {
 		styling.Item("Sword & Shield"),
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 12)
-	model := SeriesModel{List: l}
+	model := seriesModel{List: l}
 
 	// Send window resize message
 	updatedModel, _ := model.Update(tea.WindowSizeMsg{Width: 100, Height: 30})
-	finalModel := updatedModel.(SeriesModel)
+	finalModel := updatedModel.(seriesModel)
 
 	if finalModel.List.Width() != 100 {
 		t.Errorf("Expected list width to be 100 after resize, got %d", finalModel.List.Width())
@@ -122,7 +122,7 @@ func TestSeriesModelView(t *testing.T) {
 	l := list.New(items, styling.ItemDelegate{}, 20, 12)
 
 	// Test normal view
-	model := SeriesModel{List: l}
+	model := seriesModel{List: l}
 	view := model.View()
 	if view == "" {
 		t.Errorf("Expected non-empty view, got empty string")

@@ -13,18 +13,18 @@ var seriesIDMap = map[string]string{
 	"Sun & Moon":       "sm",
 }
 
-type SeriesModel struct {
+type seriesModel struct {
 	List     list.Model
 	Choice   string
 	SeriesID string
 	Quitting bool
 }
 
-func (m SeriesModel) Init() tea.Cmd {
+func (m seriesModel) Init() tea.Cmd {
 	return nil
 }
 
-func (m SeriesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m seriesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -50,7 +50,7 @@ func (m SeriesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m SeriesModel) View() string {
+func (m seriesModel) View() string {
 	if m.Quitting {
 		return "\n  Quitting card search...\n\n"
 	}
@@ -61,7 +61,7 @@ func (m SeriesModel) View() string {
 	return "\n" + m.List.View()
 }
 
-func SeriesList() SeriesModel {
+func SeriesList() seriesModel {
 	items := []list.Item{
 		styling.Item("Mega Evolution"),
 		styling.Item("Scarlet & Violet"),
@@ -80,5 +80,5 @@ func SeriesList() SeriesModel {
 	l.Styles.PaginationStyle = styling.PaginationStyle
 	l.Styles.HelpStyle = styling.HelpStyle
 
-	return SeriesModel{List: l}
+	return seriesModel{List: l}
 }

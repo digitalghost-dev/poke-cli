@@ -33,7 +33,7 @@ func TestCardsModel_Update_EscKey(t *testing.T) {
 		table.WithFocused(true),
 	)
 
-	model := CardsModel{
+	model := cardsModel{
 		Table:    tbl,
 		Quitting: false,
 	}
@@ -41,7 +41,7 @@ func TestCardsModel_Update_EscKey(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyEsc}
 	newModel, cmd := model.Update(msg)
 
-	resultModel := newModel.(CardsModel)
+	resultModel := newModel.(cardsModel)
 
 	if !resultModel.Quitting {
 		t.Error("Quitting should be set to true when ESC is pressed")
@@ -65,7 +65,7 @@ func TestCardsModel_Update_CtrlC(t *testing.T) {
 		table.WithFocused(true),
 	)
 
-	model := CardsModel{
+	model := cardsModel{
 		Table:    tbl,
 		Quitting: false,
 	}
@@ -73,7 +73,7 @@ func TestCardsModel_Update_CtrlC(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyCtrlC}
 	newModel, cmd := model.Update(msg)
 
-	resultModel := newModel.(CardsModel)
+	resultModel := newModel.(cardsModel)
 
 	if !resultModel.Quitting {
 		t.Error("Quitting should be set to true when Ctrl+C is pressed")
@@ -100,7 +100,7 @@ func TestCardsModel_Update_TabTogglesSearchFocusAndTableSelectedBackground(t *te
 	initialStyles := cardTableStyles(activeTableSelectedBg)
 	tbl.SetStyles(initialStyles)
 
-	model := CardsModel{
+	model := cardsModel{
 		Search:      search,
 		Table:       tbl,
 		TableStyles: initialStyles,
@@ -108,7 +108,7 @@ func TestCardsModel_Update_TabTogglesSearchFocusAndTableSelectedBackground(t *te
 
 	// Tab into the search bar.
 	newModel, _ := model.Update(tea.KeyMsg{Type: tea.KeyTab})
-	m1 := newModel.(CardsModel)
+	m1 := newModel.(cardsModel)
 	if !m1.Search.Focused() {
 		t.Fatal("expected search to be focused after tab")
 	}
@@ -122,7 +122,7 @@ func TestCardsModel_Update_TabTogglesSearchFocusAndTableSelectedBackground(t *te
 
 	// Tab back to the table.
 	newModel2, _ := m1.Update(tea.KeyMsg{Type: tea.KeyTab})
-	m2 := newModel2.(CardsModel)
+	m2 := newModel2.(cardsModel)
 	if m2.Search.Focused() {
 		t.Fatal("expected search to be blurred after tabbing back")
 	}
@@ -148,7 +148,7 @@ func TestCardsModel_Update_ViewImageKey_QuestionMark(t *testing.T) {
 		table.WithFocused(true),
 	)
 
-	model := CardsModel{
+	model := cardsModel{
 		Table:     tbl,
 		ViewImage: false,
 	}
@@ -156,7 +156,7 @@ func TestCardsModel_Update_ViewImageKey_QuestionMark(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'?'}}
 	newModel, cmd := model.Update(msg)
 
-	resultModel := newModel.(CardsModel)
+	resultModel := newModel.(cardsModel)
 
 	if !resultModel.ViewImage {
 		t.Error("ViewImage should be set to true when '?' is pressed")
@@ -180,7 +180,7 @@ func TestCardsModel_Update_ViewImageKey_DoesNotOverrideSearch(t *testing.T) {
 	search := textinput.New()
 	search.Focus()
 
-	model := CardsModel{
+	model := cardsModel{
 		Search:    search,
 		Table:     tbl,
 		ViewImage: false,
@@ -188,7 +188,7 @@ func TestCardsModel_Update_ViewImageKey_DoesNotOverrideSearch(t *testing.T) {
 
 	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'?'}}
 	newModel, _ := model.Update(msg)
-	resultModel := newModel.(CardsModel)
+	resultModel := newModel.(cardsModel)
 
 	if resultModel.ViewImage {
 		t.Fatal("expected ViewImage to remain false when typing '?' in the search field")
@@ -202,7 +202,7 @@ func TestCardsModel_Update_ViewImageKey_DoesNotOverrideSearch(t *testing.T) {
 }
 
 func TestCardsModel_View_Quitting(t *testing.T) {
-	model := CardsModel{
+	model := cardsModel{
 		Quitting: true,
 	}
 
@@ -230,7 +230,7 @@ func TestCardsModel_View_PriceDisplay(t *testing.T) {
 		"001/198 - Bulbasaur": "Price: $1.50",
 	}
 
-	model := CardsModel{
+	model := cardsModel{
 		Table:    tbl,
 		PriceMap: priceMap,
 		Quitting: false,
@@ -260,7 +260,7 @@ func TestCardsModel_View_MissingPrice(t *testing.T) {
 	// Empty price map - simulates missing price data
 	priceMap := map[string]string{}
 
-	model := CardsModel{
+	model := cardsModel{
 		Table:    tbl,
 		PriceMap: priceMap,
 		Quitting: false,
@@ -320,7 +320,7 @@ func TestCardDataMsg_PopulatesModel(t *testing.T) {
 	}
 
 	newModel, _ := model.Update(msg)
-	resultModel := newModel.(CardsModel)
+	resultModel := newModel.(cardsModel)
 
 	if resultModel.Loading {
 		t.Error("Loading should be false after receiving data")
@@ -360,7 +360,7 @@ func TestCardDataMsg_Error_StoresError(t *testing.T) {
 	}
 
 	newModel, cmd := model.Update(msg)
-	resultModel := newModel.(CardsModel)
+	resultModel := newModel.(cardsModel)
 
 	if resultModel.Error == nil {
 		t.Error("Error should be set when error received")
@@ -392,7 +392,7 @@ func TestCardDataMsg_EmptyResult(t *testing.T) {
 	}
 
 	newModel, _ := model.Update(msg)
-	resultModel := newModel.(CardsModel)
+	resultModel := newModel.(cardsModel)
 
 	if resultModel.Loading {
 		t.Error("Loading should be false after receiving data")

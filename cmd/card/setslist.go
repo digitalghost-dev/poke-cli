@@ -13,7 +13,7 @@ import (
 
 var getSetsData = connections.CallTCGData
 
-type SetsModel struct {
+type setsModel struct {
 	Choice     string
 	Error      error
 	Loading    bool
@@ -64,14 +64,14 @@ func fetchSetsCmd(seriesID string) tea.Cmd {
 	}
 }
 
-func (m SetsModel) Init() tea.Cmd {
+func (m setsModel) Init() tea.Cmd {
 	return tea.Batch(
 		m.Spinner.Tick,
 		fetchSetsCmd(m.SeriesName),
 	)
 }
 
-func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m setsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -135,7 +135,7 @@ func (m SetsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m SetsModel) View() string {
+func (m setsModel) View() string {
 	if m.Error != nil {
 		return styling.ApiErrorStyle.Render(
 			"Error loading sets from Supabase:\n" +
@@ -169,12 +169,12 @@ type setData struct {
 }
 
 // SetsList returns a minimal model - data fetching happens via Init()
-func SetsList(seriesID string) (SetsModel, error) {
+func SetsList(seriesID string) (setsModel, error) {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = styling.Yellow
 
-	return SetsModel{
+	return setsModel{
 		SeriesName: seriesID,
 		Loading:    true,
 		Spinner:    s,

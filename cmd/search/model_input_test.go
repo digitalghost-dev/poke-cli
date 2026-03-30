@@ -11,7 +11,7 @@ func TestUpdateInput(t *testing.T) {
 	ti := textinput.New()
 	ti.SetValue("mewtwo")
 
-	m := Model{
+	m := model{
 		ShowResults: true,
 		TextInput:   ti,
 	}
@@ -19,7 +19,7 @@ func TestUpdateInput(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'b'}}
 	mUpdated, _ := UpdateInput(msg, m)
 
-	updated := mUpdated.(Model)
+	updated := mUpdated.(model)
 
 	if updated.ShowResults {
 		t.Errorf("expected ShowResults to be false after pressing 'b'")

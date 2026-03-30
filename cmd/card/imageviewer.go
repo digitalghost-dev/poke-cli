@@ -7,7 +7,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-type ImageModel struct {
+type imageModel struct {
 	CardName  string
 	ImageURL  string
 	Error     error
@@ -37,14 +37,14 @@ func fetchImageCmd(imageURL string) tea.Cmd {
 	}
 }
 
-func (m ImageModel) Init() tea.Cmd {
+func (m imageModel) Init() tea.Cmd {
 	return tea.Batch(
 		m.Spinner.Tick,
 		fetchImageCmd(m.ImageURL),
 	)
 }
 
-func (m ImageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m imageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case imageReadyMsg:
 		m.Loading = false
@@ -72,7 +72,7 @@ func (m ImageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m ImageModel) View() string {
+func (m imageModel) View() string {
 	if m.Loading {
 		return lipgloss.NewStyle().Padding(2).Render(
 			m.Spinner.View() + "Loading image for \n" + m.CardName,
@@ -90,12 +90,12 @@ func (m ImageModel) View() string {
 	return m.ImageData
 }
 
-func ImageRenderer(cardName string, imageURL string) ImageModel {
+func ImageRenderer(cardName string, imageURL string) imageModel {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = styling.Yellow
 
-	return ImageModel{
+	return imageModel{
 		CardName: cardName,
 		ImageURL: imageURL,
 		Loading:  true,
