@@ -13,5 +13,12 @@ including CI/CD pipelines with GitHub Actions and data workflows using Dagster a
 View the [guides](Infrastructure_Guide/index.md) section for more details.
 
 ## Demo
-Here is a quick demo of the CLI/TUI tool in action.
-![demo_gif](https://poke-cli-s3-bucket.s3.us-west-2.amazonaws.com/demo-v1.6.0.gif)
+Here are some demos of the CLI/TUI tool in action.
+
+### Video Game Data
+
+![demo-vg](https://dc8hq8aq7pr04.cloudfront.net/demo-v1.6.0.gif)
+
+### Trading Card Game Data
+
+![demo-tcg](https://dc8hq8aq7pr04.cloudfront.net/poke-cli-card-v1.8.8.gif)
