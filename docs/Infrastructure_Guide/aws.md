@@ -257,8 +257,8 @@ This project uses CloudFront to serve the static assets of the web app.
               }
           }
       ]
-  }
-    ``` 
+    }
+    ```
     4. Save the policy changes.
 
 ---
