@@ -9,9 +9,8 @@ import requests
 from pipelines.utils.json_retriever import fetch_json
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_success():
+def test_fetch_json_success(benchmark):
     """Test successful JSON retrieval."""
     responses.add(
         responses.GET,
@@ -20,16 +19,15 @@ def test_fetch_json_success():
         status=200,
     )
 
-    result = fetch_json("https://api.example.com/data")
+    result = benchmark(fetch_json, "https://api.example.com/data")
 
     assert isinstance(result, dict)  # nosec
     assert result["id"] == 1  # nosec
     assert result["name"] == "Pikachu"  # nosec
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_with_nested_data():
+def test_fetch_json_with_nested_data(benchmark):
     """Test retrieval of nested JSON structures."""
     payload = {
         "results": [
@@ -45,16 +43,15 @@ def test_fetch_json_with_nested_data():
         status=200,
     )
 
-    result = fetch_json("https://api.example.com/products")
+    result = benchmark(fetch_json, "https://api.example.com/products")
 
     assert result["totalItems"] == 2  # nosec
     assert len(result["results"]) == 2  # nosec
     assert result["results"][0]["productId"] == 100  # nosec
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_http_404():
+def test_fetch_json_http_404(benchmark):
     """Test that a 404 response raises HTTPError."""
     responses.add(
         responses.GET,
@@ -63,13 +60,15 @@ def test_fetch_json_http_404():
         status=404,
     )
 
-    with pytest.raises(requests.exceptions.HTTPError):
-        fetch_json("https://api.example.com/missing")
+    def run():
+        with pytest.raises(requests.exceptions.HTTPError):
+            fetch_json("https://api.example.com/missing")
+
+    benchmark(run)
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_http_500():
+def test_fetch_json_http_500(benchmark):
     """Test that a 500 response raises HTTPError."""
     responses.add(
         responses.GET,
@@ -78,13 +77,15 @@ def test_fetch_json_http_500():
         status=500,
     )
 
-    with pytest.raises(requests.exceptions.HTTPError):
-        fetch_json("https://api.example.com/error")
+    def run():
+        with pytest.raises(requests.exceptions.HTTPError):
+            fetch_json("https://api.example.com/error")
+
+    benchmark(run)
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_connection_error():
+def test_fetch_json_connection_error(benchmark):
     """Test that a connection error raises ConnectionError."""
     responses.add(
         responses.GET,
@@ -92,13 +93,15 @@ def test_fetch_json_connection_error():
         body=requests.exceptions.ConnectionError("Connection refused"),
     )
 
-    with pytest.raises(requests.exceptions.ConnectionError):
-        fetch_json("https://api.example.com/down")
+    def run():
+        with pytest.raises(requests.exceptions.ConnectionError):
+            fetch_json("https://api.example.com/down")
+
+    benchmark(run)
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_timeout():
+def test_fetch_json_timeout(benchmark):
     """Test that a timeout raises an appropriate exception."""
     responses.add(
         responses.GET,
@@ -106,13 +109,15 @@ def test_fetch_json_timeout():
         body=requests.exceptions.ReadTimeout("Read timed out"),
     )
 
-    with pytest.raises(requests.exceptions.ReadTimeout):
-        fetch_json("https://api.example.com/slow")
+    def run():
+        with pytest.raises(requests.exceptions.ReadTimeout):
+            fetch_json("https://api.example.com/slow")
+
+    benchmark(run)
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_empty_object():
+def test_fetch_json_empty_object(benchmark):
     """Test retrieval of an empty JSON object."""
     responses.add(
         responses.GET,
@@ -121,14 +126,13 @@ def test_fetch_json_empty_object():
         status=200,
     )
 
-    result = fetch_json("https://api.example.com/empty")
+    result = benchmark(fetch_json, "https://api.example.com/empty")
 
     assert result == {}  # nosec
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_fetch_json_invalid_json():
+def test_fetch_json_invalid_json(benchmark):
     """Test that an invalid JSON body raises a ValueError (JSONDecodeError)."""
     responses.add(
         responses.GET,
@@ -138,5 +142,8 @@ def test_fetch_json_invalid_json():
         content_type="application/json",
     )
 
-    with pytest.raises(requests.exceptions.JSONDecodeError):
-        fetch_json("https://api.example.com/bad")
+    def run():
+        with pytest.raises(requests.exceptions.JSONDecodeError):
+            fetch_json("https://api.example.com/bad")
+
+    benchmark(run)

@@ -43,8 +43,8 @@ func SearchCommand() (string, error) {
 	return output.String(), nil
 }
 
-// Model structure
-type Model struct {
+// model structure
+type model struct {
 	Choice         int
 	Chosen         bool
 	Quitting       bool
@@ -54,24 +54,24 @@ type Model struct {
 	WarningMessage string
 }
 
-func initialModel() Model {
+func initialModel() model {
 	ti := textinput.New()
 	ti.Placeholder = "type name..."
 	ti.CharLimit = 20
 	ti.Width = 20
 
-	return Model{
+	return model{
 		TextInput: ti,
 	}
 }
 
 // Init initializes the program.
-func (m Model) Init() tea.Cmd {
+func (m model) Init() tea.Cmd {
 	return nil
 }
 
 // Update handles keypresses and updates the state.
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -88,7 +88,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // View renders the correct UI screen.
-func (m Model) View() string {
+func (m model) View() string {
 	if m.Quitting {
 		return "\n  Quitting search...\n\n"
 	}

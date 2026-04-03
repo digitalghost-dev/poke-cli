@@ -11,7 +11,7 @@ import (
 )
 
 // UpdateInput handles text input updates.
-func UpdateInput(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
+func UpdateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
@@ -63,7 +63,7 @@ func UpdateInput(msg tea.Msg, m Model) (tea.Model, tea.Cmd) {
 }
 
 // RenderInput renders the input view.
-func RenderInput(m Model) (string, string) {
+func RenderInput(m model) (string, string) {
 	var msg string
 	var endpoint string
 

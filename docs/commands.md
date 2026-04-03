@@ -4,7 +4,6 @@
 
 **Available Flags**
 
-* `--help | -h`
 * `--latest | -l`
 * `--version | -v`
 
@@ -16,13 +15,12 @@ the generation in which it first appeared, and a list of Pokémon that possess i
 
 **Available Flags**
 
-* `--help | -h` 
 * `--pokemon | -p`
 
 Example:
 ```console
-$ poke-cli ability solar-power
-$ poke-cli ability solar-power --pokemon    # list Pokémon that posses the ability
+poke-cli ability solar-power
+poke-cli ability solar-power --pokemon    # list Pokémon that posses the ability
 ```
 
 Output:
@@ -36,7 +34,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli item poke-ball
+poke-cli item poke-ball
 ```
 
 Output:
@@ -51,7 +49,7 @@ and the move's effect.
 
 Example:
 ```console
-$ poke-cli move dazzling-gleam
+poke-cli move dazzling-gleam
 ```
 
 Output:
@@ -65,7 +63,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli natures
+poke-cli natures
 ```
 
 Output:
@@ -79,7 +77,6 @@ Output:
 
 **Available Flags**
 
-* `-h | --help`
 * `-a | --abilities`
 * `-d | --defense`
 * `-i=xx | --image=xx`
@@ -94,7 +91,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli pokemon rockruff --abilities --moves
+poke-cli pokemon rockruff --abilities --moves
 ```
 
 Output:
@@ -103,7 +100,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli pokemon gastrodon --defense
+poke-cli pokemon gastrodon --defense
 ```
 
 Output:
@@ -113,7 +110,7 @@ Output:
 Example:
 ```console
 # choose between three sizes: 'sm', 'md', 'lg'
-$ poke-cli pokemon tyranitar --image=sm
+poke-cli pokemon tyranitar --image=sm
 ```
 
 Output:
@@ -122,7 +119,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli pokemon cacturne --stats
+poke-cli pokemon cacturne --stats
 ```
 
 Output:
@@ -136,7 +133,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli search
+poke-cli search
 ```
 
 Output:
@@ -150,11 +147,29 @@ Output:
 
 Example:
 ```console
-$ poke-cli speed
+poke-cli speed
 ```
 Output:
 
 ![speed_command](assets/speed.gif)
+
+---
+
+## `tcg`
+* Retrieve details about all competitive TCG tournaments for the current season.
+
+**Available Flags**
+
+* `--web | -w` - Open the tournament's website in the default browser.
+
+Example:
+```console
+poke-cli tcg
+```
+
+Output:
+
+![tcg_command](assets/tcg.gif)
 
 ---
 
@@ -163,7 +178,7 @@ Output:
 
 Example:
 ```console
-$ poke-cli types
+poke-cli types
 ```
 Output:
 

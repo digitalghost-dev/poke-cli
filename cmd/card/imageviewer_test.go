@@ -18,7 +18,7 @@ func TestImageModel_Init(t *testing.T) {
 }
 
 func TestImageModel_Update_EscKey(t *testing.T) {
-	model := ImageModel{
+	model := imageModel{
 		CardName: "001/198 - Pineco",
 		ImageURL: "test-sixel-data",
 	}
@@ -33,13 +33,13 @@ func TestImageModel_Update_EscKey(t *testing.T) {
 	}
 
 	// Model should be returned (even if quitting)
-	if _, ok := newModel.(ImageModel); !ok {
+	if _, ok := newModel.(imageModel); !ok {
 		t.Error("Update should return ImageModel")
 	}
 }
 
 func TestImageModel_Update_CtrlC(t *testing.T) {
-	model := ImageModel{
+	model := imageModel{
 		CardName: "001/198 - Pineco",
 		ImageURL: "test-sixel-data",
 	}
@@ -53,7 +53,7 @@ func TestImageModel_Update_CtrlC(t *testing.T) {
 }
 
 func TestImageModel_Update_DifferentKey(t *testing.T) {
-	model := ImageModel{
+	model := imageModel{
 		CardName: "001/198 - Pineco",
 		ImageURL: "test-sixel-data",
 	}
@@ -83,7 +83,7 @@ func TestImageModel_View_Loading(t *testing.T) {
 
 func TestImageModel_View_Loaded(t *testing.T) {
 	expectedData := "test-sixel-data-123"
-	model := ImageModel{
+	model := imageModel{
 		CardName:  "001/198 - Pineco",
 		ImageURL:  "http://example.com/image.png",
 		Loading:   false,
@@ -98,7 +98,7 @@ func TestImageModel_View_Loaded(t *testing.T) {
 }
 
 func TestImageModel_View_Empty(t *testing.T) {
-	model := ImageModel{
+	model := imageModel{
 		CardName:  "001/198 - Pineco",
 		ImageURL:  "",
 		Loading:   false,
@@ -143,7 +143,7 @@ func TestImageModel_Update_ImageReady(t *testing.T) {
 		t.Error("Update with imageReadyMsg should return nil command")
 	}
 
-	updatedModel := newModel.(ImageModel)
+	updatedModel := newModel.(imageModel)
 	if updatedModel.Loading {
 		t.Error(`Update with imageReadyMsg should set Loading to false`)
 	}
@@ -173,7 +173,7 @@ func TestImageModel_Update_SpinnerTick(t *testing.T) {
 	}
 
 	// Model should still be ImageModel
-	if _, ok := newModel.(ImageModel); !ok {
+	if _, ok := newModel.(imageModel); !ok {
 		t.Error("Update should return ImageModel")
 	}
 }

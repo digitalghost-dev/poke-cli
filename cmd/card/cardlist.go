@@ -16,7 +16,7 @@ import (
 
 var getCardData = connections.CallTCGData
 
-type CardsModel struct {
+type cardsModel struct {
 	AllRows           []table.Row
 	Choice            string
 	Error             error
@@ -63,7 +63,7 @@ func cardTableStyles(selectedBg lipgloss.Color) table.Styles {
 	return s
 }
 
-func syncTableStylesForFocus(m *CardsModel) {
+func syncTableStylesForFocus(m *cardsModel) {
 	if m.Search.Focused() {
 		m.TableStyles = cardTableStyles(inactiveTableSelectedBg)
 	} else {
@@ -126,14 +126,14 @@ func fetchCardsCmd(setID string) tea.Cmd {
 	}
 }
 
-func (m CardsModel) Init() tea.Cmd {
+func (m cardsModel) Init() tea.Cmd {
 	return tea.Batch(
 		m.Spinner.Tick,
 		fetchCardsCmd(m.SetID),
 	)
 }
 
-func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m cardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var bubbleCmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -239,7 +239,7 @@ func (m CardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, bubbleCmd
 }
 
-func applyFilter(m *CardsModel) {
+func applyFilter(m *cardsModel) {
 	q := strings.TrimSpace(strings.ToLower(m.Search.Value()))
 	if q == "" {
 		m.Table.SetRows(m.AllRows)
@@ -261,7 +261,7 @@ func applyFilter(m *CardsModel) {
 	m.Table.SetCursor(0)
 }
 
-func (m CardsModel) View() string {
+func (m cardsModel) View() string {
 	if m.Quitting {
 		return "\n  Quitting card search...\n\n"
 	}
@@ -319,12 +319,12 @@ type cardData struct {
 }
 
 // CardsList returns a minimal model - data fetching happens via Init()
-func CardsList(setID string) (CardsModel, error) {
+func CardsList(setID string) (cardsModel, error) {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
 	s.Style = styling.Yellow
 
-	return CardsModel{
+	return cardsModel{
 		SetID:   setID,
 		Loading: true,
 		Spinner: s,

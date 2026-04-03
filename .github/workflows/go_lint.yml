@@ -20,10 +20,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.24
+          go-version: 1.25
 
       - name: Lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v2.0.1
+          version: v2.11.4
           skip-cache: true

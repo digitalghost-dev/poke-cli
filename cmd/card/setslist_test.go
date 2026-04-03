@@ -26,7 +26,7 @@ func TestSetsModel_Update_EscKey(t *testing.T) {
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
-	model := SetsModel{
+	model := setsModel{
 		List:       l,
 		SeriesName: "sv",
 		Quitting:   false,
@@ -35,7 +35,7 @@ func TestSetsModel_Update_EscKey(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyEsc}
 	newModel, cmd := model.Update(msg)
 
-	resultModel, ok := newModel.(SetsModel)
+	resultModel, ok := newModel.(setsModel)
 	if !ok {
 		t.Fatalf("expected SetsModel, got %T", newModel)
 	}
@@ -55,7 +55,7 @@ func TestSetsModel_Update_CtrlC(t *testing.T) {
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
-	model := SetsModel{
+	model := setsModel{
 		List:       l,
 		SeriesName: "sv",
 		Quitting:   false,
@@ -64,7 +64,7 @@ func TestSetsModel_Update_CtrlC(t *testing.T) {
 	msg := tea.KeyMsg{Type: tea.KeyCtrlC}
 	newModel, cmd := model.Update(msg)
 
-	resultModel, ok := newModel.(SetsModel)
+	resultModel, ok := newModel.(setsModel)
 	if !ok {
 		t.Fatalf("expected SetsModel, got %T", newModel)
 	}
@@ -84,7 +84,7 @@ func TestSetsModel_Update_WindowSizeMsg(t *testing.T) {
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
-	model := SetsModel{
+	model := setsModel{
 		List:       l,
 		SeriesName: "sv",
 	}
@@ -92,7 +92,7 @@ func TestSetsModel_Update_WindowSizeMsg(t *testing.T) {
 	msg := tea.WindowSizeMsg{Width: 100, Height: 50}
 	newModel, cmd := model.Update(msg)
 
-	resultModel, ok := newModel.(SetsModel)
+	resultModel, ok := newModel.(setsModel)
 	if !ok {
 		t.Fatalf("expected SetsModel, got %T", newModel)
 	}
@@ -112,7 +112,7 @@ func TestSetsModel_View_Quitting(t *testing.T) {
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
-	model := SetsModel{
+	model := setsModel{
 		List:     l,
 		Quitting: true,
 	}
@@ -130,7 +130,7 @@ func TestSetsModel_View_ChoiceMade(t *testing.T) {
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
-	model := SetsModel{
+	model := setsModel{
 		List:   l,
 		Choice: "Scarlet & Violet",
 	}
@@ -148,7 +148,7 @@ func TestSetsModel_View_Normal(t *testing.T) {
 	}
 	l := list.New(items, styling.ItemDelegate{}, 20, 20)
 
-	model := SetsModel{
+	model := setsModel{
 		List:     l,
 		Quitting: false,
 		Choice:   "",
@@ -173,7 +173,7 @@ func TestSetsModel_Update_EnterKey(t *testing.T) {
 		"Paldea Evolved":   "sv02",
 	}
 
-	model := SetsModel{
+	model := setsModel{
 		List:      l,
 		SetsIDMap: setsIDMap,
 	}
@@ -225,7 +225,7 @@ func TestSetsDataMsg_PopulatesModel(t *testing.T) {
 	}
 
 	newModel, _ := model.Update(msg)
-	resultModel := newModel.(SetsModel)
+	resultModel := newModel.(setsModel)
 
 	if resultModel.Loading {
 		t.Error("Loading should be false after receiving data")
@@ -248,7 +248,7 @@ func TestSetsDataMsg_Error_StoresError(t *testing.T) {
 	}
 
 	newModel, cmd := model.Update(msg)
-	resultModel := newModel.(SetsModel)
+	resultModel := newModel.(setsModel)
 
 	if resultModel.Error == nil {
 		t.Error("Error should be set when error received")
@@ -278,7 +278,7 @@ func TestSetsDataMsg_EmptyResult(t *testing.T) {
 	}
 
 	newModel, _ := model.Update(msg)
-	resultModel := newModel.(SetsModel)
+	resultModel := newModel.(setsModel)
 
 	if resultModel.Loading {
 		t.Error("Loading should be false after receiving data")

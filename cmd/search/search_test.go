@@ -57,19 +57,19 @@ func TestSearchCommand(t *testing.T) {
 }
 
 func TestModelInit(t *testing.T) {
-	m := Model{}
+	m := model{}
 	cmd := m.Init()
 	assert.Nil(t, cmd, "Init() should return nil")
 }
 
 func TestModelQuit(t *testing.T) {
-	m := Model{}
+	m := model{}
 
 	// Simulate pressing Esc
 	msg := tea.KeyMsg{Type: tea.KeyEsc}
 	newModel, cmd := m.Update(msg)
 
-	assert.True(t, newModel.(Model).Quitting, "Model should be set to quitting")
+	assert.True(t, newModel.(model).Quitting, "Model should be set to quitting")
 
 	if cmd != nil {
 		assert.Equal(t, cmd(), tea.Quit(), "Update() should return tea.Quit command")
@@ -90,13 +90,13 @@ func TestSearchCommandValidationError(t *testing.T) {
 }
 
 func TestModelViewQuitting(t *testing.T) {
-	m := Model{Quitting: true}
+	m := model{Quitting: true}
 	view := m.View()
 	assert.Contains(t, view, "Quitting search", "View should show quitting message")
 }
 
 func TestModelViewShowResults(t *testing.T) {
-	m := Model{
+	m := model{
 		ShowResults:   true,
 		SearchResults: "Test Results",
 	}
@@ -106,7 +106,7 @@ func TestModelViewShowResults(t *testing.T) {
 }
 
 func TestModelViewNotChosen(t *testing.T) {
-	m := Model{Chosen: false}
+	m := model{Chosen: false}
 	view := m.View()
 	// View calls RenderSelection when not chosen
 	assert.Contains(t, view, "Search for a resource", "View should show selection prompt")

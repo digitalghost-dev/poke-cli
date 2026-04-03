@@ -11,6 +11,7 @@ from termcolor import colored
 
 SET_PRODUCT_MATCHING = {
     # Mega Evolution
+    "me03": "24587",
     "me02.5": "24541",
     "me02": "24448",
     "me01": "24380",

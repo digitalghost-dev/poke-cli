@@ -82,11 +82,9 @@ def mock_api_response():
     }
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_extract_sets_data_success(mock_api_response):
+def test_extract_sets_data_success(benchmark, mock_api_response):
     """Test successful extraction of sets from multiple series"""
-    # Mock all API calls
     for url, response_data in mock_api_response.items():
         responses.add(
             responses.GET,
@@ -95,9 +93,8 @@ def test_extract_sets_data_success(mock_api_response):
             status=200,
         )
 
-    result = extract_sets_data()
+    result = benchmark(extract_sets_data)
 
-    # Assertions
     assert isinstance(result, pl.DataFrame)  # nosec
     assert len(result) == 6  # nosec (2 + 2 + 1 + 1 sets)
     assert set(result.columns) == {  # nosec
@@ -113,11 +110,9 @@ def test_extract_sets_data_success(mock_api_response):
     assert set(result["set_id"].to_list()) == {"me01", "me02", "sv01", "sv02", "swsh1", "sm1"}  # nosec
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_extract_sets_data_empty_sets(mock_api_response):
+def test_extract_sets_data_empty_sets(benchmark, mock_api_response):
     """Test extraction when a series has no sets"""
-    # Modify one response to have empty sets
     mock_api_response["https://api.tcgdex.net/v2/en/series/me"]["sets"] = []
 
     for url, response_data in mock_api_response.items():
@@ -128,16 +123,15 @@ def test_extract_sets_data_empty_sets(mock_api_response):
             status=200,
         )
 
-    result = extract_sets_data()
+    result = benchmark(extract_sets_data)
 
     assert isinstance(result, pl.DataFrame)  # nosec
     assert len(result) == 4  # nosec (0 + 2 + 1 + 1 sets)
     assert "me" not in result["series_id"].to_list()  # nosec
 
 
-@pytest.mark.benchmark
 @responses.activate
-def test_extract_sets_data_null_card_counts():
+def test_extract_sets_data_null_card_counts(benchmark):
     """Test extraction with null card counts"""
     mock_responses = {
         "https://api.tcgdex.net/v2/en/series/me": {
@@ -178,7 +172,7 @@ def test_extract_sets_data_null_card_counts():
             status=200,
         )
 
-    result = extract_sets_data()
+    result = benchmark(extract_sets_data)
 
     assert isinstance(result, pl.DataFrame)  # nosec
     assert len(result) == 1  # nosec

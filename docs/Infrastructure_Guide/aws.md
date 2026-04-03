@@ -22,6 +22,7 @@ local deployment and moves it into the cloud.
 * [VPC](#vpc)
 * [RDS](#rds)
 * [EC2](#ec2)
+* [S3](#s3)
 * [Elastic IPs](#elastic-ips)
 * [EventBridge](#eventbridge)
 * [Secrets Manager](#secrets-manager)
@@ -195,8 +196,77 @@ AWS EC2 (Elastic Compute Cloud) is a cloud service that provides resizable virtu
 
 ---
 
+## S3
+AWS S3 is a cloud storage service that lets you store and retrieve any number of files (called "objects") from anywhere on the internet.
+
+This project uses s3 to store demo GIFs of the CLI and assets for the web app.
+
+1. Visit the [S3 console](https://console.aws.amazon.com/s3).
+2. Click on **Create Bucket**.
+3. Select **general purpose** for the bucket type, then **global namespace** for the bucket namespace.
+4. Give the bucket a name.
+5. Under the **Object Ownership** section, choose **ACLs disabled (recommended)**.
+6. Choose to block all public access. (CloudFront will be set up as a CDN)
+7. Disable bucket versioning.
+8. Optionally, add tags for organizational purposes.
+9. Leave **Default Encryption** section with default options.
+10. Click **Create Bucket**.
+
+### CloudFront
+AWS CloudFront is a content delivery network (CDN) that sits in front of your S3 files, serving content from servers closest to the user for faster load times, while also providing DDoS protection.
+
+This project uses CloudFront to serve the static assets of the web app.
+
+1. Visit the [CloudFront console](https://console.aws.amazon.com/cloudfront/home).
+2. Click on create distribution
+
+* Step 1 // Choose a Plan
+   1. Choose the free plan, click next
+* Step 2 // Get Started
+   1. Provide a name for the distribution
+   2. Project doesn’t have domains on Route 53
+   3. Add tags for organization, click next
+* Step 3 // Specify Origin
+   1. Origin type is Amazon S3
+   2. Click **Browse S3** and choose the correct bucket
+   3. Keep recommended settings, click next
+* Step 4 // Enable Security
+   1. Enable **Use monitor mode**
+* Step 5 // Review and Create
+   1. Review the configuration and then click **Create Distribution** when ready
+* Step 6 // Update S3 Bucket Policy
+   1. Visit the S3 [homepage](https://us-east-1.console.aws.amazon.com/s3/home) and select the bucket
+   2. Under the **Permissions** tab, in the **Block public access** section, ensure that block _all_ public access is on.
+   3. In the **Bucket Policy** section, click on **Edit**, paste in the following policy (fill missing values):
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Sid": "AllowCloudFrontServicePrincipal",
+              "Effect": "Allow",
+              "Principal": {
+                  "Service": "cloudfront.amazonaws.com"
+              },
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::<S3_BUCKET_NAME>/*",
+              "Condition": {
+                  "ArnLike": {
+                      "AWS:SourceArn": "arn:aws:cloudfront::<AWS_ACCOUNT_ID>:distribution/<CLOUDFRONT_DISTRIBUTION_ID>"
+                  }
+              }
+          }
+      ]
+    }
+    ```
+    4. Save the policy changes.
+
+---
+
 ## Elastic IPs
 An Elastic IP is a static public IPv4 address in AWS that can be assigned to an EC2 instance.
+
+A static IP address is used to ensure the virtual machine can reliably connect to the PostgreSQL database on every startup.
 
 1. Visit the [EC2 console](https://console.aws.amazon.com/ec2).
 2. On the left, under **Network & Security**, click on **Elastic IPs**.
