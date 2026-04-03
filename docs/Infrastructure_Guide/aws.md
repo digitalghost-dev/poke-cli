@@ -235,10 +235,33 @@ This project uses CloudFront to serve the static assets of the web app.
 * Step 5 // Review and Create
    1. Review the configuration and then click **Create Distribution** when ready
 * Step 6 // Update S3 Bucket Policy
-   1. The S3 bucket needs to be updated to block all public access and only allow CloudFront to access it.
-   2. Visit the S3 [homepage](https://us-east-1.console.aws.amazon.com/s3/home) and select the bucket
-   3. Under the **Permissions** tab, in the **Block public access** section, click on **Edit** and check all four boxes to disable public access.
-   4. In the **Bucket Policy** section,
+   1. Visit the S3 [homepage](https://us-east-1.console.aws.amazon.com/s3/home) and select the bucket
+   2. Under the **Permissions** tab, in the **Block public access** section, ensure that block _all_ public access is on.
+   3. In the **Bucket Policy** section, click on **Edit**, paste in the following policy (fill missing values):
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Sid": "AllowCloudFrontServicePrincipal",
+              "Effect": "Allow",
+              "Principal": {
+                  "Service": "cloudfront.amazonaws.com"
+              },
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::<S3_BUCKET_NAME>/*",
+              "Condition": {
+                  "ArnLike": {
+                      "AWS:SourceArn": "arn:aws:cloudfront::<AWS_ACCOUNT_ID>:distribution/<CLOUDFRONT_DISTRIBUTION_ID>"
+                  }
+              }
+          }
+      ]
+  }
+    ``` 
+    4. Save the policy changes.
+
+---
 
 ## Elastic IPs
 An Elastic IP is a static public IPv4 address in AWS that can be assigned to an EC2 instance.

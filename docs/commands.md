@@ -160,7 +160,7 @@ Output:
 
 **Available Flags**
 
-* `--web | -w`
+* `--web | -w` - Open the tournament's website in the default browser.
 
 Example:
 ```console
