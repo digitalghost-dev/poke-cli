@@ -93,11 +93,11 @@ func PokemonCommand() (string, error) {
 		}
 	}
 
-	eggGroup := func(w io.Writer) {
-		var eggGroupSlice []string
+	eggInformation := func(w io.Writer) {
+		var eggInformationSlice []string
 
 		for _, entry := range pokemonSpeciesStruct.EggGroups {
-			modernEggGroupNames := map[string]string{
+			modernEggInformationNames := map[string]string{
 				"indeterminate": "Amorphous",
 				"ground":        "Field",
 				"humanshape":    "Human-Like",
@@ -105,16 +105,41 @@ func PokemonCommand() (string, error) {
 				"no-eggs":       "Undiscovered",
 			}
 
-			if name, exists := modernEggGroupNames[entry.Name]; exists {
-				eggGroupSlice = append(eggGroupSlice, name)
+			if name, exists := modernEggInformationNames[entry.Name]; exists {
+				eggInformationSlice = append(eggInformationSlice, name)
 			} else {
-				capitalizedEggGroup := cases.Title(language.English).String(entry.Name)
-				eggGroupSlice = append(eggGroupSlice, capitalizedEggGroup)
+				capitalizedEggInformation := cases.Title(language.English).String(entry.Name)
+				eggInformationSlice = append(eggInformationSlice, capitalizedEggInformation)
 			}
 		}
 
-		sort.Strings(eggGroupSlice)
-		fmt.Fprintf(w, "\n%s %s %s", styling.ColoredBullet, "Egg Group(s):", strings.Join(eggGroupSlice, ", "))
+		sort.Strings(eggInformationSlice)
+
+		genderRate := pokemonSpeciesStruct.GenderRate
+		m := map[int]string{
+			-1: "Genderless",
+			0:  "0% F",
+			1:  "12.5% F",
+			2:  "25% F",
+			3:  "37.5% F",
+			4:  "50% F",
+			5:  "62.5% F",
+			6:  "75% F",
+			7:  "87.5% F",
+			8:  "100% F",
+		}
+
+		hatchCounter := pokemonSpeciesStruct.HatchCounter
+
+		fmt.Fprintf(w,
+			"\n%s %s %s\n%s %s %s\n%s %s %d",
+			styling.ColoredBullet,
+			"Egg Group(s):", strings.Join(eggInformationSlice, ", "),
+			styling.ColoredBullet,
+			"Gender Rate:", m[genderRate],
+			styling.ColoredBullet,
+			"Egg Cycles:", hatchCounter,
+		)
 	}
 
 	typing := func(w io.Writer) {
@@ -184,7 +209,7 @@ func PokemonCommand() (string, error) {
 	)
 
 	entry(&entryOutput)
-	eggGroup(&eggGroupOutput)
+	eggInformation(&eggGroupOutput)
 	typing(&typeOutput)
 	metrics(&metricsOutput)
 	species(&speciesOutput)
