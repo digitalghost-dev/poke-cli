@@ -171,6 +171,7 @@ type PokemonJSONStruct struct {
 	} `json:"sprites"`
 	Stats []struct {
 		BaseStat int `json:"base_stat"`
+		Effort int `json:"effort"`
 		Stat     struct {
 			Name string `json:"name"`
 		} `json:"stat"`

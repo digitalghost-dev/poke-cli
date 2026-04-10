@@ -142,6 +142,28 @@ func PokemonCommand() (string, error) {
 		)
 	}
 
+	effortValues := func(w io.Writer) {
+		nameMapping := map[string]string{
+			"hp":              "HP",
+			"attack":          "Atk",
+			"defense":         "Def",
+			"special-attack":  "SpA",
+			"special-defense": "SpD",
+			"speed":           "Spd",
+		}
+
+		var evs []string
+
+		for _, effortValue := range pokemonStruct.Stats {
+			if effortValue.Effort > 0 {
+				name := nameMapping[effortValue.Stat.Name]
+				evs = append(evs, fmt.Sprintf("%d %s", effortValue.Effort, name))
+			}
+		}
+
+		fmt.Fprintf(w, "\n%s Effort Values: %s", styling.ColoredBullet, strings.Join(evs, ", "))
+	}
+
 	typing := func(w io.Writer) {
 		var typeBoxes []string
 
@@ -201,11 +223,12 @@ func PokemonCommand() (string, error) {
 	}
 
 	var (
-		entryOutput    bytes.Buffer
-		eggGroupOutput bytes.Buffer
-		typeOutput     bytes.Buffer
-		metricsOutput  bytes.Buffer
-		speciesOutput  bytes.Buffer
+		entryOutput        bytes.Buffer
+		eggGroupOutput     bytes.Buffer
+		typeOutput         bytes.Buffer
+		metricsOutput      bytes.Buffer
+		speciesOutput      bytes.Buffer
+		effortValuesOutput bytes.Buffer
 	)
 
 	entry(&entryOutput)
@@ -213,10 +236,11 @@ func PokemonCommand() (string, error) {
 	typing(&typeOutput)
 	metrics(&metricsOutput)
 	species(&speciesOutput)
+	effortValues(&effortValuesOutput)
 
 	fmt.Fprintf(&output,
-		"Your selected Pokémon: %s\n%s\n%s%s%s%s\n",
-		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(),
+		"Your selected Pokémon: %s\n%s\n%s%s%s%s%s\n",
+		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(), effortValuesOutput.String(),
 	)
 
 	if *pf.Image != "" || *pf.ShortImage != "" {
