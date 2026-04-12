@@ -40,7 +40,13 @@ func ValidateArgs(args []string, v Validator) error {
 		return err
 	}
 	if v.RequireName && len(args) == 2 {
-		return fmt.Errorf("✖ Error! Please specify a(n) %s", v.CmdName)
+		errMessage := styling.ErrorBorder.Render(
+			styling.ErrorColor.Render("✖ Error!"),
+			fmt.Sprintf("\nPlease declare a(n) %s's name after the <%s> command", v.CmdName, v.CmdName),
+			fmt.Sprintf("\nRun 'poke-cli %s -h' for more details", v.CmdName),
+			"\nerror: insufficient arguments",
+		)
+		return fmt.Errorf("%s", errMessage)
 	}
 	if !v.HasFlags && !v.RequireName {
 		if err := checkNoOtherOptions(args, v.MaxArgs, v.CmdName); err != nil {

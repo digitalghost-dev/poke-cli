@@ -93,28 +93,77 @@ func PokemonCommand() (string, error) {
 		}
 	}
 
-	eggGroup := func(w io.Writer) {
-		var eggGroupSlice []string
+	eggInformation := func(w io.Writer) {
+		var eggInformationSlice []string
+
+		modernEggInformationNames := map[string]string{
+			"indeterminate": "Amorphous",
+			"ground":        "Field",
+			"humanshape":    "Human-Like",
+			"plant":         "Grass",
+			"no-eggs":       "Undiscovered",
+		}
 
 		for _, entry := range pokemonSpeciesStruct.EggGroups {
-			modernEggGroupNames := map[string]string{
-				"indeterminate": "Amorphous",
-				"ground":        "Field",
-				"humanshape":    "Human-Like",
-				"plant":         "Grass",
-				"no-eggs":       "Undiscovered",
-			}
-
-			if name, exists := modernEggGroupNames[entry.Name]; exists {
-				eggGroupSlice = append(eggGroupSlice, name)
+			if name, exists := modernEggInformationNames[entry.Name]; exists {
+				eggInformationSlice = append(eggInformationSlice, name)
 			} else {
-				capitalizedEggGroup := cases.Title(language.English).String(entry.Name)
-				eggGroupSlice = append(eggGroupSlice, capitalizedEggGroup)
+				eggInformationSlice = append(eggInformationSlice, cases.Title(language.English).String(entry.Name))
 			}
 		}
 
-		sort.Strings(eggGroupSlice)
-		fmt.Fprintf(w, "\n%s %s %s", styling.ColoredBullet, "Egg Group(s):", strings.Join(eggGroupSlice, ", "))
+		sort.Strings(eggInformationSlice)
+
+		genderRate := pokemonSpeciesStruct.GenderRate
+		m := map[int]string{
+			-1: "Genderless",
+			0:  "0% F",
+			1:  "12.5% F",
+			2:  "25% F",
+			3:  "37.5% F",
+			4:  "50% F",
+			5:  "62.5% F",
+			6:  "75% F",
+			7:  "87.5% F",
+			8:  "100% F",
+		}
+
+		hatchCounter := pokemonSpeciesStruct.HatchCounter
+
+		fmt.Fprintf(w,
+			"\n%s %s %s\n%s %s %s\n%s %s %d",
+			styling.ColoredBullet,
+			"Egg Group(s):", strings.Join(eggInformationSlice, ", "),
+			styling.ColoredBullet,
+			"Gender Rate:", m[genderRate],
+			styling.ColoredBullet,
+			"Egg Cycles:", hatchCounter,
+		)
+	}
+
+	effortValues := func(w io.Writer) {
+		nameMapping := map[string]string{
+			"hp":              "HP",
+			"attack":          "Atk",
+			"defense":         "Def",
+			"special-attack":  "SpA",
+			"special-defense": "SpD",
+			"speed":           "Spd",
+		}
+
+		var evs []string
+
+		for _, effortValue := range pokemonStruct.Stats {
+			if effortValue.Effort > 0 {
+				name, ok := nameMapping[effortValue.Stat.Name]
+				if !ok {
+					name = "Missing from API"
+				}
+				evs = append(evs, fmt.Sprintf("%d %s", effortValue.Effort, name))
+			}
+		}
+
+		fmt.Fprintf(w, "\n%s Effort Values: %s", styling.ColoredBullet, strings.Join(evs, ", "))
 	}
 
 	typing := func(w io.Writer) {
@@ -176,22 +225,24 @@ func PokemonCommand() (string, error) {
 	}
 
 	var (
-		entryOutput    bytes.Buffer
-		eggGroupOutput bytes.Buffer
-		typeOutput     bytes.Buffer
-		metricsOutput  bytes.Buffer
-		speciesOutput  bytes.Buffer
+		entryOutput        bytes.Buffer
+		eggGroupOutput     bytes.Buffer
+		typeOutput         bytes.Buffer
+		metricsOutput      bytes.Buffer
+		speciesOutput      bytes.Buffer
+		effortValuesOutput bytes.Buffer
 	)
 
 	entry(&entryOutput)
-	eggGroup(&eggGroupOutput)
+	eggInformation(&eggGroupOutput)
 	typing(&typeOutput)
 	metrics(&metricsOutput)
 	species(&speciesOutput)
+	effortValues(&effortValuesOutput)
 
 	fmt.Fprintf(&output,
-		"Your selected Pokémon: %s\n%s\n%s%s%s%s\n",
-		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(),
+		"Your selected Pokémon: %s\n%s\n%s%s%s%s%s\n",
+		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(), effortValuesOutput.String(),
 	)
 
 	if *pf.Image != "" || *pf.ShortImage != "" {

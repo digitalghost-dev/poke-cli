@@ -1,28 +1,16 @@
 package structs
 
-func (a AbilityJSONStruct) GetResourceName() string {
-	return a.Name
-}
+func (a AbilityJSONStruct) GetResourceName() string { return a.Name }
 
-func (i ItemJSONStruct) GetResourceName() string {
-	return i.Name
-}
+func (i ItemJSONStruct) GetResourceName() string { return i.Name }
 
-func (m MoveJSONStruct) GetResourceName() string {
-	return m.Name
-}
+func (m MoveJSONStruct) GetResourceName() string { return m.Name }
 
-func (p PokemonJSONStruct) GetResourceName() string {
-	return p.Name
-}
+func (p PokemonJSONStruct) GetResourceName() string { return p.Name }
 
-func (s PokemonSpeciesJSONStruct) GetResourceName() string {
-	return s.Name
-}
+func (s PokemonSpeciesJSONStruct) GetResourceName() string { return s.Name }
 
-func (t TypesJSONStruct) GetResourceName() string {
-	return t.Name
-}
+func (t TypesJSONStruct) GetResourceName() string { return t.Name }
 
 // AbilityJSONStruct ability endpoint from API
 type AbilityJSONStruct struct {
@@ -183,6 +171,7 @@ type PokemonJSONStruct struct {
 	} `json:"sprites"`
 	Stats []struct {
 		BaseStat int `json:"base_stat"`
+		Effort   int `json:"effort"`
 		Stat     struct {
 			Name string `json:"name"`
 		} `json:"stat"`
@@ -215,6 +204,8 @@ type PokemonSpeciesJSONStruct struct {
 			URL  string `json:"url"`
 		} `json:"version"`
 	} `json:"flavor_text_entries"`
+	GenderRate   int `json:"gender_rate"`
+	HatchCounter int `json:"hatch_counter"`
 }
 
 // TypesJSONStruct type endpoint from API
