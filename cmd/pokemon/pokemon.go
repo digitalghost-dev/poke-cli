@@ -96,20 +96,19 @@ func PokemonCommand() (string, error) {
 	eggInformation := func(w io.Writer) {
 		var eggInformationSlice []string
 
-		for _, entry := range pokemonSpeciesStruct.EggGroups {
-			modernEggInformationNames := map[string]string{
-				"indeterminate": "Amorphous",
-				"ground":        "Field",
-				"humanshape":    "Human-Like",
-				"plant":         "Grass",
-				"no-eggs":       "Undiscovered",
-			}
+		modernEggInformationNames := map[string]string{
+			"indeterminate": "Amorphous",
+			"ground":        "Field",
+			"humanshape":    "Human-Like",
+			"plant":         "Grass",
+			"no-eggs":       "Undiscovered",
+		}
 
+		for _, entry := range pokemonSpeciesStruct.EggGroups {
 			if name, exists := modernEggInformationNames[entry.Name]; exists {
 				eggInformationSlice = append(eggInformationSlice, name)
 			} else {
-				capitalizedEggInformation := cases.Title(language.English).String(entry.Name)
-				eggInformationSlice = append(eggInformationSlice, capitalizedEggInformation)
+				eggInformationSlice = append(eggInformationSlice, cases.Title(language.English).String(entry.Name))
 			}
 		}
 
