@@ -112,13 +112,13 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 > The `card` command renders TCG card images using your terminal's graphics protocol. When running inside Docker, pass your terminal's environment variables so image rendering works correctly:
 > ```bash
 > # Kitty
-> docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.9.1 card
+> docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.9.2 card
 >
 > # WezTerm, iTerm2, Ghostty, Konsole, Rio, Tabby
-> docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.9.1 card
+> docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.9.2 card
 >
 > # Windows Terminal (Sixel)
-> docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.9.1 card
+> docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.9.2 card
 > ```
 > If your terminal is not listed above, image rendering is not supported inside Docker.
 
