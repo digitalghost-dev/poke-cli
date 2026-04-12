@@ -156,7 +156,10 @@ func PokemonCommand() (string, error) {
 
 		for _, effortValue := range pokemonStruct.Stats {
 			if effortValue.Effort > 0 {
-				name := nameMapping[effortValue.Stat.Name]
+				name, ok := nameMapping[effortValue.Stat.Name]
+				if !ok {
+					name = "Missing from API"
+				}
 				evs = append(evs, fmt.Sprintf("%d %s", effortValue.Effort, name))
 			}
 		}
