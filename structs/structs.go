@@ -171,7 +171,7 @@ type PokemonJSONStruct struct {
 	} `json:"sprites"`
 	Stats []struct {
 		BaseStat int `json:"base_stat"`
-		Effort int `json:"effort"`
+		Effort   int `json:"effort"`
 		Stat     struct {
 			Name string `json:"name"`
 		} `json:"stat"`
@@ -204,7 +204,7 @@ type PokemonSpeciesJSONStruct struct {
 			URL  string `json:"url"`
 		} `json:"version"`
 	} `json:"flavor_text_entries"`
-	GenderRate int `json:"gender_rate"`
+	GenderRate   int `json:"gender_rate"`
 	HatchCounter int `json:"hatch_counter"`
 }
 
