@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 	xstrings "github.com/charmbracelet/x/exp/strings"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
@@ -316,11 +316,13 @@ func formula() (string, error) {
 		styling.Yellow.Render(speedStr),
 	)
 
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
-		BorderForeground(lipgloss.AdaptiveColor{Light: "#444", Dark: "#EEE"}).
-		Width(32)
+		BorderForeground(ld(lipgloss.Color("#444"), lipgloss.Color("#EEE"))).
+		Width(34)
 
 	fullDoc := lipgloss.JoinVertical(lipgloss.Top, header, "---", body)
 	output.WriteString(docStyle.Render(fullDoc))

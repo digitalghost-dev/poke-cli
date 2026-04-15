@@ -8,9 +8,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -75,11 +76,13 @@ func latestRelease(output *strings.Builder) error {
 	releaseString := "Latest available release on GitHub:"
 	releaseTag := styling.ColoredBullet.Render("") + release.TagName
 
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
-		BorderForeground(lipgloss.AdaptiveColor{Light: "#444", Dark: "#EEE"}).
-		Width(30)
+		BorderForeground(ld(lipgloss.Color("#444"), lipgloss.Color("#EEE"))).
+		Width(32)
 
 	fullDoc := lipgloss.JoinVertical(lipgloss.Top, releaseString, releaseTag)
 
