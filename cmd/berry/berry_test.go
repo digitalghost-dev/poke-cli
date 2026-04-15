@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/x/exp/teatest"
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	"github.com/charmbracelet/x/exp/teatest/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -74,6 +74,7 @@ func TestModelUpdate(t *testing.T) {
 		table.WithRows(rows),
 		table.WithFocused(true),
 		table.WithHeight(5),
+		table.WithWidth(16),
 	)
 
 	m := model{
@@ -124,15 +125,15 @@ func TestModelView(t *testing.T) {
 	}
 
 	view := m.View()
-	if view == "" {
+	if view.Content == "" {
 		t.Errorf("View() should not return empty string for normal state")
 	}
 
 	// Test quitting state
 	m.quitting = true
 	view = m.View()
-	if !strings.Contains(view, "Goodbye") {
-		t.Errorf("View() should contain 'Goodbye' when quitting, got %q", view)
+	if !strings.Contains(view.Content, "Goodbye") {
+		t.Errorf("View() should contain 'Goodbye' when quitting, got %q", view.Content)
 	}
 }
 
@@ -145,6 +146,7 @@ func TestModelViewWithSelectedBerry(t *testing.T) {
 		table.WithRows(rows),
 		table.WithFocused(true),
 		table.WithHeight(5),
+		table.WithWidth(16),
 	)
 
 	m := model{
@@ -161,8 +163,8 @@ func TestModelViewWithSelectedBerry(t *testing.T) {
 	}
 
 	for _, element := range expectedElements {
-		if !strings.Contains(view, element) {
-			t.Errorf("View() should contain %q, got %q", element, view)
+		if !strings.Contains(view.Content, element) {
+			t.Errorf("View() should contain %q, got %q", element, view.Content)
 		}
 	}
 }
@@ -182,6 +184,7 @@ func createTestModel() model {
 		table.WithRows(rows),
 		table.WithFocused(true),
 		table.WithHeight(5),
+		table.WithWidth(16),
 	)
 
 	s := table.DefaultStyles()
@@ -202,14 +205,14 @@ func TestTableNavigation(t *testing.T) {
 	testModel := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(100, 50))
 
 	// Navigate down twice
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown})
 
 	// Navigate back up once
-	testModel.Send(tea.KeyMsg{Type: tea.KeyUp})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyUp})
 
 	// Quit the program
-	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+	testModel.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(model)
@@ -229,7 +232,7 @@ func TestTableQuitWithEscape(t *testing.T) {
 	testModel := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(100, 50))
 
 	// Quit with escape
-	testModel.Send(tea.KeyMsg{Type: tea.KeyEsc})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyEscape})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(model)
@@ -244,7 +247,7 @@ func TestTableInitialSelection(t *testing.T) {
 	testModel := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(100, 50))
 
 	// Don't navigate, just quit immediately
-	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+	testModel.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(model)

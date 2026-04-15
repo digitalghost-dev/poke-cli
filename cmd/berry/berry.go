@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -65,7 +65,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var bubbleCmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "esc", "ctrl+c":
 			m.quitting = true
@@ -87,9 +87,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // View renders the current UI
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.quitting {
-		return "\n Goodbye! \n"
+		return tea.NewView("\n Goodbye! \n")
 	}
 
 	selectedBerry := ""
@@ -100,7 +100,7 @@ func (m model) View() string {
 	leftPanel := styling.TypesTableBorder.Render(m.table.View())
 
 	rightPanel := lipgloss.NewStyle().
-		Width(50).
+		Width(52).
 		Height(29).
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(styling.YellowColor).
@@ -109,18 +109,18 @@ func (m model) View() string {
 
 	screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
 
-	return fmt.Sprintf("Highlight a berry!\n%s\n%s",
+	return tea.NewView(fmt.Sprintf("Highlight a berry!\n%s\n%s",
 		screen,
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit)"))
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nctrl+c | esc (quit)")))
 }
 
 func tableGeneration() error {
 	namesList, err := connections.QueryBerryData(`
-		SELECT 
+		SELECT
 		    UPPER(SUBSTR(name, 1, 1)) || SUBSTR(name, 2)
-		FROM 
-		    berries 
-		ORDER BY 
+		FROM
+		    berries
+		ORDER BY
 		    name`)
 	if err != nil {
 		log.Fatalf("Failed to get berry names: %v", err)
@@ -136,6 +136,7 @@ func tableGeneration() error {
 		table.WithRows(rows),
 		table.WithFocused(true),
 		table.WithHeight(28),
+		table.WithWidth(16),
 	)
 
 	s := table.DefaultStyles()
