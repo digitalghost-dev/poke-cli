@@ -9,13 +9,14 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/table"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -347,7 +348,7 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 				c2, _ := styling.MakeColor(img.At(x, heightCounter+1))
 				color2 := lipgloss.Color(c2.Hex())
 
-				styleKey := string(color1) + "_" + string(color2)
+				styleKey := c1.Hex() + "_" + c2.Hex()
 				style, exists := styleCache[styleKey]
 				if !exists {
 					style = lipgloss.NewStyle().Foreground(color1).Background(color2)
@@ -510,7 +511,9 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	}
 
 	// Build and print table
-	color := lipgloss.AdaptiveColor{Light: "#4B4B4B", Dark: "#D3D3D3"}
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
+	color := ld(lipgloss.Color("#4B4B4B"), lipgloss.Color("#D3D3D3"))
 
 	t := table.New().
 		Border(lipgloss.NormalBorder()).

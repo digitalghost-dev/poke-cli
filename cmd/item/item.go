@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
@@ -61,11 +61,13 @@ func itemInfoContainer(output *strings.Builder, itemStruct structs.ItemJSONStruc
 	itemCost := fmt.Sprintf("Cost: %d", itemStruct.Cost)
 	itemCategory := "Category: " + styling.CapitalizeResourceName(itemStruct.Category.Name)
 
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
-		BorderForeground(lipgloss.AdaptiveColor{Light: "#444", Dark: "#EEE"}).
-		Width(32)
+		BorderForeground(ld(lipgloss.Color("#444"), lipgloss.Color("#EEE"))).
+		Width(34)
 
 	var flavorTextEntry string
 	var missingData string

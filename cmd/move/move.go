@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
@@ -66,7 +66,7 @@ func moveInfoContainer(output *strings.Builder, moveStruct structs.MoveJSONStruc
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
 		BorderForeground(lipgloss.Color(styling.GetTypeColor(moveStruct.Type.Name))).
-		Width(32)
+		Width(34)
 
 	headerStyle := lipgloss.NewStyle().
 		Bold(true).
@@ -103,7 +103,7 @@ func moveEffectContainer(output *strings.Builder, moveStruct structs.MoveJSONStr
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
 		BorderForeground(lipgloss.Color(styling.GetTypeColor(moveStruct.Type.Name))).
-		Width(32)
+		Width(34)
 
 	for _, entry := range moveStruct.FlavorTextEntries {
 		if entry.Language.Name != "en" {
