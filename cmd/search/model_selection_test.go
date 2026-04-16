@@ -4,19 +4,19 @@ import (
 	"testing"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/x/exp/teatest"
+	tea "charm.land/bubbletea/v2"
+	"github.com/charmbracelet/x/exp/teatest/v2"
 )
 
 func TestSelection(t *testing.T) {
 	m := initialModel()
 	testModel := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(500, 600))
 
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
-	testModel.Send(tea.KeyMsg{Type: tea.KeyUp})
-	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyUp})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
 
-	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+	testModel.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(model)
@@ -40,17 +40,17 @@ func TestChoiceClamping(t *testing.T) {
 	testModel := teatest.NewTestModel(t, m)
 
 	// Move down twice, this should attempt to exceed max Choice
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown}) // 0 → 1
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown}) // 1 → 2, but should clamp to 1
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown}) // 0 → 1
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown}) // 1 → 2, but should clamp to 1
 
 	// Move up three times, this should attempt to go below 0
-	testModel.Send(tea.KeyMsg{Type: tea.KeyUp}) // 1 → 0
-	testModel.Send(tea.KeyMsg{Type: tea.KeyUp}) // 0 → -1, clamp to 0
-	testModel.Send(tea.KeyMsg{Type: tea.KeyUp}) // stays at 0
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyUp}) // 1 → 0
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyUp}) // 0 → -1, clamp to 0
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyUp}) // stays at 0
 
 	// Simulate enter and quit to finish
-	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
-	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
+	testModel.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
 	testModel.WaitFinished(t)
 
 	final := testModel.FinalModel(t).(model)

@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 )
 
@@ -58,7 +58,7 @@ func initialModel() model {
 	ti := textinput.New()
 	ti.Placeholder = "type name..."
 	ti.CharLimit = 20
-	ti.Width = 20
+	ti.SetWidth(20)
 
 	return model{
 		TextInput: ti,
@@ -73,7 +73,7 @@ func (m model) Init() tea.Cmd {
 // Update handles keypresses and updates the state.
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			m.Quitting = true
@@ -88,17 +88,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // View renders the correct UI screen.
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.Quitting {
-		return "\n  Quitting search...\n\n"
+		return tea.NewView("\n  Quitting search...\n\n")
 	}
 	if m.ShowResults {
 		resultsView, _ := RenderInput(m) // Fetch results view
-		return resultsView
+		return tea.NewView(resultsView)
 	}
 	if !m.Chosen {
-		return RenderSelection(m)
+		return tea.NewView(RenderSelection(m))
 	}
 	inputView, _ := RenderInput(m)
-	return inputView
+	return tea.NewView(inputView)
 }

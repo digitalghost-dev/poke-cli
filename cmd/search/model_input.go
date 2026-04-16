@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -14,7 +14,7 @@ import (
 func UpdateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		if m.ShowResults {
 			// If results are shown, pressing 'b' resets to search view
 			if msg.String() == "b" {
@@ -25,7 +25,7 @@ func UpdateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 				return m, textinput.Blink
 			}
 		} else {
-			switch msg.Type {
+			switch msg.Code {
 			case tea.KeyEnter:
 				searchTerm := m.TextInput.Value()
 				_, endpoint := RenderInput(m)
