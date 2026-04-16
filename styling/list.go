@@ -3,21 +3,31 @@ package styling
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 var (
 	TitleStyle        = lipgloss.NewStyle().MarginLeft(2)
 	ItemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	SelectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(YellowAdaptive)
-	PaginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
-	HelpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
+	SelectedItemStyle lipgloss.Style
+	PaginationStyle   lipgloss.Style
+	HelpStyle         lipgloss.Style
 	QuitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 4)
 )
+
+func init() {
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
+	defaults := list.DefaultStyles(isDark)
+	PaginationStyle = defaults.PaginationStyle.PaddingLeft(4)
+	HelpStyle = defaults.HelpStyle.PaddingLeft(4).PaddingBottom(1)
+	SelectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(ld(lipgloss.Color(DarkYellow), lipgloss.Color(LightYellow)))
+}
 
 type Item string
 
