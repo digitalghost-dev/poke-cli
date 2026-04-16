@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/x/exp/teatest"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"github.com/charmbracelet/x/exp/teatest/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -111,17 +111,17 @@ func TestFetchTournaments_Success(t *testing.T) {
 func TestTournamentsModel_Update_CtrlC(t *testing.T) {
 	tests := []struct {
 		name string
-		key  tea.KeyType
+		msg  tea.KeyPressMsg
 	}{
-		{name: "ctrl+c", key: tea.KeyCtrlC},
-		{name: "esc", key: tea.KeyEsc},
+		{name: "ctrl+c", msg: tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl}},
+		{name: "esc", msg: tea.KeyPressMsg{Code: tea.KeyEscape}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := loadedModel()
 			tm := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(80, 24))
-			tm.Send(tea.KeyMsg{Type: tt.key})
+			tm.Send(tt.msg)
 			tm.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 			final := tm.FinalModel(t).(tournamentsModel)
 			if !final.quitting {
@@ -134,7 +134,7 @@ func TestTournamentsModel_Update_CtrlC(t *testing.T) {
 func TestTournamentsModel_Update_Enter_SetsSelected(t *testing.T) {
 	m := loadedModel()
 	tm := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(80, 24))
-	tm.Send(tea.KeyMsg{Type: tea.KeyEnter})
+	tm.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
 	tm.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 	final := tm.FinalModel(t).(tournamentsModel)
 	if final.selected == nil {
@@ -207,8 +207,8 @@ func TestTournamentsModel_Update_WindowResize_WhenLoading(t *testing.T) {
 func TestTournamentsModel_View_Loading(t *testing.T) {
 	m := tournamentsList(noopConn)
 	view := m.View()
-	if !strings.Contains(view, "Loading tournaments") {
-		t.Errorf("expected loading message, got %q", view)
+	if !strings.Contains(view.Content, "Loading tournaments") {
+		t.Errorf("expected loading message, got %q", view.Content)
 	}
 }
 
@@ -217,8 +217,8 @@ func TestTournamentsModel_View_Error(t *testing.T) {
 	m.loading = false
 	m.error = errors.New("something went wrong")
 	view := m.View()
-	if !strings.Contains(view, "something went wrong") {
-		t.Errorf("expected error message in view, got %q", view)
+	if !strings.Contains(view.Content, "something went wrong") {
+		t.Errorf("expected error message in view, got %q", view.Content)
 	}
 }
 
@@ -226,8 +226,8 @@ func TestTournamentsModel_View_Quitting(t *testing.T) {
 	m := tournamentsList(noopConn)
 	m.quitting = true
 	view := m.View()
-	if !strings.Contains(view, "Quitting") {
-		t.Errorf("expected quitting message, got %q", view)
+	if !strings.Contains(view.Content, "Quitting") {
+		t.Errorf("expected quitting message, got %q", view.Content)
 	}
 }
 
@@ -236,15 +236,15 @@ func TestTournamentsModel_View_Selected(t *testing.T) {
 	td := m.tournaments[0]
 	m.selected = &td
 	view := m.View()
-	if !strings.Contains(view, "London") {
-		t.Errorf("expected selected tournament in view, got %q", view)
+	if !strings.Contains(view.Content, "London") {
+		t.Errorf("expected selected tournament in view, got %q", view.Content)
 	}
 }
 
 func TestTournamentsModel_View_Normal(t *testing.T) {
 	m := loadedModel()
 	view := m.View()
-	if view == "" {
+	if view.Content == "" {
 		t.Error("expected non-empty view for loaded model")
 	}
 }

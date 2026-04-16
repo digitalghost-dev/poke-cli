@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -58,7 +58,7 @@ func TcgCommand() (string, error) {
 	conn := connections.CallTCGData
 
 	runTournaments := func(m tournamentsModel) (tournamentsModel, error) {
-		final, err := tea.NewProgram(m, tea.WithAltScreen()).Run()
+		final, err := tea.NewProgram(m).Run()
 		if err != nil {
 			return tournamentsModel{}, err
 		}
@@ -70,7 +70,7 @@ func TcgCommand() (string, error) {
 	}
 
 	runDashboard := func(m model) (model, error) {
-		final, err := tea.NewProgram(m, tea.WithAltScreen()).Run()
+		final, err := tea.NewProgram(m).Run()
 		if err != nil {
 			return model{}, err
 		}

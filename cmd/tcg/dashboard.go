@@ -2,19 +2,22 @@ package tcg
 
 import (
 	"fmt"
+	"image/color"
+	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 type styles struct {
-	doc         lipgloss.Style
-	inactiveTab lipgloss.Style
-	activeTab   lipgloss.Style
-	window      lipgloss.Style
+	doc            lipgloss.Style
+	inactiveTab    lipgloss.Style
+	activeTab      lipgloss.Style
+	window         lipgloss.Style
+	highlightColor color.Color
 }
 
 func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
@@ -28,7 +31,9 @@ func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
 func newStyles() *styles {
 	inactiveTabBorder := tabBorderWithBottom("┴", "─", "┴")
 	activeTabBorder := tabBorderWithBottom("┘", " ", "└")
-	highlightColor := lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
+	highlightColor := ld(lipgloss.Color("#874BFD"), lipgloss.Color("#7D56F4"))
 
 	s := new(styles)
 	s.doc = lipgloss.NewStyle().
@@ -44,6 +49,7 @@ func newStyles() *styles {
 		Padding(2, 0).
 		Border(lipgloss.NormalBorder()).
 		UnsetBorderTop()
+	s.highlightColor = highlightColor
 	return s
 }
 
@@ -73,7 +79,7 @@ func overviewView(m model, contentWidth int) string {
 	if len(m.standings) == 0 {
 		return "  Loading..."
 	}
-	return overviewContent(m.flag, m.tournament, m.tournamentType, m.tournamentDate, m.winner, m.winningDeck, m.totalPlayers, contentWidth)
+	return overviewContent(m.flag, m.tournament, m.tournamentType, m.tournamentDate, m.winner, m.winningDeck, m.totalPlayers, contentWidth, m.styles.highlightColor)
 }
 
 func countriesView(s []countryStats, width int) string {
@@ -86,7 +92,7 @@ func (m model) Init() tea.Cmd {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch keypress := msg.String(); keypress {
 		case "ctrl+c", "esc":
 			return m, tea.Quit
@@ -151,9 +157,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.styles == nil {
-		return ""
+		return tea.NewView("")
 	}
 
 	doc := strings.Builder{}
@@ -192,8 +198,8 @@ func (m model) View() string {
 
 	// Fill the gap between the tab row and the window's right edge so the top
 	// border line stretches the full width of the window.
-	highlightColor := lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
-	fillWidth := (windowWidth + 2) - lipgloss.Width(row)
+	highlightColor := m.styles.highlightColor
+	fillWidth := windowWidth - lipgloss.Width(row)
 	if fillWidth > 0 {
 		fill := lipgloss.NewStyle().Foreground(highlightColor).
 			Render(strings.Repeat("─", fillWidth-1) + "┐")
@@ -243,5 +249,7 @@ func (m model) View() string {
 	doc.WriteString("\n")
 	doc.WriteString(styling.KeyMenu.Render("← → (switch tab) • b (back) • ctrl+c | esc (quit)"))
 
-	return s.doc.Render(doc.String())
+	v := tea.NewView(s.doc.Render(doc.String()))
+	v.AltScreen = true
+	return v
 }

@@ -3,8 +3,8 @@ package tcg
 import (
 	"strconv"
 
-	"github.com/charmbracelet/bubbles/table"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/table"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -39,6 +39,7 @@ func standingsTable(rows []standingRows, width, height int) table.Model {
 	}
 
 	tableHeight := max(height-14, 5)
+	tableWidth := fixedWidth + deckWidth + separators
 
 	s := table.DefaultStyles()
 	s.Header = s.Header.
@@ -55,6 +56,7 @@ func standingsTable(rows []standingRows, width, height int) table.Model {
 		table.WithRows(tableRows),
 		table.WithFocused(true),
 		table.WithHeight(tableHeight),
+		table.WithWidth(tableWidth),
 	)
 	t.SetStyles(s)
 

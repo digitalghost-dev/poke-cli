@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/x/exp/teatest"
+	tea "charm.land/bubbletea/v2"
+	"github.com/charmbracelet/x/exp/teatest/v2"
 )
 
 func newTestModel() model {
@@ -45,16 +45,16 @@ func TestDashboardModel_Init_ReturnsCmd(t *testing.T) {
 func TestDashboardModel_Update_Quit(t *testing.T) {
 	tests := []struct {
 		name string
-		key  tea.KeyType
+		msg  tea.KeyPressMsg
 	}{
-		{"ctrl+c", tea.KeyCtrlC},
-		{"esc", tea.KeyEsc},
+		{"ctrl+c", tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl}},
+		{"esc", tea.KeyPressMsg{Code: tea.KeyEscape}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := newTestModel()
 			tm := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(120, 40))
-			tm.Send(tea.KeyMsg{Type: tt.key})
+			tm.Send(tt.msg)
 			tm.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 		})
 	}
@@ -63,7 +63,7 @@ func TestDashboardModel_Update_Quit(t *testing.T) {
 func TestDashboardModel_Update_Back(t *testing.T) {
 	m := newTestModel()
 	tm := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(120, 40))
-	tm.Send(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'b'}})
+	tm.Send(tea.KeyPressMsg{Code: 'b', Text: "b"})
 	tm.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 	final := tm.FinalModel(t).(model)
 	if !final.goBack {
@@ -74,12 +74,12 @@ func TestDashboardModel_Update_Back(t *testing.T) {
 func TestDashboardModel_Update_TabNavigation(t *testing.T) {
 	m := newTestModel()
 	// right moves forward
-	newM, _ := m.Update(tea.KeyMsg{Type: tea.KeyRight})
+	newM, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyRight})
 	if newM.(model).activeTab != 1 {
 		t.Errorf("expected activeTab=1 after right, got %d", newM.(model).activeTab)
 	}
 	// left moves back
-	newM2, _ := newM.(model).Update(tea.KeyMsg{Type: tea.KeyLeft})
+	newM2, _ := newM.(model).Update(tea.KeyPressMsg{Code: tea.KeyLeft})
 	if newM2.(model).activeTab != 0 {
 		t.Errorf("expected activeTab=0 after left, got %d", newM2.(model).activeTab)
 	}
@@ -88,13 +88,13 @@ func TestDashboardModel_Update_TabNavigation(t *testing.T) {
 func TestDashboardModel_Update_TabNavigation_Clamps(t *testing.T) {
 	m := newTestModel()
 	// can't go below 0
-	newM, _ := m.Update(tea.KeyMsg{Type: tea.KeyLeft})
+	newM, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyLeft})
 	if newM.(model).activeTab != 0 {
 		t.Errorf("expected activeTab to clamp at 0, got %d", newM.(model).activeTab)
 	}
 	// can't exceed last tab
 	m.activeTab = 3
-	newM2, _ := m.Update(tea.KeyMsg{Type: tea.KeyRight})
+	newM2, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyRight})
 	if newM2.(model).activeTab != 3 {
 		t.Errorf("expected activeTab to clamp at 3, got %d", newM2.(model).activeTab)
 	}
@@ -164,7 +164,7 @@ func TestDashboardModel_Update_WindowSize(t *testing.T) {
 
 func TestDashboardModel_View_NilStyles(t *testing.T) {
 	m := model{}
-	if m.View() != "" {
+	if m.View().Content != "" {
 		t.Error("expected empty string when styles is nil")
 	}
 }
@@ -173,7 +173,7 @@ func TestDashboardModel_View_ContainsTabs(t *testing.T) {
 	m := newTestModel()
 	view := m.View()
 	for _, tab := range []string{"Overview", "Standings", "Decks", "Countries"} {
-		if !strings.Contains(view, tab) {
+		if !strings.Contains(view.Content, tab) {
 			t.Errorf("expected view to contain tab %q", tab)
 		}
 	}
@@ -182,7 +182,7 @@ func TestDashboardModel_View_ContainsTabs(t *testing.T) {
 func TestDashboardModel_View_LoadingState(t *testing.T) {
 	m := newTestModel()
 	view := m.View()
-	if !strings.Contains(view, "Loading") {
+	if !strings.Contains(view.Content, "Loading") {
 		t.Error("expected loading message before data arrives")
 	}
 }
@@ -191,8 +191,8 @@ func TestDashboardModel_View_FetchError(t *testing.T) {
 	m := newTestModel()
 	m.err = errors.New("network error")
 	view := m.View()
-	if !strings.Contains(view, "fetch error") {
-		t.Errorf("expected fetch error in view, got: %s", view)
+	if !strings.Contains(view.Content, "fetch error") {
+		t.Errorf("expected fetch error in view, got: %s", view.Content)
 	}
 }
 
@@ -201,7 +201,7 @@ func TestDashboardModel_View_AllTabs(t *testing.T) {
 	for tab := 0; tab <= 3; tab++ {
 		m.activeTab = tab
 		view := m.View()
-		if view == "" {
+		if view.Content == "" {
 			t.Errorf("expected non-empty view for tab %d", tab)
 		}
 	}
