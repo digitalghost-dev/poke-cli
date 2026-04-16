@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -64,7 +64,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var bubbleCmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "esc", "ctrl+c":
 			m.quitting = true
@@ -82,20 +82,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // View renders the current UI
-func (m model) View() string {
+func (m model) View() tea.View {
 	if m.quitting {
-		return "\n  Goodbye! \n"
+		return tea.NewView("\n  Goodbye! \n")
 	}
 
 	// Don't render anything if a selection has been made
 	if m.selectedOption != "" {
-		return ""
+		return tea.NewView("")
 	}
 
 	// Render the type selection table with instructions
-	return fmt.Sprintf("Select a type!\n%s\n%s",
+	return tea.NewView(fmt.Sprintf("Select a type!\n%s\n%s",
 		styling.TypesTableBorder.Render(m.table.View()),
-		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)"))
+		styling.KeyMenu.Render("↑ (move up) • ↓ (move down)\nenter (select) • ctrl+c | esc (quit)")))
 }
 
 func createTypeSelectionTable() model {
@@ -113,6 +113,7 @@ func createTypeSelectionTable() model {
 		table.WithRows(rows),
 		table.WithFocused(true),
 		table.WithHeight(10),
+		table.WithWidth(16),
 	)
 
 	s := table.DefaultStyles()

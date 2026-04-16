@@ -5,6 +5,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 func TestDamageTable(t *testing.T) {
@@ -30,7 +32,7 @@ func TestDamageTable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to read from pipe: %v", err)
 	}
-	output := buf.String()
+	output := styling.StripANSI(buf.String())
 
 	// Step 7: Assert the output contains expected strings
 	if !strings.Contains(output, "You selected the Fire type.") {
