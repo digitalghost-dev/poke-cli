@@ -7,6 +7,7 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -32,8 +33,7 @@ func UpdateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 
 				// checking for blank queries
 				if strings.TrimSpace(searchTerm) == "" {
-					errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nNo blank queries")
-					m.WarningMessage = errMessage
+					m.WarningMessage = utils.FormatError("No blank queries")
 					return m, nil
 				}
 

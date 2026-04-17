@@ -17,6 +17,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
+	cmdutils "github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -387,8 +388,7 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	// Validate size
 	dimensions, exists := sizeMap[strings.ToLower(size)]
 	if !exists {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nInvalid image size.\nValid sizes are: lg, md, sm")
-		return fmt.Errorf("%s", errMessage)
+		return fmt.Errorf("%s", cmdutils.FormatError("Invalid image size.\nValid sizes are: lg, md, sm"))
 	}
 
 	imgStr := ToString(dimensions[0], dimensions[1], img)
