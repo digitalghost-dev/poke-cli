@@ -4,9 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/x/exp/teatest"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"github.com/charmbracelet/x/exp/teatest/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -37,7 +37,7 @@ func TestSeriesModelQuit(t *testing.T) {
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
 
 	// Test ctrl+c quit
-	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+	testModel.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(seriesModel)
@@ -59,7 +59,7 @@ func TestSeriesModelEscQuit(t *testing.T) {
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
 
 	// Test esc quit
-	testModel.Send(tea.KeyMsg{Type: tea.KeyEsc})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyEscape})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(seriesModel)
@@ -81,8 +81,8 @@ func TestSeriesModelSelection(t *testing.T) {
 	testModel := teatest.NewTestModel(t, model, teatest.WithInitialTermSize(80, 24))
 
 	// Navigate and select
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})  // Move to second item
-	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter}) // Select it
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown})  // Move to second item
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyEnter}) // Select it
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(seriesModel)
@@ -124,22 +124,22 @@ func TestSeriesModelView(t *testing.T) {
 	// Test normal view
 	model := seriesModel{List: l}
 	view := model.View()
-	if view == "" {
+	if view.Content == "" {
 		t.Errorf("Expected non-empty view, got empty string")
 	}
 
 	// Test quitting view
 	model.Quitting = true
 	view = model.View()
-	if view != "\n  Quitting card search...\n\n" {
-		t.Errorf("Expected quitting message, got '%s'", view)
+	if view.Content != "\n  Quitting card search...\n\n" {
+		t.Errorf("Expected quitting message, got '%s'", view.Content)
 	}
 
 	// Test choice made view
 	model.Quitting = false
 	model.Choice = "Scarlet & Violet"
 	view = model.View()
-	if view == "" {
+	if view.Content == "" {
 		t.Errorf("Expected non-empty view for choice, got empty string")
 	}
 }

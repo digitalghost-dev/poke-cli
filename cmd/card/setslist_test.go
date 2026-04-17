@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -32,7 +32,7 @@ func TestSetsModel_Update_EscKey(t *testing.T) {
 		Quitting:   false,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyEsc}
+	msg := tea.KeyPressMsg{Code: tea.KeyEscape}
 	newModel, cmd := model.Update(msg)
 
 	resultModel, ok := newModel.(setsModel)
@@ -61,7 +61,7 @@ func TestSetsModel_Update_CtrlC(t *testing.T) {
 		Quitting:   false,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyCtrlC}
+	msg := tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl}
 	newModel, cmd := model.Update(msg)
 
 	resultModel, ok := newModel.(setsModel)
@@ -119,8 +119,8 @@ func TestSetsModel_View_Quitting(t *testing.T) {
 
 	result := model.View()
 
-	if !strings.Contains(result, "Quitting card search") {
-		t.Errorf("View() when quitting should contain 'Quitting card search', got: %s", result)
+	if !strings.Contains(result.Content, "Quitting card search") {
+		t.Errorf("View() when quitting should contain 'Quitting card search', got: %s", result.Content)
 	}
 }
 
@@ -137,8 +137,8 @@ func TestSetsModel_View_ChoiceMade(t *testing.T) {
 
 	result := model.View()
 
-	if !strings.Contains(result, "Set selected: Scarlet & Violet") {
-		t.Errorf("View() with choice should contain 'Set selected: Scarlet & Violet', got: %s", result)
+	if !strings.Contains(result.Content, "Set selected: Scarlet & Violet") {
+		t.Errorf("View() with choice should contain 'Set selected: Scarlet & Violet', got: %s", result.Content)
 	}
 }
 
@@ -156,7 +156,7 @@ func TestSetsModel_View_Normal(t *testing.T) {
 
 	result := model.View()
 
-	if result == "" {
+	if result.Content == "" {
 		t.Error("View() should not return empty string in normal state")
 	}
 }
@@ -178,7 +178,7 @@ func TestSetsModel_Update_EnterKey(t *testing.T) {
 		SetsIDMap: setsIDMap,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyEnter}
+	msg := tea.KeyPressMsg{Code: tea.KeyEnter}
 	_, cmd := model.Update(msg)
 
 	if cmd == nil {
@@ -202,7 +202,7 @@ func TestSetsList_Success(t *testing.T) {
 	}
 
 	// View should show loading spinner
-	if model.View() == "" {
+	if model.View().Content == "" {
 		t.Error("model view should render loading state")
 	}
 }

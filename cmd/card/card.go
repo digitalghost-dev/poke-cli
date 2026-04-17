@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 )
 
@@ -37,7 +37,7 @@ func CardCommand() (string, error) {
 	}
 
 	// Program 1: Series selection
-	finalModel, err := tea.NewProgram(SeriesList(), tea.WithAltScreen()).Run()
+	finalModel, err := tea.NewProgram(SeriesList()).Run()
 	if err != nil {
 		return "", fmt.Errorf("error running series selection program: %w", err)
 	}
@@ -54,7 +54,7 @@ func CardCommand() (string, error) {
 			return "", fmt.Errorf("error loading sets: %w", err)
 		}
 
-		finalSetsModel, err := tea.NewProgram(setsMdl, tea.WithAltScreen()).Run()
+		finalSetsModel, err := tea.NewProgram(setsMdl).Run()
 		if err != nil {
 			return "", fmt.Errorf("error running sets selection program: %w", err)
 		}
@@ -76,7 +76,7 @@ func CardCommand() (string, error) {
 			}
 
 			for {
-				finalCardsModel, err := tea.NewProgram(cardsMdl, tea.WithAltScreen()).Run()
+				finalCardsModel, err := tea.NewProgram(cardsMdl).Run()
 				if err != nil {
 					return "", fmt.Errorf("error running cards program: %w", err)
 				}
@@ -89,7 +89,7 @@ func CardCommand() (string, error) {
 				if cardsResult.ViewImage {
 					// Launch image viewer
 					imageURL := cardsResult.ImageMap[cardsResult.SelectedOption]
-					_, err := tea.NewProgram(ImageRenderer(cardsResult.SelectedOption, imageURL), tea.WithAltScreen()).Run()
+					_, err := tea.NewProgram(ImageRenderer(cardsResult.SelectedOption, imageURL)).Run()
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "Warning: image viewer error: %v\n", err)
 					}

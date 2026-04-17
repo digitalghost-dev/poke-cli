@@ -3,13 +3,14 @@ package card
 import (
 	"encoding/json"
 	"fmt"
+	"image/color"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/spinner"
-	"github.com/charmbracelet/bubbles/table"
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/spinner"
+	"charm.land/bubbles/v2/table"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -47,11 +48,11 @@ type cardDataMsg struct {
 }
 
 var (
-	activeTableSelectedBg   = styling.YellowColor
-	inactiveTableSelectedBg = lipgloss.Color("#808080")
+	activeTableSelectedBg   color.Color = styling.YellowColor
+	inactiveTableSelectedBg color.Color = lipgloss.Color("#808080")
 )
 
-func cardTableStyles(selectedBg lipgloss.Color) table.Styles {
+func cardTableStyles(selectedBg color.Color) table.Styles {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
@@ -137,7 +138,7 @@ func (m cardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var bubbleCmd tea.Cmd
 
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c":
 			m.Quitting = true
@@ -185,14 +186,15 @@ func (m cardsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		ti.Placeholder = "type name..."
 		ti.Prompt = "🔎 "
 		ti.CharLimit = 24
-		ti.Width = 30
+		ti.SetWidth(30)
 		ti.Blur()
 
 		t := table.New(
 			table.WithColumns([]table.Column{{Title: "Card Name", Width: 35}}),
 			table.WithRows(msg.allRows),
 			table.WithFocused(true),
-			table.WithHeight(27),
+			table.WithHeight(25),
+			table.WithWidth(35),
 		)
 
 		styles := cardTableStyles(activeTableSelectedBg)
@@ -261,52 +263,55 @@ func applyFilter(m *cardsModel) {
 	m.Table.SetCursor(0)
 }
 
-func (m cardsModel) View() string {
+func (m cardsModel) View() tea.View {
+	var content string
 	if m.Quitting {
-		return "\n  Quitting card search...\n\n"
-	}
-	if m.Error != nil {
-		return styling.ApiErrorStyle.Render(
+		content = "\n  Quitting card search...\n\n"
+	} else if m.Error != nil {
+		content = styling.ApiErrorStyle.Render(
 			"Error loading cards from Supabase:\n" +
 				m.Error.Error() + "\n\n" +
 				"Press ctrl+c or esc to exit.",
 		)
-	}
-	if m.Loading {
-		return lipgloss.NewStyle().Padding(2).Render(
+	} else if m.Loading {
+		content = lipgloss.NewStyle().Padding(2).Render(
 			m.Spinner.View() + " Loading cards...",
 		)
-	}
-
-	selectedCard := ""
-	if row := m.Table.SelectedRow(); len(row) > 0 {
-		cardName := row[0]
-		price := m.PriceMap[cardName]
-		if price == "" {
-			price = "Price: Not available"
+	} else {
+		selectedCard := ""
+		if row := m.Table.SelectedRow(); len(row) > 0 {
+			cardName := row[0]
+			price := m.PriceMap[cardName]
+			if price == "" {
+				price = "Price: Not available"
+			}
+			illustrator := m.IllustratorMap[cardName]
+			regulationMark := m.RegulationMarkMap[cardName]
+			selectedCard = cardName + "\n---\n" + price + "\n---\n" + illustrator + "\n---\n" + regulationMark
 		}
-		illustrator := m.IllustratorMap[cardName]
-		regulationMark := m.RegulationMarkMap[cardName]
-		selectedCard = cardName + "\n---\n" + price + "\n---\n" + illustrator + "\n---\n" + regulationMark
+
+		leftContent := lipgloss.JoinVertical(lipgloss.Left, m.Search.View(), m.Table.View())
+		leftPanel := styling.TypesTableBorder.Render(leftContent)
+
+		rightPanel := lipgloss.NewStyle().
+			Width(42).
+			Height(29).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(styling.YellowColor).
+			Padding(1).
+			Render(selectedCard)
+
+		screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
+
+		content = fmt.Sprintf(
+			"Highlight a card!\n\nNote: Prices are for normal variations of cards.\n%s\n%s",
+			screen,
+			styling.KeyMenu.Render("↑ (move up)\n↓ (move down)\n? (view image)\ntab (toggle search)\nctrl+c | esc (quit)"))
 	}
 
-	leftContent := lipgloss.JoinVertical(lipgloss.Left, m.Search.View(), m.Table.View())
-	leftPanel := styling.TypesTableBorder.Render(leftContent)
-
-	rightPanel := lipgloss.NewStyle().
-		Width(40).
-		Height(29).
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(styling.YellowColor).
-		Padding(1).
-		Render(selectedCard)
-
-	screen := lipgloss.JoinHorizontal(lipgloss.Top, leftPanel, rightPanel)
-
-	return fmt.Sprintf(
-		"Highlight a card!\n\nNote: Prices are for normal variations of cards.\n%s\n%s",
-		screen,
-		styling.KeyMenu.Render("↑ (move up)\n↓ (move down)\n? (view image)\ntab (toggle search)\nctrl+c | esc (quit)"))
+	v := tea.NewView(content)
+	v.AltScreen = true
+	return v
 }
 
 type cardData struct {
