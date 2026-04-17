@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/charmbracelet/huh"
 	"charm.land/lipgloss/v2"
+	"github.com/charmbracelet/huh"
 	xstrings "github.com/charmbracelet/x/exp/strings"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
