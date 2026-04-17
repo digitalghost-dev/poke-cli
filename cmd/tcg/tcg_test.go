@@ -107,6 +107,12 @@ func TestTcgCommand(t *testing.T) {
 			golden:  "tcg_too_many_args.golden",
 			wantErr: true,
 		},
+		{
+			name:    "invalid flag",
+			args:    []string{"poke-cli", "tcg", "--bogus"},
+			golden:  "tcg_invalid_flag.golden",
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {

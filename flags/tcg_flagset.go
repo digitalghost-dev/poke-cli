@@ -18,7 +18,7 @@ type TcgFlags struct {
 
 func SetupTcgFlagSet() *TcgFlags {
 	tf := &TcgFlags{}
-	tf.FlagSet = flag.NewFlagSet("tcgFlags", flag.ExitOnError)
+	tf.FlagSet = flag.NewFlagSet("tcgFlags", flag.ContinueOnError)
 
 	tf.Web = tf.FlagSet.Bool("web", false, "Opens a Streamlit dashboard of stats in the browser")
 	tf.ShortWeb = tf.FlagSet.Bool("w", false, "Opens a Streamlit dashboard of stats in the browser")
