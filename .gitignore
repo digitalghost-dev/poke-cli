@@ -37,6 +37,7 @@ web/.coverage
 # Python
 card_data/.venv
 __pycache__/
+.ruff_cache__/
 
 # Terraform
 .terraformrc
