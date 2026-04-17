@@ -1,6 +1,7 @@
 package tcg
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -33,8 +34,6 @@ func TcgCommand() (string, error) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
 	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "tcg", RequireName: false, HasFlags: true}); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
@@ -42,6 +41,9 @@ func TcgCommand() (string, error) {
 
 	tf := flags.SetupTcgFlagSet()
 	if err := tf.FlagSet.Parse(os.Args[2:]); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return output.String(), nil
+		}
 		fmt.Fprintf(&output, "error parsing flags: %v\n", err)
 		return output.String(), err
 	}

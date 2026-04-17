@@ -159,14 +159,11 @@ func runCLI(args []string) int {
 	case exists:
 		return cmdFunc()
 	default:
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("✖ Error!"),
-			fmt.Sprintf("\n\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", cmdArg)),
-			styling.StyleBold.Render("\nCommands:"),
-			renderCommandList(),
-			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h")),
-		)
-		output.WriteString(errMessage)
+		msg := fmt.Sprintf("\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", cmdArg)) +
+			styling.StyleBold.Render("\nCommands:") +
+			renderCommandList() +
+			fmt.Sprintf("\n\nAlso run %s for more info!", styling.StyleBold.Render("poke-cli -h"))
+		output.WriteString(utils.FormatError(msg))
 
 		fmt.Println(output.String())
 

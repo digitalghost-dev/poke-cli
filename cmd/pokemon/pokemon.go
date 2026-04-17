@@ -2,6 +2,7 @@ package pokemon
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -61,8 +62,10 @@ func PokemonCommand() (string, error) {
 	pokemonName := strings.ToLower(args[2])
 
 	if err := pf.FlagSet.Parse(args[3:]); err != nil {
-		fmt.Printf("error parsing flags: %v\n", err)
-		pf.FlagSet.Usage()
+		if errors.Is(err, flag.ErrHelp) {
+			return output.String(), nil
+		}
+		fmt.Fprintf(&output, "error parsing flags: %v\n", err)
 		return output.String(), err
 	}
 

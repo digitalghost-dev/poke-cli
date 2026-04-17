@@ -59,7 +59,7 @@ func header(header string) string {
 
 func SetupPokemonFlagSet() *PokemonFlags {
 	pf := &PokemonFlags{}
-	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ExitOnError)
+	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ContinueOnError)
 
 	pf.Abilities = pf.FlagSet.Bool("abilities", false, "Print the Pokémon's abilities")
 	pf.ShortAbilities = pf.FlagSet.Bool("a", false, "Print the Pokémon's abilities")

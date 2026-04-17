@@ -1,6 +1,7 @@
 package ability
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -48,9 +49,10 @@ func AbilityCommand() (string, error) {
 	abilityName := strings.ToLower(args[2])
 
 	if err := af.FlagSet.Parse(args[3:]); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return output.String(), nil
+		}
 		fmt.Fprintf(&output, "error parsing flags: %v\n", err)
-		af.FlagSet.Usage()
-
 		return output.String(), err
 	}
 
