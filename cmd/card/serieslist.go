@@ -1,8 +1,8 @@
 package card
 
 import (
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -26,7 +26,7 @@ func (m seriesModel) Init() tea.Cmd {
 
 func (m seriesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			m.Quitting = true
@@ -50,15 +50,19 @@ func (m seriesModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m seriesModel) View() string {
+func (m seriesModel) View() tea.View {
+	var content string
 	if m.Quitting {
-		return "\n  Quitting card search...\n\n"
-	}
-	if m.Choice != "" {
-		return styling.QuitTextStyle.Render("Series selected:", m.Choice)
+		content = "\n  Quitting card search...\n\n"
+	} else if m.Choice != "" {
+		content = styling.QuitTextStyle.Render("Series selected:", m.Choice)
+	} else {
+		content = "\n" + m.List.View()
 	}
 
-	return "\n" + m.List.View()
+	v := tea.NewView(content)
+	v.AltScreen = true
+	return v
 }
 
 func SeriesList() seriesModel {

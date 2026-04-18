@@ -1,9 +1,9 @@
 package card
 
 import (
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -63,7 +63,7 @@ func (m imageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Spinner, cmd = m.Spinner.Update(msg)
 		return m, cmd
 
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			return m, tea.Quit
@@ -72,22 +72,26 @@ func (m imageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m imageModel) View() string {
+func (m imageModel) View() tea.View {
+	var content string
 	if m.Loading {
-		return lipgloss.NewStyle().Padding(2).Render(
+		content = lipgloss.NewStyle().Padding(2).Render(
 			m.Spinner.View() + "Loading image for \n" + m.CardName,
 		)
-	}
-	if m.Error != nil {
+	} else if m.Error != nil {
 		// Styling the error message with padding for better readability
-		return lipgloss.NewStyle().
+		content = lipgloss.NewStyle().
 			Padding(2).
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(styling.YellowColor).
 			Render(styling.Red.Render(m.Error.Error()))
+	} else {
+		content = m.ImageData
 	}
 
-	return m.ImageData
+	v := tea.NewView(content)
+	v.AltScreen = true
+	return v
 }
 
 func ImageRenderer(cardName string, imageURL string) imageModel {

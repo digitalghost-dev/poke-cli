@@ -3,8 +3,8 @@ package search
 import (
 	"testing"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
 )
 
 func TestUpdateInput(t *testing.T) {
@@ -16,7 +16,7 @@ func TestUpdateInput(t *testing.T) {
 		TextInput:   ti,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'b'}}
+	msg := tea.KeyPressMsg{Code: 'b', Text: "b"}
 	mUpdated, _ := UpdateInput(msg, m)
 
 	updated := mUpdated.(model)

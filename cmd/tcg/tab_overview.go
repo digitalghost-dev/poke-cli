@@ -2,10 +2,11 @@ package tcg
 
 import (
 	"fmt"
+	"image/color"
 	"strconv"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 )
 
 func formatInt(n int) string {
@@ -20,8 +21,7 @@ func formatInt(n int) string {
 	return result.String()
 }
 
-func overviewContent(flag, tournament, tournamentType, tournamentDate, winner, winningDeck string, totalPlayers, contentWidth int) string {
-	highlightColor := lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
+func overviewContent(flag, tournament, tournamentType, tournamentDate, winner, winningDeck string, totalPlayers, contentWidth int, highlightColor color.Color) string {
 	header := fmt.Sprintf("%s  %s · %s · %s", flag, tournament, tournamentType, tournamentDate)
 
 	statBox := lipgloss.NewStyle().

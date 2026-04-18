@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
@@ -95,7 +95,7 @@ func BerryImage(berryName string) string {
 				c2, _ := styling.MakeColor(img.At(x, heightCounter+1))
 				color2 := lipgloss.Color(c2.Hex())
 
-				styleKey := string(color1) + "_" + string(color2)
+				styleKey := c1.Hex() + "_" + c2.Hex()
 				style, exists := styleCache[styleKey]
 				if !exists {
 					style = lipgloss.NewStyle().Foreground(color1).Background(color2)

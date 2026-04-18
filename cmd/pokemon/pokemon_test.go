@@ -92,6 +92,12 @@ func TestPokemonCommand(t *testing.T) {
 			args:           []string{"pokemon", "slowking-galar"},
 			expectedOutput: utils.LoadGolden(t, "pokemon_regional_form_2.golden"),
 		},
+		{
+			name:           "Pokemon invalid flag",
+			args:           []string{"pokemon", "pikachu", "--bogus"},
+			expectedOutput: utils.LoadGolden(t, "pokemon_invalid_flag.golden"),
+			expectedError:  true,
+		},
 	}
 
 	for _, tt := range tests {

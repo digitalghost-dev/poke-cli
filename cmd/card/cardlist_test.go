@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/bubbles/table"
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/table"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
 )
 
 func TestCardsModel_Init(t *testing.T) {
@@ -31,6 +31,7 @@ func TestCardsModel_Update_EscKey(t *testing.T) {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
+		table.WithWidth(35),
 	)
 
 	model := cardsModel{
@@ -38,7 +39,7 @@ func TestCardsModel_Update_EscKey(t *testing.T) {
 		Quitting: false,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyEsc}
+	msg := tea.KeyPressMsg{Code: tea.KeyEscape}
 	newModel, cmd := model.Update(msg)
 
 	resultModel := newModel.(cardsModel)
@@ -63,6 +64,7 @@ func TestCardsModel_Update_CtrlC(t *testing.T) {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
+		table.WithWidth(35),
 	)
 
 	model := cardsModel{
@@ -70,7 +72,7 @@ func TestCardsModel_Update_CtrlC(t *testing.T) {
 		Quitting: false,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyCtrlC}
+	msg := tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl}
 	newModel, cmd := model.Update(msg)
 
 	resultModel := newModel.(cardsModel)
@@ -92,6 +94,7 @@ func TestCardsModel_Update_TabTogglesSearchFocusAndTableSelectedBackground(t *te
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
+		table.WithWidth(35),
 	)
 
 	search := textinput.New()
@@ -107,7 +110,7 @@ func TestCardsModel_Update_TabTogglesSearchFocusAndTableSelectedBackground(t *te
 	}
 
 	// Tab into the search bar.
-	newModel, _ := model.Update(tea.KeyMsg{Type: tea.KeyTab})
+	newModel, _ := model.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	m1 := newModel.(cardsModel)
 	if !m1.Search.Focused() {
 		t.Fatal("expected search to be focused after tab")
@@ -121,7 +124,7 @@ func TestCardsModel_Update_TabTogglesSearchFocusAndTableSelectedBackground(t *te
 	}
 
 	// Tab back to the table.
-	newModel2, _ := m1.Update(tea.KeyMsg{Type: tea.KeyTab})
+	newModel2, _ := m1.Update(tea.KeyPressMsg{Code: tea.KeyTab})
 	m2 := newModel2.(cardsModel)
 	if m2.Search.Focused() {
 		t.Fatal("expected search to be blurred after tabbing back")
@@ -146,6 +149,7 @@ func TestCardsModel_Update_ViewImageKey_QuestionMark(t *testing.T) {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
+		table.WithWidth(35),
 	)
 
 	model := cardsModel{
@@ -153,7 +157,7 @@ func TestCardsModel_Update_ViewImageKey_QuestionMark(t *testing.T) {
 		ViewImage: false,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'?'}}
+	msg := tea.KeyPressMsg{Code: '?', Text: "?"}
 	newModel, cmd := model.Update(msg)
 
 	resultModel := newModel.(cardsModel)
@@ -175,6 +179,7 @@ func TestCardsModel_Update_ViewImageKey_DoesNotOverrideSearch(t *testing.T) {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
+		table.WithWidth(35),
 	)
 
 	search := textinput.New()
@@ -186,7 +191,7 @@ func TestCardsModel_Update_ViewImageKey_DoesNotOverrideSearch(t *testing.T) {
 		ViewImage: false,
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'?'}}
+	msg := tea.KeyPressMsg{Code: '?', Text: "?"}
 	newModel, _ := model.Update(msg)
 	resultModel := newModel.(cardsModel)
 
@@ -208,8 +213,8 @@ func TestCardsModel_View_Quitting(t *testing.T) {
 
 	result := model.View()
 
-	if !strings.Contains(result, "Quitting card search") {
-		t.Errorf("View() when quitting should contain 'Quitting card search', got: %s", result)
+	if !strings.Contains(result.Content, "Quitting card search") {
+		t.Errorf("View() when quitting should contain 'Quitting card search', got: %s", result.Content)
 	}
 }
 
@@ -224,6 +229,7 @@ func TestCardsModel_View_PriceDisplay(t *testing.T) {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
+		table.WithWidth(35),
 	)
 
 	priceMap := map[string]string{
@@ -239,7 +245,7 @@ func TestCardsModel_View_PriceDisplay(t *testing.T) {
 	result := model.View()
 
 	// The view should include the card name
-	if !strings.Contains(result, "001/198 - Bulbasaur") {
+	if !strings.Contains(result.Content, "001/198 - Bulbasaur") {
 		t.Error("View() should display selected card name")
 	}
 }
@@ -255,6 +261,7 @@ func TestCardsModel_View_MissingPrice(t *testing.T) {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(true),
+		table.WithWidth(35),
 	)
 
 	// Empty price map - simulates missing price data
@@ -269,7 +276,7 @@ func TestCardsModel_View_MissingPrice(t *testing.T) {
 	result := model.View()
 
 	// Should show "Price: Not available" when price is missing
-	if !strings.Contains(result, "Price: Not available") {
+	if !strings.Contains(result.Content, "Price: Not available") {
 		t.Error("View() should display 'Price: Not available' for cards without pricing")
 	}
 }
@@ -290,8 +297,8 @@ func TestCardsList_ReturnsLoadingModel(t *testing.T) {
 
 	// View should show loading spinner
 	view := model.View()
-	if !strings.Contains(view, "Loading cards") {
-		t.Errorf("expected view to show loading state, got: %s", view)
+	if !strings.Contains(view.Content, "Loading cards") {
+		t.Errorf("expected view to show loading state, got: %s", view.Content)
 	}
 }
 

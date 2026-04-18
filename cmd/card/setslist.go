@@ -3,10 +3,10 @@ package card
 import (
 	"encoding/json"
 
-	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/list"
+	"charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -73,7 +73,7 @@ func (m setsModel) Init() tea.Cmd {
 
 func (m setsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			m.Quitting = true
@@ -135,27 +135,29 @@ func (m setsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m setsModel) View() string {
+func (m setsModel) View() tea.View {
+	var content string
 	if m.Error != nil {
-		return styling.ApiErrorStyle.Render(
+		content = styling.ApiErrorStyle.Render(
 			"Error loading sets from Supabase:\n" +
 				m.Error.Error() + "\n\n" +
 				"Press ctrl+c or esc to exit.",
 		)
-	}
-	if m.Choice != "" {
-		return styling.QuitTextStyle.Render("Set selected:", m.Choice)
-	}
-	if m.Loading {
-		return lipgloss.NewStyle().Padding(2).Render(
+	} else if m.Choice != "" {
+		content = styling.QuitTextStyle.Render("Set selected:", m.Choice)
+	} else if m.Loading {
+		content = lipgloss.NewStyle().Padding(2).Render(
 			m.Spinner.View() + "Loading sets...",
 		)
-	}
-	if m.Quitting {
-		return "\n  Quitting card search...\n\n"
+	} else if m.Quitting {
+		content = "\n  Quitting card search...\n\n"
+	} else {
+		content = "\n" + m.List.View()
 	}
 
-	return "\n" + m.List.View()
+	v := tea.NewView(content)
+	v.AltScreen = true
+	return v
 }
 
 type setData struct {

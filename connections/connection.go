@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/structs"
-	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 const APIURL = "https://pokeapi.co/api/v2/"
@@ -30,11 +30,7 @@ func FetchEndpoint[T EndpointResource](endpoint, resourceName, baseURL, resource
 	err := ApiCallSetup(fullURL, &result, false)
 
 	if err != nil {
-		errMessage := styling.ErrorBorder.Render(
-			styling.ErrorColor.Render("✖ Error!"),
-			fmt.Sprintf("\n%s not found.\n• Perhaps a typo?\n• Missing a hyphen instead of a space?", resourceType),
-		)
-		return zero, "", fmt.Errorf("%s", errMessage)
+		return zero, "", fmt.Errorf("%s", utils.FormatError(resourceType+" not found.\n• Perhaps a typo?\n• Missing a hyphen instead of a space?"))
 	}
 
 	return result, result.GetResourceName(), nil

@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
 )
 
 func TestItemFilterValue(t *testing.T) {
@@ -37,7 +37,7 @@ func TestItemDelegateSpacing(t *testing.T) {
 
 func TestItemDelegateUpdate(t *testing.T) {
 	delegate := ItemDelegate{}
-	cmd := delegate.Update(tea.KeyMsg{}, &list.Model{})
+	cmd := delegate.Update(tea.KeyPressMsg{}, &list.Model{})
 
 	if cmd != nil {
 		t.Error("Expected Update to return nil, got non-nil value")

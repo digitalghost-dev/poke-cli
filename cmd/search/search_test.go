@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/require"
 
@@ -66,7 +66,7 @@ func TestModelQuit(t *testing.T) {
 	m := model{}
 
 	// Simulate pressing Esc
-	msg := tea.KeyMsg{Type: tea.KeyEsc}
+	msg := tea.KeyPressMsg{Code: tea.KeyEscape}
 	newModel, cmd := m.Update(msg)
 
 	assert.True(t, newModel.(model).Quitting, "Model should be set to quitting")
@@ -92,7 +92,7 @@ func TestSearchCommandValidationError(t *testing.T) {
 func TestModelViewQuitting(t *testing.T) {
 	m := model{Quitting: true}
 	view := m.View()
-	assert.Contains(t, view, "Quitting search", "View should show quitting message")
+	assert.Contains(t, view.Content, "Quitting search", "View should show quitting message")
 }
 
 func TestModelViewShowResults(t *testing.T) {
@@ -102,12 +102,12 @@ func TestModelViewShowResults(t *testing.T) {
 	}
 	view := m.View()
 	// View calls RenderInput when ShowResults is true
-	assert.NotEmpty(t, view, "View should render results")
+	assert.NotEmpty(t, view.Content, "View should render results")
 }
 
 func TestModelViewNotChosen(t *testing.T) {
 	m := model{Chosen: false}
 	view := m.View()
 	// View calls RenderSelection when not chosen
-	assert.Contains(t, view, "Search for a resource", "View should show selection prompt")
+	assert.Contains(t, view.Content, "Search for a resource", "View should show selection prompt")
 }

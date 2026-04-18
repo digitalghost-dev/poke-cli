@@ -3,15 +3,15 @@ package search
 import (
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 // UpdateSelection handles navigation in the selection menu.
 func UpdateSelection(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "down":
 			m.Choice++

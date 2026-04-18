@@ -132,14 +132,14 @@ func TestRunCLI_VariousCommands(t *testing.T) {
 		args     []string
 		expected int
 	}{
-		//{"Invalid command", []string{"foobar"}, 1},
+		{"Invalid command", []string{"foobar"}, 1},
 		{"Latest flag long", []string{"--latest"}, 0},
 		{"Latest flag short", []string{"-l"}, 0},
 		{"Version flag long", []string{"--version"}, 0},
 		{"Version flag short", []string{"-v"}, 0},
 		{"Search command with invalid args", []string{"search", "pokemon", "extra-arg"}, 1},
-		//{"Missing Pokémon name", []string{"pokemon"}, 1},
-		//{"Another invalid command", []string{"invalid"}, 1},
+		{"Missing Pokémon name", []string{"pokemon"}, 1},
+		{"Another invalid command", []string{"invalid"}, 1},
 	}
 
 	for _, tt := range tests {

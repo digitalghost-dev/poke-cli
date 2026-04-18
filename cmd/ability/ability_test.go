@@ -52,6 +52,12 @@ func TestAbilityCommand(t *testing.T) {
 			args:           []string{"ability", "poison-point"},
 			expectedOutput: utils.LoadGolden(t, "ability_poison_point.golden"),
 		},
+		{
+			name:           "Ability invalid flag",
+			args:           []string{"ability", "clear-body", "--bogus"},
+			expectedOutput: utils.LoadGolden(t, "ability_invalid_flag.golden"),
+			wantError:      true,
+		},
 	}
 
 	for _, tt := range tests {

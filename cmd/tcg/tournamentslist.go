@@ -3,9 +3,9 @@ package tcg
 import (
 	"encoding/json"
 
-	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
+	"charm.land/bubbles/v2/list"
+	"charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -68,7 +68,7 @@ func (m tournamentsModel) Init() tea.Cmd {
 
 func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			m.quitting = true
@@ -131,23 +131,25 @@ func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m tournamentsModel) View() string {
+func (m tournamentsModel) View() tea.View {
+	var content string
 	if m.quitting {
-		return "\n  Quitting...\n\n"
-	}
-	if m.error != nil {
-		return styling.ApiErrorStyle.Render(
+		content = "\n  Quitting...\n\n"
+	} else if m.error != nil {
+		content = styling.ApiErrorStyle.Render(
 			"Error loading tournaments from Supabase:\n" +
 				m.error.Error() + "\n\n" +
 				"Press ctrl+c or esc to exit.",
 		)
-	}
-	if m.loading {
-		return "\n  " + m.spinner.View() + " Loading tournaments...\n\n"
-	}
-	if m.selected != nil {
-		return styling.QuitTextStyle.Render("Tournament selected:", m.selected.Location+" · "+m.selected.TextDate)
+	} else if m.loading {
+		content = "\n  " + m.spinner.View() + " Loading tournaments...\n\n"
+	} else if m.selected != nil {
+		content = styling.QuitTextStyle.Render("Tournament selected:", m.selected.Location+" · "+m.selected.TextDate)
+	} else {
+		content = "\n" + m.list.View()
 	}
 
-	return "\n" + m.list.View()
+	v := tea.NewView(content)
+	v.AltScreen = true
+	return v
 }

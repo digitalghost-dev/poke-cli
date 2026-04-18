@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/term"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -17,7 +17,9 @@ import (
 func DamageTable(typesName string, endpoint string) {
 	// Setting up variables to style the list
 	var columnWidth = 11
-	var subtle = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
+	subtle := ld(lipgloss.Color("#383838"), lipgloss.Color("#D9DCCF"))
 	var list = lipgloss.NewStyle().Border(lipgloss.NormalBorder(), false, true, false, false).BorderForeground(subtle).MarginRight(2).Height(8)
 	var listHeader = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderBottom(true).BorderForeground(subtle).MarginRight(2).Render
 	var listItem = lipgloss.NewStyle().Render

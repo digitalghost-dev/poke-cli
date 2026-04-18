@@ -3,6 +3,8 @@ package tcg
 import (
 	"strings"
 	"testing"
+
+	"charm.land/lipgloss/v2"
 )
 
 func TestOverviewContent(t *testing.T) {
@@ -53,7 +55,7 @@ func TestOverviewContent(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := overviewContent(tt.flag, tt.tournament, tt.tType, tt.tDate, tt.winner, tt.winningDeck, tt.totalPlayers, tt.contentWidth)
+			result := overviewContent(tt.flag, tt.tournament, tt.tType, tt.tDate, tt.winner, tt.winningDeck, tt.totalPlayers, tt.contentWidth, lipgloss.Color("#7D56F4"))
 			if result == "" {
 				t.Fatal("expected non-empty output")
 			}

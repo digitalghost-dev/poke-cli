@@ -3,11 +3,12 @@ package styling
 import (
 	"fmt"
 	"image/color"
+	"os"
 	"regexp"
 	"strings"
 
-	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/lipgloss/v2"
+	"golang.org/x/term"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -22,31 +23,27 @@ const (
 
 var (
 	YellowColor     = lipgloss.Color(PrimaryYellow)
-	YellowAdaptive  = lipgloss.AdaptiveColor{Light: DarkYellow, Dark: LightYellow}
-	YellowAdaptive2 = lipgloss.AdaptiveColor{Light: DarkYellow, Dark: PrimaryYellow}
+	YellowAdaptive  color.Color
+	YellowAdaptive2 color.Color
 )
 
 var (
 	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
 	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
 	Gray          = lipgloss.Color("#777777")
-	Yellow        = lipgloss.NewStyle().Foreground(YellowAdaptive)
-	ColoredBullet = lipgloss.NewStyle().
-			SetString("•").
-			Foreground(YellowColor)
-	CheckboxStyle = lipgloss.NewStyle().Foreground(YellowColor)
+	Yellow        lipgloss.Style
+	ColoredBullet lipgloss.Style
+	CheckboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(PrimaryYellow))
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
 
-	DocsLink = lipgloss.NewStyle().
-			Foreground(YellowAdaptive2).
-			Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
+	DocsLink string
 
 	StyleBold      = lipgloss.NewStyle().Bold(true)
 	StyleItalic    = lipgloss.NewStyle().Italic(true)
 	StyleUnderline = lipgloss.NewStyle().Underline(true)
 	HelpBorder     = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(YellowColor)
+			BorderForeground(lipgloss.Color(PrimaryYellow))
 	ErrorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
 	ErrorBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
@@ -61,7 +58,7 @@ var (
 			BorderForeground(lipgloss.Color("#FF8C00"))
 	TypesTableBorder = lipgloss.NewStyle().
 				BorderStyle(lipgloss.NormalBorder()).
-				BorderForeground(YellowColor)
+				BorderForeground(lipgloss.Color(PrimaryYellow))
 	ColorMap = map[string]string{
 		"normal":   "#B7B7A9",
 		"fire":     "#FF4422",
@@ -83,6 +80,23 @@ var (
 		"fairy":    "#EE99EE",
 	}
 )
+
+func init() {
+	isDark := true
+	if term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd())) {
+		isDark = lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	}
+	ld := lipgloss.LightDark(isDark)
+	YellowAdaptive = ld(lipgloss.Color(DarkYellow), lipgloss.Color(LightYellow))
+	YellowAdaptive2 = ld(lipgloss.Color(DarkYellow), lipgloss.Color(PrimaryYellow))
+	Yellow = lipgloss.NewStyle().Foreground(YellowAdaptive)
+	ColoredBullet = lipgloss.NewStyle().
+		SetString("•").
+		Foreground(lipgloss.Color(PrimaryYellow))
+	DocsLink = lipgloss.NewStyle().
+		Foreground(YellowAdaptive2).
+		Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
+}
 
 // GetTypeColor Helper function to get color for a given type name from colorMap
 func GetTypeColor(typeName string) string {
@@ -156,50 +170,4 @@ func MakeColor(c color.Color) (Color, bool) {
 func (col Color) Hex() string {
 	return fmt.Sprintf("#%02x%02x%02x",
 		uint8(col.R*255.0+0.5), uint8(col.G*255.0+0.5), uint8(col.B*255.0+0.5))
-}
-
-func FormTheme() *huh.Theme {
-	var (
-		yellow   = lipgloss.Color(LightYellow)
-		blue     = lipgloss.Color("#3B4CCA")
-		red      = lipgloss.Color("#D00000")
-		black    = lipgloss.Color("#000000")
-		normalFg = lipgloss.AdaptiveColor{Light: "235", Dark: "252"}
-	)
-	t := huh.ThemeBase()
-
-	t.Focused.Base = t.Focused.Base.BorderForeground(lipgloss.Color("238"))
-	t.Focused.Card = t.Focused.Base
-	t.Focused.Title = t.Focused.Title.Foreground(blue).Bold(true)
-	t.Focused.NoteTitle = t.Focused.NoteTitle.Foreground(blue).Bold(true).MarginBottom(1)
-	t.Focused.Directory = t.Focused.Directory.Foreground(blue)
-	t.Focused.Description = t.Focused.Description.Foreground(lipgloss.AdaptiveColor{Light: "", Dark: "243"})
-	t.Focused.ErrorIndicator = t.Focused.ErrorIndicator.Foreground(red)
-	t.Focused.ErrorMessage = t.Focused.ErrorMessage.Foreground(red)
-	t.Focused.SelectSelector = t.Focused.SelectSelector.Foreground(red)
-	t.Focused.NextIndicator = t.Focused.NextIndicator.Foreground(yellow)
-	t.Focused.PrevIndicator = t.Focused.PrevIndicator.Foreground(yellow)
-	t.Focused.Option = t.Focused.Option.Foreground(normalFg)
-	t.Focused.MultiSelectSelector = t.Focused.MultiSelectSelector.Foreground(red)
-	t.Focused.SelectedOption = t.Focused.SelectedOption.Foreground(red)
-	t.Focused.SelectedPrefix = lipgloss.NewStyle().Foreground(red).SetString("✓ ")
-	t.Focused.UnselectedPrefix = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "", Dark: "243"}).SetString("• ")
-	t.Focused.UnselectedOption = t.Focused.UnselectedOption.Foreground(normalFg)
-	t.Focused.FocusedButton = t.Focused.FocusedButton.Foreground(black).Background(yellow)
-	t.Focused.Next = t.Focused.FocusedButton
-
-	t.Focused.TextInput.Cursor = t.Focused.TextInput.Cursor.Foreground(yellow)
-	t.Focused.TextInput.Placeholder = t.Focused.TextInput.Placeholder.Foreground(lipgloss.AdaptiveColor{Light: "248", Dark: "238"})
-	t.Focused.TextInput.Prompt = t.Focused.TextInput.Prompt.Foreground(red)
-
-	t.Blurred = t.Focused
-	t.Blurred.Base = t.Focused.Base.BorderStyle(lipgloss.HiddenBorder())
-	t.Blurred.Card = t.Blurred.Base
-	t.Blurred.NextIndicator = lipgloss.NewStyle()
-	t.Blurred.PrevIndicator = lipgloss.NewStyle()
-
-	t.Group.Title = t.Focused.Title
-	t.Group.Description = t.Focused.Description
-
-	return t
 }

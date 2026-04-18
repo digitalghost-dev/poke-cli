@@ -20,7 +20,7 @@ type AbilityFlags struct {
 
 func SetupAbilityFlagSet() *AbilityFlags {
 	af := &AbilityFlags{}
-	af.FlagSet = flag.NewFlagSet("abilityFlags", flag.ExitOnError)
+	af.FlagSet = flag.NewFlagSet("abilityFlags", flag.ContinueOnError)
 
 	af.Pokemon = af.FlagSet.Bool("pokemon", false, "List all Pokémon with chosen ability")
 	af.ShortPokemon = af.FlagSet.Bool("p", false, "List all Pokémon with chosen ability")

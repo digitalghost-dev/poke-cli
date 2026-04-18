@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	spinnerpkg "github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
+	spinnerpkg "charm.land/bubbles/v2/spinner"
+	tea "charm.land/bubbletea/v2"
 )
 
 func TestImageModel_Init(t *testing.T) {
@@ -24,7 +24,7 @@ func TestImageModel_Update_EscKey(t *testing.T) {
 	}
 
 	// Test ESC key
-	msg := tea.KeyMsg{Type: tea.KeyEsc}
+	msg := tea.KeyPressMsg{Code: tea.KeyEscape}
 	newModel, cmd := model.Update(msg)
 
 	// Should return quit command
@@ -44,7 +44,7 @@ func TestImageModel_Update_CtrlC(t *testing.T) {
 		ImageURL: "test-sixel-data",
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyCtrlC}
+	msg := tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl}
 	_, cmd := model.Update(msg)
 
 	if cmd == nil {
@@ -58,7 +58,7 @@ func TestImageModel_Update_DifferentKey(t *testing.T) {
 		ImageURL: "test-sixel-data",
 	}
 
-	msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'a'}}
+	msg := tea.KeyPressMsg{Code: 'a', Text: "a"}
 	_, cmd := model.Update(msg)
 
 	if cmd != nil {
@@ -72,11 +72,11 @@ func TestImageModel_View_Loading(t *testing.T) {
 	result := model.View()
 
 	// When loading, should show spinner and card name
-	if result == "" {
+	if result.Content == "" {
 		t.Error("View() should not be empty when loading")
 	}
 	// Can't check exact spinner output as it's dynamic, but should contain card name
-	if !strings.Contains(result, "001/198 - Pineco") {
+	if !strings.Contains(result.Content, "001/198 - Pineco") {
 		t.Error("View() should contain card name when loading")
 	}
 }
@@ -92,8 +92,8 @@ func TestImageModel_View_Loaded(t *testing.T) {
 
 	result := model.View()
 
-	if result != expectedData {
-		t.Errorf("View() = %v, want %v", result, expectedData)
+	if result.Content != expectedData {
+		t.Errorf("View() = %v, want %v", result.Content, expectedData)
 	}
 }
 
@@ -107,8 +107,8 @@ func TestImageModel_View_Empty(t *testing.T) {
 
 	result := model.View()
 
-	if result != "" {
-		t.Errorf("View() with empty ImageData should return empty string, got %v", result)
+	if result.Content != "" {
+		t.Errorf("View() with empty ImageData should return empty string, got %v", result.Content)
 	}
 }
 

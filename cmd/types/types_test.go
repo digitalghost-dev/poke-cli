@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/x/exp/teatest"
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	"github.com/charmbracelet/x/exp/teatest/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
@@ -68,6 +68,7 @@ func createTestModel() model {
 		table.WithRows(rows),
 		table.WithFocused(true),
 		table.WithHeight(7),
+		table.WithWidth(16),
 	)
 
 	// Set table styles
@@ -90,7 +91,7 @@ func TestUpdate(t *testing.T) {
 		testModel := teatest.NewTestModel(t, m)
 
 		// Send escape key
-		testModel.Send(tea.KeyMsg{Type: tea.KeyEsc})
+		testModel.Send(tea.KeyPressMsg{Code: tea.KeyEscape})
 		testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 		final := testModel.FinalModel(t).(model)
@@ -102,7 +103,7 @@ func TestUpdate(t *testing.T) {
 		testModel := teatest.NewTestModel(t, m)
 
 		// Send ctrl+c key
-		testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+		testModel.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
 		testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 		final := testModel.FinalModel(t).(model)
@@ -114,7 +115,7 @@ func TestUpdate(t *testing.T) {
 		testModel := teatest.NewTestModel(t, m)
 
 		// Send enter key
-		testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
+		testModel.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
 		testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 		final := testModel.FinalModel(t).(model)
@@ -126,10 +127,10 @@ func TestUpdate(t *testing.T) {
 		testModel := teatest.NewTestModel(t, m)
 
 		// Send down arrow key to select the second row
-		testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
+		testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown})
 
 		// Then send enter to select it
-		testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
+		testModel.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
 		testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 		final := testModel.FinalModel(t).(model)
@@ -143,7 +144,7 @@ func TestView(t *testing.T) {
 		m.quitting = true
 
 		view := m.View()
-		assert.Equal(t, "\n  Goodbye! \n", view, "View should return goodbye message when quitting")
+		assert.Equal(t, "\n  Goodbye! \n", view.Content, "View should return goodbye message when quitting")
 	})
 
 	t.Run("View should return empty string when selectedOption is set", func(t *testing.T) {
@@ -155,9 +156,9 @@ func TestView(t *testing.T) {
 		m := createTestModel()
 
 		view := m.View()
-		assert.Contains(t, view, "Select a type!", "View should contain the title")
-		assert.Contains(t, view, "Type", "View should contain the table header")
-		assert.Contains(t, view, "move up", "View should contain the key menu")
+		assert.Contains(t, view.Content, "Select a type!", "View should contain the title")
+		assert.Contains(t, view.Content, "Type", "View should contain the table header")
+		assert.Contains(t, view.Content, "move up", "View should contain the key menu")
 	})
 }
 
@@ -166,10 +167,10 @@ func TestTypeSelection(t *testing.T) {
 
 	testModel := teatest.NewTestModel(t, m, teatest.WithInitialTermSize(300, 500))
 
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
-	testModel.Send(tea.KeyMsg{Type: tea.KeyDown})
-	testModel.Send(tea.KeyMsg{Type: tea.KeyEnter})
-	testModel.Send(tea.KeyMsg{Type: tea.KeyCtrlC})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown})
+	testModel.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
+	testModel.Send(tea.KeyPressMsg{Code: 'c', Mod: tea.ModCtrl})
 	testModel.WaitFinished(t, teatest.WithFinalTimeout(300*time.Millisecond))
 
 	final := testModel.FinalModel(t).(model)

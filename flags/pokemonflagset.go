@@ -9,13 +9,15 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/lipgloss/table"
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/table"
+	cmdutils "github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -57,7 +59,7 @@ func header(header string) string {
 
 func SetupPokemonFlagSet() *PokemonFlags {
 	pf := &PokemonFlags{}
-	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ExitOnError)
+	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ContinueOnError)
 
 	pf.Abilities = pf.FlagSet.Bool("abilities", false, "Print the Pokémon's abilities")
 	pf.ShortAbilities = pf.FlagSet.Bool("a", false, "Print the Pokémon's abilities")
@@ -347,7 +349,7 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 				c2, _ := styling.MakeColor(img.At(x, heightCounter+1))
 				color2 := lipgloss.Color(c2.Hex())
 
-				styleKey := string(color1) + "_" + string(color2)
+				styleKey := c1.Hex() + "_" + c2.Hex()
 				style, exists := styleCache[styleKey]
 				if !exists {
 					style = lipgloss.NewStyle().Foreground(color1).Background(color2)
@@ -386,8 +388,7 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	// Validate size
 	dimensions, exists := sizeMap[strings.ToLower(size)]
 	if !exists {
-		errMessage := styling.ErrorBorder.Render(styling.ErrorColor.Render("✖ Error!"), "\nInvalid image size.\nValid sizes are: lg, md, sm")
-		return fmt.Errorf("%s", errMessage)
+		return fmt.Errorf("%s", cmdutils.FormatError("Invalid image size.\nValid sizes are: lg, md, sm"))
 	}
 
 	imgStr := ToString(dimensions[0], dimensions[1], img)
@@ -510,7 +511,9 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	}
 
 	// Build and print table
-	color := lipgloss.AdaptiveColor{Light: "#4B4B4B", Dark: "#D3D3D3"}
+	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	ld := lipgloss.LightDark(isDark)
+	color := ld(lipgloss.Color("#4B4B4B"), lipgloss.Color("#D3D3D3"))
 
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
