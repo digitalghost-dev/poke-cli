@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
+	"golang.org/x/term"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -81,7 +82,10 @@ var (
 )
 
 func init() {
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := true
+	if term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd())) {
+		isDark = lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	}
 	ld := lipgloss.LightDark(isDark)
 	YellowAdaptive = ld(lipgloss.Color(DarkYellow), lipgloss.Color(LightYellow))
 	YellowAdaptive2 = ld(lipgloss.Color(DarkYellow), lipgloss.Color(PrimaryYellow))
