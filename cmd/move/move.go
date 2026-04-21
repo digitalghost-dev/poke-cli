@@ -10,6 +10,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/constants"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
@@ -110,12 +111,12 @@ func moveEffectContainer(output *strings.Builder, moveStruct structs.MoveJSONStr
 			continue
 		}
 
-		if entry.VersionGroup.Name == "scarlet-violet" {
+		if entry.VersionGroup.Name == constants.VersionScarletViolet {
 			sv = entry.FlavorText
 			break
 		}
 
-		if entry.VersionGroup.Name == "sword-shield" {
+		if entry.VersionGroup.Name == constants.VersionSwordShield {
 			swsh = entry.FlavorText
 		}
 	}
