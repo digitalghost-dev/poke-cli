@@ -6,18 +6,13 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"math"
 	"os"
-	"sort"
 	"strings"
 
-	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 // PokemonCommand processes the Pokémon command
@@ -83,150 +78,6 @@ func PokemonCommand() (string, error) {
 
 	capitalizedString := styling.CapitalizeResourceName(pokemonName)
 
-	entry := func(w io.Writer) {
-		for _, entry := range pokemonSpeciesStruct.FlavorTextEntries {
-			if entry.Language.Name == "en" && (entry.Version.Name == "x" || entry.Version.Name == "shield" || entry.Version.Name == "scarlet") {
-				flavorText := strings.ReplaceAll(entry.FlavorText, "\n", " ")
-				flavorText = strings.Join(strings.Fields(flavorText), " ")
-
-				wrapped := utils.WrapText(flavorText, 60)
-				fmt.Fprintln(w, wrapped)
-				return
-			}
-		}
-	}
-
-	eggInformation := func(w io.Writer) {
-		var eggInformationSlice []string
-
-		modernEggInformationNames := map[string]string{
-			"indeterminate": "Amorphous",
-			"ground":        "Field",
-			"humanshape":    "Human-Like",
-			"plant":         "Grass",
-			"no-eggs":       "Undiscovered",
-		}
-
-		for _, entry := range pokemonSpeciesStruct.EggGroups {
-			if name, exists := modernEggInformationNames[entry.Name]; exists {
-				eggInformationSlice = append(eggInformationSlice, name)
-			} else {
-				eggInformationSlice = append(eggInformationSlice, cases.Title(language.English).String(entry.Name))
-			}
-		}
-
-		sort.Strings(eggInformationSlice)
-
-		genderRate := pokemonSpeciesStruct.GenderRate
-		m := map[int]string{
-			-1: "Genderless",
-			0:  "0% F",
-			1:  "12.5% F",
-			2:  "25% F",
-			3:  "37.5% F",
-			4:  "50% F",
-			5:  "62.5% F",
-			6:  "75% F",
-			7:  "87.5% F",
-			8:  "100% F",
-		}
-
-		hatchCounter := pokemonSpeciesStruct.HatchCounter
-
-		fmt.Fprintf(w,
-			"\n%s %s %s\n%s %s %s\n%s %s %d",
-			styling.ColoredBullet,
-			"Egg Group(s):", strings.Join(eggInformationSlice, ", "),
-			styling.ColoredBullet,
-			"Gender Rate:", m[genderRate],
-			styling.ColoredBullet,
-			"Egg Cycles:", hatchCounter,
-		)
-	}
-
-	effortValues := func(w io.Writer) {
-		nameMapping := map[string]string{
-			"hp":              "HP",
-			"attack":          "Atk",
-			"defense":         "Def",
-			"special-attack":  "SpA",
-			"special-defense": "SpD",
-			"speed":           "Spd",
-		}
-
-		var evs []string
-
-		for _, effortValue := range pokemonStruct.Stats {
-			if effortValue.Effort > 0 {
-				name, ok := nameMapping[effortValue.Stat.Name]
-				if !ok {
-					name = "Missing from API"
-				}
-				evs = append(evs, fmt.Sprintf("%d %s", effortValue.Effort, name))
-			}
-		}
-
-		fmt.Fprintf(w, "\n%s Effort Values: %s", styling.ColoredBullet, strings.Join(evs, ", "))
-	}
-
-	typing := func(w io.Writer) {
-		var typeBoxes []string
-
-		for _, pokeType := range pokemonStruct.Types {
-			colorHex, exists := styling.ColorMap[pokeType.Type.Name]
-			if exists {
-				color := lipgloss.Color(colorHex)
-				typeColorStyle := lipgloss.NewStyle().
-					Align(lipgloss.Center).
-					Foreground(lipgloss.Color("#FAFAFA")).
-					Background(color).
-					Margin(1, 1, 0, 0).
-					Height(1).
-					Width(14)
-
-				rendered := typeColorStyle.Render(cases.Title(language.English).String(pokeType.Type.Name))
-				typeBoxes = append(typeBoxes, rendered)
-			}
-		}
-
-		joinedTypes := lipgloss.JoinHorizontal(lipgloss.Top, typeBoxes...)
-		fmt.Fprintln(w, joinedTypes)
-	}
-
-	metrics := func(w io.Writer) {
-		// Weight calculation
-		weightKilograms := float64(pokemonStruct.Weight) / 10
-		weightPounds := float64(weightKilograms) * 2.20462
-
-		// Height calculation
-		heightMeters := float64(pokemonStruct.Height) / 10
-		heightFeet := heightMeters * 3.28084
-		feet := int(heightFeet)
-		inches := int(math.Round((heightFeet - float64(feet)) * 12)) // Use math.Round to avoid truncation
-
-		// Adjust for rounding to 12 inches (carry over to the next foot)
-		if inches == 12 {
-			feet++
-			inches = 0
-		}
-
-		fmt.Fprintf(w, "\n%s National Pokédex #: %d\n%s Weight: %.1fkg (%.1f lbs)\n%s Height: %.1fm (%d′%02d″)\n",
-			styling.ColoredBullet, pokemonStruct.ID,
-			styling.ColoredBullet, weightKilograms, weightPounds,
-			styling.ColoredBullet, heightMeters, feet, inches)
-	}
-
-	species := func(w io.Writer) {
-		if pokemonSpeciesStruct.EvolvesFromSpecies.Name != "" {
-			evolvesFrom := pokemonSpeciesStruct.EvolvesFromSpecies.Name
-
-			capitalizedPokemonName := styling.CapitalizeResourceName(evolvesFrom)
-			fmt.Fprintf(w, "%s %s %s", styling.ColoredBullet, "Evolves from:", capitalizedPokemonName)
-		} else {
-			fmt.Fprintf(w, "%s %s", styling.ColoredBullet, "Basic Pokémon")
-		}
-	}
-
 	var (
 		entryOutput        bytes.Buffer
 		eggGroupOutput     bytes.Buffer
@@ -236,12 +87,12 @@ func PokemonCommand() (string, error) {
 		effortValuesOutput bytes.Buffer
 	)
 
-	entry(&entryOutput)
-	eggInformation(&eggGroupOutput)
-	typing(&typeOutput)
-	metrics(&metricsOutput)
-	species(&speciesOutput)
-	effortValues(&effortValuesOutput)
+	renderEntry(&entryOutput, pokemonSpeciesStruct)
+	renderEggInformation(&eggGroupOutput, pokemonSpeciesStruct)
+	renderTyping(&typeOutput, pokemonStruct)
+	renderMetrics(&metricsOutput, pokemonStruct)
+	renderSpecies(&speciesOutput, pokemonSpeciesStruct)
+	renderEffortValues(&effortValuesOutput, pokemonStruct)
 
 	fmt.Fprintf(&output,
 		"Your selected Pokémon: %s\n%s\n%s%s%s%s%s\n",
