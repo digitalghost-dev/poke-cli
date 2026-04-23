@@ -3,7 +3,18 @@ package structs
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
+
+func TestGetResourceName(t *testing.T) {
+	assert.Equal(t, "strong-jaw", AbilityJSONStruct{Name: "strong-jaw"}.GetResourceName())
+	assert.Equal(t, "poke-ball", ItemJSONStruct{Name: "poke-ball"}.GetResourceName())
+	assert.Equal(t, "thunderbolt", MoveJSONStruct{Name: "thunderbolt"}.GetResourceName())
+	assert.Equal(t, "pikachu", PokemonJSONStruct{Name: "pikachu"}.GetResourceName())
+	assert.Equal(t, "pikachu", PokemonSpeciesJSONStruct{Name: "pikachu"}.GetResourceName())
+	assert.Equal(t, "fire", TypesJSONStruct{Name: "fire"}.GetResourceName())
+}
 
 func TestPokemonJSONStruct_Unmarshal(t *testing.T) {
 	// Sample JSON data for a Pokémon

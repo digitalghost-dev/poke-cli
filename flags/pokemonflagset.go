@@ -19,6 +19,7 @@ import (
 	"charm.land/lipgloss/v2/table"
 	cmdutils "github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/constants"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
@@ -427,7 +428,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	eligibleMoves := 0
 	for _, pokeMove := range pokemonStruct.Moves {
 		for _, detail := range pokeMove.VersionGroupDetails {
-			if detail.VersionGroup.Name != "scarlet-violet" || detail.MoveLearnedMethod.Name != "level-up" {
+			if detail.VersionGroup.Name != constants.VersionScarletViolet || detail.MoveLearnedMethod.Name != "level-up" {
 				continue
 			}
 

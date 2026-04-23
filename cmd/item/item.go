@@ -9,6 +9,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
+	"github.com/digitalghost-dev/poke-cli/constants"
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -78,7 +79,7 @@ func itemInfoContainer(output *strings.Builder, itemStruct structs.ItemJSONStruc
 		fullDoc = lipgloss.JoinVertical(lipgloss.Top, capitalizedItem, itemCost, itemCategory, "---", "Description:", missingData)
 	} else {
 		for _, entry := range itemStruct.FlavorTextEntries {
-			if entry.Language.Name == "en" && entry.VersionGroup.Name == "sword-shield" {
+			if entry.Language.Name == "en" && entry.VersionGroup.Name == constants.VersionSwordShield {
 				if entry.Text != "" {
 					flavorTextEntry = entry.Text
 					fullDoc = lipgloss.JoinVertical(lipgloss.Top, capitalizedItem, itemCost, itemCategory, "---", "Description:", flavorTextEntry)

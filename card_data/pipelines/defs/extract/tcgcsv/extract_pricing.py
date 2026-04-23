@@ -137,14 +137,15 @@ def pull_product_information(set_number: str) -> pl.DataFrame:
     print(colored(" →", "blue"), f"Processing set: {set_number}")
 
     product_id = SET_PRODUCT_MATCHING[set_number]
+    headers = {"User-Agent": "poke-cli/1.9"}
 
     # Fetch product data
     products_url = f"https://tcgcsv.com/tcgplayer/3/{product_id}/products"
-    products_data = requests.get(products_url, timeout=30).json()
+    products_data = requests.get(products_url, timeout=30, headers=headers).json()
 
     # Fetch pricing data
     prices_url = f"https://tcgcsv.com/tcgplayer/3/{product_id}/prices"
-    prices_data = requests.get(prices_url, timeout=30).json()
+    prices_data = requests.get(prices_url, timeout=30, headers=headers).json()
 
     price_dict = {
         price["productId"]: price.get("marketPrice")
