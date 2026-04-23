@@ -16,7 +16,7 @@ func TestRenderEntry(t *testing.T) {
 		contains string
 	}{
 		{
-			name: "scarlet entry preferred",
+			name: "first matching english entry returned",
 			species: structs.PokemonSpeciesJSONStruct{
 				FlavorTextEntries: []struct {
 					FlavorText string `json:"flavor_text"`
@@ -29,13 +29,6 @@ func TestRenderEntry(t *testing.T) {
 						URL  string `json:"url"`
 					} `json:"version"`
 				}{
-					{FlavorText: "A shield entry.", Language: struct {
-						Name string `json:"name"`
-						URL  string `json:"url"`
-					}{Name: "en"}, Version: struct {
-						Name string `json:"name"`
-						URL  string `json:"url"`
-					}{Name: "shield"}},
 					{FlavorText: "A scarlet entry.", Language: struct {
 						Name string `json:"name"`
 						URL  string `json:"url"`
@@ -43,9 +36,16 @@ func TestRenderEntry(t *testing.T) {
 						Name string `json:"name"`
 						URL  string `json:"url"`
 					}{Name: "scarlet"}},
+					{FlavorText: "A shield entry.", Language: struct {
+						Name string `json:"name"`
+						URL  string `json:"url"`
+					}{Name: "en"}, Version: struct {
+						Name string `json:"name"`
+						URL  string `json:"url"`
+					}{Name: "shield"}},
 				},
 			},
-			contains: "A shield entry.",
+			contains: "A scarlet entry.",
 		},
 		{
 			name: "non-english entries are skipped",
@@ -334,7 +334,7 @@ func TestRenderTyping(t *testing.T) {
 			renderTyping(&buf, tt.pokemon)
 			output := buf.String()
 			if tt.contains == "" {
-				assert.True(t, strings.TrimSpace(output) == "" || !strings.Contains(output, "Faketype"))
+				assert.Empty(t, strings.TrimSpace(output))
 			} else {
 				assert.Contains(t, output, tt.contains)
 			}
