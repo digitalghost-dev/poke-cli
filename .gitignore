@@ -73,3 +73,7 @@ CLAUDE.md
 REFACTORING.md
 /card_data/.codspeed/
 /.ai/
+
+# Version management
+VERSION
+version-bump.sh
