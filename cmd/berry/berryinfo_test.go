@@ -34,7 +34,7 @@ func TestBerryName(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := BerryName(tt.input)
+			result := berryName(tt.input)
 			if result != tt.expected {
 				t.Errorf("BerryName(%q) = %q, want %q", tt.input, result, tt.expected)
 			}
@@ -62,10 +62,10 @@ func TestBerryEffect(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := BerryEffect(tt.input)
+			result := berryEffect(tt.input)
 			if tt.input == "NonExistentBerry" || tt.input == "" {
 				if result != tt.expected {
-					t.Errorf("BerryEffect(%q) = %q, want %q", tt.input, result, tt.expected)
+					t.Errorf("berryEffect(%q) = %q, want %q", tt.input, result, tt.expected)
 				}
 			}
 		})
@@ -92,10 +92,10 @@ func TestBerryInfo(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := BerryInfo(tt.input)
+			result := berryInfo(tt.input)
 			if tt.input == "NonExistentBerry" || tt.input == "" {
 				if result != tt.expected {
-					t.Errorf("BerryInfo(%q) = %q, want %q", tt.input, result, tt.expected)
+					t.Errorf("berryInfo(%q) = %q, want %q", tt.input, result, tt.expected)
 				}
 			}
 		})
@@ -117,15 +117,15 @@ func TestBerryImageWithMockServer(t *testing.T) {
 	}))
 	defer server.Close()
 
-	result := BerryImage("NonExistentBerry")
+	result := berryImage("NonExistentBerry")
 	expected := "Image information not available"
 	if result != expected {
-		t.Errorf("BerryImage('NonExistentBerry') = %q, want %q", result, expected)
+		t.Errorf("berryImage('NonExistentBerry') = %q, want %q", result, expected)
 	}
 
-	result = BerryImage("")
+	result = berryImage("")
 	if result != expected {
-		t.Errorf("BerryImage('') = %q, want %q", result, expected)
+		t.Errorf("berryImage('') = %q, want %q", result, expected)
 	}
 }
 
@@ -149,9 +149,9 @@ func TestBerryImageErrorHandling(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := BerryImage(tt.input)
+			result := berryImage(tt.input)
 			if result != tt.expected {
-				t.Errorf("BerryImage(%q) = %q, want %q", tt.input, result, tt.expected)
+				t.Errorf("berryImage(%q) = %q, want %q", tt.input, result, tt.expected)
 			}
 		})
 	}
@@ -170,9 +170,9 @@ func TestToStringStructure(t *testing.T) {
 		}
 	}
 
-	// Test the ToString function indirectly by checking that BerryImage
+	// Test the ToString function indirectly by checking that berryImage
 	// with invalid input returns the expected error message
-	result := BerryImage("InvalidBerry")
+	result := berryImage("InvalidBerry")
 	if !strings.Contains(result, "information not available") {
 		t.Errorf("Expected error message for invalid berry, got: %q", result)
 	}
@@ -187,20 +187,20 @@ func TestBerryFunctionsErrorHandling(t *testing.T) {
 		contains string
 	}{
 		{
-			name:     "BerryEffect with invalid input",
-			function: BerryEffect,
+			name:     "berryEffect with invalid input",
+			function: berryEffect,
 			input:    "InvalidBerry123",
 			contains: "not available",
 		},
 		{
-			name:     "BerryInfo with invalid input",
-			function: BerryInfo,
+			name:     "berryInfo with invalid input",
+			function: berryInfo,
 			input:    "InvalidBerry123",
 			contains: "not available",
 		},
 		{
-			name:     "BerryImage with invalid input",
-			function: BerryImage,
+			name:     "berryImage with invalid input",
+			function: berryImage,
 			input:    "InvalidBerry123",
 			contains: "not available",
 		},

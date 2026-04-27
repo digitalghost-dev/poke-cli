@@ -36,9 +36,22 @@ func BerryCommand() (string, error) {
 	flag.Parse()
 
 	// Validate arguments
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "berry", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 4, CmdName: "berry", RequireName: false, HasFlags: false}); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
+	}
+
+	if len(os.Args) > 2 {
+		berryName := styling.CapitalizeResourceName(os.Args[2])
+		if !berryExists(berryName) {
+			err := fmt.Errorf("berry %q not found", os.Args[2])
+			output.WriteString(utils.FormatError(err.Error()))
+			return output.String(), err
+		}
+		containers := berryContainers(berryName)
+		output.WriteString(containers)
+		output.WriteString("\n")
+		return output.String(), nil
 	}
 
 	if err := tableGeneration(); err != nil {
@@ -94,7 +107,7 @@ func (m model) View() tea.View {
 
 	selectedBerry := ""
 	if row := m.table.SelectedRow(); len(row) > 0 {
-		selectedBerry = BerryName(row[0]) + "\n---\n" + BerryEffect(row[0]) + "\n---\n" + BerryInfo(row[0]) + "\n---\nImage\n" + BerryImage(row[0])
+		selectedBerry = berryName(row[0]) + "\n---\n" + berryEffect(row[0]) + "\n---\n" + berryInfo(row[0]) + "\n---\nImage\n" + berryImage(row[0])
 	}
 
 	leftPanel := styling.TypesTableBorder.Render(m.table.View())
@@ -157,4 +170,31 @@ func tableGeneration() error {
 	}
 
 	return nil
+}
+
+func berryContainers(name string) string {
+	header := lipgloss.NewStyle().Bold(true).PaddingBottom(1).Render(
+		styling.StyleBold.Render(styling.CapitalizeResourceName(name)),
+	)
+	infoContent := lipgloss.JoinVertical(lipgloss.Top, header, berryInfo(name), "\n"+berryEffect(name))
+	imageContent := berryImage(name)
+
+	boxStyle := lipgloss.NewStyle().
+		Padding(1, 2).
+		BorderStyle(lipgloss.ThickBorder()).
+		BorderForeground(styling.YellowColor).
+		Width(34)
+
+	// Render both without height constraints to measure natural heights.
+	infoH := lipgloss.Height(boxStyle.Render(infoContent))
+	imageH := lipgloss.Height(boxStyle.Render(imageContent))
+
+	// Pad the shorter content with blank lines before final render so both boxes match.
+	if infoH < imageH {
+		infoContent += strings.Repeat("\n", imageH-infoH)
+	} else if imageH < infoH {
+		imageContent += strings.Repeat("\n", infoH-imageH)
+	}
+
+	return lipgloss.JoinHorizontal(lipgloss.Top, boxStyle.Render(infoContent), boxStyle.Render(imageContent))
 }

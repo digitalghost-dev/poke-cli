@@ -11,11 +11,21 @@ import (
 	"github.com/disintegration/imaging"
 )
 
-func BerryName(berryName string) string {
+func berryExists(name string) bool {
+	results, err := connections.QueryBerryData(`
+		SELECT 1 FROM berries
+		WHERE UPPER(SUBSTR(name, 1, 1)) || SUBSTR(name, 2) = ?
+		LIMIT 1`,
+		name,
+	)
+	return err == nil && len(results) > 0
+}
+
+func berryName(berryName string) string {
 	return "Berry: " + berryName
 }
 
-func BerryEffect(berryName string) string {
+func berryEffect(berryName string) string {
 	berryEffect, err := connections.QueryBerryData(`
 		SELECT
 			effect
@@ -33,7 +43,7 @@ func BerryEffect(berryName string) string {
 	return berryEffect[0]
 }
 
-func BerryInfo(berryName string) string {
+func berryInfo(berryName string) string {
 	berryInfo, err := connections.QueryBerryData(`
 		SELECT
 		   'Firmness: ' || firmness || char(10) ||
@@ -54,7 +64,7 @@ func BerryInfo(berryName string) string {
 	return berryInfo[0]
 }
 
-func BerryImage(berryName string) string {
+func berryImage(berryName string) string {
 	berryImage, err := connections.QueryBerryData(`
 		SELECT
 			sprite_url

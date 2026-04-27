@@ -10,6 +10,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/exp/teatest/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -33,6 +34,12 @@ func TestBerryCommand(t *testing.T) {
 			args:     []string{"poke-cli", "berry", "--help"},
 			wantErr:  false,
 			contains: "FLAGS:",
+		},
+		{
+			name:     "invalid berry name",
+			args:     []string{"poke-cli", "berry", "fakemon"},
+			wantErr:  true,
+			contains: "not found",
 		},
 	}
 
@@ -255,6 +262,65 @@ func TestTableInitialSelection(t *testing.T) {
 	// First row should be selected by default
 	if final.selectedOption != "Aguav" {
 		t.Errorf("Expected initial selectedOption to be 'Aguav', got %q", final.selectedOption)
+	}
+}
+
+func TestBerryCommandOutput(t *testing.T) {
+	err := os.Setenv("GO_TESTING", "1")
+	if err != nil {
+		t.Fatalf("Failed to set GO_TESTING env var: %v", err)
+	}
+
+	defer func() {
+		err := os.Unsetenv("GO_TESTING")
+		if err != nil {
+			t.Logf("Warning: failed to unset GO_TESTING: %v", err)
+		}
+	}()
+
+	tests := []struct {
+		name           string
+		args           []string
+		expectedOutput string
+	}{
+		{
+			name:           "Select 'Cheri' berry",
+			args:           []string{"berry", "Cheri"},
+			expectedOutput: utils.LoadGolden(t, "berry_cheri.golden"),
+		},
+		{
+			name:           "Select 'Oran' berry",
+			args:           []string{"berry", "Oran"},
+			expectedOutput: utils.LoadGolden(t, "berry_oran.golden"),
+		},
+		{
+			name:           "Select 'Sitrus' berry",
+			args:           []string{"berry", "Sitrus"},
+			expectedOutput: utils.LoadGolden(t, "berry_sitrus.golden"),
+		},
+		{
+			name:           "Select 'Aguav' berry",
+			args:           []string{"berry", "Aguav"},
+			expectedOutput: utils.LoadGolden(t, "berry_aguav.golden"),
+		},
+		{
+			name:           "Select 'Chople' berry",
+			args:           []string{"berry", "Chople"},
+			expectedOutput: utils.LoadGolden(t, "berry_chople.golden"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			originalArgs := os.Args
+			os.Args = append([]string{"poke-cli"}, tt.args...)
+			defer func() { os.Args = originalArgs }()
+
+			output, _ := BerryCommand()
+			cleanOutput := styling.StripANSI(output)
+
+			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
+		})
 	}
 }
 
