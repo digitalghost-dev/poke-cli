@@ -19,6 +19,7 @@ dependencies = [
     "psycopg2-binary==2.9.10",
     "pyarrow==20.0.0",
     "pydantic==2.11.7",
+    "pytest-cov==7.1.0",
     "requests==2.32.4",
     "soda-core-postgres==3.5.5",
     "sqlalchemy==2.0.41",
