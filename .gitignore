@@ -77,3 +77,6 @@ REFACTORING.md
 # Version management
 VERSION
 version-bump.sh
+
+# Testing libraries
+.codspeed/
