@@ -74,6 +74,15 @@ Hidden Ability: Chlorophyll
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the abilities flag")
 }
 
+func TestCryFlag_PokemonNotFound(t *testing.T) {
+	err := CryFlag("pokemon", "phantumpf")
+	require.Error(t, err)
+
+	actual := styling.StripANSI(err.Error())
+	assert.Contains(t, actual, "Pokémon not found")
+	assert.Contains(t, actual, "Perhaps a typo?")
+}
+
 func TestDefenseFlag(t *testing.T) {
 	var output bytes.Buffer
 	stdout := os.Stdout

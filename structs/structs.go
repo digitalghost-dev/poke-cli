@@ -142,6 +142,10 @@ type PokemonJSONStruct struct {
 		Hidden bool `json:"hidden"`
 		Slot   int  `json:"slot"`
 	} `json:"abilities"`
+	Cries struct {
+		Latest string `json:"latest"`
+		Legacy string `json:"legacy"`
+	} `json:"cries"`
 	Moves []struct {
 		Move struct {
 			Name string `json:"name"`

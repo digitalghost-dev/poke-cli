@@ -64,6 +64,27 @@ func PokemonCommand() (string, error) {
 		return output.String(), err
 	}
 
+	// The --cry flag should be used on its own for better UX.
+	// These two if-statements check that the flag is used without other flags. 
+	if (*pf.Cry || *pf.ShortCry) && (*pf.Abilities || *pf.ShortAbilities ||
+		*pf.Defense || *pf.ShortDefense ||
+		*pf.Image != "" || *pf.ShortImage != "" ||
+		*pf.Move || *pf.ShortMove ||
+		*pf.Stats || *pf.ShortStats ||
+		*pf.Types || *pf.ShortTypes) {
+		errMsg := "The --cry flag cannot be used with other flags."
+		fmt.Fprintln(&output, errMsg)
+		return output.String(), errors.New(errMsg)
+	}
+
+	if *pf.Cry || *pf.ShortCry {
+		if err := flags.CryFlag(endpoint, pokemonName); err != nil {
+			output.WriteString(err.Error())
+			return output.String(), err
+		}
+		return output.String(), nil
+	}
+
 	pokemonStruct, pokemonName, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 	if err != nil {
 		output.WriteString(err.Error())
