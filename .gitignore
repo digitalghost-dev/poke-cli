@@ -80,3 +80,4 @@ version-bump.sh
 
 # Testing libraries
 .codspeed/
+.pytest_cache/
