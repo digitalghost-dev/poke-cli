@@ -138,7 +138,9 @@ func runTypeSelectionTable(endpoint string) error {
 	}
 
 	if finalModel, ok := programModel.(model); ok && finalModel.selectedOption != "" {
-		DamageTable(strings.ToLower(finalModel.selectedOption), endpoint)
+		if err := DamageTable(strings.ToLower(finalModel.selectedOption), endpoint); err != nil {
+			return err
+		}
 	}
 
 	return nil
