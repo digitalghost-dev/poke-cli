@@ -26,16 +26,16 @@ import (
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 	"github.com/ebitengine/oto/v3"
 	"github.com/jfreymuth/oggvorbis"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type PokemonFlags struct {
 	FlagSet        *flag.FlagSet
-	Cry			   *bool
-	ShortCry	   *bool
+	Cry            *bool
+	ShortCry       *bool
 	Abilities      *bool
 	ShortAbilities *bool
 	Defense        *bool
@@ -151,7 +151,7 @@ func CryFlag(endpoint, pokemonName string) error {
 
 	cryURL := pokemonStruct.Cries.Latest
 	if cryURL == "" {
-		return fmt.Errorf("%s", cmdutils.FormatError("No cry available for" + pokemonName))
+		return fmt.Errorf("%s", cmdutils.FormatError("No cry available for"+pokemonName))
 	}
 
 	fmt.Printf("Playing %s's cry...\n", cases.Title(language.English).String(pokemonName))

@@ -65,7 +65,7 @@ func PokemonCommand() (string, error) {
 	}
 
 	// The --cry flag should be used on its own for better UX.
-	// These two if-statements check that the flag is used without other flags. 
+	// These two if-statements check that the flag is used without other flags.
 	if (*pf.Cry || *pf.ShortCry) && (*pf.Abilities || *pf.ShortAbilities ||
 		*pf.Defense || *pf.ShortDefense ||
 		*pf.Image != "" || *pf.ShortImage != "" ||
