@@ -151,7 +151,7 @@ func CryFlag(endpoint, pokemonName string) error {
 
 	cryURL := pokemonStruct.Cries.Latest
 	if cryURL == "" {
-		return fmt.Errorf("%s", cmdutils.FormatError(fmt.Sprintf("No cry available for %s", pokemonName)))
+		return fmt.Errorf("%s", cmdutils.FormatError("No cry available for" + pokemonName))
 	}
 
 	fmt.Printf("Playing %s's cry...\n", cases.Title(language.English).String(pokemonName))

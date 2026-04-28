@@ -72,7 +72,7 @@ func PokemonCommand() (string, error) {
 		*pf.Move || *pf.ShortMove ||
 		*pf.Stats || *pf.ShortStats ||
 		*pf.Types || *pf.ShortTypes) {
-		errMsg := "The --cry flag cannot be used with other flags."
+		errMsg := "the --cry flag cannot be used with other flags"
 		fmt.Fprintln(&output, errMsg)
 		return output.String(), errors.New(errMsg)
 	}
