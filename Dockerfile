@@ -8,7 +8,11 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v1.10.0" -o poke-cli .
+# Build with the `nocry` tag to exclude the --cry audio playback path.
+# Audio in containers requires host device passthrough that's both
+# fragile and unavailable on macOS/Windows Docker hosts. Users who want
+# `--cry` should install poke-cli natively.
+RUN go build -tags nocry -ldflags "-X main.version=v1.10.0" -o poke-cli .
 
 # build 2
 FROM --platform=$BUILDPLATFORM alpine:3.23
