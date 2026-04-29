@@ -37,7 +37,10 @@ func SetupAbilityFlagSet() *AbilityFlags {
 }
 
 func PokemonAbilitiesFlag(w io.Writer, endpoint string, abilityName string) error {
-	abilitiesStruct, _, _ := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
+	abilitiesStruct, _, err := connections.AbilityApiCall(endpoint, abilityName, connections.APIURL)
+	if err != nil {
+		return err
+	}
 
 	capitalizedEffect := cases.Title(language.English).String(strings.ReplaceAll(abilityName, "-", " "))
 

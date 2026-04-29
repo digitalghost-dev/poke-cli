@@ -19,7 +19,9 @@ func TestDamageTable(t *testing.T) {
 
 	os.Stdout = w
 
-	DamageTable("fire", "type")
+	if err := DamageTable("fire", "type"); err != nil {
+		t.Fatalf("DamageTable returned an error: %v", err)
+	}
 
 	err = w.Close()
 	if err != nil {
@@ -41,5 +43,19 @@ func TestDamageTable(t *testing.T) {
 
 	if !strings.Contains(output, "Damage Chart:") {
 		t.Errorf("Expected output to contain 'Damage Chart:', got:\n%s", output)
+	}
+}
+
+func TestDamageTable_TypeNotFound(t *testing.T) {
+	err := DamageTable("notatype", "type")
+	if err == nil {
+		t.Fatal("expected an error for unknown type, got nil")
+	}
+	actual := styling.StripANSI(err.Error())
+	if !strings.Contains(actual, "Type not found") {
+		t.Errorf("expected error to contain 'Type not found', got: %s", actual)
+	}
+	if !strings.Contains(actual, "Perhaps a typo?") {
+		t.Errorf("expected error to contain 'Perhaps a typo?', got: %s", actual)
 	}
 }

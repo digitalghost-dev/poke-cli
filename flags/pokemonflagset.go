@@ -101,10 +101,13 @@ func SetupPokemonFlagSet() *PokemonFlags {
 }
 
 func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	if err != nil {
+		return err
+	}
 
 	// Print the header from header func
-	_, err := fmt.Fprintln(w, header("Abilities"))
+	_, err = fmt.Fprintln(w, header("Abilities"))
 	if err != nil {
 		return err
 	}
@@ -130,10 +133,13 @@ func AbilitiesFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	if err != nil {
+		return err
+	}
 
 	// Print the header from header func
-	_, err := fmt.Fprintln(w, header("Type Defenses"))
+	_, err = fmt.Fprintln(w, header("Type Defenses"))
 	if err != nil {
 		return err
 	}
@@ -144,7 +150,10 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 
 	typeData := make(map[string]structs.TypesJSONStruct)
 	for _, pokeType := range pokemonStruct.Types {
-		typeStruct, _, _ := connections.TypesApiCall("type", pokeType.Type.Name, connections.APIURL)
+		typeStruct, _, err := connections.TypesApiCall("type", pokeType.Type.Name, connections.APIURL)
+		if err != nil {
+			return err
+		}
 		typeData[pokeType.Type.Name] = typeStruct
 	}
 
@@ -314,10 +323,13 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	if err != nil {
+		return err
+	}
 
 	// Print the header from header func
-	_, err := fmt.Fprintln(w, header("Image"))
+	_, err = fmt.Fprintln(w, header("Image"))
 	if err != nil {
 		return err
 	}
@@ -402,9 +414,12 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 }
 
 func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	if err != nil {
+		return err
+	}
 
-	_, err := fmt.Fprintln(w, header("Learnable Moves"))
+	_, err = fmt.Fprintln(w, header("Learnable Moves"))
 	if err != nil {
 		return err
 	}
@@ -549,10 +564,13 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	if err != nil {
+		return err
+	}
 
 	// Print the header from header func
-	_, err := fmt.Fprintln(w, header("Base Stats"))
+	_, err = fmt.Fprintln(w, header("Base Stats"))
 	if err != nil {
 		return err
 	}
@@ -644,10 +662,13 @@ func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
-	pokemonStruct, _, _ := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
+	if err != nil {
+		return err
+	}
 
 	// Print the header from header func
-	_, err := fmt.Fprintln(w, header("Typing"))
+	_, err = fmt.Fprintln(w, header("Typing"))
 	if err != nil {
 		return err
 	}

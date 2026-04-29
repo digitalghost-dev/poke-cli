@@ -165,8 +165,12 @@ func TestRenderEffortValues(t *testing.T) {
 						Name string `json:"name"`
 					} `json:"stat"`
 				}{
-					{Effort: 2, Stat: struct{ Name string `json:"name"` }{Name: "speed"}},
-					{Effort: 0, Stat: struct{ Name string `json:"name"` }{Name: "attack"}},
+					{Effort: 2, Stat: struct {
+						Name string `json:"name"`
+					}{Name: "speed"}},
+					{Effort: 0, Stat: struct {
+						Name string `json:"name"`
+					}{Name: "attack"}},
 				},
 			},
 			contains: "2 Spd",
@@ -182,7 +186,9 @@ func TestRenderEffortValues(t *testing.T) {
 						Name string `json:"name"`
 					} `json:"stat"`
 				}{
-					{Effort: 1, Stat: struct{ Name string `json:"name"` }{Name: "mystery-stat"}},
+					{Effort: 1, Stat: struct {
+						Name string `json:"name"`
+					}{Name: "mystery-stat"}},
 				},
 			},
 			contains: "Missing from API",
@@ -197,7 +203,9 @@ func TestRenderEffortValues(t *testing.T) {
 						Name string `json:"name"`
 					} `json:"stat"`
 				}{
-					{Effort: 0, Stat: struct{ Name string `json:"name"` }{Name: "hp"}},
+					{Effort: 0, Stat: struct {
+						Name string `json:"name"`
+					}{Name: "hp"}},
 				},
 			},
 			contains: "Effort Values:",

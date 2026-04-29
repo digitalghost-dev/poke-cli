@@ -14,7 +14,12 @@ import (
 )
 
 // DamageTable Function to display type details after a type is selected
-func DamageTable(typesName string, endpoint string) {
+func DamageTable(typesName string, endpoint string) error {
+	typesStruct, typeName, err := connections.TypesApiCall(endpoint, typesName, connections.APIURL)
+	if err != nil {
+		return err
+	}
+
 	// Setting up variables to style the list
 	var columnWidth = 11
 	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
@@ -24,8 +29,6 @@ func DamageTable(typesName string, endpoint string) {
 	var listHeader = lipgloss.NewStyle().BorderStyle(lipgloss.NormalBorder()).BorderBottom(true).BorderForeground(subtle).MarginRight(2).Render
 	var listItem = lipgloss.NewStyle().Render
 	var docStyle = lipgloss.NewStyle().Padding(1, 1, 1, 1)
-
-	typesStruct, typeName, _ := connections.TypesApiCall(endpoint, typesName, connections.APIURL)
 
 	// Format selected type
 	selectedType := cases.Title(language.English).String(typeName)
@@ -99,4 +102,6 @@ func DamageTable(typesName string, endpoint string) {
 
 	// Print the rendered document
 	fmt.Println(docStyle.Render(doc.String()))
+
+	return nil
 }

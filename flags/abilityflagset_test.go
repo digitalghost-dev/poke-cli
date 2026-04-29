@@ -34,6 +34,16 @@ func TestSetupAbilityFlagSet(t *testing.T) {
 	}
 }
 
+func TestPokemonAbilitiesFlag_AbilityNotFound(t *testing.T) {
+	var buf bytes.Buffer
+	err := PokemonAbilitiesFlag(&buf, "ability", "notarealability")
+	require.Error(t, err)
+
+	actual := styling.StripANSI(err.Error())
+	assert.Contains(t, actual, "Ability not found")
+	assert.Contains(t, actual, "Perhaps a typo?")
+}
+
 func TestPokemonFlag(t *testing.T) {
 	var output bytes.Buffer
 	stdout := os.Stdout

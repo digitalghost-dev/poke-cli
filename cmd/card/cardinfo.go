@@ -83,7 +83,7 @@ func CardImage(imageURL string) (imageData string, protocol string, err error) {
 	}
 	parsedURL, err := url.Parse(imageURL)
 	if err != nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
-		return "", "", errors.New("invalid URL scheme")
+		return "", "", errors.New("image is not available from the API")
 	}
 	resp, err := client.Get(imageURL)
 	if err != nil {
