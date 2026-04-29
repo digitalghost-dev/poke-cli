@@ -2,7 +2,7 @@
     <img width="425" src="poke-cli.png" alt="pokemon-logo"/>
     <h4></h4>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.9.5?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.10.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -99,11 +99,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.9.5 <command> [subcommand] [flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.10.0 <command> [subcommand] [flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.9.5 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.10.0 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -112,13 +112,13 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 > The `card` command renders TCG card images using your terminal's graphics protocol. When running inside Docker, pass your terminal's environment variables so image rendering works correctly:
 > ```bash
 > # Kitty
-> docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.9.5 card
+> docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.10.0 card
 >
 > # WezTerm, iTerm2, Ghostty, Konsole, Rio, Tabby
-> docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.9.5 card
+> docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.10.0 card
 >
 > # Windows Terminal (Sixel)
-> docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.9.5 card
+> docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.10.0 card
 > ```
 > If your terminal is not listed above, image rendering is not supported inside Docker.
 
