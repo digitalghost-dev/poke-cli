@@ -11,14 +11,14 @@ import (
 	"github.com/disintegration/imaging"
 )
 
-func berryExists(name string) bool {
+func berryExists(name string) (bool, error) {
 	results, err := connections.QueryBerryData(`
 		SELECT 1 FROM berries
 		WHERE UPPER(SUBSTR(name, 1, 1)) || SUBSTR(name, 2) = ?
 		LIMIT 1`,
 		name,
 	)
-	return err == nil && len(results) > 0
+	return len(results) > 0, err
 }
 
 func berryName(berryName string) string {

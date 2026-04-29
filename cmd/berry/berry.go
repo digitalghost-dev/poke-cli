@@ -43,7 +43,12 @@ func BerryCommand() (string, error) {
 
 	if len(os.Args) > 2 {
 		berryName := styling.CapitalizeResourceName(os.Args[2])
-		if !berryExists(berryName) {
+		exists, err := berryExists(berryName)
+		if err != nil {
+			output.WriteString(utils.FormatError(err.Error()))
+			return output.String(), err
+		}
+		if !exists {
 			err := fmt.Errorf("berry %q not found", os.Args[2])
 			output.WriteString(utils.FormatError(err.Error()))
 			return output.String(), err
