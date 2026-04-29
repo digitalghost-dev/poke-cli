@@ -139,7 +139,7 @@ wheels = [
 
 [[package]]
 name = "card-data"
-version = "1.9.5"
+version = "1.10.0"
 source = { virtual = "." }
 dependencies = [
     { name = "aws-secretsmanager-caching" },
@@ -190,7 +190,7 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = "==2.9.10" },
     { name = "pyarrow", specifier = "==20.0.0" },
     { name = "pydantic", specifier = "==2.11.7" },
-    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "pytest-cov", specifier = "==7.1.0" },
     { name = "requests", specifier = "==2.32.4" },
     { name = "soda-core-postgres", specifier = "==3.5.5" },
     { name = "sqlalchemy", specifier = "==2.0.41" },
