@@ -316,7 +316,8 @@ func TestBerryCommandOutput(t *testing.T) {
 			os.Args = append([]string{"poke-cli"}, tt.args...)
 			defer func() { os.Args = originalArgs }()
 
-			output, _ := BerryCommand()
+			output, err := BerryCommand()
+			require.NoError(t, err, "BerryCommand failed: %v", err)
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")

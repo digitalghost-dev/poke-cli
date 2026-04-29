@@ -19,8 +19,6 @@ from pipelines.defs.extract.tcgcsv.extract_pricing import (
     SET_PRODUCT_MATCHING,
 )
 
-_build_dataframe_fn = build_dataframe.op.compute_fn.decorated_fn
-
 
 # ---------------------------------------------------------------------------
 # is_card()
@@ -336,7 +334,7 @@ def test_build_dataframe_concatenates_all_sets(mock_pull, benchmark):
     })
     mock_pull.return_value = sample_df
 
-    result = benchmark(_build_dataframe_fn)
+    result = benchmark(build_dataframe)
 
     assert isinstance(result, pl.DataFrame)  # nosec
     assert len(result) == len(SET_PRODUCT_MATCHING)  # one row per set  # nosec
@@ -350,6 +348,6 @@ def test_build_dataframe_raises_on_empty_dataframe(mock_pull, benchmark):
 
     def run():
         with pytest.raises(ValueError, match="Empty DataFrame"):
-            _build_dataframe_fn()
+            build_dataframe()
 
     benchmark(run)
