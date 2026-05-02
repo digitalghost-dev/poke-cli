@@ -29,10 +29,11 @@ func PokemonCommand() (string, error) {
 					ShowHyphenHint: true,
 					Flags: []utils.FlagHelp{
 						{Short: "-a", Long: "--abilities", Description: "Prints the Pokémon's abilities."},
+						{Short: "-d", Long: "--defense", Description: "Prints the Pokémon's type defenses."},
 						{Short: "-i=xx", Long: "--image=xx", Description: "Prints out the Pokémon's default sprite.\n\t     " + styling.StyleItalic.Render("options: [sm, md, lg]")},
 						{Short: "-m", Long: "--moves", Description: "Prints the Pokémon's learnable moves."},
 						{Short: "-s", Long: "--stats", Description: "Prints the Pokémon's base stats."},
-						{Short: "-t", Long: "--types", Description: styling.ErrorColor.Render("Deprecated. Types are included with each Pokémon.")},
+						{Short: "-t", Long: "--types", Description: styling.ErrorColor.Render("Deprecated. Typing is included by default.")},
 					},
 				},
 			),

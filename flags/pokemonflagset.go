@@ -78,7 +78,7 @@ func SetupPokemonFlagSet() *PokemonFlags {
 	pf.ShortStats = pf.FlagSet.Bool("s", false, "Print the Pokémon's base stats")
 
 	pf.Types = pf.FlagSet.Bool("types", false, "Print the Pokémon's typing")
-	pf.ShortTypes = pf.FlagSet.Bool("t", false, "Prints the Pokémon's typing")
+	pf.ShortTypes = pf.FlagSet.Bool("t", false, "Print the Pokémon's typing")
 
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
@@ -89,9 +89,9 @@ func SetupPokemonFlagSet() *PokemonFlags {
 			fmt.Sprintf("\n\t%-30s %s", "-d, --defense", "Prints the Pokémon's type defenses."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
-			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokemon's learnable moves."),
+			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokémon's learnable moves."),
 			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
-			fmt.Sprintf("\n\t%-30s %s", "-t, --types", "Prints the Pokémon's typing."),
+			fmt.Sprintf("\n\t%-30s %s", "-t, --types", styling.ErrorColor.Render("Deprecated. Typing is included by default.")),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
 		fmt.Println(helpMessage)
