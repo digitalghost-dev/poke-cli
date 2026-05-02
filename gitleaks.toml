@@ -6,5 +6,6 @@ title = "Custom Gitleaks configuration"
 [allowlist]
 regexTarget = "match"
 regexes = [
-  '''sb_publishable_[A-Za-z0-9_-]+'''
+  '''sb_publishable_[A-Za-z0-9_-]+''',
+  '''phc_[A-Za-z0-9]+'''
 ]
