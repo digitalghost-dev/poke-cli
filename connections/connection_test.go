@@ -123,6 +123,38 @@ func TestAbilityApiCall(t *testing.T) {
 		assert.Contains(t, err.Error(), "Ability not found", "Expected 'Ability not found' in error message")
 		assert.Contains(t, err.Error(), "Perhaps a typo?", "Expected helpful suggestion in error message")
 	})
+
+	t.Run("Server error does not return not found message", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Error(w, "Server Error", http.StatusInternalServerError)
+		}))
+		defer ts.Close()
+
+		ability, name, err := AbilityApiCall("/ability", "unaware", ts.URL)
+
+		require.Error(t, err)
+		assert.Equal(t, structs.AbilityJSONStruct{}, ability)
+		assert.Empty(t, name)
+		assert.Contains(t, err.Error(), "Ability data source returned a server error.")
+		assert.NotContains(t, err.Error(), "Ability not found")
+	})
+
+	t.Run("Malformed JSON does not return not found message", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, err := w.Write([]byte("not-json"))
+			assert.NoError(t, err)
+		}))
+		defer ts.Close()
+
+		ability, name, err := AbilityApiCall("/ability", "unaware", ts.URL)
+
+		require.Error(t, err)
+		assert.Equal(t, structs.AbilityJSONStruct{}, ability)
+		assert.Empty(t, name)
+		assert.Contains(t, err.Error(), "Ability data source returned data in an unexpected format.")
+		assert.NotContains(t, err.Error(), "Ability not found")
+	})
 }
 
 func TestItemApiCall(t *testing.T) {
