@@ -145,6 +145,19 @@ Output:
 ## `speed`
 * Calculate the speed of a Pokémon in battle.
 
+The command opens an interactive form and asks for the following values:
+
+* Pokémon name
+* Level: `1-100`
+* Speed EVs: `0-252`
+* Speed IVs: `0-31`
+* Modifiers: `Choice Scarf`, `Tailwind`
+* Ability: `None`, `Swift Swim`, `Chlorophyll`, `Sand Rush`, `Slush Rush`, `Unburden`, `Quick Feet`, `Surge Surfer`
+* Nature multiplier: `+10%`, `0%`, `-10%`
+* Speed stage: `-6` to `+6`
+
+The final speed is calculated with the standard stat formula and rounded down.
+
 Example:
 ```console
 poke-cli speed
