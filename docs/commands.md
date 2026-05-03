@@ -29,6 +29,41 @@ Output:
 
 ---
 
+## `card`
+* Browse Pokémon TCG card data through an interactive TUI.
+
+The command opens a multi-step browser:
+
+1. Select a series.
+2. Select a set from that series.
+3. Browse the cards in the selected set.
+4. Option to open the selected card in the image viewer with `?`.
+
+Card images use your terminal's graphics protocol. Image rendering support depends on the terminal. 
+
+The following terminals are confirmed to have protocol support and render card images correctly:
+* Kitty
+* WezTerm
+* iTerm2
+* Ghostty
+* Konsole
+* Rio
+* Tabby
+* Windows Terminal
+
+Basic terminal emulators may show card details without images or may not render images correctly.
+
+Example:
+```console
+poke-cli card
+```
+
+Output:
+
+![card_command](assets/card.gif)
+
+---
+
 ## `item`
 * Retrieve information about a specific item, including its cost, category and description.
 
