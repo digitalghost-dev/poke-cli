@@ -220,10 +220,11 @@ Below is a list of the planned/completed commands and flags:
 - [x] `natures`: get data about natures.
 - [x] `pokemon`: get data about a Pokémon.
     - [x] `-a | --abilities`: display the Pokémon's abilities.
+    - [ ] `-c | --cry`: play the Pokémon's cry.
     - [x] `-d | --defense`: display the Pokémon's type defences.
     - [x] `-i | --image`: display a pixel image of the Pokémon.
-    - [x] `-s | --stats`: display the Pokémon's base stats.
     - [x] `-m | --moves`: display learnable moves.
+    - [x] `-s | --stats`: display the Pokémon's base stats.
 - [ ] `search`: search for a resource 
     - [x] `ability`
     - [ ] `berry`
