@@ -6,6 +6,8 @@ import streamlit as st
 
 from supabase import Client, create_client
 
+from analytics import track_visit
+
 
 @st.cache_resource
 def init_connection() -> Client:
@@ -29,19 +31,16 @@ def unique_locations() -> list:
     result = (
         supabase.table("standings")
         .select("location, text_date")
+        .eq("rank", 1)
         .order("start_date")
         .execute()
     )
-    return list(
-        dict.fromkeys(
-            (row["location"], row["text_date"]) for row in result.data
-        )  # pyrefly: ignore[bad-index, unsupported-operation]
-    )
+    return [(row["location"], row["text_date"]) for row in result.data]
 
 @st.cache_data(ttl=86400)
 def tournament_locations() -> list[dict[str, str]]:
     tournaments = supabase.table("standings").select(
-            "location, tournament_latitude, tournament_longitude, type, text_date, player_quantity"
+            "location, tournament_latitude, tournament_longitude, type, text_date, player_quantity, iso_code"
         ).eq("rank", 1).order("start_date").execute().data
 
 
@@ -84,7 +83,33 @@ def tournament_info(tourney_filter: str):
         if logo:
             st.image(logo, width=100)
 
+class SeasonKPIs:
+    def __init__(self, tournaments: list[dict[str, str]]):
+        self.tournaments = tournaments
+
+    def render(self) -> None:
+        total_tournaments = len(self.tournaments)
+        total_participants = sum(
+            int(t["player_quantity"]) for t in self.tournaments if t.get("player_quantity")
+        )
+        countries_hosted = len({t["iso_code"] for t in self.tournaments if t.get("iso_code")})
+        latest_event = self.tournaments[-1]["location"] if self.tournaments else "—"
+
+        with st.container(horizontal=True):
+            st.metric("Tournaments Tracked", f"{total_tournaments:,}", border=True)
+            st.metric("Total Participants", f"{total_participants:,}", border=True)
+            st.metric("Countries Hosted In", f"{countries_hosted:,}", border=True)
+            st.metric("Latest Event", latest_event, border=True)
+
+
 class SeasonTournamentLocations:
+    TYPE_COLORS = {
+        "International": [220, 50, 50, 200],
+        "Regional": [255, 204, 0, 200],
+        "Special Event": [50, 100, 220, 200],
+        "World": [50, 200, 100, 200],
+    }
+
     def __init__(self, tournaments: list[dict[str,str]]):
         self.tournaments = tournaments
 
@@ -93,15 +118,8 @@ class SeasonTournamentLocations:
 
         tournaments = self.tournaments
 
-        type_colors = {
-            "International": [220, 50, 50, 200],
-            "Regional": [255, 204, 0, 200],
-            "Special Event": [50, 100, 220, 200],
-            "World": [50, 200, 100, 200],
-        }
-
         for t in tournaments:
-            t["color"] = type_colors.get(
+            t["color"] = self.TYPE_COLORS.get(
                 t["type"], [200, 200, 200, 200]
             )  # pyrefly: ignore[bad-index, unsupported-operation, no-matching-overload]
 
@@ -127,8 +145,20 @@ class SeasonTournamentLocations:
 
         return fig
 
+    def _render_legend(self) -> None:
+        items = []
+        for t_type, rgba in self.TYPE_COLORS.items():
+            r, g, b, _ = rgba
+            items.append(
+                f'<span style="display:inline-flex;align-items:center;gap:6px;margin-right:20px;">'
+                f'<span style="width:12px;height:12px;border-radius:50%;background:rgb({r},{g},{b});display:inline-block;"></span>'
+                f'<span>{t_type}</span></span>'
+            )
+        st.markdown("".join(items), unsafe_allow_html=True)
+
     def render(self):
         self._build_map()
+        self._render_legend()
 
 
 class DeckStats:
@@ -404,12 +434,16 @@ class RawStandingsSection:
 
 
 def main():
+    track_visit()
     st.header("Pokémon TCG Tournament Data")
+    st.subheader("Browse Pokémon TCG tournament results by season, location, event type, and standings.")
 
     overview_tab, regionals_tab = st.tabs(["Season Overview", "Tournaments"])
 
     with overview_tab:
-        SeasonTournamentLocations(tournament_locations()).render()
+        tournaments = tournament_locations()
+        SeasonKPIs(tournaments).render()
+        SeasonTournamentLocations(tournaments).render()
 
     with regionals_tab:
         tourney_filter = header()

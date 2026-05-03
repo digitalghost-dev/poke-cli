@@ -13,9 +13,12 @@ dependencies = [
 ]
 
 [dependency-groups]
+analytics = [
+    "posthog==7.14.0",
+]
 dev = [
-    "pytest>=9.0.2",
-    "pytest-cov>=7.0.0",
+    "pytest==9.0.2",
+    "pytest-cov==7.0.0",
 ]
 
 [tool.pytest.ini_options]
