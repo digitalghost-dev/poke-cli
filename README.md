@@ -215,10 +215,10 @@ Below is a list of the planned/completed commands and flags:
     - [x] add sun & moon data
     - [ ] add x & y data
 - [x] `item`: get data about an item.
-- [x] `move`: get data about a move.
+- [ ] `move`: get data about a move.
     - [ ] `-p | --pokemon`: display Pokémon that learn this move.
 - [x] `natures`: get data about natures.
-- [x] `pokemon`: get data about a Pokémon.
+- [ ] `pokemon`: get data about a Pokémon.
     - [x] `-a | --abilities`: display the Pokémon's abilities.
     - [ ] `-c | --cry`: play the Pokémon's cry.
     - [x] `-d | --defense`: display the Pokémon's type defences.
