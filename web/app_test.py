@@ -33,8 +33,8 @@ def test_selectbox_label():
 
 def test_tournament_info():
     assert not at.exception
-    assert "•" in at.markdown[0].value
-    assert "flagcdn.com" in at.markdown[0].value
+    tournament_md = next(m for m in at.markdown if "flagcdn.com" in m.value)
+    assert "•" in tournament_md.value
 
 
 def test_dataframe_renders():
@@ -67,12 +67,10 @@ def test_dataframe_columns():
 
 
 def test_metrics():
-    assert at.metric[0].label == "Total Players"
-    assert at.metric[1].label == "Winner"
-    assert at.metric[2].label == "Winning Deck"
-    assert at.metric[0].value is not None
-    assert at.metric[1].value is not None
-    assert at.metric[2].value is not None
+    metrics_by_label = {m.label: m for m in at.metric}
+    for label in ("Total Players", "Winner", "Winning Deck"):
+        assert label in metrics_by_label
+        assert metrics_by_label[label].value is not None
 
 
 def test_dataframe_sorted_by_rank():
