@@ -323,6 +323,17 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 }
 
 func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) error {
+	sizeMap := map[string][2]int{
+		"lg": {120, 120},
+		"md": {90, 90},
+		"sm": {55, 55},
+	}
+
+	dimensions, exists := sizeMap[strings.ToLower(size)]
+	if !exists {
+		return fmt.Errorf("%s", cmdutils.FormatError("Invalid image size.\nValid sizes are: lg, md, sm"))
+	}
+
 	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
 	if err != nil {
 		return err
@@ -389,19 +400,6 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 	if err != nil {
 		fmt.Println("Error decoding image:", err)
 		return err
-	}
-
-	// Define size map
-	sizeMap := map[string][2]int{
-		"lg": {120, 120},
-		"md": {90, 90},
-		"sm": {55, 55},
-	}
-
-	// Validate size
-	dimensions, exists := sizeMap[strings.ToLower(size)]
-	if !exists {
-		return fmt.Errorf("%s", cmdutils.FormatError("Invalid image size.\nValid sizes are: lg, md, sm"))
 	}
 
 	imgStr := ToString(dimensions[0], dimensions[1], img)
