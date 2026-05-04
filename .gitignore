@@ -59,23 +59,17 @@ logs/
 
 target/
 
+# Card Data
 card_data/infrastructure/supabase/access-token
 /card_data/infrastructure/supabase/access-token
 **/.terraform/
-
 card_data/.tmp*/**
-
 card_data/pipelines/poke_cli_dbt/.user.yml
 /card_data/supabase/
 /card_data/sample_scripts/
-
 card_data/~/
 card_data/storage/
-/.claude/
-CLAUDE.md
-REFACTORING.md
 /card_data/.codspeed/
-/.ai/
 
 # Version management
 VERSION
@@ -84,3 +78,12 @@ version-bump.sh
 # Testing libraries
 .codspeed/
 .pytest_cache/
+
+# AI
+/.claude/
+CLAUDE.md
+REFACTORING.md
+AGENTS.md
+.agents/
+.codex/
+/.ai/
