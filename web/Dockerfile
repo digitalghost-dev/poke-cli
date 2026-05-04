@@ -10,10 +10,10 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 COPY pyproject.toml uv.lock ./
 
-RUN uv sync --frozen --no-dev --no-cache
+RUN uv sync --frozen --no-dev --no-cache --group analytics
 
 COPY --chown=streamlit_user:streamlit_group .streamlit .streamlit
-COPY --chown=streamlit_user:streamlit_group app.py .
+COPY --chown=streamlit_user:streamlit_group app.py analytics.py ./
 
 RUN chown -R streamlit_user:streamlit_group /app
 
