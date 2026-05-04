@@ -435,6 +435,12 @@ class RawStandingsSection:
 
 def main():
     track_visit()
+    if not st.session_state.get("privacy_toast_shown"):
+        st.toast(
+            "Anonymous analytics only — no cookies, no full IPs, no personal profiles.",
+            icon="🔒",
+        )
+        st.session_state["privacy_toast_shown"] = True
     st.header("Pokémon TCG Tournament Data")
     st.subheader("Browse Pokémon TCG tournament results by season, location, event type, and standings.")
 
