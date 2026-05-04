@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"log"
 	"math"
 	"os"
 	"strconv"
@@ -260,7 +259,7 @@ func formula() (string, error) {
 
 	speedStageInt, err := strconv.Atoi(pokemon.SpeedStage)
 	if err != nil {
-		log.Fatalf("Invalid SpeedStage: %v", err)
+		return "", fmt.Errorf("invalid SpeedStage: %w", err)
 	}
 	stageMultiplier := stageMultipliers[speedStageInt]
 

@@ -29,6 +29,41 @@ Output:
 
 ---
 
+## `card`
+* Browse Pokémon TCG card data through an interactive TUI.
+
+The command opens a multi-step browser:
+
+1. Select a series.
+2. Select a set from that series.
+3. Browse the cards in the selected set.
+4. Option to open the selected card in the image viewer with `?`.
+
+Card images use your terminal's graphics protocol. Image rendering support depends on the terminal. 
+
+The following terminals are confirmed to have protocol support and render card images correctly:
+* Kitty
+* WezTerm
+* iTerm2
+* Ghostty
+* Konsole
+* Rio
+* Tabby
+* Windows Terminal
+
+Basic terminal emulators may show card details without images or may not render images correctly.
+
+Example:
+```console
+poke-cli card
+```
+
+Output:
+
+![card_command](assets/card.gif)
+
+---
+
 ## `item`
 * Retrieve information about a specific item, including its cost, category and description.
 
@@ -144,6 +179,19 @@ Output:
 
 ## `speed`
 * Calculate the speed of a Pokémon in battle.
+
+The command opens an interactive form and asks for the following values:
+
+* Pokémon name
+* Level: `1-100`
+* Speed EVs: `0-252`
+* Speed IVs: `0-31`
+* Modifiers: `Choice Scarf`, `Tailwind`
+* Ability: `None`, `Swift Swim`, `Chlorophyll`, `Sand Rush`, `Slush Rush`, `Unburden`, `Quick Feet`, `Surge Surfer`
+* Nature multiplier: `+10%`, `0%`, `-10%`
+* Speed stage: `-6` to `+6`
+
+The final speed is calculated with the standard stat formula and rounded down.
 
 Example:
 ```console

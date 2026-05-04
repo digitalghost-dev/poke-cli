@@ -208,6 +208,20 @@ func TestFormula(t *testing.T) {
 			expectedSpeed: "1035",
 			wantError:     false,
 		},
+		{
+			name: "Invalid SpeedStage returns error",
+			pokemonDetails: PokemonDetails{
+				Name:       "pikachu",
+				SpeedStage: "abc",
+				Nature:     "0%",
+				Level:      "50",
+				Modifier:   []string{},
+				Ability:    "None",
+				SpeedEV:    "0",
+				SpeedIV:    "0",
+			},
+			wantError: true,
+		},
 	}
 
 	for _, tt := range tests {

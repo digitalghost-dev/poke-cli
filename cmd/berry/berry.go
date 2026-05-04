@@ -3,7 +3,6 @@ package berry
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -141,7 +140,7 @@ func tableGeneration() error {
 		ORDER BY
 		    name`)
 	if err != nil {
-		log.Fatalf("Failed to get berry names: %v", err)
+		return fmt.Errorf("failed to get berry names: %w", err)
 	}
 
 	rows := make([]table.Row, len(namesList))

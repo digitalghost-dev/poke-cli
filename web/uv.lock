@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.12"
 
 [[package]]
@@ -47,6 +47,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/6b/5c/685e6633917e101e5dcb62b9dd76946cbb57c26e133bae9e0cd36033c0a9/attrs-25.4.0.tar.gz", hash = "sha256:16d5969b87f0859ef33a48b35d55ac1be6e42ae49d5e853b597db70c35c57e11", size = 934251, upload-time = "2025-10-06T13:54:44.725Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3a/2a/7cc015f5b9f5db42b7d48157e23356022889fc354a2813c15934b7cb5c0e/attrs-25.4.0-py3-none-any.whl", hash = "sha256:adcf7e2a1fb3b36ac48d97835bb6d8ade15b8dcce26aba8bf1d14847b57a3373", size = 67615, upload-time = "2025-10-06T13:54:43.17Z" },
+]
+
+[[package]]
+name = "backoff"
+version = "2.2.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/d7/5bbeb12c44d7c4f2fb5b56abce497eb5ed9f34d85701de869acedd602619/backoff-2.2.1.tar.gz", hash = "sha256:03f829f5bb1923180821643f8753b0502c3b682293992485b0eef2807afa5cba", size = 17001, upload-time = "2022-10-05T19:19:32.061Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/73/b6e24bd22e6720ca8ee9a85a0c4a2971af8497d8f3193fa05390cbd46e09/backoff-2.2.1-py3-none-any.whl", hash = "sha256:63579f9a0628e06278f7e47b7d7d5b6ce20dc65c5e96a6f3ca99a6adca0396e8", size = 15148, upload-time = "2022-10-05T19:19:30.546Z" },
 ]
 
 [[package]]
@@ -358,6 +367,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5a/d3/8ae2869247df154b64c1884d7346d412fed0c49df84db635aab2d1c40e62/deprecation-2.1.0.tar.gz", hash = "sha256:72b3bde64e5d778694b0cf68178aed03d15e15477116add3fb773e581f9518ff", size = 173788, upload-time = "2020-04-20T14:23:38.738Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/02/c3/253a89ee03fc9b9682f1541728eb66db7db22148cd94f89ab22528cd1e1b/deprecation-2.1.0-py2.py3-none-any.whl", hash = "sha256:a10811591210e1fb0e768a8c25517cabeabcba6f0bf96564f8ff45189f90b14a", size = 11178, upload-time = "2020-04-20T14:23:36.581Z" },
+]
+
+[[package]]
+name = "distro"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/f8/98eea607f65de6527f8a2e8885fc8015d3e6f5775df186e443e0964a11c3/distro-1.9.0.tar.gz", hash = "sha256:2fa77c6fd8940f116ee1d6b94a2f90b13b5ea8d019b98bc8bafdcabcdd9bdbed", size = 60722, upload-time = "2023-12-24T09:54:32.31Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/b3/231ffd4ab1fc9d679809f356cebee130ac7daa00d6d6f3206dd4fd137e9e/distro-1.9.0-py3-none-any.whl", hash = "sha256:7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2", size = 20277, upload-time = "2023-12-24T09:54:30.421Z" },
 ]
 
 [[package]]
@@ -1030,6 +1048,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/75/96/52f4ce2123fed5cda50ede3b04135fc163944c6776a8315da8e2e38e0931/postgrest-2.28.0.tar.gz", hash = "sha256:c36b38646d25ea4255321d3d924ce70f8d20ec7799cb42c1221d6a818d4f6515", size = 13841, upload-time = "2026-02-10T13:17:00.648Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3c/47/43deadb113d8730e59d5045eb0968eb2ca8ccbad7506bd4fc4a18294e114/postgrest-2.28.0-py3-none-any.whl", hash = "sha256:7bca2f24dd1a1bf8a3d586c7482aba6cd41662da6733045fad585b63b7f7df75", size = 22008, upload-time = "2026-02-10T13:16:59.307Z" },
+]
+
+[[package]]
+name = "posthog"
+version = "7.14.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "backoff" },
+    { name = "distro" },
+    { name = "requests" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c4/0f/0e6578feaf0d4e670bc517b6da09ec147a65421c44e0cd687eba12f08743/posthog-7.14.0.tar.gz", hash = "sha256:3be5e513f07e4ee5119f98b0458cb640739b49cef7c96c3e18b1d65076b18239", size = 205083, upload-time = "2026-05-01T20:41:37.971Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/c2/2dc3e08e481f45c0215da4325ccc9b5f368dcee504779d2f169ab567c766/posthog-7.14.0-py3-none-any.whl", hash = "sha256:76db6e3158e2c11ec9bbcf32a673efec4acc8078965d92e2d3055555220ee546", size = 240187, upload-time = "2026-05-01T20:41:36.022Z" },
 ]
 
 [[package]]
@@ -1800,7 +1833,7 @@ wheels = [
 
 [[package]]
 name = "web"
-version = "1.9.0"
+version = "1.10.1"
 source = { virtual = "." }
 dependencies = [
     { name = "plotly" },
@@ -1811,6 +1844,9 @@ dependencies = [
 ]
 
 [package.dev-dependencies]
+analytics = [
+    { name = "posthog" },
+]
 dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -1826,9 +1862,10 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
+analytics = [{ name = "posthog", specifier = "==7.14.0" }]
 dev = [
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-cov", specifier = ">=7.0.0" },
+    { name = "pytest", specifier = "==9.0.2" },
+    { name = "pytest-cov", specifier = "==7.0.0" },
 ]
 
 [[package]]

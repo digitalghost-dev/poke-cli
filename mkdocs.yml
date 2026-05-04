@@ -3,7 +3,7 @@ site_name: poke-cli
 theme:
   icon:
     admonition:
-      note: octicons/tag-16
+      note: octicons/pencil-16
       abstract: octicons/checklist-16
       info: octicons/info-16
       tip: octicons/squirrel-16

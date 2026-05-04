@@ -1,6 +1,6 @@
 [project]
 name = "web"
-version = "v1.10.0"
+version = "v1.10.1"
 description = "Streamlit dashboard for browsing and visualizing Pokémon TCG tournament standings and results."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -13,9 +13,12 @@ dependencies = [
 ]
 
 [dependency-groups]
+analytics = [
+    "posthog==7.14.0",
+]
 dev = [
-    "pytest>=9.0.2",
-    "pytest-cov>=7.0.0",
+    "pytest==9.0.2",
+    "pytest-cov==7.0.0",
 ]
 
 [tool.pytest.ini_options]
