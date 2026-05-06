@@ -174,3 +174,29 @@ sources:
             description: "Card number"
           - name: market_price
             description: "Market price"
+
+      - name: champions_speed_tiers
+        description: "Pikalytics speed tier data ingested by n8n monthly"
+        columns:
+          - name: snapshot_month
+            description: "First-of-month date for the snapshot"
+          - name: format
+            description: "Format code (e.g. gen9championsvgc2026)"
+          - name: rank
+            description: "Speed tier rank within the format"
+          - name: pokemon
+            description: "Pokémon name (includes Mega prefix where applicable)"
+          - name: base_spe
+            description: "Base Speed stat"
+          - name: neutral_0_sp
+            description: "Speed at level 50, neutral nature, 0 SP"
+          - name: neutral_32_sp
+            description: "Speed at level 50, neutral nature, 32 SP"
+          - name: max_speed
+            description: "Speed at level 50, +Speed nature, 32 SP"
+          - name: neg_spe_0_sp
+            description: "Speed at level 50, -Speed nature, 0 SP"
+          - name: max_scarf
+            description: "Max speed multiplied by Choice Scarf (×1.5)"
+          - name: neutral_32_scarf
+            description: "Neutral 32 SP speed multiplied by Choice Scarf (×1.5)"

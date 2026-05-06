@@ -19,7 +19,15 @@ from .sensors import discord_success_sensor, discord_failure_sensor
 def defs() -> dg.Definitions:
     # load_from_defs_folder discovers dbt assets from transform_data.py
     folder_defs: dg.Definitions = load_from_defs_folder(project_root=Path(__file__).parent.parent)
-    return dg.Definitions.merge(folder_defs, defs_discord_sensors, defs_pricing, defs_sets, defs_series, defs_standings)
+    return dg.Definitions.merge(
+        folder_defs,
+        defs_discord_sensors,
+        defs_pricing,
+        defs_sets,
+        defs_series,
+        defs_standings,
+        defs_champions_speed_tiers,
+    )
 
 
 defs_discord_sensors: dg.Definitions = dg.Definitions(
@@ -76,4 +84,14 @@ standings_pipeline = dg.define_asset_job(
 defs_standings: dg.Definitions = dg.Definitions(
     assets=[create_standings_dataframe, load_standings_data],
     jobs=[standings_pipeline],
+)
+
+# Champions speed tiers job (n8n handles extract+load; Dagster runs only the dbt model)
+champions_speed_tiers_pipeline = dg.define_asset_job(
+    name="champions_speed_tiers_dbt_job",
+    selection=dg.AssetSelection.assets(dg.AssetKey(["champions_speed_tiers"])),
+)
+
+defs_champions_speed_tiers: dg.Definitions = dg.Definitions(
+    jobs=[champions_speed_tiers_pipeline],
 )
