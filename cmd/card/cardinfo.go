@@ -10,12 +10,14 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/x/ansi/sixel"
+	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/dolmen-go/kittyimg"
 	"golang.org/x/image/draw"
 )
+
+var cardImageHTTPClient = connections.NewDefaultHTTPClient()
 
 func resizeImage(img image.Image, width, height int) image.Image {
 	dst := image.NewRGBA(image.Rect(0, 0, width, height))
@@ -78,14 +80,11 @@ func supportsSixelGraphics() bool {
 
 // CardImage downloads and renders an image using Kitty protocol if supported, otherwise Sixel.
 func CardImage(imageURL string) (imageData string, protocol string, err error) {
-	client := &http.Client{
-		Timeout: time.Second * 60,
-	}
 	parsedURL, err := url.Parse(imageURL)
 	if err != nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
 		return "", "", errors.New("image is not available from the API")
 	}
-	resp, err := client.Get(imageURL)
+	resp, err := cardImageHTTPClient.Get(imageURL)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to fetch image: %w", err)
 	}

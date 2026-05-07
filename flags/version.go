@@ -10,15 +10,15 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"charm.land/lipgloss/v2"
+	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 const maxLatestReleaseBytes = 1 * 1024 * 1024 // 1 MiB
 
-var latestReleaseHTTPClient = &http.Client{Timeout: 60 * time.Second}
+var latestReleaseHTTPClient = connections.NewDefaultHTTPClient()
 
 func LatestFlag() (string, error) {
 	var output strings.Builder

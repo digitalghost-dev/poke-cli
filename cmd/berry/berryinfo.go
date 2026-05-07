@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"time"
 
 	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/connections"
@@ -15,7 +14,7 @@ import (
 
 const maxBerryImageBytes = 5 * 1024 * 1024 // 5 MiB
 
-var berryImageHTTPClient = &http.Client{Timeout: 60 * time.Second}
+var berryImageHTTPClient = connections.NewDefaultHTTPClient()
 
 func berryExists(name string) (bool, error) {
 	results, err := connections.QueryBerryData(`

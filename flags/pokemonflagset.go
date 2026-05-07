@@ -14,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
@@ -30,7 +29,7 @@ import (
 
 const maxPokemonSpriteBytes = 5 * 1024 * 1024 // 5 MiB
 
-var pokemonSpriteHTTPClient = &http.Client{Timeout: 60 * time.Second}
+var pokemonSpriteHTTPClient = connections.NewDefaultHTTPClient()
 
 type PokemonFlags struct {
 	FlagSet        *flag.FlagSet
