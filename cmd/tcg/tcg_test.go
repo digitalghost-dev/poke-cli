@@ -2,7 +2,6 @@ package tcg
 
 import (
 	"errors"
-	"os"
 	"testing"
 
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
@@ -91,25 +90,25 @@ func TestTcgCommand(t *testing.T) {
 	}{
 		{
 			name:    "help flag short",
-			args:    []string{"poke-cli", "tcg", "-h"},
+			args:    []string{"tcg", "-h"},
 			golden:  "tcg_help.golden",
 			wantErr: false,
 		},
 		{
 			name:    "help flag long",
-			args:    []string{"poke-cli", "tcg", "--help"},
+			args:    []string{"tcg", "--help"},
 			golden:  "tcg_help.golden",
 			wantErr: false,
 		},
 		{
 			name:    "too many args",
-			args:    []string{"poke-cli", "tcg", "foo", "bar"},
+			args:    []string{"tcg", "foo", "bar"},
 			golden:  "tcg_too_many_args.golden",
 			wantErr: true,
 		},
 		{
 			name:    "invalid flag",
-			args:    []string{"poke-cli", "tcg", "--bogus"},
+			args:    []string{"tcg", "--bogus"},
 			golden:  "tcg_invalid_flag.golden",
 			wantErr: true,
 		},
@@ -117,11 +116,7 @@ func TestTcgCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalArgs := os.Args
-			os.Args = tt.args
-			defer func() { os.Args = originalArgs }()
-
-			output, err := TcgCommand()
+			output, err := TcgCommand(tt.args)
 			clean := styling.StripANSI(output)
 
 			if tt.wantErr {
