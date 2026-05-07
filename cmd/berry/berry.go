@@ -1,9 +1,7 @@
 package berry
 
 import (
-	"flag"
 	"fmt"
-	"os"
 	"strings"
 
 	"charm.land/bubbles/v2/table"
@@ -14,10 +12,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func BerryCommand() (string, error) {
+func BerryCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -28,27 +26,28 @@ func BerryCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
 	// Validate arguments
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 4, CmdName: "berry", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		append([]string{"poke-cli"}, args...),
+		utils.Validator{MaxArgs: 4, CmdName: "berry", RequireName: false, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
 
-	if len(os.Args) > 2 {
-		berryName := styling.CapitalizeResourceName(os.Args[2])
+	if len(args) > 1 {
+		berryName := styling.CapitalizeResourceName(args[1])
 		exists, err := berryExists(berryName)
 		if err != nil {
 			output.WriteString(utils.FormatError(err.Error()))
 			return output.String(), err
 		}
 		if !exists {
-			err := fmt.Errorf("berry %q not found", os.Args[2])
+			err := fmt.Errorf("berry %q not found", args[1])
 			output.WriteString(utils.FormatError(err.Error()))
 			return output.String(), err
 		}
