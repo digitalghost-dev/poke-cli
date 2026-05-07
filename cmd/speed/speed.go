@@ -2,7 +2,6 @@ package speed
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"math"
 	"os"
@@ -88,11 +87,11 @@ type PokemonDetails struct {
 // SpeedStatFunc is a function type for getting a Pokémon's base speed stat
 type SpeedStatFunc func(name string) (string, error)
 
-func SpeedCommand() (string, error) {
+func SpeedCommand(args []string) (string, error) {
 	// Reset the output string builder
 	output.Reset()
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -103,14 +102,15 @@ func SpeedCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
 	// Validate arguments
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "speed", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		append([]string{"poke-cli"}, args...),
+		utils.Validator{MaxArgs: 3, CmdName: "speed", RequireName: false, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
