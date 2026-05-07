@@ -9,9 +9,9 @@ import (
 // HandleCommandOutput takes a function that returns (string, error) and wraps it in a no-argument
 // function that writes the returned string to stdout if there's no error, or to stderr if there is.
 // It returns an exit code: 0 on success, 1 on error.
-func HandleCommandOutput(fn func() (string, error)) func() int {
+func HandleCommandOutput(fn func([]string) (string, error), args []string) func() int {
 	return func() int {
-		output, err := fn()
+		output, err := fn(args)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, output)
 			return 1
@@ -26,8 +26,8 @@ func HandleFlagError(output *strings.Builder, err error) (string, error) {
 	return "", fmt.Errorf("error parsing flags: %w", err)
 }
 
-func CheckHelpFlag(output *strings.Builder, usageFunc func()) bool {
-	if len(os.Args) == 3 && (os.Args[2] == "-h" || os.Args[2] == "--help") {
+func CheckHelpFlag(args []string, usageFunc func()) bool {
+	if len(args) == 2 && (args[1] == "-h" || args[1] == "--help") {
 		usageFunc()
 		return true
 	}

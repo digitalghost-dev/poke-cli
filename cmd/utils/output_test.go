@@ -28,12 +28,15 @@ func captureOutput(target **os.File, fn func()) string {
 }
 
 func TestHandleCommandOutput_Success(t *testing.T) {
-	fn := func() (string, error) {
+	fn := func(args []string) (string, error) {
+		if strings.Join(args, " ") != "item choice-band" {
+			t.Fatalf("unexpected args: %v", args)
+		}
 		return "it worked", nil
 	}
 
 	output := captureOutput(&os.Stdout, func() {
-		HandleCommandOutput(fn)()
+		HandleCommandOutput(fn, []string{"item", "choice-band"})()
 	})
 
 	if output != "it worked\n" {
@@ -42,12 +45,15 @@ func TestHandleCommandOutput_Success(t *testing.T) {
 }
 
 func TestHandleCommandOutput_Error(t *testing.T) {
-	fn := func() (string, error) {
+	fn := func(args []string) (string, error) {
+		if strings.Join(args, " ") != "item missing" {
+			t.Fatalf("unexpected args: %v", args)
+		}
 		return "something failed", errors.New("error")
 	}
 
 	output := captureOutput(&os.Stderr, func() {
-		HandleCommandOutput(fn)()
+		HandleCommandOutput(fn, []string{"item", "missing"})()
 	})
 
 	if output != "something failed\n" {
@@ -138,12 +144,6 @@ func TestWrapText_MultipleLines(t *testing.T) {
 }
 
 func TestCheckHelpFlag_ShortFlag(t *testing.T) {
-	// Save and restore original os.Args
-	oldArgs := os.Args
-	defer func() { os.Args = oldArgs }()
-
-	os.Args = []string{"poke-cli", "pokemon", "-h"}
-
 	var output strings.Builder
 	usageCalled := false
 	usageFunc := func() {
@@ -151,7 +151,7 @@ func TestCheckHelpFlag_ShortFlag(t *testing.T) {
 		usageCalled = true
 	}
 
-	result := CheckHelpFlag(&output, usageFunc)
+	result := CheckHelpFlag([]string{"pokemon", "-h"}, usageFunc)
 
 	if !result {
 		t.Error("CheckHelpFlag should return true for -h flag")
@@ -162,12 +162,6 @@ func TestCheckHelpFlag_ShortFlag(t *testing.T) {
 }
 
 func TestCheckHelpFlag_LongFlag(t *testing.T) {
-	// Save and restore original os.Args
-	oldArgs := os.Args
-	defer func() { os.Args = oldArgs }()
-
-	os.Args = []string{"poke-cli", "pokemon", "--help"}
-
 	var output strings.Builder
 	usageCalled := false
 	usageFunc := func() {
@@ -175,7 +169,7 @@ func TestCheckHelpFlag_LongFlag(t *testing.T) {
 		usageCalled = true
 	}
 
-	result := CheckHelpFlag(&output, usageFunc)
+	result := CheckHelpFlag([]string{"pokemon", "--help"}, usageFunc)
 
 	if !result {
 		t.Error("CheckHelpFlag should return true for --help flag")
@@ -186,19 +180,12 @@ func TestCheckHelpFlag_LongFlag(t *testing.T) {
 }
 
 func TestCheckHelpFlag_NoFlag(t *testing.T) {
-	// Save and restore original os.Args
-	oldArgs := os.Args
-	defer func() { os.Args = oldArgs }()
-
-	os.Args = []string{"poke-cli", "pokemon", "charizard"}
-
-	var output strings.Builder
 	usageCalled := false
 	usageFunc := func() {
 		usageCalled = true
 	}
 
-	result := CheckHelpFlag(&output, usageFunc)
+	result := CheckHelpFlag([]string{"pokemon", "charizard"}, usageFunc)
 
 	if result {
 		t.Error("CheckHelpFlag should return false when no help flag present")
@@ -215,33 +202,26 @@ func TestCheckHelpFlag_WrongNumberOfArgs(t *testing.T) {
 	}{
 		{
 			name: "too few args",
-			args: []string{"poke-cli", "pokemon"},
+			args: []string{"pokemon"},
 		},
 		{
 			name: "too many args",
-			args: []string{"poke-cli", "pokemon", "-h", "extra"},
+			args: []string{"pokemon", "-h", "extra"},
 		},
 		{
 			name: "help flag in wrong position",
-			args: []string{"poke-cli", "pokemon", "charizard", "-h"},
+			args: []string{"pokemon", "charizard", "-h"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Save and restore original os.Args
-			oldArgs := os.Args
-			defer func() { os.Args = oldArgs }()
-
-			os.Args = tt.args
-
-			var output strings.Builder
 			usageCalled := false
 			usageFunc := func() {
 				usageCalled = true
 			}
 
-			result := CheckHelpFlag(&output, usageFunc)
+			result := CheckHelpFlag(tt.args, usageFunc)
 
 			if result {
 				t.Errorf("CheckHelpFlag should return false for args: %v", tt.args)
