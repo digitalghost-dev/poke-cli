@@ -1,8 +1,6 @@
 package natures
 
 import (
-	"flag"
-	"os"
 	"strings"
 
 	"charm.land/lipgloss/v2"
@@ -11,10 +9,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func NaturesCommand() (string, error) {
+func NaturesCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -25,13 +23,14 @@ func NaturesCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "natures", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		append([]string{"poke-cli"}, args...),
+		utils.Validator{MaxArgs: 3, CmdName: "natures", RequireName: false, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
