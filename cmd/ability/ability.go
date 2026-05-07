@@ -38,8 +38,8 @@ func AbilityCommand(args []string) (string, error) {
 	}
 
 	if err := utils.ValidateArgs(
-		append([]string{"poke-cli"}, args...),
-		utils.Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true},
+		args,
+		utils.Validator{MaxArgs: 3, CmdName: "ability", RequireName: true, HasFlags: true},
 	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err

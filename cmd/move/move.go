@@ -36,8 +36,8 @@ func MoveCommand(args []string) (string, error) {
 	}
 
 	if err := utils.ValidateArgs(
-		append([]string{"poke-cli"}, args...),
-		utils.Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false},
+		args,
+		utils.Validator{MaxArgs: 2, CmdName: "move", RequireName: true, HasFlags: false},
 	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err

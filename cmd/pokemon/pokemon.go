@@ -45,8 +45,7 @@ func PokemonCommand(args []string) (string, error) {
 		return output.String(), nil
 	}
 
-	validationArgs := append([]string{"poke-cli"}, args...)
-	err := utils.ValidatePokemonArgs(validationArgs)
+	err := utils.ValidatePokemonArgs(args)
 	if err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err

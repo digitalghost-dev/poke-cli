@@ -108,8 +108,8 @@ func SpeedCommand(args []string) (string, error) {
 
 	// Validate arguments
 	if err := utils.ValidateArgs(
-		append([]string{"poke-cli"}, args...),
-		utils.Validator{MaxArgs: 3, CmdName: "speed", RequireName: false, HasFlags: false},
+		args,
+		utils.Validator{MaxArgs: 2, CmdName: "speed", RequireName: false, HasFlags: false},
 	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
