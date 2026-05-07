@@ -1,7 +1,6 @@
 package types
 
 import (
-	"os"
 	"testing"
 	"time"
 
@@ -36,11 +35,7 @@ func TestTypesCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalArgs := os.Args
-			os.Args = append([]string{"poke-cli"}, tt.args...)
-			defer func() { os.Args = originalArgs }()
-
-			output, _ := TypesCommand()
+			output, _ := TypesCommand(tt.args)
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
@@ -181,13 +176,7 @@ func TestTypeSelection(t *testing.T) {
 }
 
 func TestTypesCommandValidationError(t *testing.T) {
-	originalArgs := os.Args
-	defer func() { os.Args = originalArgs }()
-
-	// Set os.Args with extra argument to trigger validation error
-	os.Args = []string{"poke-cli", "types", "fire", "extra-arg"}
-
-	output, err := TypesCommand()
+	output, err := TypesCommand([]string{"types", "fire", "extra-arg"})
 	require.Error(t, err, "TypesCommand should return error for invalid args")
 	assert.Contains(t, output, "Error", "Output should contain error message")
 }
