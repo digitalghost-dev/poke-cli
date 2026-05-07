@@ -46,11 +46,7 @@ func TestMoveCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalArgs := os.Args
-			os.Args = append([]string{"poke-cli"}, tt.args...)
-			defer func() { os.Args = originalArgs }()
-
-			output, _ := MoveCommand()
+			output, _ := MoveCommand(tt.args)
 			cleanOutput := styling.StripANSI(output)
 
 			assert.Equal(t, tt.expectedOutput, cleanOutput, "Output should match expected")
