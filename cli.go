@@ -123,18 +123,19 @@ func runCLI(args []string) int {
 
 	remainingArgs := mainFlagSet.Args()
 
-	commands := map[string]func() int{
-		"ability": utils.HandleCommandOutput(ability.AbilityCommand),
-		"berry":   utils.HandleCommandOutput(berry.BerryCommand),
-		"card":    utils.HandleCommandOutput(card.CardCommand),
-		"item":    utils.HandleCommandOutput(item.ItemCommand),
-		"move":    utils.HandleCommandOutput(move.MoveCommand),
-		"natures": utils.HandleCommandOutput(natures.NaturesCommand),
-		"pokemon": utils.HandleCommandOutput(pokemon.PokemonCommand),
-		"speed":   utils.HandleCommandOutput(speed.SpeedCommand),
-		"tcg":     utils.HandleCommandOutput(tcg.TcgCommand),
-		"types":   utils.HandleCommandOutput(types.TypesCommand),
-		"search":  utils.HandleCommandOutput(search.SearchCommand),
+	type commandFunc func([]string) (string, error)
+	commands := map[string]commandFunc{
+		"ability": ability.AbilityCommand,
+		"berry":   berry.BerryCommand,
+		"card":    card.CardCommand,
+		"item":    item.ItemCommand,
+		"move":    move.MoveCommand,
+		"natures": natures.NaturesCommand,
+		"pokemon": pokemon.PokemonCommand,
+		"speed":   speed.SpeedCommand,
+		"tcg":     tcg.TcgCommand,
+		"types":   types.TypesCommand,
+		"search":  search.SearchCommand,
 	}
 
 	cmdArg := ""
@@ -157,7 +158,7 @@ func runCLI(args []string) int {
 		currentVersion()
 		return 0
 	case exists:
-		return cmdFunc()
+		return utils.HandleCommandOutput(cmdFunc, remainingArgs)()
 	default:
 		msg := fmt.Sprintf("\t%-15s", fmt.Sprintf("'%s' is not a valid command.\n", cmdArg)) +
 			styling.StyleBold.Render("\nCommands:") +
