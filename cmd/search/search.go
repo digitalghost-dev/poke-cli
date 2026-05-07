@@ -1,8 +1,6 @@
 package search
 
 import (
-	"flag"
-	"os"
 	"strings"
 
 	"charm.land/bubbles/v2/textinput"
@@ -10,10 +8,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 )
 
-func SearchCommand() (string, error) {
+func SearchCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -24,13 +22,14 @@ func SearchCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		append([]string{"poke-cli"}, args...),
+		utils.Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
