@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
@@ -13,10 +12,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func AbilityCommand() (string, error) {
+func AbilityCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -34,21 +33,22 @@ func AbilityCommand() (string, error) {
 
 	af := flags.SetupAbilityFlagSet()
 
-	args := os.Args
-
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	if err := utils.ValidateArgs(args, utils.Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true}); err != nil {
+	if err := utils.ValidateArgs(
+		append([]string{"poke-cli"}, args...),
+		utils.Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
 
-	endpoint := strings.ToLower(args[1])
-	abilityName := strings.ToLower(args[2])
+	endpoint := strings.ToLower(args[0])
+	abilityName := strings.ToLower(args[1])
 
-	if err := af.FlagSet.Parse(args[3:]); err != nil {
+	if err := af.FlagSet.Parse(args[2:]); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return output.String(), nil
 		}
