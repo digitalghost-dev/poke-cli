@@ -15,8 +15,9 @@ import (
 )
 
 const APIURL = "https://pokeapi.co/api/v2/"
+const maxAPIResponseBytes = 10 * 1024 * 1024 // 10 MiB
 
-var httpClient = &http.Client{Timeout: 30 * time.Second}
+var httpClient = &http.Client{Timeout: 60 * time.Second}
 
 type EndpointResource interface {
 	GetResourceName() string
@@ -97,9 +98,12 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		return HTTPStatusError{StatusCode: resp.StatusCode, URL: rawURL}
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxAPIResponseBytes+1))
 	if err != nil {
 		return fmt.Errorf("error reading response body: %w", err)
+	}
+	if len(body) > maxAPIResponseBytes {
+		return fmt.Errorf("response body exceeds %d bytes", maxAPIResponseBytes)
 	}
 
 	err = json.Unmarshal(body, target)

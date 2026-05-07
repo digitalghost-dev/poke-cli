@@ -2,9 +2,11 @@ package connections
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/digitalghost-dev/poke-cli/structs"
@@ -84,6 +86,19 @@ func TestApiCallSetup(t *testing.T) {
 				assert.Contains(t, err.Error(), strconv.Itoa(tc.statusCode))
 			})
 		}
+	})
+
+	t.Run("response body over limit returns error", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			_, err := io.WriteString(w, strings.Repeat("x", maxAPIResponseBytes+1))
+			assert.NoError(t, err)
+		}))
+		defer ts.Close()
+
+		var target map[string]string
+		err := ApiCallSetup(ts.URL, &target, true)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "response body exceeds")
 	})
 }
 
