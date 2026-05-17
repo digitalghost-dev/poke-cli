@@ -42,7 +42,7 @@ func TestNaturesCommand(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			output, err := NaturesCommand(tt.args)
 			if tt.wantError {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
 			}

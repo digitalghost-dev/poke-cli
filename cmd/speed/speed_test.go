@@ -31,7 +31,7 @@ func TestSpeedCommand(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			output, err := SpeedCommand(tt.args)
 			if tt.wantError {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
 			}

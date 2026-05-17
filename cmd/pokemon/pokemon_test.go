@@ -104,7 +104,7 @@ func TestPokemonCommand(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			output, err := PokemonCommand(tt.args)
 			if tt.expectedError {
-				assert.Error(t, err)
+				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
 			}
