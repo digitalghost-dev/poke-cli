@@ -38,7 +38,7 @@ func TypesCommand(args []string) (string, error) {
 		return output.String(), err
 	}
 
-	endpoint := strings.ToLower(args[0])[0:4]
+	const endpoint = "type"
 	if err := runTypeSelectionTable(endpoint); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
