@@ -374,8 +374,8 @@ through the EC2 security group directly.
 The HTTP Request node will POST to `https://<tunnel-host>/graphql` with the mutation:
 
 ```graphql
-mutation LaunchRun($s: JobOrPipelineSelector!) {
-  launchRun(selector: $s) {
+mutation LaunchRun($p: ExecutionParams!) {
+  launchRun(executionParams: $p) {
     __typename
     ... on LaunchRunSuccess { run { runId } }
     ... on PythonError { message }
