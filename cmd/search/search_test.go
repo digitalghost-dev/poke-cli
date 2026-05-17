@@ -1,7 +1,6 @@
 package search
 
 import (
-	"os"
 	"strings"
 	"testing"
 
@@ -35,12 +34,7 @@ func TestSearchCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalArgs := os.Args
-			defer func() { os.Args = originalArgs }()
-
-			os.Args = append([]string{"poke-cli"}, tt.args...)
-
-			output, err := SearchCommand()
+			output, err := SearchCommand(tt.args)
 			cleanOutput := styling.StripANSI(output)
 
 			if tt.expectedError {
@@ -79,13 +73,7 @@ func TestModelQuit(t *testing.T) {
 }
 
 func TestSearchCommandValidationError(t *testing.T) {
-	originalArgs := os.Args
-	defer func() { os.Args = originalArgs }()
-
-	// Set os.Args with extra argument to trigger validation error
-	os.Args = []string{"poke-cli", "search", "pokemon", "extra-arg"}
-
-	_, err := SearchCommand()
+	_, err := SearchCommand([]string{"search", "pokemon", "extra-arg"})
 	assert.Error(t, err, "SearchCommand should return error for invalid args")
 }
 

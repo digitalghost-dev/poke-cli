@@ -108,10 +108,6 @@ func TestRunCLI(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalArgs := os.Args
-			os.Args = append([]string{"poke-cli"}, tt.args...)
-			defer func() { os.Args = originalArgs }()
-
 			var exitCode int
 			output := captureOutput(func() {
 				exitCode = runCLI(tt.args)

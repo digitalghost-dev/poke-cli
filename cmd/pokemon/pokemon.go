@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
@@ -16,10 +15,10 @@ import (
 )
 
 // PokemonCommand processes the Pokémon command
-func PokemonCommand() (string, error) {
+func PokemonCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -42,9 +41,7 @@ func PokemonCommand() (string, error) {
 
 	pf := flags.SetupPokemonFlagSet()
 
-	args := os.Args
-
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
@@ -54,10 +51,10 @@ func PokemonCommand() (string, error) {
 		return output.String(), err
 	}
 
-	endpoint := strings.ToLower(args[1])
-	pokemonName := strings.ToLower(args[2])
+	endpoint := strings.ToLower(args[0])
+	pokemonName := strings.ToLower(args[1])
 
-	if err := pf.FlagSet.Parse(args[3:]); err != nil {
+	if err := pf.FlagSet.Parse(args[2:]); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return output.String(), nil
 		}

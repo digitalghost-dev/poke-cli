@@ -25,19 +25,19 @@ func TestBerryCommand(t *testing.T) {
 	}{
 		{
 			name:     "help flag short",
-			args:     []string{"poke-cli", "berry", "-h"},
+			args:     []string{"berry", "-h"},
 			wantErr:  false,
 			contains: "USAGE:",
 		},
 		{
 			name:     "help flag long",
-			args:     []string{"poke-cli", "berry", "--help"},
+			args:     []string{"berry", "--help"},
 			wantErr:  false,
 			contains: "FLAGS:",
 		},
 		{
 			name:     "invalid berry name",
-			args:     []string{"poke-cli", "berry", "fakemon"},
+			args:     []string{"berry", "fakemon"},
 			wantErr:  true,
 			contains: "not found",
 		},
@@ -45,12 +45,7 @@ func TestBerryCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set up os.Args for the test
-			oldArgs := os.Args
-			os.Args = tt.args
-			defer func() { os.Args = oldArgs }()
-
-			output, err := BerryCommand()
+			output, err := BerryCommand(tt.args)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("BerryCommand() error = %v, wantErr %v", err, tt.wantErr)
@@ -312,11 +307,7 @@ func TestBerryCommandOutput(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalArgs := os.Args
-			os.Args = append([]string{"poke-cli"}, tt.args...)
-			defer func() { os.Args = originalArgs }()
-
-			output, err := BerryCommand()
+			output, err := BerryCommand(tt.args)
 			require.NoError(t, err, "BerryCommand failed: %v", err)
 			cleanOutput := styling.StripANSI(output)
 
@@ -326,13 +317,7 @@ func TestBerryCommandOutput(t *testing.T) {
 }
 
 func TestBerryCommandValidationError(t *testing.T) {
-	originalArgs := os.Args
-	defer func() { os.Args = originalArgs }()
-
-	// Set os.Args with extra argument to trigger validation error
-	os.Args = []string{"poke-cli", "berry", "cheri", "extra-arg"}
-
-	output, err := BerryCommand()
+	output, err := BerryCommand([]string{"berry", "cheri", "extra-arg"})
 	require.Error(t, err, "BerryCommand should return error for invalid args")
 	assert.Contains(t, output, "Error", "Output should contain error message")
 }

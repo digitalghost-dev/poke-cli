@@ -2,6 +2,7 @@ package berry
 
 import (
 	"image"
+	"io"
 	"net/http"
 	"strings"
 
@@ -10,6 +11,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
 )
+
+const maxBerryImageBytes = 5 * 1024 * 1024 // 5 MiB
+
+var berryImageHTTPClient = connections.NewDefaultHTTPClient()
 
 func berryExists(name string) (bool, error) {
 	results, err := connections.QueryBerryData(`
@@ -121,13 +126,17 @@ func berryImage(berryName string) string {
 		return str.String()
 	}
 
-	imageResp, err := http.Get(berryImage[0])
+	imageResp, err := berryImageHTTPClient.Get(berryImage[0])
 	if err != nil {
 		return "Error downloading berry image"
 	}
 	defer imageResp.Body.Close()
 
-	img, err := imaging.Decode(imageResp.Body)
+	if imageResp.StatusCode != http.StatusOK {
+		return "Error downloading berry image"
+	}
+
+	img, err := imaging.Decode(io.LimitReader(imageResp.Body, maxBerryImageBytes))
 	if err != nil {
 		return "Error decoding berry image"
 	}

@@ -1,7 +1,6 @@
 package item
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -14,10 +13,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func ItemCommand() (string, error) {
+func ItemCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -30,21 +29,20 @@ func ItemCommand() (string, error) {
 		)
 	}
 
-	args := os.Args
-
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		args,
+		utils.Validator{MaxArgs: 2, CmdName: "item", RequireName: true, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
 
-	endpoint := strings.ToLower(args[1])
-	itemName := strings.ToLower(args[2])
+	endpoint := strings.ToLower(args[0])
+	itemName := strings.ToLower(args[1])
 
 	itemStruct, itemName, err := connections.ItemApiCall(endpoint, itemName, connections.APIURL)
 	if err != nil {

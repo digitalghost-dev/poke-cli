@@ -1,9 +1,7 @@
 package move
 
 import (
-	"flag"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
@@ -17,10 +15,10 @@ import (
 	"golang.org/x/text/language"
 )
 
-func MoveCommand() (string, error) {
+func MoveCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -33,18 +31,18 @@ func MoveCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		args,
+		utils.Validator{MaxArgs: 2, CmdName: "move", RequireName: true, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
 
-	args := flag.Args()
 	endpoint := strings.ToLower(args[0])
 	moveName := strings.ToLower(args[1])
 

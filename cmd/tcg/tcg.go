@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
@@ -13,10 +12,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/flags"
 )
 
-func TcgCommand() (string, error) {
+func TcgCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -30,17 +29,20 @@ func TcgCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "tcg", RequireName: false, HasFlags: true}); err != nil {
+	if err := utils.ValidateArgs(
+		args,
+		utils.Validator{MaxArgs: 2, CmdName: "tcg", RequireName: false, HasFlags: true},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
 
 	tf := flags.SetupTcgFlagSet()
-	if err := tf.FlagSet.Parse(os.Args[2:]); err != nil {
+	if err := tf.FlagSet.Parse(args[1:]); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return output.String(), nil
 		}

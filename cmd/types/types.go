@@ -1,9 +1,7 @@
 package types
 
 import (
-	"flag"
 	"fmt"
-	"os"
 	"strings"
 
 	"charm.land/bubbles/v2/table"
@@ -13,10 +11,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func TypesCommand() (string, error) {
+func TypesCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -27,19 +25,20 @@ func TypesCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
 	// Validate arguments
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		args,
+		utils.Validator{MaxArgs: 2, CmdName: "types", RequireName: false, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
 
-	endpoint := strings.ToLower(os.Args[1])[0:4]
+	const endpoint = "type"
 	if err := runTypeSelectionTable(endpoint); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err

@@ -1,7 +1,6 @@
 package card
 
 import (
-	"os"
 	"strings"
 	"testing"
 )
@@ -15,19 +14,19 @@ func TestCardCommand(t *testing.T) {
 	}{
 		{
 			name:     "help flag short",
-			args:     []string{"poke-cli", "card", "-h"},
+			args:     []string{"card", "-h"},
 			wantErr:  false,
 			contains: "USAGE:",
 		},
 		{
 			name:     "help flag long",
-			args:     []string{"poke-cli", "card", "--help"},
+			args:     []string{"card", "--help"},
 			wantErr:  false,
 			contains: "FLAGS:",
 		},
 		{
 			name:     "invalid args",
-			args:     []string{"poke-cli", "card", "invalid-arg"},
+			args:     []string{"card", "invalid-arg"},
 			wantErr:  true,
 			contains: "",
 		},
@@ -35,11 +34,7 @@ func TestCardCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			oldArgs := os.Args
-			os.Args = tt.args
-			defer func() { os.Args = oldArgs }()
-
-			output, err := CardCommand()
+			output, err := CardCommand(tt.args)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CardCommand() error = %v, wantErr %v", err, tt.wantErr)

@@ -9,7 +9,6 @@ import (
 )
 
 func TestCheckLength(t *testing.T) {
-	// Define test cases
 	tests := []struct {
 		name        string
 		args        []string
@@ -17,446 +16,268 @@ func TestCheckLength(t *testing.T) {
 		wantErr     bool
 		expectedErr string
 	}{
-		{
-			name:        "Valid length - Empty slice",
-			args:        []string{},
-			maxLength:   1,
-			wantErr:     false,
-			expectedErr: "",
-		},
-		{
-			name:        "Valid length - Within limit",
-			args:        []string{"arg1", "arg2"},
-			maxLength:   3,
-			wantErr:     false,
-			expectedErr: "",
-		},
-		{
-			name:        "Valid length - Exactly at limit",
-			args:        []string{"arg1", "arg2", "arg3"},
-			maxLength:   3,
-			wantErr:     false,
-			expectedErr: "",
-		},
-		{
-			name:        "Invalid length - Exceeds limit",
-			args:        []string{"arg1", "arg2", "arg3", "arg4"},
-			maxLength:   3,
-			wantErr:     true,
-			expectedErr: "Too many arguments",
-		},
+		{name: "empty slice", args: []string{}, maxLength: 1},
+		{name: "within limit", args: []string{"arg1", "arg2"}, maxLength: 3},
+		{name: "exactly at limit", args: []string{"arg1", "arg2", "arg3"}, maxLength: 3},
+		{name: "exceeds limit", args: []string{"arg1", "arg2", "arg3", "arg4"}, maxLength: 3, wantErr: true, expectedErr: "Too many arguments"},
 	}
 
-	// Run test cases
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := checkLength(tt.args, tt.maxLength)
-
-			// Check if an error was expected
 			if tt.wantErr {
 				require.Error(t, err)
 				assert.Contains(t, styling.StripANSI(err.Error()), tt.expectedErr)
-			} else {
-				assert.NoError(t, err)
+				return
 			}
+			assert.NoError(t, err)
 		})
 	}
 }
 
-func TestValidateAbilityArgs(t *testing.T) {
-	// Testing valid arguments
-	validInputs := [][]string{
-		{"poke-cli", "ability", "--help"},
-		{"poke-cli", "ability", "inner-focus"},
-		{"poke-cli", "ability", "unaware", "-h"},
-		{"poke-cli", "ability", "technician", "--pokemon"},
+func TestValidateArgs(t *testing.T) {
+	tests := []struct {
+		name      string
+		args      []string
+		validator Validator
+		wantErr   bool
+		contains  string
+	}{
+		{
+			name:      "ability accepts name and flag",
+			args:      []string{"ability", "technician", "--pokemon"},
+			validator: Validator{MaxArgs: 3, CmdName: "ability", RequireName: true, HasFlags: true},
+		},
+		{
+			name:      "ability rejects missing name",
+			args:      []string{"ability"},
+			validator: Validator{MaxArgs: 3, CmdName: "ability", RequireName: true, HasFlags: true},
+			wantErr:   true,
+			contains:  "Please declare",
+		},
+		{
+			name:      "ability rejects too many args",
+			args:      []string{"ability", "strong-jaw", "all", "pokemon"},
+			validator: Validator{MaxArgs: 3, CmdName: "ability", RequireName: true, HasFlags: true},
+			wantErr:   true,
+			contains:  "Too many arguments",
+		},
+		{
+			name:      "berry accepts no name",
+			args:      []string{"berry"},
+			validator: Validator{MaxArgs: 3, CmdName: "berry"},
+		},
+		{
+			name:      "berry accepts name",
+			args:      []string{"berry", "oran"},
+			validator: Validator{MaxArgs: 3, CmdName: "berry"},
+		},
+		{
+			name:      "berry accepts help",
+			args:      []string{"berry", "--help"},
+			validator: Validator{MaxArgs: 3, CmdName: "berry"},
+		},
+		{
+			name:      "berry rejects extra arg",
+			args:      []string{"berry", "oran", "sitrus"},
+			validator: Validator{MaxArgs: 3, CmdName: "berry"},
+			wantErr:   true,
+			contains:  "only available options",
+		},
+		{
+			name:      "card accepts no args",
+			args:      []string{"card"},
+			validator: Validator{MaxArgs: 2, CmdName: "card"},
+		},
+		{
+			name:      "card accepts help",
+			args:      []string{"card", "--help"},
+			validator: Validator{MaxArgs: 2, CmdName: "card"},
+		},
+		{
+			name:      "card rejects extra arg",
+			args:      []string{"card", "scarlet"},
+			validator: Validator{MaxArgs: 2, CmdName: "card"},
+			wantErr:   true,
+			contains:  "only available options",
+		},
+		{
+			name:      "item accepts name",
+			args:      []string{"item", "potion"},
+			validator: Validator{MaxArgs: 2, CmdName: "item", RequireName: true},
+		},
+		{
+			name:      "item rejects missing name",
+			args:      []string{"item"},
+			validator: Validator{MaxArgs: 2, CmdName: "item", RequireName: true},
+			wantErr:   true,
+			contains:  "Please declare",
+		},
+		{
+			name:      "item rejects too many args",
+			args:      []string{"item", "potion", "extra"},
+			validator: Validator{MaxArgs: 2, CmdName: "item", RequireName: true},
+			wantErr:   true,
+			contains:  "Too many arguments",
+		},
+		{
+			name:      "move accepts name",
+			args:      []string{"move", "thunderbolt"},
+			validator: Validator{MaxArgs: 2, CmdName: "move", RequireName: true},
+		},
+		{
+			name:      "move rejects missing name",
+			args:      []string{"move"},
+			validator: Validator{MaxArgs: 2, CmdName: "move", RequireName: true},
+			wantErr:   true,
+			contains:  "Please declare",
+		},
+		{
+			name:      "move rejects too many args",
+			args:      []string{"move", "tackle", "scratch"},
+			validator: Validator{MaxArgs: 2, CmdName: "move", RequireName: true},
+			wantErr:   true,
+			contains:  "Too many arguments",
+		},
+		{
+			name:      "natures accepts no args",
+			args:      []string{"natures"},
+			validator: Validator{MaxArgs: 2, CmdName: "natures"},
+		},
+		{
+			name:      "natures accepts help",
+			args:      []string{"natures", "--help"},
+			validator: Validator{MaxArgs: 2, CmdName: "natures"},
+		},
+		{
+			name:      "natures rejects extra arg",
+			args:      []string{"natures", "brave"},
+			validator: Validator{MaxArgs: 2, CmdName: "natures"},
+			wantErr:   true,
+			contains:  "only available options",
+		},
+		{
+			name:      "natures rejects too many args",
+			args:      []string{"natures", "brave", "--help"},
+			validator: Validator{MaxArgs: 2, CmdName: "natures"},
+			wantErr:   true,
+			contains:  "Too many arguments",
+		},
+		{
+			name:      "search accepts no args",
+			args:      []string{"search"},
+			validator: Validator{MaxArgs: 2, CmdName: "search"},
+		},
+		{
+			name:      "search accepts help",
+			args:      []string{"search", "--help"},
+			validator: Validator{MaxArgs: 2, CmdName: "search"},
+		},
+		{
+			name:      "search rejects extra arg",
+			args:      []string{"search", "pokemon"},
+			validator: Validator{MaxArgs: 2, CmdName: "search"},
+			wantErr:   true,
+			contains:  "only available options",
+		},
+		{
+			name:      "speed accepts no args",
+			args:      []string{"speed"},
+			validator: Validator{MaxArgs: 2, CmdName: "speed"},
+		},
+		{
+			name:      "speed accepts help",
+			args:      []string{"speed", "--help"},
+			validator: Validator{MaxArgs: 2, CmdName: "speed"},
+		},
+		{
+			name:      "speed rejects extra arg",
+			args:      []string{"speed", "100"},
+			validator: Validator{MaxArgs: 2, CmdName: "speed"},
+			wantErr:   true,
+			contains:  "only available options",
+		},
+		{
+			name:      "tcg accepts no args",
+			args:      []string{"tcg"},
+			validator: Validator{MaxArgs: 2, CmdName: "tcg", HasFlags: true},
+		},
+		{
+			name:      "tcg accepts web flag",
+			args:      []string{"tcg", "--web"},
+			validator: Validator{MaxArgs: 2, CmdName: "tcg", HasFlags: true},
+		},
+		{
+			name:      "tcg rejects too many args",
+			args:      []string{"tcg", "--web", "extra"},
+			validator: Validator{MaxArgs: 2, CmdName: "tcg", HasFlags: true},
+			wantErr:   true,
+			contains:  "Too many arguments",
+		},
+		{
+			name:      "types accepts no args",
+			args:      []string{"types"},
+			validator: Validator{MaxArgs: 2, CmdName: "types"},
+		},
+		{
+			name:      "types accepts help",
+			args:      []string{"types", "--help"},
+			validator: Validator{MaxArgs: 2, CmdName: "types"},
+		},
+		{
+			name:      "types rejects extra arg",
+			args:      []string{"types", "rock"},
+			validator: Validator{MaxArgs: 2, CmdName: "types"},
+			wantErr:   true,
+			contains:  "only available options",
+		},
 	}
 
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	// Testing invalid arguments
-	invalidInputs := [][]string{
-		{"poke-cli", "abilities"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	// Testing too many arguments
-	tooManyArgs := [][]string{
-		{"poke-cli", "ability", "strong-jaw", "all", "pokemon"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 4, CmdName: "ability", RequireName: true, HasFlags: true})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ValidateArgs(tt.args, tt.validator)
+			if tt.wantErr {
+				require.Error(t, err)
+				assert.Contains(t, styling.StripANSI(err.Error()), tt.contains)
+				return
+			}
+			require.NoError(t, err)
+		})
 	}
 }
 
-func TestValidateNaturesArgs(t *testing.T) {
-	// Testing valid arguments
-	validInputs := [][]string{
-		{"poke-cli", "natures"},
-		{"poke-cli", "natures", "--help"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "natures", RequireName: false, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	// Testing invalid arguments
-	invalidInputs := [][]string{
-		{"poke-cli", "natures", "docile"},
-		{"poke-cli", "natures", "brave", "--help"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "natures", RequireName: false, HasFlags: false})
-		assert.Error(t, err, "Expected error for invalid input")
-	}
-}
-
-// TestValidatePokemonArgs tests the ValidatePokemonArgs function
 func TestValidatePokemonArgs(t *testing.T) {
-	// Testing valid arguments
 	validInputs := [][]string{
-		{"poke-cli", "pokemon", "--help"},
-		{"poke-cli", "pokemon", "mankey"},
-		{"poke-cli", "pokemon", "talonflame", "--stats", "--types"},
-		{"poke-cli", "pokemon", "passimian", "--abilities", "-t"},
-		{"poke-cli", "pokemon", "dodrio", "-a", "-s", "-t"},
-		{"poke-cli", "pokemon", "dragalge", "-a", "-s", "-t", "--image=sm"},
-		{"poke-cli", "pokemon", "squirtle", "-a", "-s"},
-		{"poke-cli", "pokemon", "dragapult", "-s", "-a"},
+		{"pokemon", "--help"},
+		{"pokemon", "mankey"},
+		{"pokemon", "talonflame", "--stats", "--types"},
+		{"pokemon", "passimian", "--abilities", "-t"},
+		{"pokemon", "dodrio", "-a", "-s", "-t"},
+		{"pokemon", "dragalge", "-a", "-s", "-t", "--image=sm"},
+		{"pokemon", "squirtle", "-a", "-s"},
+		{"pokemon", "dragapult", "-s", "-a"},
 	}
 
 	for _, input := range validInputs {
 		err := ValidatePokemonArgs(input)
-		require.NoError(t, err, "Expected no error for valid input")
+		require.NoError(t, err, "expected no error for valid input %v", input)
 	}
 
-	// Testing invalid arguments
-	invalidInputs := [][]string{
-		{"poke-cli"},
-		{"poke-cli", "pokemon"},
-		{"poke-cli", "pokemons"},
-		{"poke-cli", "pokemon", "mewtwo", "--"},
-		{"poke-cli", "pokemon", "baxcalibur", "-"},
-		{"poke-cli", "pokemon", "charizard", "extraArg"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidatePokemonArgs(input)
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	// Testing too many arguments
-	tooManyArgs := [][]string{
-		{"poke-cli", "pokemon", "hypo", "--abilities", "-s", "--types", "--image=sm", "-m", "-p"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidatePokemonArgs(input)
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
-	}
-}
-
-// TestValidateBerryArgs tests the ValidateBerryArgs function
-func TestValidateBerryArgs(t *testing.T) {
-	validInputs := [][]string{
-		{"poke-cli", "berry"},
-		{"poke-cli", "berry", "--help"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "berry", RequireName: false, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	invalidInputs := [][]string{
-		{"poke-cli", "berry", "oran"},
+	invalidInputs := []struct {
+		args     []string
+		contains string
+	}{
+		{args: []string{"pokemon"}, contains: "Please declare"},
+		{args: []string{"pokemons"}, contains: "Please declare"},
+		{args: []string{"pokemon", "mewtwo", "--"}, contains: "Empty flag"},
+		{args: []string{"pokemon", "baxcalibur", "-"}, contains: "Empty flag"},
+		{args: []string{"pokemon", "charizard", "extraArg"}, contains: "Invalid argument"},
+		{args: []string{"pokemon", "hypo", "--abilities", "-s", "--types", "--image=sm", "-m", "-p"}, contains: "Too many arguments"},
 	}
 
 	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "berry", RequireName: false, HasFlags: false})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	tooManyArgs := [][]string{
-		{"poke-cli", "berry", "oran", "sitrus"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "berry", RequireName: false, HasFlags: false})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
-	}
-}
-
-// TestValidateCardArgs tests the ValidateCardArgs function
-func TestValidateCardArgs(t *testing.T) {
-	validInputs := [][]string{
-		{"poke-cli", "card"},
-		{"poke-cli", "card", "--help"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "card", RequireName: false, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	invalidInputs := [][]string{
-		{"poke-cli", "card", "scarlet"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "card", RequireName: false, HasFlags: false})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	tooManyArgs := [][]string{
-		{"poke-cli", "card", "scarlet", "violet"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "card", RequireName: false, HasFlags: false})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
-	}
-}
-
-// TestValidateItemArgs tests the ValidateItemArgs function
-func TestValidateItemArgs(t *testing.T) {
-	validInputs := [][]string{
-		{"poke-cli", "item", "--help"},
-		{"poke-cli", "item", "potion"},
-		{"poke-cli", "item", "master-ball"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	invalidInputs := [][]string{
-		{"poke-cli", "item"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	tooManyArgs := [][]string{
-		{"poke-cli", "item", "potion", "super-potion"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "item", RequireName: true, HasFlags: false})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
-	}
-}
-
-// TestValidateMoveArgs tests the ValidateMoveArgs function
-func TestValidateMoveArgs(t *testing.T) {
-	validInputs := [][]string{
-		{"poke-cli", "move", "--help"},
-		{"poke-cli", "move", "thunderbolt"},
-		{"poke-cli", "move", "Dragon-Tail"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	invalidInputs := [][]string{
-		{"poke-cli", "move"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	tooManyArgs := [][]string{
-		{"poke-cli", "move", "tackle", "scratch"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "move", RequireName: true, HasFlags: false})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
-	}
-}
-
-// TestValidateSearchArgs tests the ValidateSearchArgs function
-func TestValidateSearchArgs(t *testing.T) {
-	validInputs := [][]string{
-		{"poke-cli", "search"},
-		{"poke-cli", "search", "--help"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	invalidInputs := [][]string{
-		{"poke-cli", "search", "pokemon"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	tooManyArgs := [][]string{
-		{"poke-cli", "search", "pokemon", "meowscarada"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "search", RequireName: false, HasFlags: false})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
-	}
-}
-
-// TestValidateTypesArgs tests the ValidateTypesArgs function
-func TestValidateTypesArgs(t *testing.T) {
-	// Testing valid arguments
-	validInputs := [][]string{
-		{"poke-cli", "types"},
-		{"poke-cli", "types", "--help"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	// Testing invalid arguments
-	invalidInputs := [][]string{
-		{"poke-cli", "types", "rock"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	// Testing too many arguments
-	tooManyArgs := [][]string{
-		{"poke-cli", "types", "rock", "pokemon"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "types", RequireName: false, HasFlags: false})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
-	}
-}
-
-// TestValidateSpeedArgs tests the ValidateSpeedArgs function
-func TestValidateSpeedArgs(t *testing.T) {
-	validInputs := [][]string{
-		{"poke-cli", "speed"},
-		{"poke-cli", "speed", "--help"},
-	}
-
-	for _, input := range validInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "speed", RequireName: false, HasFlags: false})
-		require.NoError(t, err, "Expected no error for valid input")
-	}
-
-	invalidInputs := [][]string{
-		{"poke-cli", "speed", "100"},
-	}
-
-	for _, input := range invalidInputs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "speed", RequireName: false, HasFlags: false})
-		require.Error(t, err, "Expected error for invalid input")
-	}
-
-	tooManyArgs := [][]string{
-		{"poke-cli", "speed", "100", "200"},
-	}
-
-	expectedError := styling.StripANSI("╭──────────────────╮\n│✖ Error!          │\n│Too many arguments│\n╰──────────────────╯")
-
-	for _, input := range tooManyArgs {
-		err := ValidateArgs(input, Validator{MaxArgs: 3, CmdName: "speed", RequireName: false, HasFlags: false})
-
-		if err == nil {
-			t.Fatalf("Expected an error for input %v, but got nil", input)
-		}
-
-		strippedErr := styling.StripANSI(err.Error())
-		assert.Equal(t, expectedError, strippedErr, "Unexpected error message for invalid input")
+		err := ValidatePokemonArgs(input.args)
+		require.Error(t, err, "expected error for invalid input %v", input.args)
+		assert.Contains(t, styling.StripANSI(err.Error()), input.contains)
 	}
 }

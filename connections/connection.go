@@ -15,8 +15,15 @@ import (
 )
 
 const APIURL = "https://pokeapi.co/api/v2/"
+const maxAPIResponseBytes = 10 * 1024 * 1024 // 10 MiB
 
-var httpClient = &http.Client{Timeout: 30 * time.Second}
+const DefaultHTTPTimeout = 60 * time.Second
+
+var httpClient = NewDefaultHTTPClient()
+
+func NewDefaultHTTPClient() *http.Client {
+	return &http.Client{Timeout: DefaultHTTPTimeout}
+}
 
 type EndpointResource interface {
 	GetResourceName() string
@@ -97,9 +104,12 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		return HTTPStatusError{StatusCode: resp.StatusCode, URL: rawURL}
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxAPIResponseBytes+1))
 	if err != nil {
 		return fmt.Errorf("error reading response body: %w", err)
+	}
+	if len(body) > maxAPIResponseBytes {
+		return fmt.Errorf("response body exceeds %d bytes", maxAPIResponseBytes)
 	}
 
 	err = json.Unmarshal(body, target)
@@ -144,8 +154,7 @@ func CallTCGData(url string) ([]byte, error) {
 	req.Header.Add("Authorization", "Bearer sb_publishable_oondaaAIQC-wafhEiNgpSQ_reRiEp7j")
 	req.Header.Add("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 60 * time.Second}
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error making GET request: %w", err)
 	}

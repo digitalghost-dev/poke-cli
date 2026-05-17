@@ -27,6 +27,10 @@ import (
 	"golang.org/x/text/language"
 )
 
+const maxPokemonSpriteBytes = 5 * 1024 * 1024 // 5 MiB
+
+var pokemonSpriteHTTPClient = connections.NewDefaultHTTPClient()
+
 type PokemonFlags struct {
 	FlagSet        *flag.FlagSet
 	Abilities      *bool
@@ -389,14 +393,20 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 		return str.String()
 	}
 
-	imageResp, err := http.Get(pokemonStruct.Sprites.FrontDefault)
+	imageResp, err := pokemonSpriteHTTPClient.Get(pokemonStruct.Sprites.FrontDefault)
 	if err != nil {
 		fmt.Println("Error downloading sprite image:", err)
 		return err
 	}
 	defer imageResp.Body.Close()
 
-	img, err := imaging.Decode(imageResp.Body)
+	if imageResp.StatusCode != http.StatusOK {
+		err := fmt.Errorf("unexpected sprite response status: %d", imageResp.StatusCode)
+		fmt.Println("Error downloading sprite image:", err)
+		return err
+	}
+
+	img, err := imaging.Decode(io.LimitReader(imageResp.Body, maxPokemonSpriteBytes))
 	if err != nil {
 		fmt.Println("Error decoding image:", err)
 		return err

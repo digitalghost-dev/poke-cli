@@ -1,7 +1,6 @@
 package card
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -10,10 +9,10 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 )
 
-func CardCommand() (string, error) {
+func CardCommand(args []string) (string, error) {
 	var output strings.Builder
 
-	flag.Usage = func() {
+	usage := func() {
 		output.WriteString(
 			utils.GenerateHelpMessage(
 				utils.HelpConfig{
@@ -24,14 +23,15 @@ func CardCommand() (string, error) {
 		)
 	}
 
-	if utils.CheckHelpFlag(&output, flag.Usage) {
+	if utils.CheckHelpFlag(args, usage) {
 		return output.String(), nil
 	}
 
-	flag.Parse()
-
 	// Validate arguments
-	if err := utils.ValidateArgs(os.Args, utils.Validator{MaxArgs: 3, CmdName: "card", RequireName: false, HasFlags: false}); err != nil {
+	if err := utils.ValidateArgs(
+		args,
+		utils.Validator{MaxArgs: 2, CmdName: "card", RequireName: false, HasFlags: false},
+	); err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
