@@ -10,7 +10,7 @@ weight: 8
 
 ## Overview
 
-n8n is used in this project for a few different reasoons such as performing API status checks, sending sucess/failure notifications, or ingesting data from sources that are not in a friendly format like a REST API. 
+n8n is used in this project for a few different reasons such as performing API status checks, sending success/failure notifications, or ingesting data from sources that are not in a friendly format like a REST API. 
 
 One of n8n pipelines in this project, for example, scrapes `.md` files from [Pikalytics](https://www.pikalytics.com/ai/speed-tiers) with Firecrawl's LLM-powered extraction service to pull structured speed tier data into Supabase.
 
@@ -56,7 +56,7 @@ _Public endpoint that Dagster posts to on run completion._
 
 _Posts a templated run summary to a Discord channel._
 
-1. Create a Discord server and within the defaut text channel, create a webhook.
+1. Create a Discord server and within the default text channel, create a webhook.
     1. Server Settings
     2. Integrations
     3. Webhooks
