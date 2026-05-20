@@ -18,6 +18,7 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "cards": "load_card_data",
                 "pricing_data": "data_quality_checks_on_pricing",
                 "standings": "load_standings_data",
+                "comp_events": "data_quality_checks_on_comp_events",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])

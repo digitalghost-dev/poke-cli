@@ -1,0 +1,31 @@
+checks for comp_events:
+  - row_count > 40:
+      name: Minimum row count check
+
+  - schema:
+      fail:
+        when required column missing: [start_date, end_date, season, tcg_pokedata_id, vg_pokedata_id]
+        when wrong column type:
+          start_date: text
+          end_date: text
+          season: bigint
+
+  - missing_count(start_date) = 0:
+      name: Start date completeness
+
+  - missing_count(end_date) = 0:
+      name: End date completeness
+
+  - missing_count(season) = 0:
+      name: Season completeness
+
+  - duplicate_count(tcg_pokedata_id) = 0:
+      name: TCG pokedata ID uniqueness
+
+  - duplicate_count(vg_pokedata_id) = 0:
+      name: VG pokedata ID uniqueness
+
+  - invalid_count(season) = 0:
+      valid min: 2025
+      valid max: 2030
+      name: Season range validation

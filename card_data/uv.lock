@@ -139,7 +139,7 @@ wheels = [
 
 [[package]]
 name = "card-data"
-version = "1.10.0"
+version = "1.10.2"
 source = { virtual = "." }
 dependencies = [
     { name = "aws-secretsmanager-caching" },

@@ -175,6 +175,20 @@ sources:
           - name: market_price
             description: "Market price"
 
+      - name: comp_events
+        description: "Pokedata tournament events with TCG and VG pokedata IDs"
+        columns:
+          - name: start_date
+            description: "Event start date"
+          - name: end_date
+            description: "Event end date"
+          - name: season
+            description: "Competitive season (e.g. 2026)"
+          - name: tcg_pokedata_id
+            description: "Pokedata ID for the TCG tournament at this event"
+          - name: vg_pokedata_id
+            description: "Pokedata ID for the VGC tournament at this event"
+
       - name: champions_speed_tiers
         description: "Pikalytics speed tier data ingested by n8n monthly"
         columns:
