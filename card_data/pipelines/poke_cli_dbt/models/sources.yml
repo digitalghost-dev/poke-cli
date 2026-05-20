@@ -189,6 +189,34 @@ sources:
           - name: vg_pokedata_id
             description: "Pokedata ID for the VGC tournament at this event"
 
+      - name: comp_tcg_tournaments
+        description: "Masters-division TCG tournament metadata from pokedata.ovh"
+        columns:
+          - name: event_id
+            description: "Pokedata TCG tournament ID (FK to comp_events.tcg_pokedata_id)"
+          - name: name
+            description: "Tournament name"
+          - name: count
+            description: "Masters division player count"
+          - name: rounds
+            description: "Masters division round count"
+          - name: last_updated
+            description: "Timestamp of last data update from pokedata.ovh"
+
+      - name: comp_vg_tournaments
+        description: "Masters-division VGC tournament metadata from pokedata.ovh"
+        columns:
+          - name: event_id
+            description: "Pokedata VGC tournament ID (FK to comp_events.vg_pokedata_id)"
+          - name: name
+            description: "Tournament name"
+          - name: count
+            description: "Masters division player count"
+          - name: rounds
+            description: "Masters division round count"
+          - name: last_updated
+            description: "Timestamp of last data update from pokedata.ovh"
+
       - name: champions_speed_tiers
         description: "Pikalytics speed tier data ingested by n8n monthly"
         columns:

@@ -19,6 +19,8 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "pricing_data": "data_quality_checks_on_pricing",
                 "standings": "load_standings_data",
                 "comp_events": "data_quality_checks_on_comp_events",
+                "comp_tcg_tournaments": "data_quality_checks_on_comp_tcg_tournaments",
+                "comp_vg_tournaments": "data_quality_checks_on_comp_vg_tournaments",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])
