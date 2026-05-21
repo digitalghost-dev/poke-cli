@@ -176,40 +176,20 @@ sources:
             description: "Market price"
 
       - name: comp_events
-        description: "Pokedata tournament events with TCG and VG pokedata IDs"
+        description: "Masters-division TCG and VGC tournament events from pokedata.ovh"
         columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG or VGC)"
+          - name: name
+            description: "Tournament name"
           - name: start_date
             description: "Event start date"
           - name: end_date
             description: "Event end date"
           - name: season
             description: "Competitive season (e.g. 2026)"
-          - name: tcg_pokedata_id
-            description: "Pokedata ID for the TCG tournament at this event"
-          - name: vg_pokedata_id
-            description: "Pokedata ID for the VGC tournament at this event"
-
-      - name: comp_tcg_tournaments
-        description: "Masters-division TCG tournament metadata from pokedata.ovh"
-        columns:
-          - name: event_id
-            description: "Pokedata TCG tournament ID (FK to comp_events.tcg_pokedata_id)"
-          - name: name
-            description: "Tournament name"
-          - name: count
-            description: "Masters division player count"
-          - name: rounds
-            description: "Masters division round count"
-          - name: last_updated
-            description: "Timestamp of last data update from pokedata.ovh"
-
-      - name: comp_vg_tournaments
-        description: "Masters-division VGC tournament metadata from pokedata.ovh"
-        columns:
-          - name: event_id
-            description: "Pokedata VGC tournament ID (FK to comp_events.vg_pokedata_id)"
-          - name: name
-            description: "Tournament name"
           - name: count
             description: "Masters division player count"
           - name: rounds

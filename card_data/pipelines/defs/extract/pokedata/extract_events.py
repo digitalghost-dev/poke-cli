@@ -1,4 +1,3 @@
-import re
 import dagster as dg
 import requests
 import polars as pl
@@ -24,13 +23,6 @@ def infer_season(start_date: str) -> int:
         return year
 
 
-def normalize_name(name: str) -> str:
-    name = re.sub(r'\bTCG\b', '', name, flags=re.IGNORECASE)
-    name = re.sub(r'\bVGC?\b', '', name, flags=re.IGNORECASE)
-    name = re.sub(r'\b20\d{2}\b', '', name)
-    return re.sub(r'\s+', ' ', name).strip(' --')
-
-
 @dg.asset(kinds={"API", "Polars"}, name="create_events_dataframe")
 def create_events_dataframe() -> pl.DataFrame:
     data = call_api("https://www.pokedata.ovh/apiv2/tournaments")
@@ -47,24 +39,30 @@ def build_events_dataframe(data: dict) -> pl.DataFrame:
         if t["id"] > WORLDS_VG_ID and any(v in t["name"] for v in VALID_TYPES)
     ]
 
-    tcg_by_name = {normalize_name(t["name"]): t for t in tcg_events}
-    vg_by_name  = {normalize_name(t["name"]): t for t in vg_events}
-
-    all_names = set(tcg_by_name) | set(vg_by_name)
-
     rows = []
-    for name in sorted(all_names):
-        tcg = tcg_by_name.get(name)
-        vg  = vg_by_name.get(name)
-        source = tcg or vg
+    for t in tcg_events:
         rows.append({
-            "start_date":      source["date"]["start"],
-            "end_date":        source["date"]["end"],
-            "season":          infer_season(source["date"]["start"]),
-            "tcg_pokedata_id": tcg["id"] if tcg else None,
-            "vg_pokedata_id":  vg["id"]  if vg  else None,
+            "pokedata_id":  t["id"],
+            "game_type":    "TCG",
+            "name":         t["name"],
+            "start_date":   t["date"]["start"],
+            "end_date":     t["date"]["end"],
+            "season":       infer_season(t["date"]["start"]),
+            "count":        int(t["players"]["masters"]),
+            "rounds":       t["roundNumbers"]["masters"],
+            "last_updated": t["lastUpdated"],
+        })
+    for t in vg_events:
+        rows.append({
+            "pokedata_id":  t["id"],
+            "game_type":    "VGC",
+            "name":         t["name"],
+            "start_date":   t["date"]["start"],
+            "end_date":     t["date"]["end"],
+            "season":       infer_season(t["date"]["start"]),
+            "count":        int(t["players"]["masters"]),
+            "rounds":       t["roundNumbers"]["masters"],
+            "last_updated": t["lastUpdated"],
         })
 
     return pl.DataFrame(rows)
-
-

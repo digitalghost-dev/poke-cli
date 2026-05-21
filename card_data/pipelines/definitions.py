@@ -6,14 +6,7 @@ import dagster as dg
 
 from .defs.extract.limitless.extract_standings import create_standings_dataframe
 from .defs.extract.pokedata.extract_events import create_events_dataframe
-from .defs.extract.pokedata.extract_tournaments import create_tcg_tournaments_dataframe, create_vg_tournaments_dataframe
 from .defs.load.pokedata.load_events import load_events_data, data_quality_checks_on_comp_events
-from .defs.load.pokedata.load_tournaments import (
-    load_tcg_tournaments_data,
-    load_vg_tournaments_data,
-    data_quality_checks_on_comp_tcg_tournaments,
-    data_quality_checks_on_comp_vg_tournaments,
-)
 from .defs.extract.tcgcsv.extract_pricing import build_dataframe
 from .defs.extract.tcgdex.extract_sets import extract_sets_data
 from .defs.extract.tcgdex.extract_series import extract_series_data
@@ -107,12 +100,6 @@ defs_events: dg.Definitions = dg.Definitions(
         create_events_dataframe,
         load_events_data,
         data_quality_checks_on_comp_events,
-        create_tcg_tournaments_dataframe,
-        load_tcg_tournaments_data,
-        data_quality_checks_on_comp_tcg_tournaments,
-        create_vg_tournaments_dataframe,
-        load_vg_tournaments_data,
-        data_quality_checks_on_comp_vg_tournaments,
     ],
     jobs=[events_pipeline],
 )
