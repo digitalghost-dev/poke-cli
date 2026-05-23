@@ -1,0 +1,35 @@
+checks for comp_rounds:
+  - schema:
+      fail:
+        when required column missing: [pokedata_id, game_type, player_name, round_number, opponent_name, result, table_number]
+        when wrong column type:
+          pokedata_id: text
+          game_type: text
+          player_name: text
+          round_number: bigint
+          opponent_name: text
+          result: text
+          table_number: text
+
+  - missing_count(pokedata_id) = 0:
+      name: Pokedata ID completeness
+
+  - missing_count(game_type) = 0:
+      name: Game type completeness
+
+  - missing_count(player_name) = 0:
+      name: Player name completeness
+
+  - missing_count(round_number) = 0:
+      name: Round number completeness
+
+  - duplicate_count(pokedata_id, game_type, player_name, round_number) = 0:
+      name: Round uniqueness per player
+
+  - invalid_count(round_number) = 0:
+      valid min: 1
+      name: Round number positive
+
+  - invalid_count(result) = 0:
+      valid values: [W, L, T]
+      name: Round result is W/L/T

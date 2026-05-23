@@ -1,0 +1,25 @@
+checks for comp_vg_decklists:
+  - schema:
+      fail:
+        when required column missing: [pokedata_id, game_type, player_name, decklist]
+        when wrong column type:
+          pokedata_id: text
+          game_type: text
+          player_name: text
+          decklist: jsonb
+
+  - missing_count(pokedata_id) = 0:
+      name: Pokedata ID completeness
+
+  - missing_count(player_name) = 0:
+      name: Player name completeness
+
+  - missing_count(decklist) = 0:
+      name: Decklist completeness
+
+  - duplicate_count(pokedata_id, game_type, player_name) = 0:
+      name: One decklist per player per tournament
+
+  - invalid_count(game_type) = 0:
+      valid values: [VGC]
+      name: Game type is VGC only

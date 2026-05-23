@@ -1,0 +1,49 @@
+checks for comp_players:
+  - schema:
+      fail:
+        when required column missing: [pokedata_id, game_type, player_name, placement, wins, losses, ties, resistance_self, resistance_opp, resistance_oppopp, dropped_round]
+        when wrong column type:
+          pokedata_id: text
+          game_type: text
+          player_name: text
+          country: text
+          placement: bigint
+          wins: bigint
+          losses: bigint
+          ties: bigint
+          resistance_self: numeric
+          resistance_opp: numeric
+          resistance_oppopp: numeric
+          dropped_round: bigint
+          trainer_name: text
+
+  - missing_count(pokedata_id) = 0:
+      name: Pokedata ID completeness
+
+  - missing_count(game_type) = 0:
+      name: Game type completeness
+
+  - missing_count(player_name) = 0:
+      name: Player name completeness
+
+  - missing_count(placement) = 0:
+      name: Placement completeness
+
+  - duplicate_count(pokedata_id, game_type, player_name) = 0:
+      name: Player uniqueness within tournament
+
+  - invalid_count(placement) = 0:
+      valid min: 1
+      name: Placement positive
+
+  - invalid_count(wins) = 0:
+      valid min: 0
+      name: Wins non-negative
+
+  - invalid_count(losses) = 0:
+      valid min: 0
+      name: Losses non-negative
+
+  - invalid_count(ties) = 0:
+      valid min: 0
+      name: Ties non-negative

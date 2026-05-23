@@ -42,6 +42,3 @@ checks for comp_events:
       valid min: 1
       name: Masters count positive
 
-  - invalid_count(rounds) = 0:
-      valid min: 1
-      name: Rounds positive
