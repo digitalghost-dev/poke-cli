@@ -88,3 +88,7 @@ AGENTS.md
 .codex/
 /.ai/
 .firecrawl/
+
+# Plans
+aggregation-service-implementation.md
+aggregation-service-plan.md
