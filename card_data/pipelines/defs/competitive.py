@@ -16,14 +16,19 @@ from ..utils.secret_retriever import fetch_secret
 WORLDS_TCG_ID = "0000129"
 WORLDS_VG_ID = "0000115"
 VALID_EVENT_TYPES = ["Regional", "International", "Worlds"]
+EVENT_SOURCES = (
+    ("tcg", "TCG", WORLDS_TCG_ID),
+    ("vg", "VGC", WORLDS_VG_ID),
+)
 
 REQUEST_DELAY_SECONDS = 0.2
 TOP_N_PLACEMENTS = 256
 COUNTRY_PATTERN = re.compile(r"^(.*?)\s*\[([A-Za-z]{2,3})\]\s*$")
 
 
-def call_api(url: str) -> dict:
-    r = requests.get(url, timeout=60)
+def call_api(url: str, session: requests.Session | None = None) -> dict:
+    client = session or requests
+    r = client.get(url, timeout=60)
     r.raise_for_status()
     return r.json()
 
@@ -93,40 +98,26 @@ _UPSERT_EVENTS = """
 
 
 def build_events_dataframe(data: dict) -> pl.DataFrame:
-    tcg_events = [
-        t for t in data["tcg"]["data"]
-        if t["id"] > WORLDS_TCG_ID and any(v in t["name"] for v in VALID_EVENT_TYPES)
-    ]
-    vg_events = [
-        t for t in data["vg"]["data"]
-        if t["id"] > WORLDS_VG_ID and any(v in t["name"] for v in VALID_EVENT_TYPES)
-    ]
-
     rows = []
-    for t in tcg_events:
-        rows.append({
-            "pokedata_id":  t["id"],
-            "game_type":    "TCG",
-            "name":         t["name"],
-            "start_date":   t["date"]["start"],
-            "end_date":     t["date"]["end"],
-            "season":       infer_season(t["date"]["start"]),
-            "count":        int(t["players"]["masters"]),
-            "rounds":       t["roundNumbers"]["masters"],
-            "last_updated": t["lastUpdated"],
-        })
-    for t in vg_events:
-        rows.append({
-            "pokedata_id":  t["id"],
-            "game_type":    "VGC",
-            "name":         t["name"],
-            "start_date":   t["date"]["start"],
-            "end_date":     t["date"]["end"],
-            "season":       infer_season(t["date"]["start"]),
-            "count":        int(t["players"]["masters"]),
-            "rounds":       t["roundNumbers"]["masters"],
-            "last_updated": t["lastUpdated"],
-        })
+    for source_key, game_type, min_event_id in EVENT_SOURCES:
+        for event in data[source_key]["data"]:
+            if event["id"] <= min_event_id or not any(
+                event_type in event["name"] for event_type in VALID_EVENT_TYPES
+            ):
+                continue
+
+            start_date = event["date"]["start"]
+            rows.append({
+                "pokedata_id": event["id"],
+                "game_type": game_type,
+                "name": event["name"],
+                "start_date": start_date,
+                "end_date": event["date"]["end"],
+                "season": infer_season(start_date),
+                "count": int(event["players"]["masters"]),
+                "rounds": event["roundNumbers"]["masters"],
+                "last_updated": event["lastUpdated"],
+            })
 
     return pl.DataFrame(rows)
 
@@ -170,9 +161,9 @@ _CREATE_PLAYERS = """
         wins          BIGINT,
         losses        BIGINT,
         ties          BIGINT,
-        resistance_self    NUMERIC,
-        resistance_opp     NUMERIC,
-        resistance_oppopp  NUMERIC,
+        resistance_self    NUMERIC(4, 2),
+        resistance_opp     NUMERIC(4, 2),
+        resistance_oppopp  NUMERIC(4, 2),
         dropped_round BIGINT,
         trainer_name  TEXT,
         UNIQUE (pokedata_id, game_type, player_name)
@@ -193,8 +184,8 @@ _CREATE_ROUNDS = """
     )
 """
 
-_CREATE_VG_DECKLISTS = """
-    CREATE TABLE IF NOT EXISTS staging.comp_vg_decklists (
+_CREATE_DECKLISTS_TEMPLATE = """
+    CREATE TABLE IF NOT EXISTS staging.{table_name} (
         id           BIGSERIAL PRIMARY KEY,
         pokedata_id  TEXT NOT NULL,
         game_type    TEXT NOT NULL,
@@ -204,16 +195,8 @@ _CREATE_VG_DECKLISTS = """
     )
 """
 
-_CREATE_TCG_DECKLISTS = """
-    CREATE TABLE IF NOT EXISTS staging.comp_tcg_decklists (
-        id           BIGSERIAL PRIMARY KEY,
-        pokedata_id  TEXT NOT NULL,
-        game_type    TEXT NOT NULL,
-        player_name  TEXT NOT NULL,
-        decklist     JSONB,
-        UNIQUE (pokedata_id, game_type, player_name)
-    )
-"""
+_CREATE_VG_DECKLISTS = _CREATE_DECKLISTS_TEMPLATE.format(table_name="comp_vg_decklists")
+_CREATE_TCG_DECKLISTS = _CREATE_DECKLISTS_TEMPLATE.format(table_name="comp_tcg_decklists")
 
 _INSERT_PLAYERS_SQL = """
     INSERT INTO staging.comp_players (
@@ -233,64 +216,50 @@ _INSERT_ROUNDS_SQL = """
     ON CONFLICT (pokedata_id, game_type, player_name, round_number) DO NOTHING
 """
 
-_INSERT_VG_DECKLISTS_SQL = """
-    INSERT INTO staging.comp_vg_decklists (
+_INSERT_DECKLISTS_SQL_TEMPLATE = """
+    INSERT INTO staging.{table_name} (
         pokedata_id, game_type, player_name, decklist
     ) VALUES %s
     ON CONFLICT (pokedata_id, game_type, player_name) DO NOTHING
 """
 
-_INSERT_TCG_DECKLISTS_SQL = """
-    INSERT INTO staging.comp_tcg_decklists (
-        pokedata_id, game_type, player_name, decklist
-    ) VALUES %s
-    ON CONFLICT (pokedata_id, game_type, player_name) DO NOTHING
-"""
+_INSERT_VG_DECKLISTS_SQL = _INSERT_DECKLISTS_SQL_TEMPLATE.format(
+    table_name="comp_vg_decklists"
+)
+_INSERT_TCG_DECKLISTS_SQL = _INSERT_DECKLISTS_SQL_TEMPLATE.format(
+    table_name="comp_tcg_decklists"
+)
+
+_PLAYER_TABLE_DDLS = (
+    _CREATE_PLAYERS,
+    _CREATE_ROUNDS,
+    _CREATE_VG_DECKLISTS,
+    _CREATE_TCG_DECKLISTS,
+)
 
 
 def fetch_events_to_process(conn) -> list[dict]:
     """Finished events not yet loaded into comp_players. 2-day buffer past end_date."""
-    exists = conn.execute(
-        text(
-            """
-            SELECT EXISTS (
-                SELECT 1 FROM information_schema.tables
-                WHERE table_schema = 'staging' AND table_name = 'comp_players'
-            )
-            """
-        )
-    ).scalar()
-
-    if exists:
-        query = """
-            SELECT e.pokedata_id, e.game_type
-            FROM staging.comp_events e
-            WHERE e.end_date::date < CURRENT_DATE - INTERVAL '1 day'
-              AND NOT EXISTS (
-                  SELECT 1 FROM staging.comp_players p
-                  WHERE p.pokedata_id = e.pokedata_id
-                    AND p.game_type   = e.game_type
-              )
-            ORDER BY e.end_date
-        """
-    else:
-        query = """
-            SELECT pokedata_id, game_type
-            FROM staging.comp_events
-            WHERE end_date::date < CURRENT_DATE - INTERVAL '1 day'
-            ORDER BY end_date
-        """
+    query = """
+        SELECT e.pokedata_id, e.game_type
+        FROM staging.comp_events e
+        WHERE e.end_date::date < CURRENT_DATE - INTERVAL '1 day'
+          AND NOT EXISTS (
+              SELECT 1 FROM staging.comp_players p
+              WHERE p.pokedata_id = e.pokedata_id
+                AND p.game_type   = e.game_type
+          )
+        ORDER BY e.end_date
+    """
 
     return [dict(row._mapping) for row in conn.execute(text(query)).all()]
 
 
-def process_event(cur, pid: str, gt: str) -> tuple[int, int, int]:
-    """Fetch one event from the API and bulk-insert its data via execute_values.
-    Returns (players_loaded, rounds_loaded, decklists_loaded)."""
-    url_segment = "tcg" if gt == "TCG" else "vg"
-    url = f"https://www.pokedata.ovh/apiv2/{url_segment}/id/{pid}/division/masters"
-    data = call_api(url)
-
+def build_player_rows(
+    data: dict,
+    pid: str,
+    gt: str,
+) -> tuple[list[tuple], list[tuple], list[tuple], list[tuple]]:
     players: list[tuple] = []
     rounds: list[tuple] = []
     decklists_vg: list[tuple] = []
@@ -325,14 +294,30 @@ def process_event(cur, pid: str, gt: str) -> tuple[int, int, int]:
                 else:
                     decklists_tcg.append(deck_row)
 
-    if players:
-        execute_values(cur, _INSERT_PLAYERS_SQL, players, page_size=500)
-    if rounds:
-        execute_values(cur, _INSERT_ROUNDS_SQL, rounds, page_size=1000)
-    if decklists_vg:
-        execute_values(cur, _INSERT_VG_DECKLISTS_SQL, decklists_vg, page_size=500)
-    if decklists_tcg:
-        execute_values(cur, _INSERT_TCG_DECKLISTS_SQL, decklists_tcg, page_size=500)
+    return players, rounds, decklists_vg, decklists_tcg
+
+
+def process_event(
+    cur,
+    pid: str,
+    gt: str,
+    session: requests.Session | None = None,
+) -> tuple[int, int, int]:
+    """Fetch one event from the API and bulk-insert its data via execute_values."""
+    url_segment = "tcg" if gt == "TCG" else "vg"
+    url = f"https://www.pokedata.ovh/apiv2/{url_segment}/id/{pid}/division/masters"
+    data = call_api(url, session=session)
+    players, rounds, decklists_vg, decklists_tcg = build_player_rows(data, pid, gt)
+
+    insert_batches = (
+        (_INSERT_PLAYERS_SQL, players, 500),
+        (_INSERT_ROUNDS_SQL, rounds, 1000),
+        (_INSERT_VG_DECKLISTS_SQL, decklists_vg, 500),
+        (_INSERT_TCG_DECKLISTS_SQL, decklists_tcg, 500),
+    )
+    for insert_sql, rows, page_size in insert_batches:
+        if rows:
+            execute_values(cur, insert_sql, rows, page_size=page_size)
 
     return len(players), len(rounds), len(decklists_vg) + len(decklists_tcg)
 
@@ -349,10 +334,8 @@ def load_players_data() -> None:
         engine = create_engine(database_url)
 
         with engine.begin() as conn:
-            conn.execute(text(_CREATE_PLAYERS))
-            conn.execute(text(_CREATE_ROUNDS))
-            conn.execute(text(_CREATE_VG_DECKLISTS))
-            conn.execute(text(_CREATE_TCG_DECKLISTS))
+            for ddl in _PLAYER_TABLE_DDLS:
+                conn.execute(text(ddl))
 
         with engine.connect() as conn:
             events = fetch_events_to_process(conn)
@@ -369,7 +352,7 @@ def load_players_data() -> None:
         failures = 0
         totals = {"players": 0, "rounds": 0, "decklists": 0}
 
-        with engine.connect() as conn:
+        with engine.connect() as conn, requests.Session() as session:
             for i, ev in enumerate(events, 1):
                 pid = ev["pokedata_id"]
                 gt = ev["game_type"]
@@ -378,7 +361,9 @@ def load_players_data() -> None:
                 try:
                     with conn.begin():
                         cur = conn.connection.cursor()
-                        n_players, n_rounds, n_decklists = process_event(cur, pid, gt)
+                        n_players, n_rounds, n_decklists = process_event(
+                            cur, pid, gt, session
+                        )
                     successes += 1
                     totals["players"] += n_players
                     totals["rounds"] += n_rounds
