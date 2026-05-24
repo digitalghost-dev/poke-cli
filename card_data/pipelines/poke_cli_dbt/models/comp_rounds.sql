@@ -2,15 +2,7 @@
 {{ config(
     materialized='incremental',
     unique_key='id',
-    on_schema_change='sync_all_columns',
-    post_hook=[
-        "ALTER TABLE {{ this }} DROP CONSTRAINT IF EXISTS comp_rounds_pkey",
-        "ALTER TABLE {{ this }} DROP CONSTRAINT IF EXISTS pk_comp_rounds",
-        "ALTER TABLE {{ this }} ADD CONSTRAINT pk_comp_rounds PRIMARY KEY (id)",
-        "ALTER TABLE {{ this }} DROP CONSTRAINT IF EXISTS fk_comp_rounds_players",
-        "ALTER TABLE {{ this }} ADD CONSTRAINT fk_comp_rounds_players FOREIGN KEY (pokedata_id, game_type, player_name) REFERENCES {{ ref('comp_players') }} (pokedata_id, game_type, player_name) ON DELETE CASCADE",
-        "{{ enable_rls() }}"
-    ]
+    on_schema_change='append_new_columns'
 ) }}
 
 SELECT
