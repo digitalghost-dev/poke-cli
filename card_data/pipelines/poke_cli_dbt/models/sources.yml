@@ -197,6 +197,78 @@ sources:
           - name: last_updated
             description: "Timestamp of last data update from pokedata.ovh"
 
+      - name: comp_players
+        description: "Masters-division players for each tournament event"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG or VGC)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: country
+            description: "Player country code (e.g. US, BR, JP)"
+          - name: placement
+            description: "Final placement in the tournament"
+          - name: wins
+            description: "Match wins"
+          - name: losses
+            description: "Match losses"
+          - name: ties
+            description: "Match ties"
+          - name: resistance_self
+            description: "Win percentage of the player"
+          - name: resistance_opp
+            description: "Average opponent win percentage"
+          - name: resistance_oppopp
+            description: "Average opponent's-opponent win percentage"
+          - name: dropped_round
+            description: "Round the player dropped (-1 if never dropped)"
+          - name: trainer_name
+            description: "In-game trainer name (VG only)"
+
+      - name: comp_rounds
+        description: "Per-round results for each player in each tournament"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG or VGC)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: round_number
+            description: "Round number"
+          - name: opponent_name
+            description: "Opponent display name (may include country, or 'BYE')"
+          - name: result
+            description: "Round result (W/L/T)"
+          - name: table_number
+            description: "Table number (raw text, trimmed and cast to int in dbt model)"
+
+      - name: comp_vg_decklists
+        description: "VG decklists: one row per player, full decklist stored as JSONB array of 6 Pokemon"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (VGC)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: decklist
+            description: "JSONB array of 6 Pokemon: [{id, name, teratype, ability, item, badges[4 moves]}]"
+
+      - name: comp_tcg_decklists
+        description: "TCG decklists: one row per player, full decklist stored as JSONB object with pokemon/trainer/energy arrays"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: decklist
+            description: "JSONB object with shape {pokemon: [{count, name, number, set}], trainer: [...], energy: [...]}"
+
       - name: champions_speed_tiers
         description: "Pikalytics speed tier data ingested by n8n monthly"
         columns:
