@@ -19,6 +19,10 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "pricing_data": "data_quality_checks_on_pricing",
                 "standings": "load_standings_data",
                 "comp_events": "data_quality_checks_on_comp_events",
+                "comp_players": "data_quality_checks_on_comp_players",
+                "comp_rounds": "data_quality_checks_on_comp_rounds",
+                "comp_vg_decklists": "data_quality_checks_on_comp_vg_decklists",
+                "comp_tcg_decklists": "data_quality_checks_on_comp_tcg_decklists",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])
