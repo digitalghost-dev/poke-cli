@@ -5,8 +5,16 @@ from dagster import definitions, load_from_defs_folder
 import dagster as dg
 
 from .defs.extract.limitless.extract_standings import create_standings_dataframe
-from .defs.extract.pokedata.extract_events import create_events_dataframe
-from .defs.load.pokedata.load_events import load_events_data, data_quality_checks_on_comp_events
+from .defs.competitive import (
+    create_events_dataframe,
+    load_events_data,
+    data_quality_checks_on_comp_events,
+    load_players_data,
+    data_quality_checks_on_comp_players,
+    data_quality_checks_on_comp_rounds,
+    data_quality_checks_on_comp_vg_decklists,
+    data_quality_checks_on_comp_tcg_decklists,
+)
 from .defs.extract.tcgcsv.extract_pricing import build_dataframe
 from .defs.extract.tcgdex.extract_sets import extract_sets_data
 from .defs.extract.tcgdex.extract_series import extract_series_data
@@ -100,6 +108,11 @@ defs_events: dg.Definitions = dg.Definitions(
         create_events_dataframe,
         load_events_data,
         data_quality_checks_on_comp_events,
+        load_players_data,
+        data_quality_checks_on_comp_players,
+        data_quality_checks_on_comp_rounds,
+        data_quality_checks_on_comp_vg_decklists,
+        data_quality_checks_on_comp_tcg_decklists,
     ],
     jobs=[events_pipeline],
 )
