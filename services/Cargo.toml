@@ -1,0 +1,11 @@
+[package]
+name = "services"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0"
+dirs = "6.0"
+hex = "0.4"
+reqwest = { version = "0.12", features = ["blocking"] }
+sha2 = "0.10"
