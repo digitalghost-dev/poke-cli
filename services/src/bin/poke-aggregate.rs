@@ -73,3 +73,79 @@ fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_chained_flags() {
+        let cli = Cli::try_parse_from([
+            "poke-aggregate", "pokemon", "charizard", "-a", "-s", "--image=md",
+        ])
+        .unwrap();
+
+        match cli.command {
+            SubCommands::Pokemon(args) => {
+                assert_eq!(args.name, "charizard");
+                assert!(args.abilities);
+                assert!(args.stats);
+                assert!(!args.defense);
+                assert!(!args.moves);
+                assert!(matches!(args.image, Some(ImageSize::Md)));
+            }
+        }
+    }
+
+    #[test]
+    fn image_equals_and_space_forms_are_equivalent() {
+        let equals = Cli::try_parse_from([
+            "poke-aggregate", "pokemon", "charizard", "--image=lg",
+        ])
+        .unwrap();
+        let spaced = Cli::try_parse_from([
+            "poke-aggregate", "pokemon", "charizard", "--image", "lg",
+        ])
+        .unwrap();
+
+        for cli in [equals, spaced] {
+            match cli.command {
+                SubCommands::Pokemon(args) => {
+                    assert!(matches!(args.image, Some(ImageSize::Lg)));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn rejects_bad_image_size() {
+        let result = Cli::try_parse_from([
+            "poke-aggregate", "pokemon", "charizard", "--image", "xl",
+        ]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn missing_name_is_rejected() {
+        let result = Cli::try_parse_from(["poke-aggregate", "pokemon"]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn from_pokemon_args_maps_image_enum_to_string() {
+        let cli = Cli::try_parse_from([
+            "poke-aggregate", "pokemon", "charizard", "--image=md", "-a",
+        ])
+        .unwrap();
+
+        match cli.command {
+            SubCommands::Pokemon(args) => {
+                let opts: ProfileOptions = args.into();
+                assert!(opts.abilities);
+                assert_eq!(opts.image, Some("md".to_string()));
+            }
+        }
+    }
+}
