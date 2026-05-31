@@ -64,9 +64,9 @@ fn main() -> anyhow::Result<()> {
             let name: String = args.name.clone();
             let options: ProfileOptions = args.into();
 
-            let value: serde_json::Value = run(&name, &options)?;
+            let profile: services::domain::Pokemon = run(&name, &options)?;
 
-            serde_json::to_writer_pretty(std::io::stdout(), &value)?;
+            serde_json::to_writer_pretty(std::io::stdout(), &profile)?;
             println!();
         }
     }
