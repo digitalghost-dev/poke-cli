@@ -13,7 +13,7 @@ pub struct RawPokemon {
     pub height: u32,
     pub weight: u32,
     pub species: NamedRef,
-    pub types: Vec<RawTypesEntry>,
+    pub types: Vec<RawTypingEntry>,
     pub abilities: Vec<RawAbilitiesEntry>,
     pub stats: Vec<RawStatsEntry>,
     pub moves: Vec<RawMovesEntry>,
@@ -21,11 +21,11 @@ pub struct RawPokemon {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct RawTypesEntry {
+pub struct RawTypingEntry {
     pub slot: u8,
     // `type` is a Rust keyword, so rename the JSON key onto a legal field name.
     #[serde(rename = "type")]
-    pub type_ref: NamedRef,
+    pub typing: NamedRef,
 }
 
 #[derive(Deserialize, Debug)]

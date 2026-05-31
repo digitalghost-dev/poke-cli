@@ -7,7 +7,7 @@ pub struct Pokemon {
     pub height: u32,
     pub weight: u32,
     pub species: PokemonSpeciesInfo,
-    pub types: Vec<PokemonType>,
+    pub types: Vec<PokemonTyping>,
 
     // Optional sections are omitted from the JSON entirely when not requested,
     // rather than serialized as `null`.
@@ -15,13 +15,13 @@ pub struct Pokemon {
     pub abilities: Option<Vec<PokemonAbility>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub stats: Option<Vec<PokemonStat>>,
+    pub stats: Option<Vec<PokemonStats>>,
 
     pub source: ResourceSourceMetadata,
 }
 
 #[derive(Serialize, Debug)]
-pub struct PokemonType {
+pub struct PokemonTyping {
     pub name: String,
     pub slot: u8,
 }
@@ -33,7 +33,7 @@ pub struct PokemonAbility {
 }
 
 #[derive(Serialize, Debug)]
-pub struct PokemonStat {
+pub struct PokemonStats {
     pub name: String,
     pub base_stat: u16,
 }
@@ -80,8 +80,8 @@ mod tests {
                 evolves_from: Some("charmeleon".to_string()),
             },
             types: vec![
-                PokemonType { name: "fire".to_string(), slot: 1 },
-                PokemonType { name: "flying".to_string(), slot: 2 },
+                PokemonTyping { name: "fire".to_string(), slot: 1 },
+                PokemonTyping { name: "flying".to_string(), slot: 2 },
             ],
             abilities: None,
             stats: None,
