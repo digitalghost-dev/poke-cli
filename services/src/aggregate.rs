@@ -1,14 +1,17 @@
 use serde::de::DeserializeOwned;
-use crate::api::{RawPokemon, RawPokemonSpecies, RawType, RawDamageRelations};
-use crate::domain::{PokemonTyping, PokemonAbility, PokemonStats, PokemonSpeciesInfo, TypeDefenseProfile, TypeEffectiveness};
-use crate::domain::{Pokemon, ResourceSourceMetadata};
+use crate::api::{RawPokemon, RawPokemonSpecies, RawType, RawDamageRelations, RawMove};
+use crate::domain::{PokemonTyping, PokemonAbility, PokemonStats, PokemonSpeciesInfo, TypeDefenseProfile, TypeEffectiveness, LearnableMove};
+use crate::domain::{Pokemon, ResourceSourceMetadata, PartialResourceError};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
+use tokio::runtime::Runtime;
+  use futures::StreamExt;
 
 const ALL_TYPES: &[&str] = &[
     "normal","fire","water","electric","grass","ice","fighting","poison",
     "ground","flying","psychic","bug","rock","ghost","dragon","dark","steel","fairy",
 ];
+const MAX_CONNCURANT_FETCHES: usize = 8;
 
 pub struct ProfileOptions {
     pub abilities: bool,
@@ -137,6 +140,13 @@ pub fn get_pokemon_profile(name: &str, opts: &ProfileOptions) -> anyhow::Result<
     let pokemon  = get_pokemon(name)?;
     let pokemon_species = get_pokemon_species(name)?;
 
+    let (moves, move_partials) = if opts.moves {
+    let (m, p) = build_moves(&pokemon, "scarlet-violet", "level-up");
+        (Some(m), p)
+    } else {
+        (None, vec![])
+    };
+
     let profile = Pokemon {
         id: pokemon.id,
         name: pokemon.name.clone(),
@@ -145,12 +155,13 @@ pub fn get_pokemon_profile(name: &str, opts: &ProfileOptions) -> anyhow::Result<
         species: build_species(&pokemon_species),
         abilities: if opts.abilities { Some(build_abilities(&pokemon)) } else { None },
         defenses: if opts.defense { Some(build_defenses(&pokemon)?) } else { None },
+        moves,
         types: build_types(&pokemon),
         stats: if opts.stats { Some(build_stats(&pokemon)) } else { None },
         source: ResourceSourceMetadata {
             fetched_at: now_epoch_secs(),
-            partial_errors: vec![],
-          }
+            partial_errors: move_partials,      // ← was vec![]
+        },
     };
 
     Ok(profile)
@@ -163,6 +174,92 @@ fn now_epoch_secs() -> String {
         .unwrap()
         .as_secs()
         .to_string()
+}
+
+struct MoveCandidate {
+    name: String,
+    level: u8,
+}
+
+fn filter_and_dedupe(pokemon: &RawPokemon, version_group: &str, learn_method: &str) -> Vec<MoveCandidate> {
+    let mut best: HashMap<String, u8> = HashMap::new();
+
+   for entry in &pokemon.moves {
+        for detail in &entry.version_group_details {
+            // keep only the rows matching BOTH filters
+            if detail.version_group.name == version_group
+                && detail.move_learn_method.name == learn_method
+            {
+                let level = detail.level_learned_at;
+                best.entry(entry.r#move.name.clone())
+                    .and_modify(|existing| { if level < *existing { *existing = level; } })
+                    .or_insert(level);
+            }
+        }
+   }
+
+   best.into_iter().map(|(name, level)| MoveCandidate { name, level }).collect()
+}
+
+fn build_learnable_move(cand: &MoveCandidate, raw: &RawMove, version_group: &str, learn_method: &str) -> LearnableMove {
+    LearnableMove {
+        name: cand.name.clone(),
+        level: cand.level,                       // from the candidate (9c)
+        type_name: raw.typing.name.clone(),      // from the move detail
+        category: raw.damage_class.name.clone(),
+        power: raw.power,
+        accuracy: raw.accuracy,
+        pp: raw.pp,
+        learn_method: learn_method.to_string(),
+        version_group: version_group.to_string(),
+    }
+}
+
+async fn fetch_move(client: &reqwest::Client, name: &str) -> anyhow::Result<RawMove> {
+    let url: String = format!("https://pokeapi.co/api/v2/move/{name}");
+    let raw = client.get(&url).send().await?.error_for_status()?.json::<RawMove>().await?;
+
+    Ok(raw)
+}
+
+fn build_moves(pokemon: &RawPokemon, version_group: &str, learn_method: &str) -> (Vec<LearnableMove>, Vec<PartialResourceError>) {
+    let candidates = filter_and_dedupe(pokemon, version_group, learn_method);
+
+    let runtime: Runtime = Runtime::new().expect("tokio runtime");
+    let results: Vec<Result<LearnableMove, PartialResourceError>> = runtime.block_on(async {
+        let client = reqwest::Client::new();
+
+        futures::stream::iter(candidates)
+            .map(|cand| {
+                let client = &client;
+                async move {
+                    match fetch_move(client, &cand.name).await {
+                        Ok(raw) => Ok(build_learnable_move(&cand, &raw, version_group, learn_method)),
+                        Err(e) => Err(PartialResourceError {
+                            resource: "move".to_string(),
+                            name: cand.name.clone(),
+                            error: e.to_string(),
+                        }),
+                    }
+                }
+            })
+            .buffer_unordered(MAX_CONNCURANT_FETCHES)
+            .collect()
+            .await
+        });
+
+        let mut moves = vec![];
+        let mut partials = vec![];
+
+        for r in results {
+            match r {
+                Ok(m) => moves.push(m),
+                Err(p) => partials.push(p),
+            }
+        }
+        moves.sort_by_key(|m| (m.level, m.name.clone()));
+
+        (moves, partials)
 }
 
 #[cfg(test)]
@@ -239,5 +336,31 @@ mod tests {
         assert!(defense.resistant_to.iter().any(|e| e.type_name == "bug" && e.multiplier == 0.25));
         // immunity dominates
         assert!(defense.immune_to.iter().any(|e| e.type_name == "ground"));
+    }
+
+    #[test]
+    fn filter_and_dedupe_keeps_unique_level_up_moves() {
+        let candidates = filter_and_dedupe(&charizard(), "scarlet-violet", "level-up");
+
+        assert!(!candidates.is_empty());
+
+        // dedupe worked: no move name appears twice
+        let total = candidates.len();
+        let mut names: Vec<&str> = candidates.iter().map(|c| c.name.as_str()).collect();
+        names.sort();
+        names.dedup();
+        assert_eq!(names.len(), total, "candidate names should be unique");
+
+        // a known charizard level-up move is present
+        assert!(candidates.iter().any(|c| c.name == "ember"));
+    }
+
+    #[test]
+    fn filter_and_dedupe_filters_by_version_group() {
+        let real = filter_and_dedupe(&charizard(), "scarlet-violet", "level-up");
+        let bogus = filter_and_dedupe(&charizard(), "no-such-game", "level-up");
+
+        assert!(!real.is_empty());
+        assert!(bogus.is_empty(), "a non-existent version group should match nothing");
     }
 }

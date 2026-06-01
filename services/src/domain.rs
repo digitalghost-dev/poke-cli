@@ -17,6 +17,9 @@ pub struct Pokemon {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stats: Option<Vec<PokemonStats>>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub moves: Option<Vec<LearnableMove>>,
+
     pub source: ResourceSourceMetadata,
 
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -80,6 +83,20 @@ pub struct TypeEffectiveness {
     pub multiplier: f32,
 }
 
+#[derive(Serialize, Debug)]
+pub struct LearnableMove {
+    pub name: String,
+    pub level: u8,                 // ← from the Pokémon's move list (version_group_details)
+    #[serde(rename = "type")]
+    pub type_name: String,         // ← from the move detail (RawMove.typing)
+    pub category: String,          // ← from the move detail (RawMove.damage_class)
+    pub power: Option<u16>,        // ← move detail; null for status moves
+    pub accuracy: Option<u8>,      // ← move detail; null for never-miss
+    pub pp: Option<u8>,            // ← move detail
+    pub learn_method: String,      // ← from the filter (e.g. "level-up")
+    pub version_group: String,     // ← from the filter (e.g. "scarlet-violet")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -103,6 +120,7 @@ mod tests {
             ],
             abilities: None,
             stats: None,
+            moves: None,
             defenses: None,
             source: ResourceSourceMetadata {
                 fetched_at: "2026-05-30T00:00:00Z".to_string(),
