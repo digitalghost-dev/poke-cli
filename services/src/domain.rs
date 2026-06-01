@@ -86,7 +86,7 @@ pub struct TypeEffectiveness {
 #[derive(Serialize, Debug)]
 pub struct LearnableMove {
     pub name: String,
-    pub level: u8, 
+    pub level: u8,
     #[serde(rename = "type")]
     pub type_name: String,
     pub category: String,

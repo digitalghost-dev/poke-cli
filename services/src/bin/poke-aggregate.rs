@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand, ValueEnum};
-use services::aggregate::{run, ProfileOptions};
+use services::aggregate::{ProfileOptions, run};
 
 #[derive(Parser)]
 #[command(name = "poke-aggregate", version)]
