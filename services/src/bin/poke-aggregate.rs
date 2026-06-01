@@ -45,11 +45,14 @@ impl From<PokemonArgs> for ProfileOptions {
         Self {
             abilities: args.abilities,
             defense: args.defense,
-            image: args.image.map(|size| match size {
-                ImageSize::Sm => "sm",
-                ImageSize::Md => "md",
-                ImageSize::Lg => "lg",
-            }.to_string()),
+            image: args.image.map(|size| {
+                match size {
+                    ImageSize::Sm => "sm",
+                    ImageSize::Md => "md",
+                    ImageSize::Lg => "lg",
+                }
+                .to_string()
+            }),
             moves: args.moves,
             stats: args.stats,
         }
@@ -59,7 +62,7 @@ impl From<PokemonArgs> for ProfileOptions {
 fn main() -> anyhow::Result<()> {
     let cli: Cli = Cli::parse();
 
-    match cli.command{
+    match cli.command {
         SubCommands::Pokemon(args) => {
             let name: String = args.name.clone();
             let options: ProfileOptions = args.into();
@@ -81,7 +84,12 @@ mod tests {
     #[test]
     fn parses_chained_flags() {
         let cli = Cli::try_parse_from([
-            "poke-aggregate", "pokemon", "charizard", "-a", "-s", "--image=md",
+            "poke-aggregate",
+            "pokemon",
+            "charizard",
+            "-a",
+            "-s",
+            "--image=md",
         ])
         .unwrap();
 
@@ -99,14 +107,11 @@ mod tests {
 
     #[test]
     fn image_equals_and_space_forms_are_equivalent() {
-        let equals = Cli::try_parse_from([
-            "poke-aggregate", "pokemon", "charizard", "--image=lg",
-        ])
-        .unwrap();
-        let spaced = Cli::try_parse_from([
-            "poke-aggregate", "pokemon", "charizard", "--image", "lg",
-        ])
-        .unwrap();
+        let equals =
+            Cli::try_parse_from(["poke-aggregate", "pokemon", "charizard", "--image=lg"]).unwrap();
+        let spaced =
+            Cli::try_parse_from(["poke-aggregate", "pokemon", "charizard", "--image", "lg"])
+                .unwrap();
 
         for cli in [equals, spaced] {
             match cli.command {
@@ -119,9 +124,8 @@ mod tests {
 
     #[test]
     fn rejects_bad_image_size() {
-        let result = Cli::try_parse_from([
-            "poke-aggregate", "pokemon", "charizard", "--image", "xl",
-        ]);
+        let result =
+            Cli::try_parse_from(["poke-aggregate", "pokemon", "charizard", "--image", "xl"]);
 
         assert!(result.is_err());
     }
@@ -135,10 +139,9 @@ mod tests {
 
     #[test]
     fn from_pokemon_args_maps_image_enum_to_string() {
-        let cli = Cli::try_parse_from([
-            "poke-aggregate", "pokemon", "charizard", "--image=md", "-a",
-        ])
-        .unwrap();
+        let cli =
+            Cli::try_parse_from(["poke-aggregate", "pokemon", "charizard", "--image=md", "-a"])
+                .unwrap();
 
         match cli.command {
             SubCommands::Pokemon(args) => {

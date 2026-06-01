@@ -48,7 +48,11 @@ mod tests {
 
     // Unique-per-test path inside the OS temp dir so parallel tests don't collide.
     fn temp_path(label: &str) -> PathBuf {
-        env::temp_dir().join(format!("poke-cache-test-{}-{}.json", std::process::id(), label))
+        env::temp_dir().join(format!(
+            "poke-cache-test-{}-{}.json",
+            std::process::id(),
+            label
+        ))
     }
 
     #[test]
@@ -99,7 +103,7 @@ mod tests {
         write_atomic(&path, "hello").unwrap();
 
         assert_eq!(fs::read_to_string(&path).unwrap(), "hello");
-        assert!(cache_is_fresh(&path).unwrap()); 
+        assert!(cache_is_fresh(&path).unwrap());
 
         fs::remove_file(&path).unwrap();
     }

@@ -86,15 +86,15 @@ pub struct TypeEffectiveness {
 #[derive(Serialize, Debug)]
 pub struct LearnableMove {
     pub name: String,
-    pub level: u8,                 // ← from the Pokémon's move list (version_group_details)
+    pub level: u8, 
     #[serde(rename = "type")]
-    pub type_name: String,         // ← from the move detail (RawMove.typing)
-    pub category: String,          // ← from the move detail (RawMove.damage_class)
-    pub power: Option<u16>,        // ← move detail; null for status moves
-    pub accuracy: Option<u8>,      // ← move detail; null for never-miss
-    pub pp: Option<u8>,            // ← move detail
-    pub learn_method: String,      // ← from the filter (e.g. "level-up")
-    pub version_group: String,     // ← from the filter (e.g. "scarlet-violet")
+    pub type_name: String,
+    pub category: String,
+    pub power: Option<u16>,
+    pub accuracy: Option<u8>,
+    pub pp: Option<u8>,
+    pub learn_method: String,
+    pub version_group: String,
 }
 
 #[cfg(test)]
@@ -115,8 +115,14 @@ mod tests {
                 evolves_from: Some("charmeleon".to_string()),
             },
             types: vec![
-                PokemonTyping { name: "fire".to_string(), slot: 1 },
-                PokemonTyping { name: "flying".to_string(), slot: 2 },
+                PokemonTyping {
+                    name: "fire".to_string(),
+                    slot: 1,
+                },
+                PokemonTyping {
+                    name: "flying".to_string(),
+                    slot: 2,
+                },
             ],
             abilities: None,
             stats: None,

@@ -80,7 +80,7 @@ pub struct RawType {
 pub struct RawDamageRelations {
     pub double_damage_from: Vec<NamedRef>,
     pub half_damage_from: Vec<NamedRef>,
-    pub no_damage_from: Vec<NamedRef>
+    pub no_damage_from: Vec<NamedRef>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -89,7 +89,7 @@ pub struct RawMove {
     // `type` is a Rust keyword, so rename the JSON key onto a legal field name.
     #[serde(rename = "type")]
     pub typing: NamedRef,
-    pub damage_class: NamedRef,   // category lives here
+    pub damage_class: NamedRef, // category lives here
     pub power: Option<u16>,
     pub accuracy: Option<u8>,
     pub pp: Option<u8>,

@@ -1,15 +1,18 @@
+use crate::api::{RawDamageRelations, RawMove, RawPokemon, RawPokemonSpecies, RawType};
+use crate::domain::{
+    LearnableMove, PokemonAbility, PokemonSpeciesInfo, PokemonStats, PokemonTyping,
+    TypeDefenseProfile, TypeEffectiveness,
+};
+use crate::domain::{PartialResourceError, Pokemon, ResourceSourceMetadata};
+use futures::StreamExt;
 use serde::de::DeserializeOwned;
-use crate::api::{RawPokemon, RawPokemonSpecies, RawType, RawDamageRelations, RawMove};
-use crate::domain::{PokemonTyping, PokemonAbility, PokemonStats, PokemonSpeciesInfo, TypeDefenseProfile, TypeEffectiveness, LearnableMove};
-use crate::domain::{Pokemon, ResourceSourceMetadata, PartialResourceError};
-use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::runtime::Runtime;
-  use futures::StreamExt;
 
 const ALL_TYPES: &[&str] = &[
-    "normal","fire","water","electric","grass","ice","fighting","poison",
-    "ground","flying","psychic","bug","rock","ghost","dragon","dark","steel","fairy",
+    "normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground",
+    "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy",
 ];
 const MAX_CONNCURANT_FETCHES: usize = 8;
 
@@ -38,7 +41,6 @@ fn get_pokemon(name: &str) -> anyhow::Result<RawPokemon> {
     let url: String = format!("https://pokeapi.co/api/v2/pokemon/{name}");
 
     fetch_json(&url)
-    
 }
 
 fn get_pokemon_species(name: &str) -> anyhow::Result<RawPokemonSpecies> {
@@ -55,7 +57,8 @@ fn get_type(name: &str) -> anyhow::Result<RawType> {
 
 // functions focused on building data
 fn build_stats(pokemon: &RawPokemon) -> Vec<PokemonStats> {
-    pokemon.stats
+    pokemon
+        .stats
         .iter()
         .map(|s| PokemonStats {
             name: s.stat.name.clone(),
@@ -64,9 +67,9 @@ fn build_stats(pokemon: &RawPokemon) -> Vec<PokemonStats> {
         .collect()
 }
 
-
 fn build_abilities(pokemon: &RawPokemon) -> Vec<PokemonAbility> {
-    pokemon.abilities
+    pokemon
+        .abilities
         .iter()
         .map(|a| PokemonAbility {
             name: a.ability.name.clone(),
@@ -88,11 +91,22 @@ fn build_defenses(pokemon: &RawPokemon) -> anyhow::Result<TypeDefenseProfile> {
     Ok(bucket(multipliers))
 }
 
-fn apply_damage_relations(out: &mut HashMap<String, f32>, rels: &RawDamageRelations)  {
-    for t in &rels.double_damage_from { if let Some(m) = out.get_mut(&t.name) { *m *= 2.0; } }
-    for t in &rels.half_damage_from { if let Some(m) = out.get_mut(&t.name) { *m *= 0.5; } }
-    for t in &rels.no_damage_from { if let Some(m) = out.get_mut(&t.name) { *m *= 0.0; } }
-
+fn apply_damage_relations(out: &mut HashMap<String, f32>, rels: &RawDamageRelations) {
+    for t in &rels.double_damage_from {
+        if let Some(m) = out.get_mut(&t.name) {
+            *m *= 2.0;
+        }
+    }
+    for t in &rels.half_damage_from {
+        if let Some(m) = out.get_mut(&t.name) {
+            *m *= 0.5;
+        }
+    }
+    for t in &rels.no_damage_from {
+        if let Some(m) = out.get_mut(&t.name) {
+            *m *= 0.0;
+        }
+    }
 }
 
 fn bucket(multipliers: HashMap<String, f32>) -> TypeDefenseProfile {
@@ -102,32 +116,65 @@ fn bucket(multipliers: HashMap<String, f32>) -> TypeDefenseProfile {
     let mut normal = vec![];
 
     for (type_name, m) in multipliers {
-        if m == 0.0 { immune.push(TypeEffectiveness { type_name, multiplier: m }); }
-        else if m > 1.0 { weak.push(TypeEffectiveness { type_name, multiplier: m }); }
-        else if m < 1.0 { resistant.push(TypeEffectiveness { type_name, multiplier: m }); }
-        else { normal.push(type_name); }
+        if m == 0.0 {
+            immune.push(TypeEffectiveness {
+                type_name,
+                multiplier: m,
+            });
+        } else if m > 1.0 {
+            weak.push(TypeEffectiveness {
+                type_name,
+                multiplier: m,
+            });
+        } else if m < 1.0 {
+            resistant.push(TypeEffectiveness {
+                type_name,
+                multiplier: m,
+            });
+        } else {
+            normal.push(type_name);
+        }
     }
 
     // stable output: weak high→low, resist low→high, then alphabetical
-    weak.sort_by(|a, b| b.multiplier.partial_cmp(&a.multiplier).unwrap().then(a.type_name.cmp(&b.type_name)));
-    resistant.sort_by(|a, b| a.multiplier.partial_cmp(&b.multiplier).unwrap().then(a.type_name.cmp(&b.type_name)));
+    weak.sort_by(|a, b| {
+        b.multiplier
+            .partial_cmp(&a.multiplier)
+            .unwrap()
+            .then(a.type_name.cmp(&b.type_name))
+    });
+    resistant.sort_by(|a, b| {
+        a.multiplier
+            .partial_cmp(&b.multiplier)
+            .unwrap()
+            .then(a.type_name.cmp(&b.type_name))
+    });
     immune.sort_by(|a, b| a.type_name.cmp(&b.type_name));
     normal.sort();
-    TypeDefenseProfile { weak_to: weak, resistant_to: resistant, immune_to: immune, normal_damage: normal }
+    TypeDefenseProfile {
+        weak_to: weak,
+        resistant_to: resistant,
+        immune_to: immune,
+        normal_damage: normal,
+    }
 }
 
 fn build_species(species: &RawPokemonSpecies) -> PokemonSpeciesInfo {
-    PokemonSpeciesInfo{
+    PokemonSpeciesInfo {
         name: species.name.clone(),
         egg_groups: species.egg_groups.iter().map(|g| g.name.clone()).collect(),
         gender_rate: species.gender_rate,
         hatch_counter: species.hatch_counter,
-        evolves_from: species.evolves_from_species.as_ref().map(|n| n.name.clone()),
+        evolves_from: species
+            .evolves_from_species
+            .as_ref()
+            .map(|n| n.name.clone()),
     }
 }
 
 fn build_types(pokemon: &RawPokemon) -> Vec<PokemonTyping> {
-    pokemon.types
+    pokemon
+        .types
         .iter()
         .map(|t| PokemonTyping {
             name: t.typing.name.clone(),
@@ -137,11 +184,11 @@ fn build_types(pokemon: &RawPokemon) -> Vec<PokemonTyping> {
 }
 
 pub fn get_pokemon_profile(name: &str, opts: &ProfileOptions) -> anyhow::Result<Pokemon> {
-    let pokemon  = get_pokemon(name)?;
+    let pokemon = get_pokemon(name)?;
     let pokemon_species = get_pokemon_species(name)?;
 
     let (moves, move_partials) = if opts.moves {
-    let (m, p) = build_moves(&pokemon, "scarlet-violet", "level-up");
+        let (m, p) = build_moves(&pokemon, "scarlet-violet", "level-up");
         (Some(m), p)
     } else {
         (None, vec![])
@@ -153,19 +200,30 @@ pub fn get_pokemon_profile(name: &str, opts: &ProfileOptions) -> anyhow::Result<
         height: pokemon.height,
         weight: pokemon.weight,
         species: build_species(&pokemon_species),
-        abilities: if opts.abilities { Some(build_abilities(&pokemon)) } else { None },
-        defenses: if opts.defense { Some(build_defenses(&pokemon)?) } else { None },
+        abilities: if opts.abilities {
+            Some(build_abilities(&pokemon))
+        } else {
+            None
+        },
+        defenses: if opts.defense {
+            Some(build_defenses(&pokemon)?)
+        } else {
+            None
+        },
         moves,
         types: build_types(&pokemon),
-        stats: if opts.stats { Some(build_stats(&pokemon)) } else { None },
+        stats: if opts.stats {
+            Some(build_stats(&pokemon))
+        } else {
+            None
+        },
         source: ResourceSourceMetadata {
             fetched_at: now_epoch_secs(),
-            partial_errors: move_partials,      // ← was vec![]
+            partial_errors: move_partials, // ← was vec![]
         },
     };
 
     Ok(profile)
-
 }
 
 fn now_epoch_secs() -> String {
@@ -181,10 +239,14 @@ struct MoveCandidate {
     level: u8,
 }
 
-fn filter_and_dedupe(pokemon: &RawPokemon, version_group: &str, learn_method: &str) -> Vec<MoveCandidate> {
+fn filter_and_dedupe(
+    pokemon: &RawPokemon,
+    version_group: &str,
+    learn_method: &str,
+) -> Vec<MoveCandidate> {
     let mut best: HashMap<String, u8> = HashMap::new();
 
-   for entry in &pokemon.moves {
+    for entry in &pokemon.moves {
         for detail in &entry.version_group_details {
             // keep only the rows matching BOTH filters
             if detail.version_group.name == version_group
@@ -192,20 +254,31 @@ fn filter_and_dedupe(pokemon: &RawPokemon, version_group: &str, learn_method: &s
             {
                 let level = detail.level_learned_at;
                 best.entry(entry.r#move.name.clone())
-                    .and_modify(|existing| { if level < *existing { *existing = level; } })
+                    .and_modify(|existing| {
+                        if level < *existing {
+                            *existing = level;
+                        }
+                    })
                     .or_insert(level);
             }
         }
-   }
+    }
 
-   best.into_iter().map(|(name, level)| MoveCandidate { name, level }).collect()
+    best.into_iter()
+        .map(|(name, level)| MoveCandidate { name, level })
+        .collect()
 }
 
-fn build_learnable_move(cand: &MoveCandidate, raw: &RawMove, version_group: &str, learn_method: &str) -> LearnableMove {
+fn build_learnable_move(
+    cand: &MoveCandidate,
+    raw: &RawMove,
+    version_group: &str,
+    learn_method: &str,
+) -> LearnableMove {
     LearnableMove {
         name: cand.name.clone(),
-        level: cand.level,                       // from the candidate (9c)
-        type_name: raw.typing.name.clone(),      // from the move detail
+        level: cand.level,                  // from the candidate (9c)
+        type_name: raw.typing.name.clone(), // from the move detail
         category: raw.damage_class.name.clone(),
         power: raw.power,
         accuracy: raw.accuracy,
@@ -217,12 +290,22 @@ fn build_learnable_move(cand: &MoveCandidate, raw: &RawMove, version_group: &str
 
 async fn fetch_move(client: &reqwest::Client, name: &str) -> anyhow::Result<RawMove> {
     let url: String = format!("https://pokeapi.co/api/v2/move/{name}");
-    let raw = client.get(&url).send().await?.error_for_status()?.json::<RawMove>().await?;
+    let raw = client
+        .get(&url)
+        .send()
+        .await?
+        .error_for_status()?
+        .json::<RawMove>()
+        .await?;
 
     Ok(raw)
 }
 
-fn build_moves(pokemon: &RawPokemon, version_group: &str, learn_method: &str) -> (Vec<LearnableMove>, Vec<PartialResourceError>) {
+fn build_moves(
+    pokemon: &RawPokemon,
+    version_group: &str,
+    learn_method: &str,
+) -> (Vec<LearnableMove>, Vec<PartialResourceError>) {
     let candidates = filter_and_dedupe(pokemon, version_group, learn_method);
 
     let runtime: Runtime = Runtime::new().expect("tokio runtime");
@@ -234,7 +317,12 @@ fn build_moves(pokemon: &RawPokemon, version_group: &str, learn_method: &str) ->
                 let client = &client;
                 async move {
                     match fetch_move(client, &cand.name).await {
-                        Ok(raw) => Ok(build_learnable_move(&cand, &raw, version_group, learn_method)),
+                        Ok(raw) => Ok(build_learnable_move(
+                            &cand,
+                            &raw,
+                            version_group,
+                            learn_method,
+                        )),
                         Err(e) => Err(PartialResourceError {
                             resource: "move".to_string(),
                             name: cand.name.clone(),
@@ -246,20 +334,20 @@ fn build_moves(pokemon: &RawPokemon, version_group: &str, learn_method: &str) ->
             .buffer_unordered(MAX_CONNCURANT_FETCHES)
             .collect()
             .await
-        });
+    });
 
-        let mut moves = vec![];
-        let mut partials = vec![];
+    let mut moves = vec![];
+    let mut partials = vec![];
 
-        for r in results {
-            match r {
-                Ok(m) => moves.push(m),
-                Err(p) => partials.push(p),
-            }
+    for r in results {
+        match r {
+            Ok(m) => moves.push(m),
+            Err(p) => partials.push(p),
         }
-        moves.sort_by_key(|m| (m.level, m.name.clone()));
+    }
+    moves.sort_by_key(|m| (m.level, m.name.clone()));
 
-        (moves, partials)
+    (moves, partials)
 }
 
 #[cfg(test)]
@@ -286,7 +374,11 @@ mod tests {
         assert_eq!(abilities.len(), 2);
         assert_eq!(abilities[0].name, "blaze");
         // solar-power is charizard's hidden ability
-        assert!(abilities.iter().any(|a| a.name == "solar-power" && a.is_hidden));
+        assert!(
+            abilities
+                .iter()
+                .any(|a| a.name == "solar-power" && a.is_hidden)
+        );
     }
 
     #[test]
@@ -331,9 +423,19 @@ mod tests {
         let defense = bucket(multipliers);
 
         // double weakness — exactly what the *= 20.5 typo broke
-        assert!(defense.weak_to.iter().any(|e| e.type_name == "rock" && e.multiplier == 4.0));
+        assert!(
+            defense
+                .weak_to
+                .iter()
+                .any(|e| e.type_name == "rock" && e.multiplier == 4.0)
+        );
         // double resistance
-        assert!(defense.resistant_to.iter().any(|e| e.type_name == "bug" && e.multiplier == 0.25));
+        assert!(
+            defense
+                .resistant_to
+                .iter()
+                .any(|e| e.type_name == "bug" && e.multiplier == 0.25)
+        );
         // immunity dominates
         assert!(defense.immune_to.iter().any(|e| e.type_name == "ground"));
     }
@@ -361,6 +463,9 @@ mod tests {
         let bogus = filter_and_dedupe(&charizard(), "no-such-game", "level-up");
 
         assert!(!real.is_empty());
-        assert!(bogus.is_empty(), "a non-existent version group should match nothing");
+        assert!(
+            bogus.is_empty(),
+            "a non-existent version group should match nothing"
+        );
     }
 }
