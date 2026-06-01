@@ -18,6 +18,9 @@ pub struct Pokemon {
     pub stats: Option<Vec<PokemonStats>>,
 
     pub source: ResourceSourceMetadata,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub defenses: Option<TypeDefenseProfile>,
 }
 
 #[derive(Serialize, Debug)]
@@ -62,6 +65,21 @@ pub struct PartialResourceError {
     pub error: String,
 }
 
+#[derive(Serialize, Debug)]
+pub struct TypeDefenseProfile {
+    pub weak_to: Vec<TypeEffectiveness>,
+    pub resistant_to: Vec<TypeEffectiveness>,
+    pub immune_to: Vec<TypeEffectiveness>,
+    pub normal_damage: Vec<String>,
+}
+
+#[derive(Serialize, Debug)]
+pub struct TypeEffectiveness {
+    #[serde(rename = "type")]
+    pub type_name: String,
+    pub multiplier: f32,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -85,6 +103,7 @@ mod tests {
             ],
             abilities: None,
             stats: None,
+            defenses: None,
             source: ResourceSourceMetadata {
                 fetched_at: "2026-05-30T00:00:00Z".to_string(),
                 partial_errors: vec![],

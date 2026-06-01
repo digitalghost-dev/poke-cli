@@ -71,6 +71,18 @@ pub struct RawPokemonSpecies {
     pub evolves_from_species: Option<NamedRef>,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct RawType {
+    pub damage_relations: RawDamageRelations,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct RawDamageRelations {
+    pub double_damage_from: Vec<NamedRef>,
+    pub half_damage_from: Vec<NamedRef>,
+    pub no_damage_from: Vec<NamedRef>
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
