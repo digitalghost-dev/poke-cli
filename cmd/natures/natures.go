@@ -37,8 +37,9 @@ func NaturesCommand(args []string) (string, error) {
 
 	output.WriteString("Natures affect the growth of a Pokémon.\n" +
 		"Each nature increases one of its stats by 10% and decreases one by 10%.\n" +
-		"Five natures increase and decrease the same stat and therefore have no effect.\n\n" +
-		styling.StyleBold.Render("Nature Chart:") + "\n")
+		"Five natures increase and decrease the same stat and therefore have no effect.\n\n")
+	output.WriteString(styling.StyleBold.Render("Nature Chart:"))
+	output.WriteString("\n")
 
 	chart := [][]string{
 		{" ", styling.Red.Render("-Attack"), styling.Red.Render("-Defense"), styling.Red.Render("-Sp. Atk"), styling.Red.Render("-Sp. Def"), styling.Red.Render("Speed")},
@@ -60,7 +61,15 @@ func NaturesCommand(args []string) (string, error) {
 				Padding(0, 1)
 		})
 
-	output.WriteString(t.Render() + "\n")
+	output.WriteString(t.Render())
+	output.WriteString("\n")
+
+	deprecationWarning := styling.WarningBorder.Render(
+		styling.WarningColor.Render("⚠ Warning!"),
+		"\nThe natures command is deprecated\nand will be removed in v2.\n\nIt will move to a flag under the\nnew mechanics command. ",
+	)
+	output.WriteString("\n")
+	output.WriteString(deprecationWarning)
 
 	return output.String(), nil
 }
