@@ -185,7 +185,7 @@ fn build_types(pokemon: &RawPokemon) -> Vec<PokemonTyping> {
 
 pub fn get_pokemon_profile(name: &str, opts: &ProfileOptions) -> anyhow::Result<Pokemon> {
     let pokemon = get_pokemon(name)?;
-    let pokemon_species = get_pokemon_species(name)?;
+    let pokemon_species = get_pokemon_species(&pokemon.species.name)?;
 
     let (moves, move_partials) = if opts.moves {
         let (m, p) = build_moves(&pokemon, "scarlet-violet", "level-up");
