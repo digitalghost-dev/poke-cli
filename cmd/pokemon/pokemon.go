@@ -116,8 +116,8 @@ func PokemonCommand(args []string) (string, error) {
 		flagFunc  func(io.Writer, string, string) error
 	}{
 		{*pf.Abilities || *pf.ShortAbilities, flags.AbilitiesFlag},
-		{*pf.Defense || *pf.ShortDefense, flags.DefenseFlag},
-		{*pf.Move || *pf.ShortMove, flags.MovesFlag},
+		{*pf.Defenses || *pf.ShortDefenses, flags.DefenseFlag},
+		{*pf.Moves || *pf.ShortMoves, flags.MovesFlag},
 		{*pf.Stats || *pf.ShortStats, flags.StatsFlag},
 		{*pf.Types || *pf.ShortTypes, flags.TypesFlag},
 	}

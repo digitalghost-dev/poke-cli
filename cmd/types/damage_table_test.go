@@ -1,8 +1,6 @@
 package types
 
 import (
-	"bytes"
-	"os"
 	"strings"
 	"testing"
 
@@ -10,33 +8,12 @@ import (
 )
 
 func TestDamageTable(t *testing.T) {
-	originalStdout := os.Stdout
-
-	r, w, err := os.Pipe()
+	output, err := DamageTable("fire", "type")
 	if err != nil {
-		t.Fatalf("Failed to create pipe: %v", err)
-	}
-
-	os.Stdout = w
-
-	if err := DamageTable("fire", "type"); err != nil {
 		t.Fatalf("DamageTable returned an error: %v", err)
 	}
+	output = styling.StripANSI(output)
 
-	err = w.Close()
-	if err != nil {
-		t.Fatalf("Failed to close pipe: %v", err)
-	}
-	os.Stdout = originalStdout
-
-	var buf bytes.Buffer
-	_, err = buf.ReadFrom(r)
-	if err != nil {
-		t.Fatalf("Failed to read from pipe: %v", err)
-	}
-	output := styling.StripANSI(buf.String())
-
-	// Step 7: Assert the output contains expected strings
 	if !strings.Contains(output, "You selected the Fire type.") {
 		t.Errorf("Expected output to contain Fire type header, got:\n%s", output)
 	}
@@ -47,7 +24,7 @@ func TestDamageTable(t *testing.T) {
 }
 
 func TestDamageTable_TypeNotFound(t *testing.T) {
-	err := DamageTable("notatype", "type")
+	_, err := DamageTable("notatype", "type")
 	if err == nil {
 		t.Fatal("expected an error for unknown type, got nil")
 	}

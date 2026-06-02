@@ -13,11 +13,11 @@ import (
 	"golang.org/x/text/language"
 )
 
-// DamageTable Function to display type details after a type is selected
-func DamageTable(typesName string, endpoint string) error {
+// DamageTable Function to build type details after a type is selected
+func DamageTable(typesName string, endpoint string) (string, error) {
 	typesStruct, typeName, err := connections.TypesApiCall(endpoint, typesName, connections.APIURL)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Setting up variables to style the list
@@ -34,9 +34,11 @@ func DamageTable(typesName string, endpoint string) error {
 	selectedType := cases.Title(language.English).String(typeName)
 	coloredType := lipgloss.NewStyle().Foreground(lipgloss.Color(styling.GetTypeColor(typeName))).Render(selectedType)
 
-	fmt.Printf("You selected the %s type.\nNumber of Pokémon with type: %d\nNumber of moves with type: %d\n", coloredType, len(typesStruct.Pokemon), len(typesStruct.Moves))
-	fmt.Println("----------")
-	fmt.Println(styling.StyleBold.Render("Damage Chart:"))
+	var out strings.Builder
+	fmt.Fprintf(&out, "You selected the %s type.\nNumber of Pokémon with type: %d\nNumber of moves with type: %d\n", coloredType, len(typesStruct.Pokemon), len(typesStruct.Moves))
+	out.WriteString("----------\n")
+	out.WriteString(styling.StyleBold.Render("Damage Chart:"))
+	out.WriteString("\n")
 
 	physicalWidth, _, _ := term.GetSize(uintptr(int(os.Stdout.Fd())))
 	doc := strings.Builder{}
@@ -100,8 +102,8 @@ func DamageTable(typesName string, endpoint string) error {
 		docStyle = docStyle.MaxWidth(physicalWidth)
 	}
 
-	// Print the rendered document
-	fmt.Println(docStyle.Render(doc.String()))
+	// Append the rendered document
+	out.WriteString(docStyle.Render(doc.String()))
 
-	return nil
+	return out.String(), nil
 }

@@ -20,12 +20,12 @@ func TestCurrentVersion(t *testing.T) {
 		{
 			name:           "Version set by ldflags",
 			version:        "v1.0.2",
-			expectedOutput: "Version: v1.0.2\n",
+			expectedOutput: "Version: v1.0.2",
 		},
 		{
 			name:           "Version set to (devel)",
 			version:        "(devel)",
-			expectedOutput: "Version: (devel)\n",
+			expectedOutput: "Version: (devel)",
 		},
 	}
 
@@ -37,26 +37,7 @@ func TestCurrentVersion(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			version = tt.version
 
-			r, w, _ := os.Pipe()
-			oldStdout := os.Stdout
-			os.Stdout = w
-
-			currentVersion()
-
-			// Close the writer and restore stdout
-			err := w.Close()
-			if err != nil {
-				t.Fatalf("Failed to close pipe: %v", err)
-			}
-			os.Stdout = oldStdout
-
-			// Read the output from the pipe
-			var buf bytes.Buffer
-			if _, err := buf.ReadFrom(r); err != nil {
-				t.Fatalf("Failed to read from pipe: %v", err)
-			}
-
-			got := buf.String()
+			got := currentVersion()
 			if got != tt.expectedOutput {
 				t.Errorf("Expected %q, got %q", tt.expectedOutput, got)
 			}

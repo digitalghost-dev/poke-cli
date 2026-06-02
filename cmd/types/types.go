@@ -39,10 +39,12 @@ func TypesCommand(args []string) (string, error) {
 	}
 
 	const endpoint = "type"
-	if err := runTypeSelectionTable(endpoint); err != nil {
+	chart, err := runTypeSelectionTable(endpoint)
+	if err != nil {
 		output.WriteString(err.Error())
 		return output.String(), err
 	}
+	output.WriteString(chart)
 
 	return output.String(), nil
 }
@@ -128,19 +130,17 @@ func createTypeSelectionTable() model {
 	return model{table: tbl}
 }
 
-func runTypeSelectionTable(endpoint string) error {
+func runTypeSelectionTable(endpoint string) (string, error) {
 	m := createTypeSelectionTable()
 
 	programModel, err := tea.NewProgram(m).Run()
 	if err != nil {
-		return fmt.Errorf("error running program: %w", err)
+		return "", fmt.Errorf("error running program: %w", err)
 	}
 
 	if finalModel, ok := programModel.(model); ok && finalModel.selectedOption != "" {
-		if err := DamageTable(strings.ToLower(finalModel.selectedOption), endpoint); err != nil {
-			return err
-		}
+		return DamageTable(strings.ToLower(finalModel.selectedOption), endpoint)
 	}
 
-	return nil
+	return "", nil
 }
