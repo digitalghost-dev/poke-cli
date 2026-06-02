@@ -1,5 +1,5 @@
 # build 1
-FROM golang:1.25.9-alpine3.23 AS build
+FROM golang:1.25.10-alpine3.23 AS build
 
 WORKDIR /app
 
