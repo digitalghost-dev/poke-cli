@@ -10,6 +10,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 func TcgCommand(args []string) (string, error) {
@@ -88,6 +89,12 @@ func TcgCommand(args []string) (string, error) {
 	if err := runTcgLoop(conn, runTournaments, runDashboard); err != nil {
 		return "", err
 	}
+
+	deprecationWarning := styling.WarningBorder.Render(
+		styling.WarningColor.Render("⚠ Warning!"),
+		"\nThe tcg command is deprecated\nand will be removed in v2.\n\nIt will be renamed to a new\n'comp' command. ",
+	)
+	output.WriteString(deprecationWarning)
 
 	return output.String(), nil
 }
