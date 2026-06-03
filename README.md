@@ -242,7 +242,7 @@ Below is a list of the planned/completed commands and flags:
 The following planned changes in `v2`:
 
 - `pokemon <name> -t | --types` — removed; typing is included by default.
-- `pokemon <name> --defense` - being renamed to `--defenses` to keep consistancy with other flags in the `pokemon` command.
+- `pokemon <name> --defense` - being renamed to `--defenses` to keep consistency with other flags in the `pokemon` command.
 - `natures` — moves to a flag under a new `mechanics` command.
 - `tcg` — moves to a new `comp` command (covers competitive TCG *and* VGC data).
 - Adding `pflag` library to enforce POSIX style flags.
