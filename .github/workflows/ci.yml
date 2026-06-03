@@ -59,10 +59,38 @@ jobs:
         with:
           sarif_file: results.sarif
 
+  bandit:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Run Bandit Security Scanner
+        run: |
+          uv tool run --from 'bandit[sarif,toml]' bandit \
+            -r card_data/pipelines \
+            -f sarif \
+            -o bandit-results.sarif \
+            || true
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: bandit-results.sarif
+
   gitleaks:
     runs-on: ubuntu-22.04
-    needs: [gosec]
-    if: needs.gosec.result == 'success'
+    needs: [gosec, bandit]
+    if: needs.gosec.result == 'success' && needs.bandit.result == 'success'
 
     steps:
       - name: Checkout
