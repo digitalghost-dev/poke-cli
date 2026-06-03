@@ -110,8 +110,6 @@ func TestRunCLI_VariousCommands(t *testing.T) {
 		expected int
 	}{
 		{"Invalid command", []string{"foobar"}, 1},
-		{"Latest flag long", []string{"--latest"}, 0},
-		{"Latest flag short", []string{"-l"}, 0},
 		{"Version flag long", []string{"--version"}, 0},
 		{"Version flag short", []string{"-v"}, 0},
 		{"Search command with invalid args", []string{"search", "pokemon", "extra-arg"}, 1},

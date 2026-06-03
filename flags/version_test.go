@@ -4,8 +4,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -148,4 +150,51 @@ func TestLatestReleaseFromURL(t *testing.T) {
 			assert.Contains(t, cleanOutput, tt.outputHas)
 		})
 	}
+}
+
+func TestLatestReleaseFromURL_RateLimited(t *testing.T) {
+	reset := time.Now().Add(30 * time.Minute).Unix()
+	client := &http.Client{
+		Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+			header := make(http.Header)
+			header.Set("X-RateLimit-Remaining", "0")
+			header.Set("X-RateLimit-Reset", strconv.FormatInt(reset, 10))
+			return &http.Response{
+				StatusCode: http.StatusForbidden,
+				Header:     header,
+				Body:       io.NopCloser(strings.NewReader(`{"message":"rate limit exceeded"}`)),
+				Request:    req,
+			}, nil
+		}),
+	}
+
+	var output strings.Builder
+	err := latestReleaseFromURL(&output, "https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest", client)
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "rate limit reached")
+	assert.Contains(t, err.Error(), "Try again after")
+	// A rate-limit response should not fall back to the bare status message.
+	assert.NotContains(t, err.Error(), "unexpected GitHub response status")
+}
+
+func TestLatestReleaseFromURL_SetsUserAgent(t *testing.T) {
+	var gotUserAgent string
+	client := &http.Client{
+		Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+			gotUserAgent = req.Header.Get("User-Agent")
+			return &http.Response{
+				StatusCode: http.StatusOK,
+				Header:     make(http.Header),
+				Body:       io.NopCloser(strings.NewReader(`{"tag_name":"v1.2.3"}`)),
+				Request:    req,
+			}, nil
+		}),
+	}
+
+	var output strings.Builder
+	err := latestReleaseFromURL(&output, "https://api.github.com/repos/digitalghost-dev/poke-cli/releases/latest", client)
+
+	require.NoError(t, err)
+	assert.Equal(t, "poke-cli", gotUserAgent)
 }

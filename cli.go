@@ -53,7 +53,7 @@ func renderCommandList() string {
 func currentVersion() string {
 	if version != "(devel)" {
 		// Use version injected by -ldflags
-		return "Version:" + version
+		return "Version: " + version
 	}
 
 	// Fallback to build info when the version is not set
@@ -63,7 +63,7 @@ func currentVersion() string {
 	}
 
 	if buildInfo.Main.Version != "" {
-		return "Version:" + buildInfo.Main.Version
+		return "Version: " + buildInfo.Main.Version
 	}
 	return "Version: (devel)"
 }
