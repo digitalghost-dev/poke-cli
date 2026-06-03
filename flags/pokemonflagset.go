@@ -35,12 +35,12 @@ type PokemonFlags struct {
 	FlagSet        *flag.FlagSet
 	Abilities      *bool
 	ShortAbilities *bool
-	Defense        *bool
-	ShortDefense   *bool
+	Defenses       *bool
+	ShortDefenses  *bool
 	Image          *string
 	ShortImage     *string
-	Move           *bool
-	ShortMove      *bool
+	Moves          *bool
+	ShortMoves     *bool
 	Stats          *bool
 	ShortStats     *bool
 	Types          *bool
@@ -69,14 +69,14 @@ func SetupPokemonFlagSet() *PokemonFlags {
 	pf.Abilities = pf.FlagSet.Bool("abilities", false, "Print the Pokémon's abilities")
 	pf.ShortAbilities = pf.FlagSet.Bool("a", false, "Print the Pokémon's abilities")
 
-	pf.Defense = pf.FlagSet.Bool("defense", false, "Print the Pokémon's type defenses")
-	pf.ShortDefense = pf.FlagSet.Bool("d", false, "Print the Pokémon's type defenses")
+	pf.Defenses = pf.FlagSet.Bool("defense", false, "Print the Pokémon's type defenses")
+	pf.ShortDefenses = pf.FlagSet.Bool("d", false, "Print the Pokémon's type defenses")
 
 	pf.Image = pf.FlagSet.String("image", "", "Print the Pokémon's default sprite")
 	pf.ShortImage = pf.FlagSet.String("i", "", "Print the Pokémon's default sprite")
 
-	pf.Move = pf.FlagSet.Bool("moves", false, "Print the Pokémon's learnable moves")
-	pf.ShortMove = pf.FlagSet.Bool("m", false, "Print the Pokémon's learnable moves")
+	pf.Moves = pf.FlagSet.Bool("moves", false, "Print the Pokémon's learnable moves")
+	pf.ShortMoves = pf.FlagSet.Bool("m", false, "Print the Pokémon's learnable moves")
 
 	pf.Stats = pf.FlagSet.Bool("stats", false, "Print the Pokémon's base stats")
 	pf.ShortStats = pf.FlagSet.Bool("s", false, "Print the Pokémon's base stats")
@@ -395,21 +395,17 @@ func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) er
 
 	imageResp, err := pokemonSpriteHTTPClient.Get(pokemonStruct.Sprites.FrontDefault)
 	if err != nil {
-		fmt.Println("Error downloading sprite image:", err)
-		return err
+		return fmt.Errorf("error downloading sprite image: %w", err)
 	}
 	defer imageResp.Body.Close()
 
 	if imageResp.StatusCode != http.StatusOK {
-		err := fmt.Errorf("unexpected sprite response status: %d", imageResp.StatusCode)
-		fmt.Println("Error downloading sprite image:", err)
-		return err
+		return fmt.Errorf("unexpected sprite response status: %d", imageResp.StatusCode)
 	}
 
 	img, err := imaging.Decode(io.LimitReader(imageResp.Body, maxPokemonSpriteBytes))
 	if err != nil {
-		fmt.Println("Error decoding image:", err)
-		return err
+		return fmt.Errorf("error decoding image: %w", err)
 	}
 
 	imgStr := ToString(dimensions[0], dimensions[1], img)

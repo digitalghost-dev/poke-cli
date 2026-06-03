@@ -1,4 +1,4 @@
-import subprocess # nosec
+import subprocess  # nosec
 from pathlib import Path
 
 import dagster as dg
@@ -37,7 +37,7 @@ def data_quality_checks_on_pricing() -> None:
     current_file_dir = Path(__file__).parent
     print(f"Setting cwd to: {current_file_dir}")
 
-    result = subprocess.run( # nosec
+    result = subprocess.run(  # nosec
         [
             "soda",
             "scan",
@@ -58,4 +58,6 @@ def data_quality_checks_on_pricing() -> None:
         print(result.stderr)
 
     if result.returncode != 0:
-        raise Exception(f"Soda data quality checks failed with return code {result.returncode}")
+        raise Exception(
+            f"Soda data quality checks failed with return code {result.returncode}"
+        )

@@ -68,9 +68,7 @@ def test_fetch_secret_empty_json_object(mock_get_session, mock_secret_cache_cls)
 def test_fetch_secret_cache_raises(mock_get_session, mock_secret_cache_cls):
     """Test that an exception from SecretCache propagates."""
     mock_cache_instance = MagicMock()
-    mock_cache_instance.get_secret_string.side_effect = Exception(
-        "Secret not found"
-    )
+    mock_cache_instance.get_secret_string.side_effect = Exception("Secret not found")
     mock_secret_cache_cls.return_value = mock_cache_instance
 
     with pytest.raises(Exception, match="Secret not found"):
@@ -114,9 +112,7 @@ def test_fetch_n8n_webhook_secret_missing_key(mock_get_session, mock_secret_cach
 
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
-def test_fetch_n8n_webhook_secret_invalid_json(
-    mock_get_session, mock_secret_cache_cls
-):
+def test_fetch_n8n_webhook_secret_invalid_json(mock_get_session, mock_secret_cache_cls):
     """Test that invalid JSON in the secret raises JSONDecodeError."""
     mock_cache_instance = MagicMock()
     mock_cache_instance.get_secret_string.return_value = "{broken"
@@ -142,14 +138,10 @@ def test_fetch_n8n_webhook_secret_empty_json_object(
 
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
-def test_fetch_n8n_webhook_secret_cache_raises(
-    mock_get_session, mock_secret_cache_cls
-):
+def test_fetch_n8n_webhook_secret_cache_raises(mock_get_session, mock_secret_cache_cls):
     """Test that an exception from SecretCache propagates."""
     mock_cache_instance = MagicMock()
-    mock_cache_instance.get_secret_string.side_effect = Exception(
-        "Access denied"
-    )
+    mock_cache_instance.get_secret_string.side_effect = Exception("Access denied")
     mock_secret_cache_cls.return_value = mock_cache_instance
 
     with pytest.raises(Exception, match="Access denied"):
