@@ -16,9 +16,17 @@ def mock_api_response():
     """Sample API response matching tcgdex format"""
     return [
         {"id": "sv", "name": "Scarlet & Violet", "logo": "https://example.com/sv.png"},
-        {"id": "swsh", "name": "Sword & Shield", "logo": "https://example.com/swsh.png"},
+        {
+            "id": "swsh",
+            "name": "Sword & Shield",
+            "logo": "https://example.com/swsh.png",
+        },
         {"id": "xy", "name": "XY", "logo": "https://example.com/xy.png"},
-        {"id": "me", "name": "McDonald's Collection", "logo": "https://example.com/me.png"},
+        {
+            "id": "me",
+            "name": "McDonald's Collection",
+            "logo": "https://example.com/me.png",
+        },
         {"id": "sm", "name": "Sun & Moon", "logo": None},
     ]
 
@@ -30,7 +38,7 @@ def test_extract_series_data_success(benchmark, mock_api_response):
         responses.GET,
         "https://api.tcgdex.net/v2/en/series",
         json=mock_api_response,
-        status=200
+        status=200,
     )
 
     result = benchmark(extract_series_data)
@@ -48,7 +56,9 @@ def test_extract_series_data_validation_error(benchmark):
     responses.add(
         responses.GET,
         "https://api.tcgdex.net/v2/en/series",
-        json=[{"logo": "https://example.com/test.png"}],  # missing required 'id' and 'name'
+        json=[
+            {"logo": "https://example.com/test.png"}
+        ],  # missing required 'id' and 'name'
         status=200,
     )
 

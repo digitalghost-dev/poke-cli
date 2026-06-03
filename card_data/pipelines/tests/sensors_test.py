@@ -25,7 +25,10 @@ def _make_context(run_id: str = "test-run-id", job_name: str = "test-job") -> Ma
 # ---------------------------------------------------------------------------
 
 
-@patch("pipelines.sensors.fetch_n8n_webhook_secret", return_value="https://n8n.example.com/hook")
+@patch(
+    "pipelines.sensors.fetch_n8n_webhook_secret",
+    return_value="https://n8n.example.com/hook",
+)
 @patch("pipelines.sensors.requests.post")
 def test_discord_success_sensor_posts_webhook(mock_post, mock_secret, benchmark):
     mock_post.return_value.status_code = 200
@@ -40,9 +43,17 @@ def test_discord_success_sensor_posts_webhook(mock_post, mock_secret, benchmark)
     )
 
 
-@patch("pipelines.sensors.fetch_n8n_webhook_secret", return_value="https://n8n.example.com/hook")
-@patch("pipelines.sensors.requests.post", side_effect=requests.RequestException("connection refused"))
-def test_discord_success_sensor_handles_request_exception(mock_post, mock_secret, benchmark):
+@patch(
+    "pipelines.sensors.fetch_n8n_webhook_secret",
+    return_value="https://n8n.example.com/hook",
+)
+@patch(
+    "pipelines.sensors.requests.post",
+    side_effect=requests.RequestException("connection refused"),
+)
+def test_discord_success_sensor_handles_request_exception(
+    mock_post, mock_secret, benchmark
+):
     ctx = _make_context()
 
     benchmark(_success_fn, ctx)  # must not raise
@@ -51,9 +62,14 @@ def test_discord_success_sensor_handles_request_exception(mock_post, mock_secret
     assert "connection refused" in ctx.log.error.call_args[0][0]  # nosec
 
 
-@patch("pipelines.sensors.fetch_n8n_webhook_secret", return_value="https://n8n.example.com/hook")
+@patch(
+    "pipelines.sensors.fetch_n8n_webhook_secret",
+    return_value="https://n8n.example.com/hook",
+)
 @patch("pipelines.sensors.requests.post", side_effect=Exception("unexpected error"))
-def test_discord_success_sensor_handles_generic_exception(mock_post, mock_secret, benchmark):
+def test_discord_success_sensor_handles_generic_exception(
+    mock_post, mock_secret, benchmark
+):
     ctx = _make_context()
 
     benchmark(_success_fn, ctx)  # must not raise
@@ -67,7 +83,10 @@ def test_discord_success_sensor_handles_generic_exception(mock_post, mock_secret
 # ---------------------------------------------------------------------------
 
 
-@patch("pipelines.sensors.fetch_n8n_webhook_secret", return_value="https://n8n.example.com/hook")
+@patch(
+    "pipelines.sensors.fetch_n8n_webhook_secret",
+    return_value="https://n8n.example.com/hook",
+)
 @patch("pipelines.sensors.requests.post")
 def test_discord_failure_sensor_posts_webhook(mock_post, mock_secret, benchmark):
     mock_post.return_value.status_code = 200
@@ -82,9 +101,16 @@ def test_discord_failure_sensor_posts_webhook(mock_post, mock_secret, benchmark)
     )
 
 
-@patch("pipelines.sensors.fetch_n8n_webhook_secret", return_value="https://n8n.example.com/hook")
-@patch("pipelines.sensors.requests.post", side_effect=requests.RequestException("timeout"))
-def test_discord_failure_sensor_handles_request_exception(mock_post, mock_secret, benchmark):
+@patch(
+    "pipelines.sensors.fetch_n8n_webhook_secret",
+    return_value="https://n8n.example.com/hook",
+)
+@patch(
+    "pipelines.sensors.requests.post", side_effect=requests.RequestException("timeout")
+)
+def test_discord_failure_sensor_handles_request_exception(
+    mock_post, mock_secret, benchmark
+):
     ctx = _make_context()
 
     benchmark(_failure_fn, ctx)  # must not raise
@@ -93,9 +119,14 @@ def test_discord_failure_sensor_handles_request_exception(mock_post, mock_secret
     assert "timeout" in ctx.log.error.call_args[0][0]  # nosec
 
 
-@patch("pipelines.sensors.fetch_n8n_webhook_secret", return_value="https://n8n.example.com/hook")
+@patch(
+    "pipelines.sensors.fetch_n8n_webhook_secret",
+    return_value="https://n8n.example.com/hook",
+)
 @patch("pipelines.sensors.requests.post", side_effect=Exception("service unavailable"))
-def test_discord_failure_sensor_handles_generic_exception(mock_post, mock_secret, benchmark):
+def test_discord_failure_sensor_handles_generic_exception(
+    mock_post, mock_secret, benchmark
+):
     ctx = _make_context()
 
     benchmark(_failure_fn, ctx)  # must not raise

@@ -107,7 +107,14 @@ def test_extract_sets_data_success(benchmark, mock_api_response):
         "symbol",
     }
     assert set(result["series_id"].to_list()) == {"me", "sv", "swsh", "sm"}  # nosec
-    assert set(result["set_id"].to_list()) == {"me01", "me02", "sv01", "sv02", "swsh1", "sm1"}  # nosec
+    assert set(result["set_id"].to_list()) == {
+        "me01",
+        "me02",
+        "sv01",
+        "sv02",
+        "swsh1",
+        "sm1",
+    }  # nosec
 
 
 @responses.activate
