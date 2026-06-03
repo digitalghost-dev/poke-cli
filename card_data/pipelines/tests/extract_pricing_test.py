@@ -155,8 +155,14 @@ def _make_product(product_id: int, name: str, card_number: str) -> dict:
     }
 
 
-def _make_price(product_id: int, market_price: float | None, sub_type: str = "Normal") -> dict:
-    return {"productId": product_id, "marketPrice": market_price, "subTypeName": sub_type}
+def _make_price(
+    product_id: int, market_price: float | None, sub_type: str = "Normal"
+) -> dict:
+    return {
+        "productId": product_id,
+        "marketPrice": market_price,
+        "subTypeName": sub_type,
+    }
 
 
 @responses.activate
@@ -165,19 +171,23 @@ def test_pull_product_information_success(benchmark):
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/products",
-        json={"results": [
-            _make_product(1001, "Pikachu", "025/198"),
-            _make_product(1002, "Charizard", "006/198"),
-        ]},
+        json={
+            "results": [
+                _make_product(1001, "Pikachu", "025/198"),
+                _make_product(1002, "Charizard", "006/198"),
+            ]
+        },
         status=200,
     )
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/prices",
-        json={"results": [
-            _make_price(1001, 1.50),
-            _make_price(1002, None),
-        ]},
+        json={
+            "results": [
+                _make_price(1001, 1.50),
+                _make_price(1002, None),
+            ]
+        },
         status=200,
     )
 
@@ -195,21 +205,25 @@ def test_pull_product_information_skips_variants(benchmark):
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/products",
-        json={"results": [
-            _make_product(1001, "Pikachu", "025/198"),
-            _make_product(1002, "Pikachu (Poke Ball Pattern)", "025/198"),
-            _make_product(1003, "Pikachu (Master Ball Pattern)", "025/198"),
-        ]},
+        json={
+            "results": [
+                _make_product(1001, "Pikachu", "025/198"),
+                _make_product(1002, "Pikachu (Poke Ball Pattern)", "025/198"),
+                _make_product(1003, "Pikachu (Master Ball Pattern)", "025/198"),
+            ]
+        },
         status=200,
     )
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/prices",
-        json={"results": [
-            _make_price(1001, 2.00),
-            _make_price(1002, 3.00),
-            _make_price(1003, 4.00),
-        ]},
+        json={
+            "results": [
+                _make_price(1001, 2.00),
+                _make_price(1002, 3.00),
+                _make_price(1003, 4.00),
+            ]
+        },
         status=200,
     )
 
@@ -225,10 +239,12 @@ def test_pull_product_information_skips_non_cards(benchmark):
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/products",
-        json={"results": [
-            _make_product(1001, "Pikachu", "025/198"),
-            {"productId": 1002, "name": "Booster Pack", "extendedData": []},
-        ]},
+        json={
+            "results": [
+                _make_product(1001, "Pikachu", "025/198"),
+                {"productId": 1002, "name": "Booster Pack", "extendedData": []},
+            ]
+        },
         status=200,
     )
     responses.add(
@@ -267,7 +283,9 @@ def test_pull_product_information_sm_normalizes_card_number(benchmark):
 
 @responses.activate
 def test_pull_product_information_excludes_reverse_holofoil_prices(benchmark):
-    product_id = "22873"  # sv01 — both Normal and Reverse Holofoil entries for same card
+    product_id = (
+        "22873"  # sv01 — both Normal and Reverse Holofoil entries for same card
+    )
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/products",
@@ -277,10 +295,12 @@ def test_pull_product_information_excludes_reverse_holofoil_prices(benchmark):
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/prices",
-        json={"results": [
-            _make_price(1001, 5.00, "Reverse Holofoil"),
-            _make_price(1001, 1.50, "Normal"),
-        ]},
+        json={
+            "results": [
+                _make_price(1001, 5.00, "Reverse Holofoil"),
+                _make_price(1001, 1.50, "Normal"),
+            ]
+        },
         status=200,
     )
 
@@ -296,13 +316,15 @@ def test_pull_product_information_validation_error_raises(benchmark):
     responses.add(
         responses.GET,
         f"https://tcgcsv.com/tcgplayer/3/{product_id}/products",
-        json={"results": [
-            {
-                "productId": "not-an-integer",
-                "name": "Bad Card",
-                "extendedData": [{"name": "Number", "value": "999/198"}],
-            }
-        ]},
+        json={
+            "results": [
+                {
+                    "productId": "not-an-integer",
+                    "name": "Bad Card",
+                    "extendedData": [{"name": "Number", "value": "999/198"}],
+                }
+            ]
+        },
         status=200,
     )
     responses.add(
@@ -326,12 +348,14 @@ def test_pull_product_information_validation_error_raises(benchmark):
 
 @patch("pipelines.defs.extract.tcgcsv.extract_pricing.pull_product_information")
 def test_build_dataframe_concatenates_all_sets(mock_pull, benchmark):
-    sample_df = pl.DataFrame({
-        "product_id": [1001],
-        "name": ["Pikachu"],
-        "card_number": ["025/198"],
-        "market_price": [1.50],
-    })
+    sample_df = pl.DataFrame(
+        {
+            "product_id": [1001],
+            "name": ["Pikachu"],
+            "card_number": ["025/198"],
+            "market_price": [1.50],
+        }
+    )
     mock_pull.return_value = sample_df
 
     result = benchmark(build_dataframe)

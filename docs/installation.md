@@ -63,11 +63,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
     * Run a single command and exit:
     ```console
-    docker run --rm -it digitalghostdev/poke-cli:v1.10.2 <command> [subcommand] [flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.10.3 <command> [subcommand] [flag]
     ```
     * Enter the container and use its shell:
     ```console
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.10.2 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.10.3 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -77,13 +77,13 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
     The `card` command renders TCG card images using your terminal's graphics protocol. When running inside Docker, pass your terminal's environment variables so image rendering works correctly:
     ```console
     # Kitty
-    docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.10.2 card
+    docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.10.3 card
 
     # WezTerm, iTerm2, Ghostty, Konsole, Rio, Tabby
-    docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.10.2 card
+    docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.10.3 card
 
     # Windows Terminal (Sixel)
-    docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.10.2 card
+    docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.10.3 card
     ```
     If your terminal is not listed above, image rendering is not supported inside Docker.
 

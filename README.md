@@ -2,7 +2,7 @@
     <img width="425" src="poke-cli.png" alt="pokemon-logo"/>
     <h4></h4>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
-    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.10.2?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
+    <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v1.10.3?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
 </div>
 <div align="center">
@@ -21,6 +21,9 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 * [Usage](#usage)
 * [Roadmap](#roadmap)
 * [Tested Terminals](#tested-terminals)
+
+> ![NOTE]
+> A version 2 is being planned and built that will remove/update some commands and flags. Refer to the changes under the [Roadmap](#version-2-changes) for more information.
 
 ---
 
@@ -99,11 +102,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 3. Choose how to interact with the container:
    * Run a single command and exit:
     ```bash
-    docker run --rm -it digitalghostdev/poke-cli:v1.10.2 <command> [subcommand] [flag]
+    docker run --rm -it digitalghostdev/poke-cli:v1.10.3 <command> [subcommand] [flag]
     ```
    * Enter the container and use its shell:
     ```bash
-    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.10.2 -c "cd /app && exec sh"
+    docker run --rm -it --name poke-cli --entrypoint /bin/sh digitalghostdev/poke-cli:v1.10.3 -c "cd /app && exec sh"
    # placed into the /app directory, run the program with './poke-cli'
    # example: ./poke-cli ability swift-swim
     ```
@@ -112,13 +115,13 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 > The `card` command renders TCG card images using your terminal's graphics protocol. When running inside Docker, pass your terminal's environment variables so image rendering works correctly:
 > ```bash
 > # Kitty
-> docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.10.2 card
+> docker run --rm -it -e TERM -e KITTY_WINDOW_ID digitalghostdev/poke-cli:v1.10.3 card
 >
 > # WezTerm, iTerm2, Ghostty, Konsole, Rio, Tabby
-> docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.10.2 card
+> docker run --rm -it -e TERM -e TERM_PROGRAM digitalghostdev/poke-cli:v1.10.3 card
 >
 > # Windows Terminal (Sixel)
-> docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.10.2 card
+> docker run --rm -it -e WT_SESSION digitalghostdev/poke-cli:v1.10.3 card
 > ```
 > If your terminal is not listed above, image rendering is not supported inside Docker.
 
@@ -234,6 +237,16 @@ Below is a list of the planned/completed commands and flags:
 - [x] `speed`: compare speed stats between two Pokémon.
 - [x] `tcg`: get data about TCG tournaments.
 - [x] `types`: get data about a specific typing.
+
+### Version 2 Changes
+The following planned changes in `v2`:
+
+- `pokemon <name> -t | --types` — removed; typing is included by default.
+- `pokemon <name> --defense` - being renamed to `--defenses` to keep consistency with other flags in the `pokemon` command.
+- `natures` — moves to a flag under a new `mechanics` command.
+- `tcg` — moves to a new `comp` command (covers competitive TCG *and* VGC data).
+- Adding `pflag` library to enforce POSIX style flags.
+
 
 ---
 ## Tested Terminals

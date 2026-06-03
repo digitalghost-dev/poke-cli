@@ -4,6 +4,7 @@ from pathlib import Path
 
 DBT_PROJECT_PATH = Path(__file__).joinpath("..", "..", "..", "poke_cli_dbt").resolve()
 
+
 class CustomDbtTranslator(DagsterDbtTranslator):
     def get_asset_key(self, dbt_resource_props):
 
@@ -30,9 +31,10 @@ class CustomDbtTranslator(DagsterDbtTranslator):
         # For models, use default behavior
         return super().get_asset_key(dbt_resource_props)
 
+
 @dbt_assets(
     manifest=DBT_PROJECT_PATH / "target" / "manifest.json",
-    dagster_dbt_translator=CustomDbtTranslator()
+    dagster_dbt_translator=CustomDbtTranslator(),
 )
 def dbt_build_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     """
@@ -42,7 +44,4 @@ def dbt_build_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
 
 
 dbt_resource = DbtCliResource(project_dir=DBT_PROJECT_PATH)
-defs = dg.Definitions(
-    assets=[dbt_build_assets],
-    resources={"dbt": dbt_resource}
-)
+defs = dg.Definitions(assets=[dbt_build_assets], resources={"dbt": dbt_resource})

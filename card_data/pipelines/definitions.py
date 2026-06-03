@@ -19,7 +19,10 @@ from .defs.extract.tcgcsv.extract_pricing import build_dataframe
 from .defs.extract.tcgdex.extract_sets import extract_sets_data
 from .defs.extract.tcgdex.extract_series import extract_series_data
 from .defs.load.limitless.load_standings import load_standings_data
-from .defs.load.tcgcsv.load_pricing import load_pricing_data, data_quality_checks_on_pricing
+from .defs.load.tcgcsv.load_pricing import (
+    load_pricing_data,
+    data_quality_checks_on_pricing,
+)
 from .defs.load.tcgdex.load_sets import load_sets_data, data_quality_check_on_sets
 from .defs.load.tcgdex.load_series import load_series_data, data_quality_check_on_series
 from .sensors import discord_success_sensor, discord_failure_sensor
@@ -28,7 +31,9 @@ from .sensors import discord_success_sensor, discord_failure_sensor
 @definitions
 def defs() -> dg.Definitions:
     # load_from_defs_folder discovers dbt assets from transform_data.py
-    folder_defs: dg.Definitions = load_from_defs_folder(project_root=Path(__file__).parent.parent)
+    folder_defs: dg.Definitions = load_from_defs_folder(
+        project_root=Path(__file__).parent.parent
+    )
     return dg.Definitions.merge(
         folder_defs,
         defs_discord_sensors,
@@ -67,7 +72,9 @@ defs_pricing: dg.Definitions = dg.Definitions(
 # Series pipeline job
 series_pipeline = dg.define_asset_job(
     name="series_pipeline_job",
-    selection=dg.AssetSelection.assets(extract_series_data).downstream(include_self=True),
+    selection=dg.AssetSelection.assets(extract_series_data).downstream(
+        include_self=True
+    ),
 )
 
 defs_series: dg.Definitions = dg.Definitions(
@@ -89,7 +96,9 @@ defs_sets: dg.Definitions = dg.Definitions(
 # Standings pipeline job
 standings_pipeline = dg.define_asset_job(
     name="standings_pipeline_job",
-    selection=dg.AssetSelection.assets(create_standings_dataframe).downstream(include_self=True),
+    selection=dg.AssetSelection.assets(create_standings_dataframe).downstream(
+        include_self=True
+    ),
 )
 
 defs_standings: dg.Definitions = dg.Definitions(

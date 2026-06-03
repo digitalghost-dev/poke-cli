@@ -9,9 +9,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"charm.land/lipgloss/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
@@ -60,7 +63,15 @@ func latestReleaseFromURL(output *strings.Builder, releaseURL string, client *ht
 		}
 	}
 
-	response, err := client.Get(parsedURL.String())
+	req, err := http.NewRequest(http.MethodGet, parsedURL.String(), nil)
+	if err != nil {
+		err = fmt.Errorf("error creating request: %w", err)
+		fmt.Fprintln(output, err)
+		return err
+	}
+	req.Header.Set("User-Agent", "poke-cli")
+
+	response, err := client.Do(req)
 	if err != nil {
 		err = fmt.Errorf("error fetching data: %w", err)
 		fmt.Fprintln(output, err)
@@ -69,7 +80,7 @@ func latestReleaseFromURL(output *strings.Builder, releaseURL string, client *ht
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		err := fmt.Errorf("unexpected GitHub response status: %d", response.StatusCode)
+		err := gitHubStatusError(response)
 		fmt.Fprintln(output, err)
 		return err
 	}
@@ -115,4 +126,20 @@ func latestReleaseFromURL(output *strings.Builder, releaseURL string, client *ht
 	output.WriteString("\n")
 
 	return nil
+}
+
+func gitHubStatusError(response *http.Response) error {
+	rateLimited := (response.StatusCode == http.StatusForbidden || response.StatusCode == http.StatusTooManyRequests) &&
+		response.Header.Get("X-RateLimit-Remaining") == "0"
+	if !rateLimited {
+		return fmt.Errorf("unexpected GitHub response status: %d", response.StatusCode)
+	}
+
+	msg := "GitHub API rate limit reached (60 requests/hour for unauthenticated requests)."
+	if reset := response.Header.Get("X-RateLimit-Reset"); reset != "" {
+		if secs, err := strconv.ParseInt(reset, 10, 64); err == nil {
+			msg += "\nTry again after " + time.Unix(secs, 0).Format("3:04 PM") + "."
+		}
+	}
+	return errors.New(utils.FormatError(msg))
 }

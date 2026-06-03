@@ -40,7 +40,7 @@ func UpdateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 				// Call PokéAPI
 				result, err := query(endpoint, searchTerm)
 				if err != nil {
-					fmt.Printf("Error fetching search results: %v", err)
+					m.WarningMessage = utils.FormatError(fmt.Sprintf("Error fetching search results: %v", err))
 					return m, nil
 				}
 
