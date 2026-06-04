@@ -16,7 +16,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/speed"
-	"github.com/digitalghost-dev/poke-cli/cmd/tcg"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/tcg"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
