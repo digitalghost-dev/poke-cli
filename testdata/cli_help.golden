@@ -17,7 +17,7 @@
 │    card            Get details about a TCG card              │
 │    item            Get details about an item                 │
 │    move            Get details about a move                  │
-│    natures         Get details about all natures             │
+│    mechanics       Get details about video game mechanics    │
 │    pokemon         Get details about a Pokémon               │
 │    search          Search for a resource                     │
 │    speed           Calculate the speed of a Pokémon in battle│

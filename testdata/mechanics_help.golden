@@ -1,0 +1,10 @@
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│Get details about game mechanics.                                                                         │
+│                                                                                                          │
+│ USAGE:                                                                                                   │
+│    poke-cli mechanics                                                                                    │
+│                                                                                                          │
+│ FLAGS:                                                                                                   │
+│    -h, --help                     Prints the help menu.                                                  │
+│    -n, --natures                  Prints a table with all natures and their respective buffs and debuffs.│
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯
