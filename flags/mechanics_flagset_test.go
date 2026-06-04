@@ -21,7 +21,6 @@ func TestSetupMechanicsFlagSet(t *testing.T) {
 		name     string
 	}{
 		{mf.Natures, false, "Natures flag should default to false"},
-		{mf.ShortNatures, false, "Short natures flag should default to false"},
 	}
 
 	for _, tt := range flagTests {
@@ -32,14 +31,13 @@ func TestSetupMechanicsFlagSet(t *testing.T) {
 
 func TestMechanicsFlagSetParse(t *testing.T) {
 	tests := []struct {
-		name      string
-		args      []string
-		wantLong  bool
-		wantShort bool
+		name        string
+		args        []string
+		wantNatures bool
 	}{
-		{"long natures flag", []string{"--natures"}, true, false},
-		{"short natures flag", []string{"-n"}, false, true},
-		{"no flags", []string{}, false, false},
+		{"long natures flag", []string{"--natures"}, true},
+		{"short natures flag", []string{"-n"}, true},
+		{"no flags", []string{}, false},
 	}
 
 	for _, tt := range tests {
@@ -47,8 +45,7 @@ func TestMechanicsFlagSetParse(t *testing.T) {
 			mf := SetupMechanicsFlagSet()
 			err := mf.FlagSet.Parse(tt.args)
 			require.NoError(t, err)
-			assert.Equal(t, tt.wantLong, *mf.Natures, "long flag value")
-			assert.Equal(t, tt.wantShort, *mf.ShortNatures, "short flag value")
+			assert.Equal(t, tt.wantNatures, *mf.Natures, "natures flag value")
 		})
 	}
 }

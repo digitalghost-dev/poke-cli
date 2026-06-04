@@ -1,27 +1,25 @@
 package flags
 
 import (
-	"flag"
 	"fmt"
 	"strings"
 
+	flag "github.com/spf13/pflag"
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 type MechanicsFlags struct {
-	FlagSet      *flag.FlagSet
-	Natures      *bool
-	ShortNatures *bool
+	FlagSet *flag.FlagSet
+	Natures *bool
 }
 
 func SetupMechanicsFlagSet() *MechanicsFlags {
 	mf := &MechanicsFlags{}
 	mf.FlagSet = flag.NewFlagSet("mechanicsFlags", flag.ContinueOnError)
 
-	mf.Natures = mf.FlagSet.Bool("natures", false, "Show a table with natures.")
-	mf.ShortNatures = mf.FlagSet.Bool("n", false, "Show a table with natures.")
+	mf.Natures = mf.FlagSet.BoolP("natures", "n", false, "Show a table with natures.")
 
 	mf.FlagSet.Usage = func() {
 		helpMessage := styling.HelpBorder.Render("poke-cli mechanics [flags]\n\n",

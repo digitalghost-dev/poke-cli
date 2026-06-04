@@ -2,10 +2,9 @@ package mechanics
 
 import (
 	"errors"
-	"flag"
-	"fmt"
 	"strings"
 
+	flag "github.com/spf13/pflag"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
 )
@@ -45,12 +44,12 @@ func MechanicsCommand(args []string) (string, error) {
 		if errors.Is(err, flag.ErrHelp) {
 			return output.String(), nil
 		}
-		fmt.Fprintf(&output, "error parsing flags: %v\n", err)
+		output.WriteString(utils.FormatFlagError("mechanics", err))
 		return output.String(), err
 	}
 
 	switch {
-	case *mf.Natures || *mf.ShortNatures:
+	case *mf.Natures:
 		output.WriteString(flags.NaturesFlag())
 	default:
 		usage()
