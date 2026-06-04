@@ -11,8 +11,8 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/berry"
 	"github.com/digitalghost-dev/poke-cli/cmd/card"
 	"github.com/digitalghost-dev/poke-cli/cmd/item"
+	"github.com/digitalghost-dev/poke-cli/cmd/mechanics"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
-	"github.com/digitalghost-dev/poke-cli/cmd/natures"
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/speed"
@@ -33,8 +33,8 @@ var commandDescriptions = []struct {
 	{"berry", "Get details about a berry"},
 	{"card", "Get details about a TCG card"},
 	{"item", "Get details about an item"},
+	{"mechanics", "Get details about video game mechanics"},
 	{"move", "Get details about a move"},
-	{"natures", "Get details about all natures"},
 	{"pokemon", "Get details about a Pokémon"},
 	{"search", "Search for a resource"},
 	{"speed", "Calculate the speed of a Pokémon in battle"},
@@ -122,17 +122,17 @@ func runCLI(args []string) int {
 
 	type commandFunc func([]string) (string, error)
 	commands := map[string]commandFunc{
-		"ability": ability.AbilityCommand,
-		"berry":   berry.BerryCommand,
-		"card":    card.CardCommand,
-		"item":    item.ItemCommand,
-		"move":    move.MoveCommand,
-		"natures": natures.NaturesCommand,
-		"pokemon": pokemon.PokemonCommand,
-		"speed":   speed.SpeedCommand,
-		"tcg":     tcg.TcgCommand,
-		"types":   types.TypesCommand,
-		"search":  search.SearchCommand,
+		"ability":   ability.AbilityCommand,
+		"berry":     berry.BerryCommand,
+		"card":      card.CardCommand,
+		"item":      item.ItemCommand,
+		"mechanics": mechanics.MechanicsCommand,
+		"move":      move.MoveCommand,
+		"pokemon":   pokemon.PokemonCommand,
+		"search":    search.SearchCommand,
+		"speed":     speed.SpeedCommand,
+		"tcg":       tcg.TcgCommand,
+		"types":     types.TypesCommand,
 	}
 
 	cmdArg := ""

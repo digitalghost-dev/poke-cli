@@ -186,8 +186,8 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │    berry           Get details about a berry                  │
 │    card            Get details about a TCG card               │
 │    item            Get details about an item                  │
+│    mechanics       Get details about video game mechanics     │
 │    move            Get details about a move                   │
-│    natures         Get details about all natures              │
 │    pokemon         Get details about a Pokémon                │
 │    search          Search for a resource                      │
 │    speed           Calculate the speed of a Pokémon in battle │
@@ -218,9 +218,10 @@ Below is a list of the planned/completed commands and flags:
     - [x] add sun & moon data
     - [ ] add x & y data
 - [x] `item`: get data about an item.
+- [x] `mechanics`: get data about game mechanics.
+    - [x] `-n | --natures`: display a table of all natures.
 - [ ] `move`: get data about a move.
     - [ ] `-p | --pokemon`: display Pokémon that learn this move.
-- [x] `natures`: get data about natures.
 - [ ] `pokemon`: get data about a Pokémon.
     - [x] `-a | --abilities`: display the Pokémon's abilities.
     - [ ] `-c | --cry`: play the Pokémon's cry.
