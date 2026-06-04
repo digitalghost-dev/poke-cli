@@ -22,7 +22,7 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 * [Roadmap](#roadmap)
 * [Tested Terminals](#tested-terminals)
 
-> ![NOTE]
+> [!NOTE]
 > A version 2 is being planned and built that will remove/update some commands and flags. Refer to the changes under the [Roadmap](#version-2-changes) for more information.
 
 ---
