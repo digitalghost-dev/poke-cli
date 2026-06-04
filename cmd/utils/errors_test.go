@@ -61,6 +61,15 @@ func TestFormatResourceErrors(t *testing.T) {
 				"Could not fetch Pokémon data.",
 			},
 		},
+		{
+			name:   "flag error",
+			format: func() string { return FormatFlagError("mechanics", errors.New("unknown flag: --bogus")) },
+			contains: []string{
+				"Invalid flag for mechanics",
+				"unknown flag: --bogus",
+				"Run 'poke-cli mechanics -h' for more info",
+			},
+		},
 	}
 
 	for _, tt := range tests {
