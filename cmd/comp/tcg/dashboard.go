@@ -9,6 +9,7 @@ import (
 	"charm.land/bubbles/v2/table"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/tcg/web"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -99,6 +100,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "b":
 			m.goBack = true
 			return m, tea.Quit
+		case "w":
+			return m, web.Open("https://web.poke-cli.com/")
 		case "right", "l", "n", "tab":
 			m.activeTab = min(m.activeTab+1, len(m.tabs)-1)
 			return m, nil
@@ -247,7 +250,7 @@ func (m model) View() tea.View {
 	doc.WriteString("\n")
 	doc.WriteString(s.window.Width(windowWidth).Render(content))
 	doc.WriteString("\n")
-	doc.WriteString(styling.KeyMenu.Render("← → (switch tab) • b (back) • ctrl+c | esc (quit)"))
+	doc.WriteString(styling.KeyMenu.Render("← → (switch tab) • b (back) • w (web) • ctrl+c | esc (quit)"))
 
 	v := tea.NewView(s.doc.Render(doc.String()))
 	v.AltScreen = true

@@ -3,9 +3,11 @@ package tcg
 import (
 	"encoding/json"
 
+	"charm.land/bubbles/v2/key"
 	"charm.land/bubbles/v2/list"
 	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/tcg/web"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -73,6 +75,8 @@ func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "esc":
 			m.quitting = true
 			return m, tea.Quit
+		case "w":
+			return m, web.Open("https://web.poke-cli.com/")
 		case "enter":
 			idx := m.list.Index()
 			if idx >= 0 && idx < len(m.tournaments) {
@@ -106,6 +110,13 @@ func (m tournamentsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		l.Styles.Title = styling.TitleStyle
 		l.Styles.PaginationStyle = styling.PaginationStyle
 		l.Styles.HelpStyle = styling.HelpStyle
+
+		webBinding := key.NewBinding(
+			key.WithKeys("w"),
+			key.WithHelp("w", "web"),
+		)
+		l.AdditionalShortHelpKeys = func() []key.Binding { return []key.Binding{webBinding} }
+		l.AdditionalFullHelpKeys = func() []key.Binding { return []key.Binding{webBinding} }
 
 		m.list = l
 		m.loading = false
@@ -147,6 +158,7 @@ func (m tournamentsModel) View() tea.View {
 		content = styling.QuitTextStyle.Render("Tournament selected:", m.selected.Location+" · "+m.selected.TextDate)
 	} else {
 		content = "\n" + m.list.View()
+		styling.KeyMenu.Render("w web")
 	}
 
 	v := tea.NewView(content)
