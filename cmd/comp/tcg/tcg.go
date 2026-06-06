@@ -1,65 +1,13 @@
 package tcg
 
 import (
-	"errors"
-	"flag"
 	"fmt"
-	"strings"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
-	"github.com/digitalghost-dev/poke-cli/flags"
-	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-func TcgCommand(args []string) (string, error) {
-	var output strings.Builder
-
-	usage := func() {
-		output.WriteString(
-			utils.GenerateHelpMessage(
-				utils.HelpConfig{
-					Description: "Get details about TCG tournaments.",
-					CmdName:     "tcg",
-					Flags: []utils.FlagHelp{
-						{Short: "-w", Long: "--web", Description: "Opens the Streamlit dashboard in your default browser."},
-					},
-				},
-			),
-		)
-	}
-
-	if utils.CheckHelpFlag(args, usage) {
-		return output.String(), nil
-	}
-
-	if err := utils.ValidateArgs(
-		args,
-		utils.Validator{MaxArgs: 2, CmdName: "tcg", RequireName: false, HasFlags: true},
-	); err != nil {
-		output.WriteString(err.Error())
-		return output.String(), err
-	}
-
-	tf := flags.SetupTcgFlagSet()
-	if err := tf.FlagSet.Parse(args[1:]); err != nil {
-		if errors.Is(err, flag.ErrHelp) {
-			return output.String(), nil
-		}
-		fmt.Fprintf(&output, "error parsing flags: %v\n", err)
-		return output.String(), err
-	}
-
-	if *tf.Web || *tf.ShortWeb {
-		msg, err := flags.WebFlag("https://web.poke-cli.com/")
-		if err != nil {
-			return "", err
-		}
-		output.WriteString(msg)
-		return output.String(), nil
-	}
-
+func Run() (back bool, err error) {
 	conn := connections.CallTCGData
 
 	runTournaments := func(m tournamentsModel) (tournamentsModel, error) {
@@ -87,16 +35,10 @@ func TcgCommand(args []string) (string, error) {
 	}
 
 	if err := runTcgLoop(conn, runTournaments, runDashboard); err != nil {
-		return "", err
+		return false, err
 	}
 
-	deprecationWarning := styling.WarningBorder.Render(
-		styling.WarningColor.Render("⚠ Warning!"),
-		"\nThe tcg command is deprecated\nand will be removed in v2.\n\nIt will be renamed to a new\n'comp' command. ",
-	)
-	output.WriteString(deprecationWarning)
-
-	return output.String(), nil
+	return true, nil
 }
 
 func runTcgLoop(

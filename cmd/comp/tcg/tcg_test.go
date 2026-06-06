@@ -4,8 +4,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/digitalghost-dev/poke-cli/cmd/utils"
-	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -79,52 +77,4 @@ func TestRunTcgLoop_DashboardRunnerError(t *testing.T) {
 	}
 	err := runTcgLoop(noopConn, runTournaments, runDashboard)
 	assert.ErrorContains(t, err, "dashboard")
-}
-
-func TestTcgCommand(t *testing.T) {
-	tests := []struct {
-		name    string
-		args    []string
-		golden  string
-		wantErr bool
-	}{
-		{
-			name:    "help flag short",
-			args:    []string{"tcg", "-h"},
-			golden:  "tcg_help.golden",
-			wantErr: false,
-		},
-		{
-			name:    "help flag long",
-			args:    []string{"tcg", "--help"},
-			golden:  "tcg_help.golden",
-			wantErr: false,
-		},
-		{
-			name:    "too many args",
-			args:    []string{"tcg", "foo", "bar"},
-			golden:  "tcg_too_many_args.golden",
-			wantErr: true,
-		},
-		{
-			name:    "invalid flag",
-			args:    []string{"tcg", "--bogus"},
-			golden:  "tcg_invalid_flag.golden",
-			wantErr: true,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			output, err := TcgCommand(tt.args)
-			clean := styling.StripANSI(output)
-
-			if tt.wantErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-			assert.Equal(t, utils.LoadGolden(t, tt.golden), clean)
-		})
-	}
 }

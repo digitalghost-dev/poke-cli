@@ -16,7 +16,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/speed"
-	"github.com/digitalghost-dev/poke-cli/cmd/comp/tcg"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -32,13 +32,13 @@ var commandDescriptions = []struct {
 	{"ability", "Get details about an ability"},
 	{"berry", "Get details about a berry"},
 	{"card", "Get details about a TCG card"},
+	{"comp", "Get details about competitive Pokémon"},
 	{"item", "Get details about an item"},
 	{"mechanics", "Get details about video game mechanics"},
 	{"move", "Get details about a move"},
 	{"pokemon", "Get details about a Pokémon"},
 	{"search", "Search for a resource"},
 	{"speed", "Calculate the speed of a Pokémon in battle"},
-	{"tcg", "Get details about TCG tournaments"},
 	{"types", "Get details about a typing"},
 }
 
@@ -125,13 +125,13 @@ func runCLI(args []string) int {
 		"ability":   ability.AbilityCommand,
 		"berry":     berry.BerryCommand,
 		"card":      card.CardCommand,
+		"comp": comp.CompCommand,
 		"item":      item.ItemCommand,
 		"mechanics": mechanics.MechanicsCommand,
 		"move":      move.MoveCommand,
 		"pokemon":   pokemon.PokemonCommand,
 		"search":    search.SearchCommand,
 		"speed":     speed.SpeedCommand,
-		"tcg":       tcg.TcgCommand,
 		"types":     types.TypesCommand,
 	}
 
