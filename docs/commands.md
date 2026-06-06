@@ -78,6 +78,24 @@ Output:
 
 ---
 
+## `mechanics`
+* Retrieve data about video game mechanics.
+
+**Available Flags**
+
+* `--natures | -n`
+
+Example:
+```console
+poke-cli mechanics --natures
+```
+
+Output:
+
+![mechanics_gif](assets/mechanics.gif)
+
+---
+
 ## `move`
 * Retrieve information about a specific move, including its type, power, PP, accuracy, category, etc.,
 and the move's effect.
@@ -90,20 +108,6 @@ poke-cli move dazzling-gleam
 Output:
 
 ![move_command](assets/move.gif)
-
----
-
-## `natures`
-* Retrieve a table of all natures and the stats they affect.
-
-Example:
-```console
-poke-cli natures
-```
-
-Output:
-
-![natures_gif](assets/natures.gif)
 
 ---
 
