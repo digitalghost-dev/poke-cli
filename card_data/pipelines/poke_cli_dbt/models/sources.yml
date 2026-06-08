@@ -294,3 +294,71 @@ sources:
             description: "Max speed multiplied by Choice Scarf (×1.5)"
           - name: neutral_32_scarf
             description: "Neutral 32 SP speed multiplied by Choice Scarf (×1.5)"
+
+      - name: pokemon
+        description: "Raw PokéAPI pokemon data (shared TCG + VG hub; includes alternate forms with is_default = 0)"
+        columns:
+          - name: id
+            description: "Unique pokemon identifier (alternate forms use 10000+ ids)"
+          - name: identifier
+            description: "Pokemon name slug (e.g. bulbasaur)"
+          - name: species_id
+            description: "Foreign key to pokemon_species (not currently loaded)"
+          - name: height
+            description: "Height in decimetres"
+          - name: weight
+            description: "Weight in hectograms"
+          - name: base_experience
+            description: "Base experience yield"
+          - name: order
+            description: "National Pokédex sort order (reserved word; quote as \"order\" in SQL)"
+          - name: is_default
+            description: "1 for the default form, 0 for alternate forms (megas, regional forms)"
+
+      - name: vg_types
+        description: "Raw PokéAPI types lookup (Fire, Water, etc.)"
+        columns:
+          - name: id
+            description: "Unique type identifier"
+          - name: identifier
+            description: "Type name slug (e.g. fire)"
+          - name: generation_id
+            description: "Generation the type was introduced"
+          - name: damage_class_id
+            description: "Legacy physical/special damage class (pre-Gen IV)"
+
+      - name: vg_stats
+        description: "Raw PokéAPI stats lookup (hp, attack, etc.)"
+        columns:
+          - name: id
+            description: "Unique stat identifier"
+          - name: damage_class_id
+            description: "Damage class the stat relates to (nullable, e.g. hp)"
+          - name: identifier
+            description: "Stat name slug (e.g. attack)"
+          - name: is_battle_only
+            description: "1 if the stat exists only in battle (e.g. accuracy, evasion)"
+          - name: game_index
+            description: "Internal stat ordering used by the games"
+
+      - name: vg_pokemon_types
+        description: "Raw PokéAPI pokemon-to-type bridge (many-to-many)"
+        columns:
+          - name: pokemon_id
+            description: "Foreign key to pokemon"
+          - name: type_id
+            description: "Foreign key to types"
+          - name: slot
+            description: "Type slot (1 = primary, 2 = secondary)"
+
+      - name: vg_pokemon_stats
+        description: "Raw PokéAPI pokemon-to-stat bridge with base stat values"
+        columns:
+          - name: pokemon_id
+            description: "Foreign key to pokemon"
+          - name: stat_id
+            description: "Foreign key to stats"
+          - name: base_stat
+            description: "Base value of the stat for this pokemon"
+          - name: effort
+            description: "Effort value (EV) yield for defeating this pokemon"
