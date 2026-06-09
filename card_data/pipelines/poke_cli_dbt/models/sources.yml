@@ -269,32 +269,6 @@ sources:
           - name: decklist
             description: "JSONB object with shape {pokemon: [{count, name, number, set}], trainer: [...], energy: [...]}"
 
-      - name: champions_speed_tiers
-        description: "Pikalytics speed tier data ingested by n8n monthly"
-        columns:
-          - name: snapshot_month
-            description: "First-of-month date for the snapshot"
-          - name: format
-            description: "Format code (e.g. gen9championsvgc2026)"
-          - name: rank
-            description: "Speed tier rank within the format"
-          - name: pokemon
-            description: "Pokémon name (includes Mega prefix where applicable)"
-          - name: base_spe
-            description: "Base Speed stat"
-          - name: neutral_0_sp
-            description: "Speed at level 50, neutral nature, 0 SP"
-          - name: neutral_32_sp
-            description: "Speed at level 50, neutral nature, 32 SP"
-          - name: max_speed
-            description: "Speed at level 50, +Speed nature, 32 SP"
-          - name: neg_spe_0_sp
-            description: "Speed at level 50, -Speed nature, 0 SP"
-          - name: max_scarf
-            description: "Max speed multiplied by Choice Scarf (×1.5)"
-          - name: neutral_32_scarf
-            description: "Neutral 32 SP speed multiplied by Choice Scarf (×1.5)"
-
       - name: pokemon
         description: "Raw PokéAPI pokemon data (shared TCG + VG hub; includes alternate forms with is_default = 0)"
         columns:
@@ -362,3 +336,15 @@ sources:
             description: "Base value of the stat for this pokemon"
           - name: effort
             description: "Effort value (EV) yield for defeating this pokemon"
+
+      - name: pikalytics_speed_tiers
+        description: "Raw Pikalytics speed-tier rows scraped by n8n (pikalytics.com/ai/speed-tiers), full-replaced each run; tier math is derived downstream in the pikalytics_speed_tiers dbt model"
+        columns:
+          - name: format
+            description: "Format code (e.g. gen9championsvgc2026)"
+          - name: rank
+            description: "Speed tier rank within the format"
+          - name: pokemon
+            description: "Pokémon display name (proper case, includes Mega prefix where applicable)"
+          - name: base_spe
+            description: "Base Speed stat (the only scraped numeric; all other tiers derived in dbt)"
