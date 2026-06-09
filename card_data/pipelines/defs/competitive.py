@@ -23,6 +23,7 @@ EVENT_SOURCES = (
 
 REQUEST_DELAY_SECONDS = 0.2
 TOP_N_PLACEMENTS = 256
+RESISTANCE_FLOOR = 0.25  # Pokémon tiebreakers floor each win % at 25%
 COUNTRY_PATTERN = re.compile(r"^(.*?)\s*\[([A-Za-z]{2,3})\]\s*$")
 
 
@@ -161,9 +162,9 @@ _CREATE_PLAYERS = """
         wins          BIGINT,
         losses        BIGINT,
         ties          BIGINT,
-        resistance_self    NUMERIC(4, 2),
-        resistance_opp     NUMERIC(4, 2),
-        resistance_oppopp  NUMERIC(4, 2),
+        resistance_self    NUMERIC(6, 4),
+        resistance_opp     NUMERIC(6, 4),
+        resistance_oppopp  NUMERIC(6, 4),
         dropped_round BIGINT,
         trainer_name  TEXT,
         UNIQUE (pokedata_id, game_type, player_name)
@@ -255,6 +256,48 @@ def fetch_events_to_process(conn) -> list[dict]:
     return [dict(row._mapping) for row in conn.execute(text(query)).all()]
 
 
+def _win_percentage(wins: int, losses: int, ties: int) -> float:
+    """Match win % used by Pokémon tiebreakers: a tie counts as half a win."""
+    total = wins + losses + ties
+    if total <= 0:
+        return RESISTANCE_FLOOR
+    return (wins + 0.5 * ties) / total
+
+
+def compute_resistances(div_data: list[dict]) -> dict[str, dict[str, float]]:
+    win_pct: dict[str, float] = {}
+    opponents: dict[str, list[str]] = {}
+
+    for p in div_data:
+        raw = p["name"]
+        rec = p["record"]
+        byes = sum(
+            1 for r in (p.get("rounds") or {}).values() if r.get("name") == "BYE"
+        )
+        win_pct[raw] = _win_percentage(rec["wins"] - byes, rec["losses"], rec["ties"])
+        opponents[raw] = [
+            r["name"]
+            for r in (p.get("rounds") or {}).values()
+            if r.get("name") and r["name"] != "BYE"
+        ]
+
+    def _mean(values: list[float]) -> float:
+        return sum(values) / len(values) if values else RESISTANCE_FLOOR
+
+    opp_pct = {
+        raw: _mean([max(RESISTANCE_FLOOR, win_pct[o]) for o in opps if o in win_pct])
+        for raw, opps in opponents.items()
+    }
+    return {
+        raw: {
+            "self": win_pct[raw],
+            "opp": opp_pct[raw],
+            "oppopp": _mean([opp_pct[o] for o in opps if o in opp_pct]),
+        }
+        for raw, opps in opponents.items()
+    }
+
+
 def build_player_rows(
     data: dict,
     pid: str,
@@ -266,17 +309,21 @@ def build_player_rows(
     decklists_tcg: list[tuple] = []
 
     for div in data.get("tournament_data", []):
-        for p in div.get("data", []):
+        div_data = div.get("data", [])
+        resistances = compute_resistances(div_data)
+
+        for p in div_data:
             placement = p.get("placing")
             if placement is None or placement > TOP_N_PLACEMENTS:
                 continue
 
             name, country = parse_player_name(p["name"])
+            res = resistances[p["name"]]
 
             players.append((
                 pid, gt, name, country, placement,
                 p["record"]["wins"], p["record"]["losses"], p["record"]["ties"],
-                p["resistances"]["self"], p["resistances"]["opp"], p["resistances"]["oppopp"],
+                res["self"], res["opp"], res["oppopp"],
                 p.get("drop", -1), p.get("Trainer name"),
             ))
 
