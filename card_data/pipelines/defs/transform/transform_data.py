@@ -24,6 +24,11 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "comp_rounds": "data_quality_checks_on_comp_rounds",
                 "comp_vg_decklists": "data_quality_checks_on_comp_vg_decklists",
                 "comp_tcg_decklists": "data_quality_checks_on_comp_tcg_decklists",
+                "pokemon": "load_pokemon",
+                "vg_types": "load_vg_types",
+                "vg_stats": "load_vg_stats",
+                "vg_pokemon_types": "load_vg_pokemon_types",
+                "vg_pokemon_stats": "load_vg_pokemon_stats",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])

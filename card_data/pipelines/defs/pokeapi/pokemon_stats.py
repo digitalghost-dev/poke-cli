@@ -1,5 +1,8 @@
+import dagster as dg
 import polars as pl
+from dagster import RetryPolicy, Backoff
 from sqlalchemy.exc import OperationalError
+from termcolor import colored
 
 from ...utils.secret_retriever import fetch_secret
 
@@ -12,20 +15,22 @@ def create_dataframe(url: str) -> pl.DataFrame:
     return df
 
 
-def upload_dataframe():
+@dg.asset(
+    kinds={"Supabase", "Postgres"},
+    retry_policy=RetryPolicy(max_retries=3, delay=2, backoff=Backoff.EXPONENTIAL),
+)
+def load_vg_pokemon_stats() -> None:
     database_url: str = fetch_secret()
     table_name: str = f"staging.vg_{RESOURCE_NAME}"
-    df = create_dataframe(f"https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/{RESOURCE_NAME}.csv")
+    df = create_dataframe(
+        f"https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/{RESOURCE_NAME}.csv"
+    )
 
     try:
         df.write_database(
             table_name=table_name, connection=database_url, if_table_exists="replace"
         )
-        print(f" ✓ Data loaded into {table_name}")
+        print(colored(" ✓", "green"), f"Data loaded into {table_name}")
     except OperationalError as e:
-        print(f" ✖ Connection error in load_pricing_data():", e)
+        print(colored(" ✖", "red"), "Connection error in load_vg_pokemon_stats():", e)
         raise
-
-
-if __name__ == "__main__":
-    upload_dataframe()
