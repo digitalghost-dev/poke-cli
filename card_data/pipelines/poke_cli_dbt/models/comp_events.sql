@@ -9,6 +9,7 @@ SELECT
     pokedata_id,
     game_type,
     name,
+    regexp_replace(name, '^(\d{4}\s+)?(.+?)\s+Pokémon.*$', '\2') AS location,
     start_date::date,
     end_date::date,
     season,
