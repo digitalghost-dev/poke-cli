@@ -25,6 +25,12 @@ from .defs.load.tcgcsv.load_pricing import (
 )
 from .defs.load.tcgdex.load_sets import load_sets_data, data_quality_check_on_sets
 from .defs.load.tcgdex.load_series import load_series_data, data_quality_check_on_series
+from .defs.pokeapi.pokemon import load_pokemon
+from .defs.pokeapi.types import load_vg_types
+from .defs.pokeapi.stats import load_vg_stats
+from .defs.pokeapi.pokemon_types import load_vg_pokemon_types
+from .defs.pokeapi.pokemon_stats import load_vg_pokemon_stats
+from .defs.pikalytics.speed_tiers import trigger_pikalytics_speed_tiers
 from .sensors import discord_success_sensor, discord_failure_sensor
 
 
@@ -42,7 +48,8 @@ def defs() -> dg.Definitions:
         defs_series,
         defs_standings,
         defs_events,
-        defs_champions_speed_tiers,
+        defs_pokeapi,
+        defs_pikalytics,
     )
 
 
@@ -127,12 +134,58 @@ defs_events: dg.Definitions = dg.Definitions(
 )
 
 
-# Champions speed tiers job (n8n handles extract+load; Dagster runs only the dbt model)
-champions_speed_tiers_pipeline = dg.define_asset_job(
-    name="champions_speed_tiers_dbt_job",
-    selection=dg.AssetSelection.assets(dg.AssetKey(["champions_speed_tiers"])),
+# PokéAPI video-game data pipeline job (5 staging loads + their downstream dbt models)
+pokeapi_pipeline = dg.define_asset_job(
+    name="pokeapi_pipeline_job",
+    selection=dg.AssetSelection.assets(
+        load_pokemon,
+        load_vg_types,
+        load_vg_stats,
+        load_vg_pokemon_types,
+        load_vg_pokemon_stats,
+    ).downstream(include_self=True),
 )
 
-defs_champions_speed_tiers: dg.Definitions = dg.Definitions(
-    jobs=[champions_speed_tiers_pipeline],
+# Runs on the 1st and 15th of each month at 14:00 LA time
+pokeapi_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
+    name="pokeapi_schedule",
+    cron_schedule="0 14 1,15 * *",
+    target=pokeapi_pipeline,
+    execution_timezone="America/Los_Angeles",
+)
+
+defs_pokeapi: dg.Definitions = dg.Definitions(
+    assets=[
+        load_pokemon,
+        load_vg_types,
+        load_vg_stats,
+        load_vg_pokemon_types,
+        load_vg_pokemon_stats,
+    ],
+    jobs=[pokeapi_pipeline],
+    schedules=[pokeapi_schedule],
+)
+
+
+# Pikalytics pipeline job (Dagster-first: triggers the n8n scrape, then dbt builds public).
+# Scaffolded for fan-out — add the other pikalytics trigger assets to the selection as they migrate.
+pikalytics_pipeline = dg.define_asset_job(
+    name="pikalytics_pipeline_job",
+    selection=dg.AssetSelection.assets(trigger_pikalytics_speed_tiers).downstream(
+        include_self=True
+    ),
+)
+
+# Weekly, Mondays at 08:00 LA time (mirrors the old n8n speed-tiers cadence)
+pikalytics_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
+    name="pikalytics_schedule",
+    cron_schedule="0 8 * * 1",
+    target=pikalytics_pipeline,
+    execution_timezone="America/Los_Angeles",
+)
+
+defs_pikalytics: dg.Definitions = dg.Definitions(
+    assets=[trigger_pikalytics_speed_tiers],
+    jobs=[pikalytics_pipeline],
+    schedules=[pikalytics_schedule],
 )

@@ -29,6 +29,7 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "vg_stats": "load_vg_stats",
                 "vg_pokemon_types": "load_vg_pokemon_types",
                 "vg_pokemon_stats": "load_vg_pokemon_stats",
+                "pikalytics_speed_tiers": "trigger_pikalytics_speed_tiers",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])
