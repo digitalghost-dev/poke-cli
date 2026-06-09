@@ -9,7 +9,7 @@ def discord_success_sensor(context: RunStatusSensorContext):
     context.log.info(f"Detected successful run: {context.dagster_run.run_id}")
     try:
         response = requests.post(
-            fetch_n8n_webhook_secret(),
+            fetch_n8n_webhook_secret("dagster-job-alert"),
             json={
                 "job_name": context.dagster_run.job_name,
                 "status": "SUCCESS",
@@ -29,7 +29,7 @@ def discord_failure_sensor(context: RunStatusSensorContext):
     context.log.info(f"Detected failed run: {context.dagster_run.run_id}")
     try:
         response = requests.post(
-            fetch_n8n_webhook_secret(),
+            fetch_n8n_webhook_secret("dagster-job-alert"),
             json={
                 "job_name": context.dagster_run.job_name,
                 "status": "FAILURE",

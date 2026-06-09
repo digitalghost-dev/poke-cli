@@ -23,7 +23,7 @@ def fetch_secret() -> str:
     return secret_dict["database_uri"]
 
 
-def fetch_n8n_webhook_secret() -> str:
+def fetch_n8n_webhook_secret(key: str) -> str:
     client = botocore.session.get_session().create_client("secretsmanager")
     cache_config = SecretCacheConfig()
     cache = SecretCache(config=cache_config, client=client)
@@ -31,4 +31,4 @@ def fetch_n8n_webhook_secret() -> str:
     secret = cast(str, cache.get_secret_string("n8n_webhook"))
     secret_dict: dict[str, str] = json.loads(secret)
 
-    return secret_dict["n8n_webhook"]
+    return secret_dict[key]
