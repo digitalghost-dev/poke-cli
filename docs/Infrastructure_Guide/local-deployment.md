@@ -12,7 +12,7 @@ The [4. AWS](aws.md) section will show how to deploy this solution on the cloud.
 
 ## Python
 
-First, create a directory for all the Python code. This project's Python directory is called `card_data`.
+First, create a directory for all the Python code. This project's Python directory is called `data_platform`.
 Once the directory is created, `cd` into it from the terminal.
 
 All following commands will take place in this directory.
@@ -38,7 +38,7 @@ _uv is the main package and project manager used in this project. Learn more abo
     uv init
     ```
    
-4. Sync `uv` with the libraries from `card_data/pyproject.toml`. Syncing ensures that all project dependencies are installed and up-to-date with the lockfile.
+4. Sync `uv` with the libraries from `data_platform/pyproject.toml`. Syncing ensures that all project dependencies are installed and up-to-date with the lockfile.
     ```bash
     uv sync
     ```
@@ -141,7 +141,7 @@ uv add dbt
 
 This will add the libraries to `pyproject.toml` file.
 
-Initialize a `dbt` project in the `card_data` directory:
+Initialize a `dbt` project in the `data_platform` directory:
 ```bash
 dbt init
 ```
@@ -206,7 +206,7 @@ Soda and its components needed for the project can be installed with `uv`:
    uv add soda-core-postgres
 ```
 
-2. Create a `configuration.yml` and `checks.yml` files under the `card_data/pipelines/soda/` directory.
+2. Create a `configuration.yml` and `checks.yml` files under the `data_platform/pipelines/soda/` directory.
 
     * The `configuration.yml` holds the information for connecting to the data source. The below is an example from this project that reads the `username` and `password`
       from the local environment so that this file can be safely committed to `git` and pushed to GitHub.

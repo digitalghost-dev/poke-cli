@@ -7,9 +7,9 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/card_data/card_data
+WorkingDirectory=/home/ubuntu/poke-cli/data_platform
 Environment="AWS_DEFAULT_REGION=us-west-2"
-Environment="PATH=/home/ubuntu/card_data/card_data/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PATH=/home/ubuntu/poke-cli/data_platform/.venv/bin:/usr/local/bin:/usr/bin:/bin"
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict

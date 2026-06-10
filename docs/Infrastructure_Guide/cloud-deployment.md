@@ -56,13 +56,13 @@ Connect to the virtual machine and run the following commands to get everything 
       ```
     * Tell `git` which directory to check out. Then, pull that directory:
       ```shell
-      echo "card_data/" >> .git/info/sparse-checkout
+      echo "data_platform/" >> .git/info/sparse-checkout
       ```
     * Pull the repository into the local directory:
       ```shell
       git pull origin main
       ```
-    * Verify that `card_data/` directory was created:
+    * Verify that `data_platform/` directory was created:
       ```shell
       ls
       ```
@@ -118,7 +118,7 @@ stop once each day with AWS EventBridge. To automate the starting of the Dagster
 
 ### Service Files
 
-The `card_data/infrastructure/` directory has the following files:
+The `data_platform/infrastructure/` directory has the following files:
 
 1. `dagster.service` - the main `systemd` file for defining the Dagster service and environment.
 2. `wait-for-rds.sh` - stored as `ExecStartPre` in `dagster.service` to check if the RDS instance is available.
@@ -158,11 +158,11 @@ Copy or move the files from the checked out repository to the proper directory o
 be edited to match project specific configuration. Such as the proper RDS instance name in `wait-for-rds.sh`_):
 
 ```shell
-cp card_data/card_data/infrastructure/wait-for-rds.sh /home/ubuntu/
+cp poke-cli/data_platform/infrastructure/wait-for-rds.sh /home/ubuntu/
 
-cp card_data/card_data/infrastructure/start-dagster.sh /home/ubuntu/
+cp poke-cli/data_platform/infrastructure/start-dagster.sh /home/ubuntu/
 
-cp card_data/card_data/infrastructure/dagster.service /etc/systemd/system/
+cp poke-cli/data_platform/infrastructure/dagster.service /etc/systemd/system/
 ```
 
 #### Create Files
@@ -185,9 +185,9 @@ First, create `dagster.service`
     [Service]
     Type=simple
     User=ubuntu
-    WorkingDirectory=/home/ubuntu/card_data/card_data
+    WorkingDirectory=/home/ubuntu/poke-cli/data_platform
     Environment="AWS_DEFAULT_REGION=us-west-2"
-    Environment="PATH=/home/ubuntu/card_data/card_data/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+    Environment="PATH=/home/ubuntu/poke-cli/data_platform/.venv/bin:/usr/local/bin:/usr/bin:/bin"
     NoNewPrivileges=true
     PrivateTmp=true
     ProtectSystem=strict
@@ -309,11 +309,11 @@ Last, create `start-dagster.sh`
     fi
     export AWS_RDS_HOSTNAME
     
-    DAGSTER_HOME=/home/ubuntu/card_data/card_data/
+    DAGSTER_HOME=/home/ubuntu/poke-cli/data_platform/
     export DAGSTER_HOME
     
     # Activate the virtual environment
-    source /home/ubuntu/card_data/card_data/.venv/bin/activate
+    source /home/ubuntu/poke-cli/data_platform/.venv/bin/activate
     
     # Start Dagster
     exec dg dev --host 0.0.0.0 --port 3000

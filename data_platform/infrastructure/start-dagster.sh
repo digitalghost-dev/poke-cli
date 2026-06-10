@@ -48,11 +48,11 @@ if [ -z "$AWS_RDS_HOSTNAME" ] || [ "$AWS_RDS_HOSTNAME" = "null" ]; then
 fi
 export AWS_RDS_HOSTNAME
 
-DAGSTER_HOME=/home/ubuntu/card_data/card_data/
+DAGSTER_HOME=/home/ubuntu/poke-cli/data_platform/
 export DAGSTER_HOME
 
 # Activate the virtual environment
-source /home/ubuntu/card_data/card_data/.venv/bin/activate
+source /home/ubuntu/poke-cli/data_platform/.venv/bin/activate
 
 # Start Dagster
 exec dg dev --host 0.0.0.0 --port 3000

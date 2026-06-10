@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'card_data/**'
+      - 'data_platform/**'
       - 'web/**'
   pull_request:
     types: [opened, reopened, synchronize]
     paths:
-      - 'card_data/**'
+      - 'data_platform/**'
       - 'web/**'
 
 permissions:
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: card_data
+        working-directory: data_platform
 
     steps:
       - name: Checkout
@@ -42,7 +42,7 @@ jobs:
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v4
         with:
-          working-directory: card_data
+          working-directory: data_platform
           mode: simulation
           run: uv run pytest pipelines/tests/ -v --codspeed
 

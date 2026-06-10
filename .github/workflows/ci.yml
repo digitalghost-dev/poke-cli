@@ -17,7 +17,7 @@ on:
       - '.github/**'
       - '.dockerignore'
       - 'docs/**'
-      - 'card_data/**'
+      - 'data_platform/**'
       - '.gitignore'
       - '.gitleaksignore'
       - 'demo**'
@@ -77,7 +77,7 @@ jobs:
       - name: Run Bandit Security Scanner
         run: |
           uv tool run --from 'bandit[sarif,toml]' bandit \
-            -r card_data/pipelines \
+            -r data_platform/pipelines \
             -f sarif \
             -o bandit-results.sarif \
             || true

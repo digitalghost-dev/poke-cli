@@ -14,7 +14,7 @@
 ## Pokemon CLI
 `poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing VG and TCG data about Pokémon!
 
-View the [documentation](https://docs.poke-cli.com) on the data infrastructure in [card_data/](https://github.com/digitalghost-dev/poke-cli/tree/main/card_data) if you're interested.
+View the [documentation](https://docs.poke-cli.com) on the data infrastructure in [data_platform/](https://github.com/digitalghost-dev/poke-cli/tree/main/data_platform) if you're interested.
 
 * [Demo](#demo)
 * [Installation](#installation)
