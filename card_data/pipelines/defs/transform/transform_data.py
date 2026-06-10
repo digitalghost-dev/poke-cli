@@ -32,6 +32,7 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "pikalytics_speed_tiers": "trigger_pikalytics_speed_tiers",
                 "pikalytics_usage": "trigger_pikalytics_usage",
                 "pikalytics_top_teams": "trigger_pikalytics_top_teams",
+                "pikalytics_pokemon_comp_info": "trigger_pikalytics_pokemon_comp_info",
             }
             if name in source_mapping:
                 return dg.AssetKey([source_mapping[name]])

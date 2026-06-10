@@ -33,6 +33,7 @@ from .defs.pokeapi.pokemon_stats import load_vg_pokemon_stats
 from .defs.pikalytics.speed_tiers import trigger_pikalytics_speed_tiers
 from .defs.pikalytics.usage import trigger_pikalytics_usage
 from .defs.pikalytics.top_teams import trigger_pikalytics_top_teams
+from .defs.pikalytics.pokemon_comp_info import trigger_pikalytics_pokemon_comp_info
 from .sensors import discord_success_sensor, discord_failure_sensor
 
 
@@ -169,14 +170,16 @@ defs_pokeapi: dg.Definitions = dg.Definitions(
 )
 
 
-# Pikalytics pipeline job (Dagster-first: triggers the n8n scrape, then dbt builds public).
-# Scaffolded for fan-out — add the other pikalytics trigger assets to the selection as they migrate.
+# Pikalytics pipeline job (Dagster-first: triggers the n8n scrapes, then dbt builds public).
+# pokemon_comp_info depends on usage (it reads the fresh top-50 from staging.pikalytics_usage),
+# so it runs after the usage trigger; the rest fan out in parallel.
 pikalytics_pipeline = dg.define_asset_job(
     name="pikalytics_pipeline_job",
     selection=dg.AssetSelection.assets(
         trigger_pikalytics_speed_tiers,
         trigger_pikalytics_usage,
         trigger_pikalytics_top_teams,
+        trigger_pikalytics_pokemon_comp_info,
     ).downstream(include_self=True),
 )
 
@@ -193,6 +196,7 @@ defs_pikalytics: dg.Definitions = dg.Definitions(
         trigger_pikalytics_speed_tiers,
         trigger_pikalytics_usage,
         trigger_pikalytics_top_teams,
+        trigger_pikalytics_pokemon_comp_info,
     ],
     jobs=[pikalytics_pipeline],
     schedules=[pikalytics_schedule],

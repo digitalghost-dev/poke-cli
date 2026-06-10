@@ -378,3 +378,19 @@ sources:
             description: "JSONB array of Pokémon display-name strings on the team"
           - name: web_url
             description: "Pikalytics top-teams page URL"
+
+      - name: pikalytics_pokemon_comp_info
+        description: "Raw Pikalytics per-Pokémon competitive info scraped by n8n from each top-50 usage Pokémon's AI pokedex page (full-replaced each run); pokemon_slug + pokemon_id and format/source derived downstream in the pikalytics_pokemon_comp_info dbt model"
+        columns:
+          - name: pokemon
+            description: "Pokémon display name (carried from the staging.pikalytics_usage list)"
+          - name: web_url
+            description: "Pikalytics pokedex page URL for the Pokémon"
+          - name: common_moves
+            description: "JSONB array of {name, usage_percent} for the Pokémon's common moves"
+          - name: common_abilities
+            description: "JSONB array of {name, usage_percent} for common abilities"
+          - name: common_items
+            description: "JSONB array of {name, usage_percent} for common held items"
+          - name: common_teammates
+            description: "JSONB array of {name, usage_percent} for common teammates"
