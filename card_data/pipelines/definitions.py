@@ -31,6 +31,8 @@ from .defs.pokeapi.stats import load_vg_stats
 from .defs.pokeapi.pokemon_types import load_vg_pokemon_types
 from .defs.pokeapi.pokemon_stats import load_vg_pokemon_stats
 from .defs.pikalytics.speed_tiers import trigger_pikalytics_speed_tiers
+from .defs.pikalytics.usage import trigger_pikalytics_usage
+from .defs.pikalytics.top_teams import trigger_pikalytics_top_teams
 from .sensors import discord_success_sensor, discord_failure_sensor
 
 
@@ -171,9 +173,11 @@ defs_pokeapi: dg.Definitions = dg.Definitions(
 # Scaffolded for fan-out — add the other pikalytics trigger assets to the selection as they migrate.
 pikalytics_pipeline = dg.define_asset_job(
     name="pikalytics_pipeline_job",
-    selection=dg.AssetSelection.assets(trigger_pikalytics_speed_tiers).downstream(
-        include_self=True
-    ),
+    selection=dg.AssetSelection.assets(
+        trigger_pikalytics_speed_tiers,
+        trigger_pikalytics_usage,
+        trigger_pikalytics_top_teams,
+    ).downstream(include_self=True),
 )
 
 # Weekly, Mondays at 08:00 LA time (mirrors the old n8n speed-tiers cadence)
@@ -185,7 +189,11 @@ pikalytics_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
 )
 
 defs_pikalytics: dg.Definitions = dg.Definitions(
-    assets=[trigger_pikalytics_speed_tiers],
+    assets=[
+        trigger_pikalytics_speed_tiers,
+        trigger_pikalytics_usage,
+        trigger_pikalytics_top_teams,
+    ],
     jobs=[pikalytics_pipeline],
     schedules=[pikalytics_schedule],
 )

@@ -348,3 +348,33 @@ sources:
             description: "Pokémon display name (proper case, includes Mega prefix where applicable)"
           - name: base_spe
             description: "Base Speed stat (the only scraped numeric; all other tiers derived in dbt)"
+
+      - name: pikalytics_usage
+        description: "Raw Pikalytics usage rows scraped by n8n (pikalytics.com/ai/pokedex/<format>), full-replaced each run; pokemon_slug + pokemon_id derived downstream in the pikalytics_usage dbt model"
+        columns:
+          - name: rank
+            description: "Usage rank within the format"
+          - name: pokemon
+            description: "Pokémon display name (proper case, includes form suffix e.g. Charizard-Mega-Y)"
+          - name: usage_percent
+            description: "Usage percentage"
+          - name: web_url
+            description: "Pikalytics pokedex page URL for the Pokémon"
+
+      - name: pikalytics_top_teams
+        description: "Raw Pikalytics top-teams rows scraped by n8n (pikalytics.com/ai/top-teams/<format>), full-replaced each run; wins/losses/ties, pokemon_ids, and format/source derived downstream in the pikalytics_top_teams dbt model"
+        columns:
+          - name: rank
+            description: "Team rank within the format"
+          - name: author
+            description: "Team author / player name"
+          - name: record
+            description: "Win/loss/tie record as scraped text (e.g. 7-2-1)"
+          - name: tournament
+            description: "Tournament name (may contain punctuation or vertical bars)"
+          - name: archetypes
+            description: "JSONB array of archetype label strings (empty array if none)"
+          - name: pokemon
+            description: "JSONB array of Pokémon display-name strings on the team"
+          - name: web_url
+            description: "Pikalytics top-teams page URL"
