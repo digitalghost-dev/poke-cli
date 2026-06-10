@@ -22,3 +22,4 @@ models:
 
 on-run-end:
   - "{{ create_relationships() }}"
+  - "{{ create_pikalytics_relationships() }}"

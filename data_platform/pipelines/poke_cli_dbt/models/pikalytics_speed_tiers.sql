@@ -3,27 +3,42 @@
     post_hook="{{ enable_rls() }}"
 ) }}
 
--- Replaces champions_speed_tiers. n8n lands RAW rows (format, rank, pokemon, base_spe)
--- in staging.pikalytics_speed_tiers (full replace each run); all tier math lives here
--- in SQL (moved out of the n8n Code node) so the derivations are version-controlled.
-
-WITH tiers AS (
+WITH staged AS (
     SELECT
         format,
         rank,
         pokemon,
         base_spe,
-        base_spe + 20                        AS neutral_0_sp,
-        base_spe + 52                        AS neutral_32_sp,
-        FLOOR((base_spe + 52) * 1.1)::int    AS max_speed
+        TRIM(BOTH '-' FROM LOWER(REGEXP_REPLACE(pokemon, '[^a-zA-Z0-9]+', '-', 'g'))) AS pokemon_slug
     FROM {{ source('staging', 'pikalytics_speed_tiers') }}
+),
+
+tiers AS (
+    SELECT
+        format,
+        rank,
+        pokemon,
+        pokemon_slug,
+        -- internal only (not selected): normalize the naive slug to the hub form to resolve the id
+        CASE
+            WHEN pokemon_slug ~ '^mega-.*-[xy]$' THEN REGEXP_REPLACE(pokemon_slug, '^mega-(.*)-([xy])$', '\1-mega-\2')
+            WHEN pokemon_slug LIKE 'mega-%'      THEN REGEXP_REPLACE(pokemon_slug, '^mega-(.*)$', '\1-mega')
+            WHEN pokemon_slug = 'basculegion-f'  THEN 'basculegion-female'
+            ELSE pokemon_slug
+        END AS hub_slug,
+        base_spe,
+        base_spe + 20                     AS neutral_0_sp,
+        base_spe + 52                     AS neutral_32_sp,
+        FLOOR((base_spe + 52) * 1.1)::int AS max_speed
+    FROM staged
 )
 
 SELECT
     format,
     rank,
     pokemon,
-    TRIM(BOTH '-' FROM LOWER(REGEXP_REPLACE(pokemon, '[^a-zA-Z0-9]+', '-', 'g'))) AS pokemon_slug,
+    pokemon_slug,
+    {{ resolve_pokemon_id('hub_slug') }} AS pokemon_id,
     base_spe,
     neutral_0_sp,
     neutral_32_sp,
