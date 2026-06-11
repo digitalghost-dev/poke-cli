@@ -29,6 +29,7 @@ class CustomDbtTranslator(DagsterDbtTranslator):
                 "vg_stats": "load_vg_stats",
                 "vg_pokemon_types": "load_vg_pokemon_types",
                 "vg_pokemon_stats": "load_vg_pokemon_stats",
+                "vg_pokemon_sprites": "load_vg_pokemon_sprites",
                 "pikalytics_speed_tiers": "trigger_pikalytics_speed_tiers",
                 "pikalytics_usage": "trigger_pikalytics_usage",
                 "pikalytics_top_teams": "trigger_pikalytics_top_teams",

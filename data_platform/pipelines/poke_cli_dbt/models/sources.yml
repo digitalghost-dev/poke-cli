@@ -337,6 +337,14 @@ sources:
           - name: effort
             description: "Effort value (EV) yield for defeating this pokemon"
 
+      - name: vg_pokemon_sprites
+        description: "Raw PokéAPI sprite URLs (one row per pokemon id, aligned from the GitHub sprite repo)"
+        columns:
+          - name: gif_sprite_url
+            description: "Animated Showdown gif URL (null if no gif exists for the id)"
+          - name: png_sprite_url
+            description: "Static png URL fallback (null if no png exists for the id)"
+
       - name: pikalytics_speed_tiers
         description: "Raw Pikalytics speed-tier rows scraped by n8n (pikalytics.com/ai/speed-tiers), full-replaced each run; tier math is derived downstream in the pikalytics_speed_tiers dbt model"
         columns:

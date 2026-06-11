@@ -26,8 +26,9 @@ from .defs.load.tcgcsv.load_pricing import (
 from .defs.load.tcgdex.load_sets import load_sets_data, data_quality_check_on_sets
 from .defs.load.tcgdex.load_series import load_series_data, data_quality_check_on_series
 from .defs.pokeapi.pokemon import load_pokemon
-from .defs.pokeapi.types import load_vg_types
-from .defs.pokeapi.stats import load_vg_stats
+from .defs.pokeapi.pokemon_sprites import load_vg_pokemon_sprites
+from .defs.pokeapi.base_types import load_vg_types
+from .defs.pokeapi.base_stats import load_vg_stats
 from .defs.pokeapi.pokemon_types import load_vg_pokemon_types
 from .defs.pokeapi.pokemon_stats import load_vg_pokemon_stats
 from .defs.pikalytics.speed_tiers import trigger_pikalytics_speed_tiers
@@ -137,11 +138,12 @@ defs_events: dg.Definitions = dg.Definitions(
 )
 
 
-# PokéAPI video-game data pipeline job (5 staging loads + their downstream dbt models)
+# PokéAPI video-game data pipeline job (6 staging loads + their downstream dbt models)
 pokeapi_pipeline = dg.define_asset_job(
     name="pokeapi_pipeline_job",
     selection=dg.AssetSelection.assets(
         load_pokemon,
+        load_vg_pokemon_sprites,
         load_vg_types,
         load_vg_stats,
         load_vg_pokemon_types,
@@ -160,6 +162,7 @@ pokeapi_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
 defs_pokeapi: dg.Definitions = dg.Definitions(
     assets=[
         load_pokemon,
+        load_vg_pokemon_sprites,
         load_vg_types,
         load_vg_stats,
         load_vg_pokemon_types,
