@@ -138,6 +138,16 @@ defs_events: dg.Definitions = dg.Definitions(
 )
 
 
+# The pikalytics dbt models depend on the pokemon model (resolve_pokemon_id refs it),
+# so they sit downstream of load_pokemon. They belong to pikalytics_pipeline_job, so
+# exclude them here to keep the two data sources in separate jobs.
+pikalytics_dbt_models = dg.AssetSelection.assets(
+    "pikalytics_speed_tiers",
+    "pikalytics_usage",
+    "pikalytics_top_teams",
+    "pikalytics_pokemon_comp_info",
+)
+
 # PokéAPI video-game data pipeline job (6 staging loads + their downstream dbt models)
 pokeapi_pipeline = dg.define_asset_job(
     name="pokeapi_pipeline_job",
@@ -148,10 +158,10 @@ pokeapi_pipeline = dg.define_asset_job(
         load_vg_stats,
         load_vg_pokemon_types,
         load_vg_pokemon_stats,
-    ).downstream(include_self=True),
+    ).downstream(include_self=True)
+    - pikalytics_dbt_models,
 )
 
-# Runs on the 1st and 15th of each month at 14:00 LA time
 pokeapi_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
     name="pokeapi_schedule",
     cron_schedule="0 14 1,15 * *",
@@ -186,7 +196,6 @@ pikalytics_pipeline = dg.define_asset_job(
     ).downstream(include_self=True),
 )
 
-# Weekly, Mondays at 08:00 LA time (mirrors the old n8n speed-tiers cadence)
 pikalytics_schedule: dg.ScheduleDefinition = dg.ScheduleDefinition(
     name="pikalytics_schedule",
     cron_schedule="0 8 * * 1",
