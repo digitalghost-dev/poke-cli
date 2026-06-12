@@ -15,7 +15,7 @@ from ..utils.secret_retriever import fetch_secret
 
 WORLDS_TCG_ID = "0000129"
 WORLDS_VG_ID = "0000115"
-VALID_EVENT_TYPES = ["Regional", "International", "Worlds"]
+EVENT_NAME_TOKEN = "Championships"
 EVENT_SOURCES = (
     ("tcg", "TCG", WORLDS_TCG_ID),
     ("vg", "VGC", WORLDS_VG_ID),
@@ -102,9 +102,7 @@ def build_events_dataframe(data: dict) -> pl.DataFrame:
     rows = []
     for source_key, game_type, min_event_id in EVENT_SOURCES:
         for event in data[source_key]["data"]:
-            if event["id"] <= min_event_id or not any(
-                event_type in event["name"] for event_type in VALID_EVENT_TYPES
-            ):
+            if event["id"] <= min_event_id or EVENT_NAME_TOKEN not in event["name"]:
                 continue
 
             start_date = event["date"]["start"]
