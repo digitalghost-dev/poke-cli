@@ -71,7 +71,6 @@ type model struct {
 	totalPlayers   int
 	winner         string
 	winningDeck    string
-	flag           string
 	goBack         bool
 	err            error
 }
@@ -80,7 +79,7 @@ func overviewView(m model, contentWidth int) string {
 	if len(m.standings) == 0 {
 		return "  Loading..."
 	}
-	return overviewContent(m.flag, m.tournament, m.tournamentType, m.tournamentDate, m.winner, m.winningDeck, m.totalPlayers, contentWidth, m.styles.highlightColor)
+	return overviewContent(m.tournament, m.tournamentType, m.tournamentDate, m.winner, m.winningDeck, m.totalPlayers, contentWidth, m.styles.highlightColor)
 }
 
 func countriesView(s []countryStats, width int) string {
@@ -134,7 +133,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.totalPlayers = first.PlayerQty
 			m.winner = first.Name
 			m.winningDeck = first.Deck
-			m.flag = countryFlag(first.ISOCode)
 			m.tournamentDate = first.TextDate
 			m.tournamentType = first.Type
 		}

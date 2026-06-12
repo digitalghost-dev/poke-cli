@@ -34,7 +34,7 @@ type tournamentsDataMsg struct {
 
 func fetchTournaments(conn func(string) ([]byte, error)) tea.Cmd {
 	return func() tea.Msg {
-		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=location,text_date&rank=eq.1&order=start_date.desc"
+		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/comp_standings_view?select=location,text_date&rank=eq.1&order=start_date.desc"
 		body, err := conn(endpoint)
 		if err != nil {
 			return tournamentsDataMsg{err: err}

@@ -21,8 +21,8 @@ func formatInt(n int) string {
 	return result.String()
 }
 
-func overviewContent(flag, tournament, tournamentType, tournamentDate, winner, winningDeck string, totalPlayers, contentWidth int, highlightColor color.Color) string {
-	header := fmt.Sprintf("%s  %s · %s · %s", flag, tournament, tournamentType, tournamentDate)
+func overviewContent(tournament, tournamentType, tournamentDate, winner, winningDeck string, totalPlayers, contentWidth int, highlightColor color.Color) string {
+	header := fmt.Sprintf("%s · %s · %s", tournament, tournamentType, tournamentDate)
 
 	statBox := lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).

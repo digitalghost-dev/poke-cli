@@ -3,7 +3,6 @@ package tcg
 import (
 	"encoding/json"
 	"net/url"
-	"strings"
 
 	tea "charm.land/bubbletea/v2"
 )
@@ -21,7 +20,6 @@ type standingRows struct {
 	Location      string `json:"location"`
 	TextDate      string `json:"text_date"`
 	Type          string `json:"type"`
-	ISOCode       string `json:"iso_code"`
 	PlayerQty     int    `json:"player_quantity"`
 }
 
@@ -32,8 +30,8 @@ type standingsDataMsg struct {
 
 func fetchData(tournament string, conn func(string) ([]byte, error)) tea.Cmd {
 	return func() tea.Msg {
-		cols := "rank,name,points,record,opp_win_percent,opp_opp_win_percent,deck,player_country,country_code,location,text_date,type,iso_code,player_quantity"
-		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/standings?select=" + cols + "&location=eq." + url.QueryEscape(tournament) + "&order=rank"
+		cols := "rank,name,points,record,opp_win_percent,opp_opp_win_percent,deck,player_country,country_code,location,text_date,type,player_quantity"
+		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/comp_standings_view?select=" + cols + "&location=eq." + url.QueryEscape(tournament) + "&order=rank"
 		body, err := conn(endpoint)
 		if err != nil {
 			return standingsDataMsg{err: err}
@@ -46,15 +44,4 @@ func fetchData(tournament string, conn func(string) ([]byte, error)) tea.Cmd {
 
 		return standingsDataMsg{items: rows}
 	}
-}
-
-func countryFlag(isoCode string) string {
-	code := strings.ToUpper(isoCode)
-	if len(code) != 2 {
-		return ""
-	}
-	if code[0] < 'A' || code[0] > 'Z' || code[1] < 'A' || code[1] > 'Z' {
-		return ""
-	}
-	return string(rune(0x1F1E6+(rune(code[0])-'A'))) + string(rune(0x1F1E6+(rune(code[1])-'A')))
 }
