@@ -1,11 +1,11 @@
 {{ config(
     materialized='incremental',
-    unique_key='id',
+    unique_key=['pokedata_id', 'game_type'],
+    incremental_strategy='merge',
     on_schema_change='append_new_columns'
 ) }}
 
 SELECT
-    id,
     pokedata_id,
     game_type,
     name,
@@ -17,8 +17,3 @@ SELECT
     rounds,
     last_updated::timestamp
 FROM {{ source('staging', 'comp_events') }}
-{% if is_incremental() %}
-WHERE last_updated::timestamp > (
-    SELECT COALESCE(MAX(last_updated), '1900-01-01'::timestamp) FROM {{ this }}
-)
-{% endif %}

@@ -1,12 +1,12 @@
 -- depends_on: {{ ref('comp_events') }}
 {{ config(
     materialized='incremental',
-    unique_key='id',
+    unique_key=['pokedata_id', 'game_type', 'player_name'],
+    incremental_strategy='merge',
     on_schema_change='append_new_columns'
 ) }}
 
 SELECT
-    id,
     pokedata_id,
     game_type,
     player_name,
@@ -21,6 +21,3 @@ SELECT
     dropped_round,
     trainer_name
 FROM {{ source('staging', 'comp_players') }}
-{% if is_incremental() %}
-WHERE id > (SELECT COALESCE(MAX(id), 0) FROM {{ this }})
-{% endif %}
