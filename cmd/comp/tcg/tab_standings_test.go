@@ -7,9 +7,9 @@ import (
 
 func sampleRows() []standingRows {
 	return []standingRows{
-		{Rank: 1, Name: "Ash Ketchum", Points: 47, Record: "15 - 1 - 2", OppWinPct: "58.10%", OppOppWinPct: "60.56%", Deck: "gardevoir", PlayerCountry: "United States", ISOCode: "US"},
-		{Rank: 2, Name: "Misty Williams", Points: 44, Record: "14 - 2 - 2", OppWinPct: "68.56%", OppOppWinPct: "61.67%", Deck: "dragapult/dusknoir", PlayerCountry: "Japan", ISOCode: "JP"},
-		{Rank: 3, Name: "Brock Harrison", Points: 41, Record: "13 - 2 - 2", OppWinPct: "69.01%", OppOppWinPct: "63.78%", Deck: "dragapult", PlayerCountry: "United Kingdom", ISOCode: "GB"},
+		{Rank: 1, Name: "Ash Ketchum", Points: 47, Record: "15 - 1 - 2", OppWinPct: "58.10%", OppOppWinPct: "60.56%", Deck: "gardevoir", PlayerCountry: "United States"},
+		{Rank: 2, Name: "Misty Williams", Points: 44, Record: "14 - 2 - 2", OppWinPct: "68.56%", OppOppWinPct: "61.67%", Deck: "dragapult/dusknoir", PlayerCountry: "Japan"},
+		{Rank: 3, Name: "Brock Harrison", Points: 41, Record: "13 - 2 - 2", OppWinPct: "69.01%", OppOppWinPct: "63.78%", Deck: "dragapult", PlayerCountry: "United Kingdom"},
 	}
 }
 

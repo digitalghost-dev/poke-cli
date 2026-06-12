@@ -68,27 +68,3 @@ func TestFetchStandings_URLEncoding(t *testing.T) {
 		t.Errorf("expected URL-encoded tournament name in URL, got %q", capturedURL)
 	}
 }
-
-func TestCountryFlag(t *testing.T) {
-	tests := []struct {
-		isoCode string
-		want    string
-	}{
-		{"gb", "🇬🇧"},
-		{"GB", "🇬🇧"},
-		{"us", "🇺🇸"},
-		{"jp", "🇯🇵"},
-		{"", ""},
-		{"x", ""},
-		{"abc", ""},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.isoCode, func(t *testing.T) {
-			got := countryFlag(tt.isoCode)
-			if got != tt.want {
-				t.Errorf("countryFlag(%q) = %q, want %q", tt.isoCode, got, tt.want)
-			}
-		})
-	}
-}

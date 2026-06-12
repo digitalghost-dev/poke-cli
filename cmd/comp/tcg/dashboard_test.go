@@ -24,8 +24,8 @@ func newTestModel() model {
 func loadedTestModel() model {
 	m := newTestModel()
 	items := []standingRows{
-		{Rank: 1, Name: "Ash", Points: 47, Deck: "gardevoir", PlayerCountry: "USA", ISOCode: "US", PlayerQty: 500, TextDate: "Jan 10", Type: "Regional"},
-		{Rank: 2, Name: "Misty", Points: 44, Deck: "dragapult", PlayerCountry: "Japan", ISOCode: "JP", PlayerQty: 500, TextDate: "Jan 10", Type: "Regional"},
+		{Rank: 1, Name: "Ash", Points: 47, Deck: "gardevoir", PlayerCountry: "USA", PlayerQty: 500, TextDate: "Jan 10", Type: "Regional"},
+		{Rank: 2, Name: "Misty", Points: 44, Deck: "dragapult", PlayerCountry: "Japan", PlayerQty: 500, TextDate: "Jan 10", Type: "Regional"},
 	}
 	newModel, _ := m.Update(standingsDataMsg{items: items})
 	return newModel.(model)
