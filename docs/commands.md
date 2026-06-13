@@ -25,7 +25,7 @@ poke-cli ability solar-power --pokemon    # list Pokémon that posses the abilit
 
 Output:
 
-![ability_command](assets/ability.gif)
+![ability_command](assets/command_gifs/ability.gif)
 
 ---
 
@@ -60,7 +60,7 @@ poke-cli card
 
 Output:
 
-![card_command](assets/card.gif)
+![card_command](assets/command_gifs/card.gif)
 
 ---
 
@@ -74,7 +74,7 @@ poke-cli item poke-ball
 
 Output:
 
-![item_command](assets/item.gif)
+![item_command](assets/command_gifs/item.gif)
 
 ---
 
@@ -92,7 +92,7 @@ poke-cli mechanics --natures
 
 Output:
 
-![mechanics_gif](assets/mechanics.gif)
+![mechanics_gif](assets/command_gifs/mechanics.gif)
 
 ---
 
@@ -107,7 +107,7 @@ poke-cli move dazzling-gleam
 
 Output:
 
-![move_command](assets/move.gif)
+![move_command](assets/command_gifs/move.gif)
 
 ---
 
@@ -135,7 +135,7 @@ poke-cli pokemon rockruff --abilities --moves
 
 Output:
 
-![pokemon_abilities_moves](assets/pokemon_abilities_moves.gif)
+![pokemon_abilities_moves](assets/command_gifs/pokemon-abilities-moves.gif)
 
 Example:
 ```console
@@ -144,7 +144,7 @@ poke-cli pokemon gastrodon --defense
 
 Output:
 
-![pokemon_defense](assets/pokemon_defense.gif)
+![pokemon_defense](assets/command_gifs/pokemon-defense.gif)
 
 Example:
 ```console
@@ -154,7 +154,7 @@ poke-cli pokemon tyranitar --image=sm
 
 Output:
 
-![pokemon_image](assets/pokemon_image.gif)
+![pokemon_image](assets/command_gifs/pokemon-image.gif)
 
 Example:
 ```console
@@ -163,7 +163,7 @@ poke-cli pokemon cacturne --stats
 
 Output:
 
-![pokemon_types](assets/pokemon_stats.gif)
+![pokemon_types](assets/command_gifs/pokemon-stats.gif)
 
 ---
 
@@ -177,7 +177,7 @@ poke-cli search
 
 Output:
 
-![search_command](assets/search.gif)
+![search_command](assets/command_gifs/search.gif)
 
 ---
 
@@ -203,7 +203,7 @@ poke-cli speed
 ```
 Output:
 
-![speed_command](assets/speed.gif)
+![speed_command](assets/command_gifs/speed.gif)
 
 ---
 
@@ -221,7 +221,7 @@ poke-cli tcg
 
 Output:
 
-![tcg_command](assets/tcg.gif)
+![tcg_command](assets/command_gifs/tcg.gif)
 
 ---
 
@@ -234,4 +234,4 @@ poke-cli types
 ```
 Output:
 
-![types_command](assets/types.gif)
+![types_command](assets/command_gifs/types.gif)
