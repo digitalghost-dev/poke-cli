@@ -18,6 +18,7 @@ type dashboardModel struct {
 	tournament string
 	decoded    *Decoded
 	table      table.Model
+	extraTable table.Model
 	goBack     bool
 	err        error
 }
@@ -67,6 +68,14 @@ func newTable(spec Spec, rows []table.Row, width, height int) table.Model {
 	return t
 }
 
+func (m *dashboardModel) buildTables() {
+	if m.decoded == nil {
+		return
+	}
+	m.table = newTable(m.spec, m.decoded.TableRows, m.width, m.height)
+	m.extraTable = newUsageTable(m.decoded.Extra, len(m.decoded.TableRows), m.width, m.height)
+}
+
 func (m dashboardModel) Init() tea.Cmd {
 	return fetchDashboard(m.spec, m.tournament, m.conn)
 }
@@ -89,9 +98,14 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.activeTab = max(m.activeTab-1, 0)
 			return m, nil
 		}
-		if m.activeTab == 1 && m.decoded != nil {
+		if m.decoded != nil {
 			var cmd tea.Cmd
-			m.table, cmd = m.table.Update(msg)
+			switch m.activeTab {
+			case 1:
+				m.table, cmd = m.table.Update(msg)
+			case 2:
+				m.extraTable, cmd = m.extraTable.Update(msg)
+			}
 			return m, cmd
 		}
 
@@ -99,7 +113,7 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 		if m.decoded != nil {
-			m.table = newTable(m.spec, m.decoded.TableRows, m.width, m.height)
+			m.buildTables()
 		}
 		return m, nil
 
@@ -110,7 +124,7 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		d := msg.decoded
 		m.decoded = &d
-		m.table = newTable(m.spec, d.TableRows, m.width, m.height)
+		m.buildTables()
 	}
 
 	return m, nil
@@ -129,7 +143,11 @@ func (m dashboardModel) renderTab(contentWidth int) string {
 	case 1:
 		return m.table.View()
 	case 2:
-		return m.decoded.ExtraTab(contentWidth)
+		view := m.extraTable.View()
+		if c := m.decoded.Extra.Caption; c != "" {
+			view += "\n\n" + captionStyle.Render(c)
+		}
+		return view
 	case 3:
 		return BarChart(m.decoded.Countries, contentWidth, 20)
 	}

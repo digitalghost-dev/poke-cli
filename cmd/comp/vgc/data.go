@@ -50,7 +50,13 @@ func decode(body []byte) (shell.Decoded, error) {
 		}
 	}
 
-	usage := usageItems(rows)
+	d.Extra = shell.Frequency{
+		NameHeader:  "Pokémon",
+		CountHeader: "Teams",
+		Caption:     "Based on the top 256 players' teams per event.",
+		Items:       usageItems(rows),
+	}
+
 	var tournament, tType, date, winner string
 	var total int
 	var winnerTeam []string
@@ -66,27 +72,24 @@ func decode(body []byte) (shell.Decoded, error) {
 	d.Overview = func(contentWidth int, hc color.Color) string {
 		return overviewContent(tournament, tType, date, winner, winnerTeam, total, contentWidth, hc)
 	}
-	d.ExtraTab = func(contentWidth int) string {
-		return shell.BarChart(usage, contentWidth, 30)
-	}
 	return d, nil
 }
 
-func countryItems(rows []standingRow) []shell.BarChartItem {
+func countryItems(rows []standingRow) []shell.Tally {
 	counts := map[string]int{}
 	for _, r := range rows {
 		if r.PlayerCountry != "" {
 			counts[r.PlayerCountry]++
 		}
 	}
-	items := make([]shell.BarChartItem, 0, len(counts))
+	items := make([]shell.Tally, 0, len(counts))
 	for country, n := range counts {
-		items = append(items, shell.BarChartItem{Label: country, Total: n})
+		items = append(items, shell.Tally{Label: country, Count: n})
 	}
 	return items
 }
 
-func usageItems(rows []standingRow) []shell.BarChartItem {
+func usageItems(rows []standingRow) []shell.Tally {
 	counts := map[string]int{}
 	for _, r := range rows {
 		for _, mon := range r.Team {
@@ -95,9 +98,9 @@ func usageItems(rows []standingRow) []shell.BarChartItem {
 			}
 		}
 	}
-	items := make([]shell.BarChartItem, 0, len(counts))
+	items := make([]shell.Tally, 0, len(counts))
 	for name, n := range counts {
-		items = append(items, shell.BarChartItem{Label: name, Total: n})
+		items = append(items, shell.Tally{Label: name, Count: n})
 	}
 	return items
 }

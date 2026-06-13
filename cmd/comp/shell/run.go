@@ -12,11 +12,18 @@ import (
 
 type ConnFunc func(string) ([]byte, error)
 
+type Frequency struct {
+	NameHeader  string
+	CountHeader string
+	Caption     string
+	Items       []Tally
+}
+
 type Decoded struct {
 	TableRows []table.Row
-	Countries []BarChartItem
 	Overview  func(contentWidth int, highlight color.Color) string
-	ExtraTab  func(contentWidth int) string
+	Extra     Frequency
+	Countries []Tally
 }
 
 type Spec struct {

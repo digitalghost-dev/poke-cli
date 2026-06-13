@@ -10,6 +10,8 @@ import (
 
 const keyMenu = "← → (switch tab) • b (back) • w (web) • ctrl+c | esc (quit)"
 
+var captionStyle = lipgloss.NewStyle().Foreground(styling.Gray).Italic(true)
+
 func (s *Styles) Render(tabs []string, activeTab, width int, renderContent func(contentWidth int) string) string {
 	doc := strings.Builder{}
 

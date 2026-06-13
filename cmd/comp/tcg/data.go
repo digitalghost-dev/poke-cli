@@ -42,7 +42,13 @@ func decode(body []byte) (shell.Decoded, error) {
 		}
 	}
 
-	decks := deckItems(rows)
+	d.Extra = shell.Frequency{
+		NameHeader:  "Deck",
+		CountHeader: "Players",
+		Caption:     "Based on the top 256 players per event.",
+		Items:       deckItems(rows),
+	}
+
 	var tournament, tType, date, winner, winningDeck string
 	var total int
 	if len(rows) > 0 {
@@ -53,34 +59,31 @@ func decode(body []byte) (shell.Decoded, error) {
 	d.Overview = func(contentWidth int, hc color.Color) string {
 		return overviewContent(tournament, tType, date, winner, winningDeck, total, contentWidth, hc)
 	}
-	d.ExtraTab = func(contentWidth int) string {
-		return shell.BarChart(decks, contentWidth, 30)
-	}
 	return d, nil
 }
 
-func countryItems(rows []standingRow) []shell.BarChartItem {
+func countryItems(rows []standingRow) []shell.Tally {
 	counts := map[string]int{}
 	for _, r := range rows {
 		if r.PlayerCountry != "" {
 			counts[r.PlayerCountry]++
 		}
 	}
-	items := make([]shell.BarChartItem, 0, len(counts))
+	items := make([]shell.Tally, 0, len(counts))
 	for country, n := range counts {
-		items = append(items, shell.BarChartItem{Label: country, Total: n})
+		items = append(items, shell.Tally{Label: country, Count: n})
 	}
 	return items
 }
 
-func deckItems(rows []standingRow) []shell.BarChartItem {
+func deckItems(rows []standingRow) []shell.Tally {
 	counts := map[string]int{}
 	for _, r := range rows {
 		counts[r.Deck]++
 	}
-	items := make([]shell.BarChartItem, 0, len(counts))
+	items := make([]shell.Tally, 0, len(counts))
 	for deck, n := range counts {
-		items = append(items, shell.BarChartItem{Label: deck, Total: n})
+		items = append(items, shell.Tally{Label: deck, Count: n})
 	}
 	return items
 }

@@ -6,41 +6,38 @@ import (
 	"strings"
 )
 
-type BarChartItem struct {
+type Tally struct {
 	Label string
-	Total int
+	Count int
 }
 
-func BarChart(s []BarChartItem, width, labelWidth int) string {
+func BarChart(s []Tally, width, labelWidth int) string {
 	if len(s) == 0 {
 		return ""
 	}
 
-	sorted := make([]BarChartItem, len(s))
+	sorted := make([]Tally, len(s))
 	copy(sorted, s)
 	sort.Slice(sorted, func(i, j int) bool {
-		return sorted[i].Total > sorted[j].Total
+		return sorted[i].Count > sorted[j].Count
 	})
 
 	display := sorted
 	if len(sorted) > 9 {
 		other := 0
 		for _, stat := range sorted[9:] {
-			other += stat.Total
+			other += stat.Count
 		}
-		display = append(sorted[:9], BarChartItem{Label: "Other", Total: other})
+		display = append(sorted[:9], Tally{Label: "Other", Count: other})
 	}
 
 	const countWidth = 5
-	maxBarWidth := width - labelWidth - countWidth - 4
-	if maxBarWidth < 10 {
-		maxBarWidth = 10
-	}
+	maxBarWidth := max(width-labelWidth-countWidth-4, 10)
 
 	maxVal := 0
 	for _, stat := range display {
-		if stat.Total > maxVal {
-			maxVal = stat.Total
+		if stat.Count > maxVal {
+			maxVal = stat.Count
 		}
 	}
 
@@ -48,13 +45,13 @@ func BarChart(s []BarChartItem, width, labelWidth int) string {
 	for _, stat := range display {
 		barWidth := 0
 		if maxVal > 0 {
-			barWidth = stat.Total * maxBarWidth / maxVal
-			if barWidth == 0 && stat.Total > 0 {
+			barWidth = stat.Count * maxBarWidth / maxVal
+			if barWidth == 0 && stat.Count > 0 {
 				barWidth = 1
 			}
 		}
 		bar := strings.Repeat("█", barWidth) + strings.Repeat(" ", maxBarWidth-barWidth)
-		fmt.Fprintf(&sb, "%-*s %s %*d\n", labelWidth, stat.Label, bar, countWidth, stat.Total)
+		fmt.Fprintf(&sb, "%-*s %s %*d\n", labelWidth, stat.Label, bar, countWidth, stat.Count)
 	}
 	return sb.String()
 }
