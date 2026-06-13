@@ -6,16 +6,16 @@ import (
 )
 
 func TestBarChart_Empty(t *testing.T) {
-	result := BarChart([]BarChartItem{}, 80, 20)
+	result := BarChart([]Tally{}, 80, 20)
 	if result != "" {
 		t.Errorf("expected empty string for empty input, got %q", result)
 	}
 }
 
 func TestBarChart_AllZeroTotals(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "USA", Total: 0},
-		{Label: "Japan", Total: 0},
+	items := []Tally{
+		{Label: "USA", Count: 0},
+		{Label: "Japan", Count: 0},
 	}
 
 	result := BarChart(items, 80, 20)
@@ -28,8 +28,8 @@ func TestBarChart_AllZeroTotals(t *testing.T) {
 }
 
 func TestBarChart_SingleEntry(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "USA", Total: 10},
+	items := []Tally{
+		{Label: "USA", Count: 10},
 	}
 	result := BarChart(items, 80, 20)
 	if result == "" {
@@ -44,10 +44,10 @@ func TestBarChart_SingleEntry(t *testing.T) {
 }
 
 func TestBarChart_SortsDescending(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "France", Total: 5},
-		{Label: "USA", Total: 20},
-		{Label: "Japan", Total: 10},
+	items := []Tally{
+		{Label: "France", Count: 5},
+		{Label: "USA", Count: 20},
+		{Label: "Japan", Count: 10},
 	}
 	result := BarChart(items, 80, 20)
 	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
@@ -64,18 +64,18 @@ func TestBarChart_SortsDescending(t *testing.T) {
 }
 
 func TestBarChart_TopNineWithOther(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "A", Total: 100},
-		{Label: "B", Total: 90},
-		{Label: "C", Total: 80},
-		{Label: "D", Total: 70},
-		{Label: "E", Total: 60},
-		{Label: "F", Total: 50},
-		{Label: "G", Total: 40},
-		{Label: "H", Total: 30},
-		{Label: "I", Total: 20},
-		{Label: "J", Total: 10},
-		{Label: "K", Total: 5},
+	items := []Tally{
+		{Label: "A", Count: 100},
+		{Label: "B", Count: 90},
+		{Label: "C", Count: 80},
+		{Label: "D", Count: 70},
+		{Label: "E", Count: 60},
+		{Label: "F", Count: 50},
+		{Label: "G", Count: 40},
+		{Label: "H", Count: 30},
+		{Label: "I", Count: 20},
+		{Label: "J", Count: 10},
+		{Label: "K", Count: 5},
 	}
 	result := BarChart(items, 80, 20)
 	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
@@ -89,9 +89,9 @@ func TestBarChart_TopNineWithOther(t *testing.T) {
 }
 
 func TestBarChart_ExactlyNine(t *testing.T) {
-	items := make([]BarChartItem, 9)
+	items := make([]Tally, 9)
 	for i := range items {
-		items[i] = BarChartItem{Label: "X", Total: i + 1}
+		items[i] = Tally{Label: "X", Count: i + 1}
 	}
 	result := BarChart(items, 80, 20)
 	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
@@ -105,12 +105,12 @@ func TestBarChart_ExactlyNine(t *testing.T) {
 }
 
 func TestBarChart_DoesNotMutateInput(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "France", Total: 5},
-		{Label: "USA", Total: 20},
-		{Label: "Japan", Total: 10},
+	items := []Tally{
+		{Label: "France", Count: 5},
+		{Label: "USA", Count: 20},
+		{Label: "Japan", Count: 10},
 	}
-	original := make([]BarChartItem, len(items))
+	original := make([]Tally, len(items))
 	copy(original, items)
 
 	BarChart(items, 80, 20)
@@ -123,8 +123,8 @@ func TestBarChart_DoesNotMutateInput(t *testing.T) {
 }
 
 func TestBarChart_NarrowWidth(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "USA", Total: 10},
+	items := []Tally{
+		{Label: "USA", Count: 10},
 	}
 	result := BarChart(items, 5, 20)
 	if result == "" {
@@ -133,18 +133,18 @@ func TestBarChart_NarrowWidth(t *testing.T) {
 }
 
 func TestBarChart_OtherExceedsTopEntry(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "A", Total: 10},
-		{Label: "B", Total: 9},
-		{Label: "C", Total: 8},
-		{Label: "D", Total: 7},
-		{Label: "E", Total: 6},
-		{Label: "F", Total: 5},
-		{Label: "G", Total: 4},
-		{Label: "H", Total: 3},
-		{Label: "I", Total: 2},
-		{Label: "J", Total: 50},
-		{Label: "K", Total: 50},
+	items := []Tally{
+		{Label: "A", Count: 10},
+		{Label: "B", Count: 9},
+		{Label: "C", Count: 8},
+		{Label: "D", Count: 7},
+		{Label: "E", Count: 6},
+		{Label: "F", Count: 5},
+		{Label: "G", Count: 4},
+		{Label: "H", Count: 3},
+		{Label: "I", Count: 2},
+		{Label: "J", Count: 50},
+		{Label: "K", Count: 50},
 	}
 	result := BarChart(items, 80, 20)
 	if result == "" {
@@ -153,9 +153,9 @@ func TestBarChart_OtherExceedsTopEntry(t *testing.T) {
 }
 
 func TestBarChart_MinOneBlock(t *testing.T) {
-	items := []BarChartItem{
-		{Label: "Big", Total: 428},
-		{Label: "Tiny", Total: 1},
+	items := []Tally{
+		{Label: "Big", Count: 428},
+		{Label: "Tiny", Count: 1},
 	}
 	result := BarChart(items, 80, 20)
 	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")

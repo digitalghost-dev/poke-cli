@@ -36,9 +36,15 @@ func TestDecode_Success(t *testing.T) {
 		t.Error("expected Landorus forme bracket stripped in the winner team box")
 	}
 
-	usage := d.ExtraTab(120)
-	if !strings.Contains(usage, "Iron Crown") || !strings.Contains(usage, "Landorus [Therian Forme]") {
-		t.Errorf("expected Usage tab to keep full forme names, got:\n%s", usage)
+	if d.Extra.NameHeader != "Pokémon" || d.Extra.CountHeader != "Teams" {
+		t.Errorf("unexpected Extra headers: %q / %q", d.Extra.NameHeader, d.Extra.CountHeader)
+	}
+	usage := map[string]int{}
+	for _, it := range d.Extra.Items {
+		usage[it.Label] = it.Count
+	}
+	if usage["Iron Crown"] != 2 || usage["Landorus [Therian Forme]"] != 2 {
+		t.Errorf("expected Usage tallies to keep full forme names, got %v", usage)
 	}
 }
 
@@ -50,9 +56,12 @@ func TestDecode_TeamJSONB(t *testing.T) {
 	if err != nil {
 		t.Fatalf("decode error: %v", err)
 	}
-	usage := d.ExtraTab(120)
-	if !strings.Contains(usage, "Landorus [Therian Forme]") {
-		t.Errorf("expected forme name in usage, got:\n%s", usage)
+	usage := map[string]int{}
+	for _, it := range d.Extra.Items {
+		usage[it.Label] = it.Count
+	}
+	if usage["Landorus [Therian Forme]"] != 1 {
+		t.Errorf("expected forme name kept in usage tallies, got %v", usage)
 	}
 }
 

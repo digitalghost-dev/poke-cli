@@ -142,7 +142,7 @@ func TestDashboard_View_FetchError(t *testing.T) {
 
 func TestDashboard_View_AllTabs(t *testing.T) {
 	m := loadedTestDashboard()
-	wants := map[int]string{0: "OVERVIEW-BODY", 2: "EXTRA-BODY", 3: "USA"}
+	wants := map[int]string{0: "OVERVIEW-BODY", 2: "EXTRA-CAPTION", 3: "USA"}
 	for tab := 0; tab <= 3; tab++ {
 		m.activeTab = tab
 		content := m.View().Content

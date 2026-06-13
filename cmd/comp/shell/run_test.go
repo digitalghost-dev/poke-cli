@@ -27,9 +27,14 @@ func testSpec() Spec {
 func testDecoded() Decoded {
 	return Decoded{
 		TableRows: []table.Row{{"1", "Ash"}, {"2", "Misty"}},
-		Countries: []BarChartItem{{Label: "USA", Total: 5}},
+		Countries: []Tally{{Label: "USA", Count: 5}},
 		Overview:  func(_ int, _ color.Color) string { return "OVERVIEW-BODY" },
-		ExtraTab:  func(_ int) string { return "EXTRA-BODY" },
+		Extra: Frequency{
+			NameHeader:  "Deck",
+			CountHeader: "Players",
+			Caption:     "EXTRA-CAPTION",
+			Items:       []Tally{{Label: "EXTRA-DECK", Count: 2}},
+		},
 	}
 }
 

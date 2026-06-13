@@ -30,9 +30,15 @@ func TestDecode_Success(t *testing.T) {
 		}
 	}
 
-	decks := d.ExtraTab(120)
-	if !strings.Contains(decks, "gardevoir") || !strings.Contains(decks, "dragapult") {
-		t.Errorf("expected Decks tab to list archetypes, got:\n%s", decks)
+	if d.Extra.NameHeader != "Deck" || d.Extra.CountHeader != "Players" {
+		t.Errorf("unexpected Extra headers: %q / %q", d.Extra.NameHeader, d.Extra.CountHeader)
+	}
+	decks := map[string]int{}
+	for _, it := range d.Extra.Items {
+		decks[it.Label] = it.Count
+	}
+	if decks["gardevoir"] != 1 || decks["dragapult"] != 1 {
+		t.Errorf("expected Decks tallies for gardevoir+dragapult, got %v", decks)
 	}
 }
 
