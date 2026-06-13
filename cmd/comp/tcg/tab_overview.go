@@ -3,23 +3,10 @@ package tcg
 import (
 	"fmt"
 	"image/color"
-	"strconv"
-	"strings"
 
 	"charm.land/lipgloss/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/shell"
 )
-
-func formatInt(n int) string {
-	s := strconv.Itoa(n)
-	var result strings.Builder
-	for i, c := range s {
-		if i > 0 && (len(s)-i)%3 == 0 {
-			result.WriteRune(',')
-		}
-		result.WriteRune(c)
-	}
-	return result.String()
-}
 
 func overviewContent(tournament, tournamentType, tournamentDate, winner, winningDeck string, totalPlayers, contentWidth int, highlightColor color.Color) string {
 	header := fmt.Sprintf("%s · %s · %s", tournament, tournamentType, tournamentDate)
@@ -31,7 +18,7 @@ func overviewContent(tournament, tournamentType, tournamentDate, winner, winning
 		Width(26).
 		Align(lipgloss.Center)
 
-	totalBox := statBox.Render("Total Players\n\n" + formatInt(totalPlayers))
+	totalBox := statBox.Render("Total Players\n\n" + shell.FormatInt(totalPlayers))
 	winnerBox := statBox.Render("Winner\n\n" + winner)
 	deckBox := statBox.Render("Winning Deck\n\n" + winningDeck)
 

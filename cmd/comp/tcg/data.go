@@ -2,12 +2,14 @@ package tcg
 
 import (
 	"encoding/json"
-	"net/url"
+	"image/color"
+	"strconv"
 
-	tea "charm.land/bubbletea/v2"
+	"charm.land/bubbles/v2/table"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/shell"
 )
 
-type standingRows struct {
+type standingRow struct {
 	Rank          int    `json:"rank"`
 	Name          string `json:"name"`
 	Points        int    `json:"points"`
@@ -23,25 +25,62 @@ type standingRows struct {
 	PlayerQty     int    `json:"player_quantity"`
 }
 
-type standingsDataMsg struct {
-	items []standingRows
-	err   error
+func decode(body []byte) (shell.Decoded, error) {
+	var rows []standingRow
+	if err := json.Unmarshal(body, &rows); err != nil {
+		return shell.Decoded{}, err
+	}
+
+	d := shell.Decoded{
+		TableRows: make([]table.Row, len(rows)),
+		Countries: countryItems(rows),
+	}
+	for i, r := range rows {
+		d.TableRows[i] = table.Row{
+			strconv.Itoa(r.Rank), r.Name, strconv.Itoa(r.Points), r.Record,
+			r.OppWinPct, r.OppOppWinPct, r.Deck, r.PlayerCountry,
+		}
+	}
+
+	decks := deckItems(rows)
+	var tournament, tType, date, winner, winningDeck string
+	var total int
+	if len(rows) > 0 {
+		first := rows[0]
+		tournament, tType, date = first.Location, first.Type, first.TextDate
+		winner, winningDeck, total = first.Name, first.Deck, first.PlayerQty
+	}
+	d.Overview = func(contentWidth int, hc color.Color) string {
+		return overviewContent(tournament, tType, date, winner, winningDeck, total, contentWidth, hc)
+	}
+	d.ExtraTab = func(contentWidth int) string {
+		return shell.BarChart(decks, contentWidth, 30)
+	}
+	return d, nil
 }
 
-func fetchData(tournament string, conn func(string) ([]byte, error)) tea.Cmd {
-	return func() tea.Msg {
-		cols := "rank,name,points,record,opp_win_percent,opp_opp_win_percent,deck,player_country,country_code,location,text_date,type,player_quantity"
-		endpoint := "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/comp_standings_view?select=" + cols + "&location=eq." + url.QueryEscape(tournament) + "&order=rank"
-		body, err := conn(endpoint)
-		if err != nil {
-			return standingsDataMsg{err: err}
+func countryItems(rows []standingRow) []shell.BarChartItem {
+	counts := map[string]int{}
+	for _, r := range rows {
+		if r.PlayerCountry != "" {
+			counts[r.PlayerCountry]++
 		}
-
-		var rows []standingRows
-		if err = json.Unmarshal(body, &rows); err != nil {
-			return standingsDataMsg{err: err}
-		}
-
-		return standingsDataMsg{items: rows}
 	}
+	items := make([]shell.BarChartItem, 0, len(counts))
+	for country, n := range counts {
+		items = append(items, shell.BarChartItem{Label: country, Total: n})
+	}
+	return items
+}
+
+func deckItems(rows []standingRow) []shell.BarChartItem {
+	counts := map[string]int{}
+	for _, r := range rows {
+		counts[r.Deck]++
+	}
+	items := make([]shell.BarChartItem, 0, len(counts))
+	for deck, n := range counts {
+		items = append(items, shell.BarChartItem{Label: deck, Total: n})
+	}
+	return items
 }
