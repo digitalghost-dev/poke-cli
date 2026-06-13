@@ -1,70 +1,84 @@
 package tcg
 
 import (
-	"errors"
 	"strings"
 	"testing"
+
+	"charm.land/lipgloss/v2"
 )
 
-func TestFetchStandings_ConnectionError(t *testing.T) {
-	mock := func(_ string) ([]byte, error) {
-		return nil, errors.New("connection refused")
+func TestDecode_Success(t *testing.T) {
+	body := []byte(`[
+		{"rank":1,"name":"Ash","points":47,"record":"15 - 1 - 0","deck":"gardevoir","player_country":"USA","type":"Regional","text_date":"Jan 10","player_quantity":500,"location":"London"},
+		{"rank":2,"name":"Misty","points":44,"deck":"dragapult","player_country":"Japan"}
+	]`)
+	d, err := decode(body)
+	if err != nil {
+		t.Fatalf("decode error: %v", err)
 	}
-	msg := fetchData("London", mock)()
-	result, ok := msg.(standingsDataMsg)
-	if !ok {
-		t.Fatalf("expected standingsDataMsg, got %T", msg)
+	if len(d.TableRows) != 2 {
+		t.Errorf("expected 2 table rows, got %d", len(d.TableRows))
 	}
-	if result.err == nil {
-		t.Error("expected error, got nil")
+	if len(d.Countries) != 2 {
+		t.Errorf("expected 2 country tallies, got %d", len(d.Countries))
 	}
-	if result.items != nil {
-		t.Error("expected nil items on error")
+
+	overview := d.Overview(120, lipgloss.Color("#7D56F4"))
+	for _, s := range []string{"London", "Regional", "Ash", "gardevoir", "500"} {
+		if !strings.Contains(overview, s) {
+			t.Errorf("expected overview to contain %q", s)
+		}
+	}
+
+	decks := d.ExtraTab(120)
+	if !strings.Contains(decks, "gardevoir") || !strings.Contains(decks, "dragapult") {
+		t.Errorf("expected Decks tab to list archetypes, got:\n%s", decks)
 	}
 }
 
-func TestFetchStandings_InvalidJSON(t *testing.T) {
-	mock := func(_ string) ([]byte, error) {
-		return []byte("not json"), nil
-	}
-	msg := fetchData("London", mock)()
-	result, ok := msg.(standingsDataMsg)
-	if !ok {
-		t.Fatalf("expected standingsDataMsg, got %T", msg)
-	}
-	if result.err == nil {
+func TestDecode_InvalidJSON(t *testing.T) {
+	if _, err := decode([]byte("not json")); err == nil {
 		t.Error("expected unmarshal error, got nil")
 	}
 }
 
-func TestFetchStandings_Success(t *testing.T) {
-	mock := func(_ string) ([]byte, error) {
-		return []byte(`[{"rank":1,"name":"Alice","player_country":"USA"},{"rank":2,"name":"Bob","player_country":"Japan"}]`), nil
+func TestDecode_EmptyCountrySkipped(t *testing.T) {
+	body := []byte(`[{"rank":1,"name":"Ash","player_country":""},{"rank":2,"name":"Misty","player_country":"Japan"}]`)
+	d, err := decode(body)
+	if err != nil {
+		t.Fatalf("decode error: %v", err)
 	}
-	msg := fetchData("London", mock)()
-	result, ok := msg.(standingsDataMsg)
-	if !ok {
-		t.Fatalf("expected standingsDataMsg, got %T", msg)
-	}
-	if result.err != nil {
-		t.Errorf("expected no error, got %v", result.err)
-	}
-	if len(result.items) != 2 {
-		t.Errorf("expected 2 items, got %d", len(result.items))
-	}
-	if result.items[0].Name != "Alice" {
-		t.Errorf("expected first item name to be Alice, got %q", result.items[0].Name)
+	if len(d.Countries) != 1 {
+		t.Errorf("expected empty country skipped (1 tally), got %d", len(d.Countries))
 	}
 }
 
-func TestFetchStandings_URLEncoding(t *testing.T) {
-	var capturedURL string
-	mock := func(url string) ([]byte, error) {
-		capturedURL = url
-		return []byte(`[]`), nil
+func TestStandingsColumns_HasDeck(t *testing.T) {
+	cols := standingsColumns(120)
+	if len(cols) != 8 {
+		t.Fatalf("expected 8 columns, got %d", len(cols))
 	}
-	fetchData("São Paulo", mock)()
-	if !strings.Contains(capturedURL, "S%C3%A3o") {
-		t.Errorf("expected URL-encoded tournament name in URL, got %q", capturedURL)
+	found := false
+	for _, c := range cols {
+		if c.Title == "Deck" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("expected a Deck column in the TCG standings table")
+	}
+}
+
+func TestSpec_URLs(t *testing.T) {
+	s := Spec()
+	if !strings.Contains(s.ListURL, "comp_tcg_standings_view") {
+		t.Errorf("expected TCG view in list URL, got %q", s.ListURL)
+	}
+	durl := s.DashboardURL("São Paulo")
+	if !strings.Contains(durl, "comp_tcg_standings_view") {
+		t.Errorf("expected TCG view in dashboard URL, got %q", durl)
+	}
+	if !strings.Contains(durl, "S%C3%A3o") {
+		t.Errorf("expected URL-encoded location, got %q", durl)
 	}
 }
