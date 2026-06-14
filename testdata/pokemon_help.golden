@@ -8,7 +8,7 @@
 │ FLAGS:                                                                    │
 │    -h, --help                     Prints the help menu.                   │
 │    -a, --abilities                Prints the Pokémon's abilities.         │
-│    -d, --defense                  Prints the Pokémon's type defenses.     │
+│    -d, --defenses                 Prints the Pokémon's type defenses.     │
 │    -i=xx, --image=xx              Prints out the Pokémon's default sprite.│
 │         options: [sm, md, lg]                                             │
 │    -m, --moves                    Prints the Pokémon's learnable moves.   │

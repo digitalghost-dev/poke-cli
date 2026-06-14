@@ -28,7 +28,7 @@ func PokemonCommand(args []string) (string, error) {
 					ShowHyphenHint: true,
 					Flags: []utils.FlagHelp{
 						{Short: "-a", Long: "--abilities", Description: "Prints the Pokémon's abilities."},
-						{Short: "-d", Long: "--defense", Description: "Prints the Pokémon's type defenses."},
+						{Short: "-d", Long: "--defenses", Description: "Prints the Pokémon's type defenses."},
 						{Short: "-i=xx", Long: "--image=xx", Description: "Prints out the Pokémon's default sprite.\n\t     " + styling.StyleItalic.Render("options: [sm, md, lg]")},
 						{Short: "-m", Long: "--moves", Description: "Prints the Pokémon's learnable moves."},
 						{Short: "-s", Long: "--stats", Description: "Prints the Pokémon's base stats."},

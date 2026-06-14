@@ -67,7 +67,7 @@ func SetupPokemonFlagSet() *PokemonFlags {
 	pf.Abilities = pf.FlagSet.Bool("abilities", false, "Print the Pokémon's abilities")
 	pf.ShortAbilities = pf.FlagSet.Bool("a", false, "Print the Pokémon's abilities")
 
-	pf.Defenses = pf.FlagSet.Bool("defense", false, "Print the Pokémon's type defenses")
+	pf.Defenses = pf.FlagSet.Bool("defenses", false, "Print the Pokémon's type defenses")
 	pf.ShortDefenses = pf.FlagSet.Bool("d", false, "Print the Pokémon's type defenses")
 
 	pf.Image = pf.FlagSet.String("image", "", "Print the Pokémon's default sprite")
@@ -85,7 +85,7 @@ func SetupPokemonFlagSet() *PokemonFlags {
 		helpMessage := styling.HelpBorder.Render("poke-cli pokemon <pokemon-name> [flags]\n\n",
 			styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-30s %s", "-a, --abilities", "Prints the Pokémon's abilities."),
-			fmt.Sprintf("\n\t%-30s %s", "-d, --defense", "Prints the Pokémon's type defenses."),
+			fmt.Sprintf("\n\t%-30s %s", "-d, --defenses", "Prints the Pokémon's type defenses."),
 			fmt.Sprintf("\n\t%-30s %s", "-i=xx, --image=xx", "Prints out the Pokémon's default sprite."),
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
 			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokémon's learnable moves."),
