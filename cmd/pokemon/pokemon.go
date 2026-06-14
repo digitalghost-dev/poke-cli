@@ -32,7 +32,6 @@ func PokemonCommand(args []string) (string, error) {
 						{Short: "-i=xx", Long: "--image=xx", Description: "Prints out the Pokémon's default sprite.\n\t     " + styling.StyleItalic.Render("options: [sm, md, lg]")},
 						{Short: "-m", Long: "--moves", Description: "Prints the Pokémon's learnable moves."},
 						{Short: "-s", Long: "--stats", Description: "Prints the Pokémon's base stats."},
-						{Short: "-t", Long: "--types", Description: styling.ErrorColor.Render("Deprecated. Typing is included by default.")},
 					},
 				},
 			),
@@ -119,7 +118,6 @@ func PokemonCommand(args []string) (string, error) {
 		{*pf.Defenses || *pf.ShortDefenses, flags.DefenseFlag},
 		{*pf.Moves || *pf.ShortMoves, flags.MovesFlag},
 		{*pf.Stats || *pf.ShortStats, flags.StatsFlag},
-		{*pf.Types || *pf.ShortTypes, flags.TypesFlag},
 	}
 
 	for _, check := range flagChecks {

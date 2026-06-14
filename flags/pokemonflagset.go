@@ -43,8 +43,6 @@ type PokemonFlags struct {
 	ShortMoves     *bool
 	Stats          *bool
 	ShortStats     *bool
-	Types          *bool
-	ShortTypes     *bool
 }
 
 func header(header string) string {
@@ -81,9 +79,6 @@ func SetupPokemonFlagSet() *PokemonFlags {
 	pf.Stats = pf.FlagSet.Bool("stats", false, "Print the Pokémon's base stats")
 	pf.ShortStats = pf.FlagSet.Bool("s", false, "Print the Pokémon's base stats")
 
-	pf.Types = pf.FlagSet.Bool("types", false, "Print the Pokémon's typing")
-	pf.ShortTypes = pf.FlagSet.Bool("t", false, "Print the Pokémon's typing")
-
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 
 	pf.FlagSet.Usage = func() {
@@ -95,7 +90,6 @@ func SetupPokemonFlagSet() *PokemonFlags {
 			fmt.Sprintf("\n\t%5s%-15s", "", hintMessage),
 			fmt.Sprintf("\n\t%-30s %s", "-m, --moves", "Prints the Pokémon's learnable moves."),
 			fmt.Sprintf("\n\t%-30s %s", "-s, --stats", "Prints the Pokémon's base stats."),
-			fmt.Sprintf("\n\t%-30s %s", "-t, --types", styling.ErrorColor.Render("Deprecated. Typing is included by default.")),
 			fmt.Sprintf("\n\t%-30s %s", "-h, --help", "Prints the help menu."),
 		)
 		fmt.Println(helpMessage)
@@ -661,41 +655,6 @@ func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 	if err != nil {
 		return err
 	}
-
-	return nil
-}
-
-func TypesFlag(w io.Writer, endpoint string, pokemonName string) error {
-	pokemonStruct, _, err := connections.PokemonApiCall(endpoint, pokemonName, connections.APIURL)
-	if err != nil {
-		return err
-	}
-
-	// Print the header from header func
-	_, err = fmt.Fprintln(w, header("Typing"))
-	if err != nil {
-		return err
-	}
-
-	for _, pokeType := range pokemonStruct.Types {
-		colorHex, exists := styling.ColorMap[pokeType.Type.Name]
-		if exists {
-			color := lipgloss.Color(colorHex)
-			style := lipgloss.NewStyle().Bold(true).Foreground(color)
-			styledName := style.Render(cases.Title(language.English).String(pokeType.Type.Name))
-			_, err := fmt.Fprintf(w, "Type %d: %s\n", pokeType.Slot, styledName)
-			if err != nil {
-				return err
-			}
-		} else {
-			_, err := fmt.Fprintf(w, "Type %d: %s\n", pokeType.Slot, cases.Title(language.English).String(pokeType.Type.Name))
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	fmt.Fprintln(w, styling.WarningBorder.Render(styling.WarningColor.Render("⚠ Warning!"), "\nThe '-t | --types' flag is deprecated\nand will be removed in v2.\n\nTyping is now included by default.\nYou no longer need this flag. "))
 
 	return nil
 }

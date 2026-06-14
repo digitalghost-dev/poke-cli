@@ -31,10 +31,8 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 		{pf.ShortImage, "", "Short image flag default value should be 'md'"},
 		{pf.Moves, false, "Moves flag default value should be 'moves'"},
 		{pf.ShortMoves, false, "Short moves flag default value should be 'm'"},
-		{pf.Types, false, "Types flag should be 'types'"},
 		{pf.Stats, false, "Stats flag should be 'stats'"},
 		{pf.ShortStats, false, "Short stats flag should be 's'"},
-		{pf.ShortTypes, false, "Short types flag should be 't'"},
 	}
 
 	for _, tt := range flagTests {
@@ -242,42 +240,4 @@ Total      318
 	actualOutput := styling.StripANSI(output.String())
 
 	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the stats flag")
-}
-
-func TestTypesFlag(t *testing.T) {
-	var output bytes.Buffer
-	stdout := os.Stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
-
-	err := TypesFlag(&output, "pokemon", "bulbasaur")
-
-	if closeErr := w.Close(); closeErr != nil {
-		t.Fatalf("Failed to close pipe writer: %v", closeErr)
-	}
-	os.Stdout = stdout
-
-	_, readErr := output.ReadFrom(r)
-	if readErr != nil {
-		t.Fatalf("Failed to read from pipe: %v", readErr)
-	}
-
-	require.NoError(t, err, "TypesFlag should not return an error for a valid Pokémon")
-
-	expectedOutput := `──────
-Typing
-Type 1: Grass
-Type 2: Poison
-╭─────────────────────────────────────╮
-│⚠ Warning!                           │
-│The '-t | --types' flag is deprecated│
-│and will be removed in v2.           │
-│                                     │
-│Typing is now included by default.   │
-│You no longer need this flag.        │
-╰─────────────────────────────────────╯
-`
-	actualOutput := styling.StripANSI(output.String())
-
-	assert.Equal(t, expectedOutput, actualOutput, "Output should contain data for the types flag")
 }
