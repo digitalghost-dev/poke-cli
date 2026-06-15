@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"sync"
+
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 var cacheWarnOnce sync.Once
@@ -14,8 +16,8 @@ func cacheNotice() (string, error) {
 	if suppressCacheWarning() {
 		return "", nil
 	}
-	return "⚠ poke-cache not installed — running without local caching.\n" +
-		"  Install it for faster repeat lookups: https://docs.poke-cli.com/caching", nil
+	return styling.WarningColor.Render("poke-cache not installed; running without local caching.\n" +
+		"  Install it for faster repeat lookups: https://docs.poke-cli.com/caching"), nil
 }
 
 func warnNoCache() {
