@@ -117,11 +117,10 @@ Output:
 **Available Flags**
 
 * `-a | --abilities`
-* `-d | --defense`
+* `-d | --defenses`
 * `-i=xx | --image=xx`
 * `-m | --moves`
 * `-s | --stats`
-* `-t | --types`
 
 !!! warning
 
