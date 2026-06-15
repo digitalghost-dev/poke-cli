@@ -1,6 +1,7 @@
 import dagster as dg
 import polars as pl
 from dagster import Backoff, RetryPolicy
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 from termcolor import colored
 
@@ -18,10 +19,13 @@ def load_standings_data(create_standings_dataframe: pl.DataFrame) -> None:
 
     df = create_standings_dataframe
     try:
-        df.write_database(
-            table_name=table_name, connection=database_url, if_table_exists="replace"
-        )
+        engine = create_engine(database_url)
+        with engine.begin() as conn:
+            conn.execute(text(f"TRUNCATE TABLE {table_name}"))
+            df.write_database(
+                table_name=table_name, connection=conn, if_table_exists="append"
+            )
         print(colored(" ✓", "green"), f"Data loaded into {table_name}")
     except OperationalError as e:
-        print(colored(" ✖", "red"), "Connection error in load_card_data():", e)
+        print(colored(" ✖", "red"), "Connection error in load_standings_data():", e)
         raise
