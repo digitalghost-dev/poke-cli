@@ -29,11 +29,24 @@ func captureStderr(t *testing.T, fn func()) string {
 }
 
 func TestSuppressCacheWarning(t *testing.T) {
-	t.Setenv("POKE_CLI_NO_CACHE_WARNING", "")
-	assert.False(t, suppressCacheWarning(), "empty env var should not suppress")
+	tests := []struct {
+		value    string
+		suppress bool
+	}{
+		{"", false},
+		{"0", false},
+		{"false", false},
+		{"banana", false},
+		{"1", true},
+		{"true", true},
+	}
 
-	t.Setenv("POKE_CLI_NO_CACHE_WARNING", "1")
-	assert.True(t, suppressCacheWarning(), "set env var should suppress")
+	for _, tt := range tests {
+		t.Run(tt.value, func(t *testing.T) {
+			t.Setenv("POKE_CLI_NO_CACHE_WARNING", tt.value)
+			assert.Equal(t, tt.suppress, suppressCacheWarning())
+		})
+	}
 }
 
 func TestCacheNotice(t *testing.T) {

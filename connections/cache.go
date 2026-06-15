@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 	"sync"
 
 	"github.com/digitalghost-dev/poke-cli/styling"
@@ -29,7 +30,8 @@ func warnNoCache() {
 }
 
 func suppressCacheWarning() bool {
-	return os.Getenv("POKE_CLI_NO_CACHE_WARNING") != ""
+	v, err := strconv.ParseBool(os.Getenv("POKE_CLI_NO_CACHE_WARNING"))
+	return err == nil && v
 }
 
 func cachedFetch(url string) ([]byte, error) {
