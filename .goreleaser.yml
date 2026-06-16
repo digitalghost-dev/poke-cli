@@ -30,7 +30,9 @@ builds:
       path: prebuilt/poke-cache-{{ .Os }}-{{ .Arch }}/poke-cache{{ .Ext }}
 
 archives:
-  - formats: [ 'zip' ]
+  - id: poke-cli
+    ids: [ poke-cli, poke-cache ]
+    formats: [ 'zip' ]
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -38,10 +40,16 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-      - goos: windows
-        formats: [ 'zip' ]
+  - id: poke-cache
+    ids: [ poke-cache ]
+    formats: [ 'zip' ]
+    name_template: >-
+      poke-cache_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
 
 changelog:
   sort: asc
@@ -52,6 +60,7 @@ changelog:
 
 homebrew_casks:
   - name: poke-cli
+    ids: [ poke-cli ]
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     homepage: "https://docs.poke-cli.com/"
     license: MIT
@@ -68,6 +77,7 @@ homebrew_casks:
 
 scoops:
   - name: poke-cli
+    ids: [ poke-cli ]
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     homepage: "https://docs.poke-cli.com/"
     license: MIT
