@@ -81,7 +81,8 @@ func AbilityCommand(args []string) (string, error) {
 	}
 
 	capitalizedAbility := styling.CapitalizeResourceName(abilityName)
-	output.WriteString(styling.StyleBold.Render(capitalizedAbility) + "\n")
+	output.WriteString(styling.StyleBold.Render(capitalizedAbility))
+	output.WriteByte('\n')
 
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")
 	if len(generationParts) > 1 {
