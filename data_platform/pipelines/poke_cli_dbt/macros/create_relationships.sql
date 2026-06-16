@@ -1,4 +1,13 @@
 {% macro create_relationships() %}
+    {% if not execute %}{% do return('') %}{% endif %}
+
+    {% set targets = ['cards', 'sets', 'series'] %}
+    {% set ran = [] %}
+    {% for res in results %}
+        {% if res.node.name in targets %}{% do ran.append(res.node.name) %}{% endif %}
+    {% endfor %}
+    {% if ran | length == 0 %}{% do return('') %}{% endif %}
+
     {{ print("Dropping existing constraints...") }}
 
     -- Drop existing constraints if they exist (in reverse dependency order)
