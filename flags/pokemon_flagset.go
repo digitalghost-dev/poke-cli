@@ -3,7 +3,6 @@
 package flags
 
 import (
-	"flag"
 	"fmt"
 	"image"
 	"io"
@@ -15,6 +14,7 @@ import (
 	"strings"
 	"sync"
 
+	flag "github.com/spf13/pflag"
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
 	cmdutils "github.com/digitalghost-dev/poke-cli/cmd/utils"
@@ -34,15 +34,10 @@ var pokemonSpriteHTTPClient = connections.NewDefaultHTTPClient()
 type PokemonFlags struct {
 	FlagSet        *flag.FlagSet
 	Abilities      *bool
-	ShortAbilities *bool
 	Defenses       *bool
-	ShortDefenses  *bool
 	Image          *string
-	ShortImage     *string
 	Moves          *bool
-	ShortMoves     *bool
 	Stats          *bool
-	ShortStats     *bool
 }
 
 func header(header string) string {
@@ -64,20 +59,15 @@ func SetupPokemonFlagSet() *PokemonFlags {
 	pf := &PokemonFlags{}
 	pf.FlagSet = flag.NewFlagSet("pokeFlags", flag.ContinueOnError)
 
-	pf.Abilities = pf.FlagSet.Bool("abilities", false, "Print the Pokémon's abilities")
-	pf.ShortAbilities = pf.FlagSet.Bool("a", false, "Print the Pokémon's abilities")
+	pf.Abilities = pf.FlagSet.BoolP("abilities", "a", false, "Print the Pokémon's abilities")
 
-	pf.Defenses = pf.FlagSet.Bool("defenses", false, "Print the Pokémon's type defenses")
-	pf.ShortDefenses = pf.FlagSet.Bool("d", false, "Print the Pokémon's type defenses")
+	pf.Defenses = pf.FlagSet.BoolP("defenses", "d", false, "Print the Pokémon's type defenses")
 
-	pf.Image = pf.FlagSet.String("image", "", "Print the Pokémon's default sprite")
-	pf.ShortImage = pf.FlagSet.String("i", "", "Print the Pokémon's default sprite")
+	pf.Image = pf.FlagSet.StringP("image", "i", "", "Print the Pokémon's default sprite")
 
-	pf.Moves = pf.FlagSet.Bool("moves", false, "Print the Pokémon's learnable moves")
-	pf.ShortMoves = pf.FlagSet.Bool("m", false, "Print the Pokémon's learnable moves")
+	pf.Moves = pf.FlagSet.BoolP("moves", "m", false, "Print the Pokémon's learnable moves")
 
-	pf.Stats = pf.FlagSet.Bool("stats", false, "Print the Pokémon's base stats")
-	pf.ShortStats = pf.FlagSet.Bool("s", false, "Print the Pokémon's base stats")
+	pf.Stats = pf.FlagSet.BoolP("stats", "s", false, "Print the Pokémon's base stats")
 
 	hintMessage := styling.StyleItalic.Render("options: [sm, md, lg]")
 

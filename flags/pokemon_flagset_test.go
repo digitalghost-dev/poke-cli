@@ -24,15 +24,10 @@ func TestSetupPokemonFlagSet(t *testing.T) {
 		name     string
 	}{
 		{pf.Abilities, false, "Abilities flag should be 'abilities'"},
-		{pf.ShortAbilities, false, "Short abilities flag should be 'a'"},
 		{pf.Defenses, false, "Defenses flag should be 'defense'"},
-		{pf.ShortDefenses, false, "Short Defenses flag should be 'd'"},
 		{pf.Image, "", "Image flag default value should be 'md'"},
-		{pf.ShortImage, "", "Short image flag default value should be 'md'"},
 		{pf.Moves, false, "Moves flag default value should be 'moves'"},
-		{pf.ShortMoves, false, "Short moves flag default value should be 'm'"},
 		{pf.Stats, false, "Stats flag should be 'stats'"},
-		{pf.ShortStats, false, "Short stats flag should be 's'"},
 	}
 
 	for _, tt := range flagTests {

@@ -25,7 +25,6 @@ func TestSetupAbilityFlagSet(t *testing.T) {
 		name     string
 	}{
 		{af.Pokemon, false, "Pokemon flag should be 'pokemon'"},
-		{af.ShortPokemon, false, "Short pokemon flag should be 'p'"},
 	}
 
 	for _, tt := range flagTests {

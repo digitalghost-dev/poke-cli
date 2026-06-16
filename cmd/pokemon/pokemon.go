@@ -3,11 +3,11 @@ package pokemon
 import (
 	"bytes"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"strings"
 
+	flag "github.com/spf13/pflag"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -96,12 +96,9 @@ func PokemonCommand(args []string) (string, error) {
 		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(), effortValuesOutput.String(),
 	)
 
-	if *pf.Image != "" || *pf.ShortImage != "" {
+	if *pf.Image != "" {
 		// Determine the size based on the provided flags
 		size := *pf.Image
-		if *pf.ShortImage != "" {
-			size = *pf.ShortImage
-		}
 
 		// Call the ImageFlag function with the specified size
 		if err := flags.ImageFlag(&output, endpoint, pokemonName, size); err != nil {
@@ -114,10 +111,10 @@ func PokemonCommand(args []string) (string, error) {
 		condition bool
 		flagFunc  func(io.Writer, string, string) error
 	}{
-		{*pf.Abilities || *pf.ShortAbilities, flags.AbilitiesFlag},
-		{*pf.Defenses || *pf.ShortDefenses, flags.DefenseFlag},
-		{*pf.Moves || *pf.ShortMoves, flags.MovesFlag},
-		{*pf.Stats || *pf.ShortStats, flags.StatsFlag},
+		{*pf.Abilities, flags.AbilitiesFlag},
+		{*pf.Defenses, flags.DefenseFlag},
+		{*pf.Moves, flags.MovesFlag},
+		{*pf.Stats, flags.StatsFlag},
 	}
 
 	for _, check := range flagChecks {

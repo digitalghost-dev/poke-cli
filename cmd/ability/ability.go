@@ -2,10 +2,10 @@ package ability
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"strings"
 
+	flag "github.com/spf13/pflag"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -99,7 +99,7 @@ func AbilityCommand(args []string) (string, error) {
 		fmt.Fprintf(&output, "%s Effect: %s", styling.ColoredBullet, englishShortEffect)
 	}
 
-	if *af.Pokemon || *af.ShortPokemon {
+	if *af.Pokemon {
 		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
 			return utils.HandleFlagError(&output, err)
 		}

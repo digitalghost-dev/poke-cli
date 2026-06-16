@@ -1,11 +1,11 @@
 package flags
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"strings"
 
+	flag "github.com/spf13/pflag"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"golang.org/x/text/cases"
@@ -15,15 +15,13 @@ import (
 type AbilityFlags struct {
 	FlagSet      *flag.FlagSet
 	Pokemon      *bool
-	ShortPokemon *bool
 }
 
 func SetupAbilityFlagSet() *AbilityFlags {
 	af := &AbilityFlags{}
 	af.FlagSet = flag.NewFlagSet("abilityFlags", flag.ContinueOnError)
 
-	af.Pokemon = af.FlagSet.Bool("pokemon", false, "List all Pokémon with chosen ability")
-	af.ShortPokemon = af.FlagSet.Bool("p", false, "List all Pokémon with chosen ability")
+	af.Pokemon = af.FlagSet.BoolP("pokemon", "p", false, "List all Pokémon with chosen ability")
 
 	af.FlagSet.Usage = func() {
 		helpMessage := styling.HelpBorder.Render("poke-cli ability <ability-name> [flags]\n\n",
