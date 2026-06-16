@@ -42,8 +42,40 @@ permissions:
   security-events: write
 
 jobs:
+  smoke-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
+
+      - name: Build
+        shell: bash
+        run: go build -o poke-cli${{ matrix.os == 'windows-latest' && '.exe' || '' }} .
+
+      - name: Smoke test
+        shell: bash
+        run: |
+          BIN=./poke-cli${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          "$BIN" --help
+          "$BIN" pokemon pikachu
+          "$BIN" pokemon charizard -a -d
+          "$BIN" ability overgrow
+          "$BIN" move thunderbolt
+          "$BIN" natures
+
   gosec:
     runs-on: ubuntu-22.04
+    needs: [smoke-tests]
 
     steps:
       - name: Checkout
@@ -61,6 +93,7 @@ jobs:
 
   bandit:
     runs-on: ubuntu-22.04
+    needs: [smoke-tests]
 
     steps:
       - name: Checkout
@@ -87,6 +120,31 @@ jobs:
         with:
           sarif_file: bandit-results.sarif
 
+  rust-cache:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build poke-cache
+        run: cargo build --release --manifest-path services/Cargo.toml --bin poke-cache
+
+      - name: Test cache module
+        run: cargo test --manifest-path services/Cargo.toml --lib cache
+
+      - name: Smoke test poke-cache
+        run: |
+          BIN=services/target/release/poke-cache
+          "$BIN" get "https://pokeapi.co/api/v2/pokemon/pikachu" > out.json
+          test -s out.json
+          "$BIN" get "https://pokeapi.co/api/v2/pokemon/pikachu" 2> hit.log > /dev/null
+          grep -q "Cache hit" hit.log
+          echo "poke-cache smoke test passed"
+
   gitleaks:
     runs-on: ubuntu-22.04
     needs: [gosec, bandit]
@@ -111,8 +169,8 @@ jobs:
 
   build-linux-packages:
     runs-on: ubuntu-22.04
-    needs: [gitleaks]
-    if: needs.gitleaks.result == 'success'
+    needs: [gitleaks, rust-cache]
+    if: needs.gitleaks.result == 'success' && needs.rust-cache.result == 'success'
     strategy:
       matrix:
         arch: [ amd64, arm64 ]
@@ -133,6 +191,24 @@ jobs:
           CGO_ENABLED: 0
         run: |
           go build -ldflags="-s -w -X main.version=${{ env.VERSION_NUMBER }}" -o poke-cli
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.arch == 'arm64' && 'aarch64-unknown-linux-gnu' || 'x86_64-unknown-linux-gnu' }}
+
+      - name: Install aarch64 cross-linker
+        if: matrix.arch == 'arm64'
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build poke-cache Binary
+        env:
+          RUST_TARGET: ${{ matrix.arch == 'arm64' && 'aarch64-unknown-linux-gnu' || 'x86_64-unknown-linux-gnu' }}
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+          CC_aarch64_unknown_linux_gnu: aarch64-linux-gnu-gcc
+        run: |
+          cargo build --release --manifest-path services/Cargo.toml --bin poke-cache --target "$RUST_TARGET"
+          cp "services/target/$RUST_TARGET/release/poke-cache" ./poke-cache
 
       - name: Install nFPM
         run: |
@@ -161,12 +237,6 @@ jobs:
             --packager rpm \
             --target dist/poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.rpm
           
-          # Build APK package
-          nfpm package \
-            --config nfpm-${{ matrix.arch }}.yaml \
-            --packager apk \
-            --target dist/poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.apk
-
       - name: Upload packages as artifacts
         uses: actions/upload-artifact@v6
         with:
@@ -229,37 +299,9 @@ jobs:
             digitalghost-dev/poke-cli/fedora/42 \
             poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.rpm
 
-  upload-apk-packages:
-    runs-on: ubuntu-22.04
-    needs: [build-linux-packages]
-    if: needs.build-linux-packages.result == 'success'
-    strategy:
-      matrix:
-        arch: [ amd64, arm64 ]
-      fail-fast: false
-
-    steps:
-      - name: Download package artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: linux-packages-${{ matrix.arch }}
-          path: packages/
-
-      - name: Install Cloudsmith CLI
-        uses: cloudsmith-io/cloudsmith-cli-action@v2
-        with:
-          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-
-      - name: Upload APK to Cloudsmith
-        working-directory: packages
-        run: |
-          cloudsmith push alpine \
-            digitalghost-dev/poke-cli/alpine/v3.22 \
-            poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.apk
-
   upload-summary:
     runs-on: ubuntu-22.04
-    needs: [upload-deb-packages, upload-rpm-packages, upload-apk-packages]
+    needs: [upload-deb-packages, upload-rpm-packages]
     if: always()
 
     steps:
@@ -267,11 +309,9 @@ jobs:
         run: |
           echo "DEB uploads: ${{ needs.upload-deb-packages.result }}"
           echo "RPM uploads: ${{ needs.upload-rpm-packages.result }}"
-          echo "APK uploads: ${{ needs.upload-apk-packages.result }}"
-          
+
           if [ "${{ needs.upload-deb-packages.result }}" != "success" ] || \
-             [ "${{ needs.upload-rpm-packages.result }}" != "success" ] || \
-             [ "${{ needs.upload-apk-packages.result }}" != "success" ]; then
+             [ "${{ needs.upload-rpm-packages.result }}" != "success" ]; then
             echo "⚠️ Some uploads failed"
             exit 1
           fi

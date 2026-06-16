@@ -7,7 +7,8 @@ before:
     - go mod tidy
 
 builds:
-  - env:
+  - id: poke-cli
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -15,6 +16,18 @@ builds:
       - darwin
     ldflags:
       - -s -w -X main.version=v2.0.0
+  - id: poke-cache
+    builder: prebuilt
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: poke-cache
+    prebuilt:
+      path: prebuilt/poke-cache-{{ .Os }}-{{ .Arch }}/poke-cache{{ .Ext }}
 
 archives:
   - formats: [ 'zip' ]
@@ -42,8 +55,6 @@ homebrew_casks:
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     homepage: "https://docs.poke-cli.com/"
     license: MIT
-    conflicts:
-      - formula: poke-cli
     repository:
       owner: digitalghost-dev
       name: homebrew-tap
@@ -52,7 +63,7 @@ homebrew_casks:
       post:
         install: |
           if OS.mac? && system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poke-cli"]
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}"]
           end
 
 scoops:

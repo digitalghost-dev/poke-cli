@@ -13,3 +13,5 @@ license: "MIT"
 contents:
   - src: ./poke-cli
     dst: /usr/bin/poke-cli
+  - src: ./poke-cache
+    dst: /usr/bin/poke-cache

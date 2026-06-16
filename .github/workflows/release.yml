@@ -4,27 +4,104 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
+  build-poke-cache:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-22.04
+            goos: linux
+            goarch: amd64
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-22.04
+            goos: linux
+            goarch: arm64
+            apt: gcc-aarch64-linux-gnu
+            cross_linker: aarch64-linux-gnu-gcc
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            goos: darwin
+            goarch: amd64
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            goos: darwin
+            goarch: arm64
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            goos: windows
+            goarch: amd64
+            ext: .exe
+          - target: aarch64-pc-windows-msvc
+            os: windows-latest
+            goos: windows
+            goarch: arm64
+            ext: .exe
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install aarch64 cross-linker
+        if: matrix.apt
+        run: sudo apt-get update && sudo apt-get install -y ${{ matrix.apt }}
+
+      - name: Build poke-cache
+        shell: bash
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: ${{ matrix.cross_linker }}
+          CC_aarch64_unknown_linux_gnu: ${{ matrix.cross_linker }}
+        run: cargo build --release --manifest-path services/Cargo.toml --bin poke-cache --target ${{ matrix.target }}
+
+      - name: Stage binary
+        shell: bash
+        run: |
+          mkdir -p staging
+          cp "services/target/${{ matrix.target }}/release/poke-cache${{ matrix.ext }}" "staging/poke-cache${{ matrix.ext }}"
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v6
+        with:
+          name: poke-cache-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: staging/poke-cache${{ matrix.ext }}
+          if-no-files-found: error
+
   goreleaser:
+    needs: [build-poke-cache]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.25
+          go-version: '1.25'
+
+      - name: Download poke-cache binaries
+        uses: actions/download-artifact@v7
+        with:
+          pattern: poke-cache-*
+          path: prebuilt
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
-          distribution: goreleaser
+          distribution: goreleaser-pro
           version: '~> v2'
-          args: release --clean
+          args: ${{ startsWith(github.ref, 'refs/tags/') && 'release --clean' || 'release --clean --snapshot' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_GORELEASER }}
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
