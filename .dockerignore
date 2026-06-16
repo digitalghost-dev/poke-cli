@@ -29,3 +29,6 @@ testdata/
 
 # Python data
 data_platform/
+
+# Rust build artifacts
+services/target/
