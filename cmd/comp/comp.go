@@ -7,6 +7,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/tcg"
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/vgc"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/champions"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 )
 
@@ -60,6 +61,8 @@ func CompCommand(args []string) (string, error) {
 			back, err = tcg.Run()
 		case "vgc":
 			back, err = vgc.Run()
+		case "champions":
+			back, err = champions.Run()
 		}
 		if err != nil {
 			return "", err

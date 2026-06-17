@@ -7,8 +7,9 @@ import (
 )
 
 var compIDMap = map[string]string{
-	"TCG": "tcg",
-	"VGC": "vgc",
+	"TCG Competition Data":     "tcg",
+	"VGC Competition Data":     "vgc",
+	"Pokémon Champions Data":   "champions",
 }
 
 type pickerModel struct {
@@ -64,11 +65,12 @@ func (m pickerModel) View() tea.View {
 
 func CompList() pickerModel {
 	items := []list.Item{
-		styling.Item("TCG"),
-		styling.Item("VGC"),
+		styling.Item("TCG Competition Data"),
+		styling.Item("VGC Competition Data"),
+		styling.Item("Pokémon Champions Data"),
 	}
 
-	const listWidth = 20
+	const listWidth = 24
 	const listHeight = 12
 
 	l := list.New(items, styling.ItemDelegate{}, listWidth, listHeight)

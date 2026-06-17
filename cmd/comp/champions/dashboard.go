@@ -1,0 +1,117 @@
+package champions
+
+import (
+	"fmt"
+
+	"charm.land/bubbles/v2/table"
+	tea "charm.land/bubbletea/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/shell"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/web"
+)
+
+var tabs = []string{"Overview", "Usage", "Top Teams", "Speed Tiers"}
+
+type dashboardModel struct {
+	activeTab int
+	conn      shell.ConnFunc
+	data      *dashboardData
+	err       error
+	goBack    bool
+	height    int
+	styles    *shell.Styles
+	teams     table.Model
+	width     int
+}
+
+func newDashboard(conn shell.ConnFunc) dashboardModel {
+	return dashboardModel{
+		conn:   conn,
+		styles: shell.NewStyles(),
+	}
+}
+
+func (m dashboardModel) renderTab(contentWidth int) string {
+	if m.err != nil {
+		return fmt.Sprintf("fetch error: %v", m.err)
+	}
+
+	if m.data == nil {
+		return "  Loading..."
+	}
+
+	switch m.activeTab {
+	case 0:
+		return "Overview"
+	case 1:
+		return "Usage"
+	case 2:
+		return renderTeamsTable(m.teams)
+	case 3:
+		return "Speed Tiers"
+	default:
+		return ""
+	}
+}
+
+func (m dashboardModel) Init() tea.Cmd {
+	return fetchDashboardData(m.conn)
+}
+
+func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		switch msg.String() {
+		case "ctrl+c", "esc":
+			return m, tea.Quit
+		case "b":
+			m.goBack = true
+			return m, tea.Quit
+		case "w":
+			return m, web.Open("https://web.poke-cli.com/")
+		case "right", "l", "tab":
+			m.activeTab = min(m.activeTab+1, len(tabs)-1)
+			return m, nil
+		case "left", "h", "shift+tab":
+			m.activeTab = max(m.activeTab-1, 0)
+			return m, nil
+		}
+		if m.data != nil && m.activeTab == 2 {
+			var cmd tea.Cmd
+			m.teams, cmd = m.teams.Update(msg)
+			return m, cmd
+		}
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
+		if m.data != nil {
+			m.teams = newTeamsTable(m.data.Teams, contentWidth(m.width), m.height)
+		}
+		return m, nil
+	case dataMsg:
+		if msg.err != nil {
+			m.err = msg.err
+			return m, nil
+		}
+		m.data = msg.data
+		m.teams = newTeamsTable(m.data.Teams, contentWidth(m.width), m.height)
+		return m, nil
+	}
+
+	return m, nil
+}
+
+func (m dashboardModel) View() tea.View {
+	if m.styles == nil {
+		return tea.NewView("")
+	}
+
+	body := m.styles.Render(tabs, m.activeTab, m.width, m.renderTab)
+
+	v := tea.NewView(body)
+	v.AltScreen = true
+	return v
+}
+
+func contentWidth(width int) int {
+	return max(width-10, 40)
+}
