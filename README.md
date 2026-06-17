@@ -163,6 +163,9 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
    ```
 2. The tool should be ready to use if `$PATH` is set up.
 
+> [!TIP]
+> `go install` builds only the `poke-cli` binary, **not** the `poke-cache` caching helper (a separate binary that every packaged install bundles). `poke-cli` works the same without it; it just calls PokéAPI directly instead of caching responses on disk. To enable caching, download the `poke-cache` archive for your platform from the [releases](https://github.com/digitalghost-dev/poke-cli/releases/latest) page, extract it, and move the `poke-cache` binary onto your `$PATH`.
+
 
 ---
 ## Usage

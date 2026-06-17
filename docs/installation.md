@@ -46,7 +46,6 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 
 | Package Type | Distributions                     | Repository Setup                                                                                                                        | Installation Command                   |
 |:------------:|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
-|    `apk`     | Alpine                            | `sudo apk add --no-cache bash && curl -1sLf 'https://dl.cloudsmith.io/basic/digitalghost-dev/poke-cli/setup.alpine.sh' \| sudo -E bash` | `sudo apk add poke-cli --update-cache` |
 |    `deb`     | Ubuntu, Debian                    | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.deb.sh' \| sudo -E bash`                                   | `sudo apt-get install poke-cli`        |
 |    `rpm`     | Fedora, CentOS, Red Hat, openSUSE | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.rpm.sh' \| sudo -E bash`                                   | `sudo yum install poke-cli`            |
 
@@ -108,10 +107,10 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 #### Example usage
   ```console
   # Windows
-  .\poke-cli.exe pokemon charizard --types --abilities
+  .\poke-cli.exe pokemon charizard --abilities
    
   # Unix
-  .\poke-cli ability airlock --pokemon
+  ./poke-cli ability airlock --pokemon
   ```
 
 ### Source
@@ -121,3 +120,7 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
    go install github.com/digitalghost-dev/poke-cli@latest
    ```
 2. The tool should be ready to use if `$PATH` is set up.
+
+!!! tip
+
+    `go install` builds only the `poke-cli` binary, **not** the `poke-cache` caching helper (a separate binary that every packaged install bundles). `poke-cli` works the same without it; it just calls PokéAPI directly instead of caching responses on disk. To enable caching, download the `poke-cache` archive for your platform from the [releases](https://github.com/digitalghost-dev/poke-cli/releases/latest) page, extract it, and move the `poke-cache` binary onto your `$PATH`.
