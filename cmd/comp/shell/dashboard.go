@@ -91,10 +91,10 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "w":
 			return m, web.Open("https://web.poke-cli.com/")
-		case "right", "l", "n", "tab":
+		case "right", "l", "tab":
 			m.activeTab = min(m.activeTab+1, len(m.spec.Tabs)-1)
 			return m, nil
-		case "left", "h", "p", "shift+tab":
+		case "left", "h", "shift+tab":
 			m.activeTab = max(m.activeTab-1, 0)
 			return m, nil
 		}
