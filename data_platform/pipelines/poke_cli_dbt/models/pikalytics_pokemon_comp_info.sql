@@ -1,13 +1,7 @@
 {{ config(
-    materialized='table',
-    post_hook="{{ enable_rls() }}"
+    materialized='incremental',
+    pre_hook="truncate table {{ this }}"
 ) }}
-
--- Replaces pikalytics_pokemon_comp_stats. n8n reads the fresh top-50 from
--- staging.pikalytics_usage, scrapes each Pokémon's AI pokedex page, and lands RAW rows
--- (pokemon, web_url + 4 JSONB "common" sections) in staging.pikalytics_pokemon_comp_info
--- (full replace each run). Derivations live here: pokemon_slug, pokemon_id (resolve_pokemon_id),
--- format/source constants. The common_* JSONB sections pass through unchanged.
 
 WITH staged AS (
     SELECT

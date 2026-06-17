@@ -1,6 +1,6 @@
 {{ config(
-    materialized='table',
-    post_hook="{{ enable_rls() }}"
+    materialized='incremental',
+    pre_hook="truncate table {{ this }}"
 ) }}
 
 WITH staged AS (

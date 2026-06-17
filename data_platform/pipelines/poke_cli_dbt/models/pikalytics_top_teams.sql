@@ -1,13 +1,7 @@
 {{ config(
-    materialized='table',
-    post_hook="{{ enable_rls() }}"
+    materialized='incremental',
+    pre_hook="truncate table {{ this }}"
 ) }}
-
--- Replaces pikalytics_comp_top_teams. n8n lands RAW rows (rank, author, record,
--- tournament, archetypes, pokemon, web_url) in staging.pikalytics_top_teams (full
--- replace each run). All derivations live here in SQL (moved out of the n8n Code node):
--- wins/losses/ties parsed from record, format/source constants, and pokemon_ids —
--- a parallel array linking each team member to the public.pokemon hub via resolve_pokemon_id.
 
 WITH staged AS (
     SELECT
