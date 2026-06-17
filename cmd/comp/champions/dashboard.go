@@ -45,7 +45,7 @@ func (m dashboardModel) renderTab(contentWidth int) string {
 	case 1:
 		return "Usage"
 	case 2:
-		return renderTeamsTable(m.teams)
+		return renderTeamsTable(m.teams, m.data.Teams, contentWidth)
 	case 3:
 		return "Speed Tiers"
 	default:

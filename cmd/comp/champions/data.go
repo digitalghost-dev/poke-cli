@@ -7,7 +7,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/shell"
 )
 
-const topTeamsURL = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_top_teams?select=rank,author,record,tournament,archetypes,pokemon,web_url&order=rank"
+const topTeamsURL = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_top_teams?select=author,record,tournament,archetypes,pokemon,web_url&order=rank"
 
 type dashboardData struct {
 	Teams []teamRow
@@ -19,8 +19,7 @@ type dataMsg struct {
 }
 
 type teamRow struct {
-	Rank       int      `json:"rank"`
-	Author     string   `json:"author"`
+	Player     string   `json:"author"`
 	Record     string   `json:"record"`
 	Tournament string   `json:"tournament"`
 	Archetypes []string `json:"archetypes"`
