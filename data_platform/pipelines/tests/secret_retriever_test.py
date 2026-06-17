@@ -75,11 +75,6 @@ def test_fetch_secret_cache_raises(mock_get_session, mock_secret_cache_cls):
         fetch_secret()
 
 
-# ---------------------------------------------------------------------------
-# fetch_n8n_webhook_secret()
-# ---------------------------------------------------------------------------
-
-
 @patch("pipelines.utils.secret_retriever.SecretCache")
 @patch("pipelines.utils.secret_retriever.botocore.session.get_session")
 def test_fetch_n8n_webhook_secret_success(mock_get_session, mock_secret_cache_cls):
@@ -90,7 +85,7 @@ def test_fetch_n8n_webhook_secret_success(mock_get_session, mock_secret_cache_cl
     mock_cache_instance.get_secret_string.return_value = secret_payload
     mock_secret_cache_cls.return_value = mock_cache_instance
 
-    result = fetch_n8n_webhook_secret()
+    result = fetch_n8n_webhook_secret("n8n_webhook")
 
     assert result == "https://n8n.example.com/hook/abc"  # nosec
     mock_cache_instance.get_secret_string.assert_called_once_with("n8n_webhook")
@@ -107,7 +102,7 @@ def test_fetch_n8n_webhook_secret_missing_key(mock_get_session, mock_secret_cach
     mock_secret_cache_cls.return_value = mock_cache_instance
 
     with pytest.raises(KeyError, match="n8n_webhook"):
-        fetch_n8n_webhook_secret()
+        fetch_n8n_webhook_secret("n8n_webhook")
 
 
 @patch("pipelines.utils.secret_retriever.SecretCache")
@@ -119,7 +114,7 @@ def test_fetch_n8n_webhook_secret_invalid_json(mock_get_session, mock_secret_cac
     mock_secret_cache_cls.return_value = mock_cache_instance
 
     with pytest.raises(json.JSONDecodeError):
-        fetch_n8n_webhook_secret()
+        fetch_n8n_webhook_secret("n8n_webhook")
 
 
 @patch("pipelines.utils.secret_retriever.SecretCache")
@@ -133,7 +128,7 @@ def test_fetch_n8n_webhook_secret_empty_json_object(
     mock_secret_cache_cls.return_value = mock_cache_instance
 
     with pytest.raises(KeyError, match="n8n_webhook"):
-        fetch_n8n_webhook_secret()
+        fetch_n8n_webhook_secret("n8n_webhook")
 
 
 @patch("pipelines.utils.secret_retriever.SecretCache")
@@ -145,4 +140,4 @@ def test_fetch_n8n_webhook_secret_cache_raises(mock_get_session, mock_secret_cac
     mock_secret_cache_cls.return_value = mock_cache_instance
 
     with pytest.raises(Exception, match="Access denied"):
-        fetch_n8n_webhook_secret()
+        fetch_n8n_webhook_secret("n8n_webhook")
