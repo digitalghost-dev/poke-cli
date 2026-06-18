@@ -34,6 +34,27 @@ func testTeams() []teamRow {
 	}
 }
 
+func testCompInfo() []compInfoRow {
+	return []compInfoRow{
+		{
+			Pokemon:         "Miraidon",
+			WebURL:          "https://example.com/pokemon/1",
+			CommonMoves:     []commonStat{{Name: "Protect", UsagePercent: 90.5}},
+			CommonAbilities: []commonStat{{Name: "Hadron Engine", UsagePercent: 100}},
+			CommonItems:     []commonStat{{Name: "Choice Specs", UsagePercent: 45.2}},
+			CommonTeammates: []commonStat{{Name: "Flutter Mane", UsagePercent: 70.1}},
+		},
+		{
+			Pokemon:         "Calyrex-Shadow",
+			WebURL:          "",
+			CommonMoves:     []commonStat{{Name: "Astral Barrage", UsagePercent: 99.1}},
+			CommonAbilities: []commonStat{{Name: "As One", UsagePercent: 100}},
+			CommonItems:     nil,
+			CommonTeammates: []commonStat{{Name: "Miraidon", UsagePercent: 40.0}},
+		},
+	}
+}
+
 func newTestDashboard() dashboardModel {
 	return dashboardModel{
 		conn:   noopConn,
@@ -45,7 +66,7 @@ func newTestDashboard() dashboardModel {
 
 func loadedTestDashboard() dashboardModel {
 	m := newTestDashboard()
-	nm, _ := m.Update(dataMsg{data: &dashboardData{Teams: testTeams()}})
+	nm, _ := m.Update(dataMsg{data: &dashboardData{CompInfo: testCompInfo(), Teams: testTeams()}})
 	return nm.(dashboardModel)
 }
 
@@ -146,7 +167,19 @@ func TestDashboard_Update_DataMsg_Success(t *testing.T) {
 		t.Fatal("expected data to be set")
 	}
 	if len(m.teams.Rows()) != 2 {
-		t.Errorf("expected 2 table rows, got %d", len(m.teams.Rows()))
+		t.Errorf("expected 2 team rows, got %d", len(m.teams.Rows()))
+	}
+	if len(m.overview.Rows()) != 2 {
+		t.Errorf("expected 2 overview rows, got %d", len(m.overview.Rows()))
+	}
+}
+
+func TestDashboard_Update_OverviewTableNavigation(t *testing.T) {
+	m := loadedTestDashboard()
+	m.activeTab = 0
+	nm, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
+	if nm.(dashboardModel).overview.Cursor() != 1 {
+		t.Errorf("expected overview cursor to advance to 1, got %d", nm.(dashboardModel).overview.Cursor())
 	}
 }
 
@@ -252,7 +285,7 @@ func TestDashboard_RenderTab(t *testing.T) {
 	}{
 		{"error", func() dashboardModel { m := newTestDashboard(); m.err = errors.New("boom"); return m }(), 0, "fetch error"},
 		{"loading", newTestDashboard(), 0, "Loading"},
-		{"overview", loaded, 0, "Overview"},
+		{"overview", loaded, 0, "Miraidon"},
 		{"usage", loaded, 1, "Usage"},
 		{"top teams", loaded, 2, "Alice"},
 		{"speed tiers", loaded, 3, "Speed Tiers"},

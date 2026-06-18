@@ -9,7 +9,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/web"
 )
 
-var tabs = []string{"Overview", "Usage", "Top Teams", "Speed Tiers"}
+var tabs = []string{"Pokémon Overview", "Usage", "Top Teams", "Speed Tiers"}
 
 type dashboardModel struct {
 	activeTab int
@@ -18,6 +18,8 @@ type dashboardModel struct {
 	err       error
 	goBack    bool
 	height    int
+	quit bool
+	overview  table.Model
 	styles    *shell.Styles
 	teams     table.Model
 	width     int
@@ -41,7 +43,7 @@ func (m dashboardModel) renderTab(contentWidth int) string {
 
 	switch m.activeTab {
 	case 0:
-		return "Overview"
+		return renderOverview(m.overview, m.data.CompInfo, contentWidth)
 	case 1:
 		return "Usage"
 	case 2:
@@ -62,6 +64,7 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
+			m.quit = true
 			return m, tea.Quit
 		case "b":
 			m.goBack = true
@@ -75,15 +78,23 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.activeTab = max(m.activeTab-1, 0)
 			return m, nil
 		}
-		if m.data != nil && m.activeTab == 2 {
-			var cmd tea.Cmd
-			m.teams, cmd = m.teams.Update(msg)
-			return m, cmd
+		if m.data != nil {
+			switch m.activeTab {
+			case 0:
+				var cmd tea.Cmd
+				m.overview, cmd = m.overview.Update(msg)
+				return m, cmd
+			case 2:
+				var cmd tea.Cmd
+				m.teams, cmd = m.teams.Update(msg)
+				return m, cmd
+			}
 		}
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
 		if m.data != nil {
+			m.overview = newOverviewTable(m.data.CompInfo, m.height)
 			m.teams = newTeamsTable(m.data.Teams, contentWidth(m.width), m.height)
 		}
 		return m, nil
@@ -93,6 +104,7 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		m.data = msg.data
+		m.overview = newOverviewTable(m.data.CompInfo, m.height)
 		m.teams = newTeamsTable(m.data.Teams, contentWidth(m.width), m.height)
 		return m, nil
 	}
@@ -101,6 +113,10 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m dashboardModel) View() tea.View {
+	if m.quit {
+		return tea.NewView("\n Goodbye! \n")
+	}
+
 	if m.styles == nil {
 		return tea.NewView("")
 	}

@@ -8,11 +8,113 @@ import (
 	"strings"
 
 	"charm.land/bubbles/v2/table"
+	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/shell"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
-// Top Teams section
+// Overview tab
+func newOverviewTable(rows []compInfoRow, height int) table.Model {
+	const nameWidth = 22
+	columns := []table.Column{{Title: "Pokémon", Width: nameWidth}}
+
+	trows := make([]table.Row, 0, len(rows))
+	for _, row := range rows {
+		trows = append(trows, table.Row{row.Pokemon})
+	}
+
+	t := table.New(
+		table.WithColumns(columns),
+		table.WithRows(trows),
+		table.WithFocused(true),
+		table.WithHeight(max(height-12, 5)),
+		table.WithWidth(nameWidth+4),
+	)
+	t.SetStyles(shell.TableStyles())
+	return t
+}
+
+var overviewCaption = lipgloss.NewStyle().Foreground(styling.Gray).Italic(true)
+
+func renderOverview(pokemonTable table.Model, rows []compInfoRow, width int) string {
+	if len(rows) == 0 {
+		return "No data available"
+	}
+
+	caption := overviewCaption.Render("Select a Pokémon to see its most common moves, items, abilities, and teammates from recent Champions events.")
+
+	detailWidth := max(width-pokemonTable.Width()-4, 40)
+	detail := renderPokemonDetail(selectedCompInfo(pokemonTable, rows), detailWidth)
+	body := lipgloss.JoinHorizontal(lipgloss.Top, pokemonTable.View(), "  ", detail)
+	return caption + "\n\n" + body
+}
+
+func selectedCompInfo(pokemonTable table.Model, rows []compInfoRow) compInfoRow {
+	if len(rows) == 0 {
+		return compInfoRow{}
+	}
+
+	idx := min(max(pokemonTable.Cursor(), 0), len(rows)-1)
+	return rows[idx]
+}
+
+func renderPokemonDetail(row compInfoRow, width int) string {
+	colWidth := min(max((width-3)/2, 18), 34)
+
+	moves := renderStatColumn("Common Moves", row.CommonMoves, colWidth)
+	items := renderStatColumn("Common Items", row.CommonItems, colWidth)
+	abilities := renderStatColumn("Common Abilities", row.CommonAbilities, colWidth)
+	teammates := renderStatColumn("Common Teammates", row.CommonTeammates, colWidth)
+
+	var b strings.Builder
+	b.WriteString(styling.Yellow.Render(row.Pokemon))
+	b.WriteString("\n\n")
+	b.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, moves, "   ", items))
+	b.WriteString("\n\n")
+	b.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, abilities, "   ", teammates))
+	if row.WebURL != "" {
+		b.WriteString("\n\n")
+		b.WriteString(detailLine("Link", row.WebURL, width))
+	}
+	return b.String()
+}
+
+func renderStatColumn(title string, stats []commonStat, width int) string {
+	var b strings.Builder
+	b.WriteString(styling.StyleBold.Render(title))
+	b.WriteString("\n")
+	if len(stats) == 0 {
+		b.WriteString("-")
+	} else {
+		for i, stat := range stats {
+			if i > 0 {
+				b.WriteString("\n")
+			}
+			b.WriteString(statLine(stat, width))
+		}
+	}
+	return lipgloss.NewStyle().Width(width).Render(b.String())
+}
+
+func statLine(stat commonStat, width int) string {
+	const pctWidth = 6
+	nameWidth := min(max(width-pctWidth-1, 6), 20)
+	name := lipgloss.NewStyle().Width(nameWidth).Render(truncateName(stat.Name, nameWidth))
+	return fmt.Sprintf("%s %*.1f%%", name, pctWidth-1, stat.UsagePercent)
+}
+
+func truncateName(name string, width int) string {
+	if lipgloss.Width(name) <= width {
+		return name
+	}
+	runes := []rune(name)
+	if width <= 1 {
+		return string(runes[:max(width, 0)])
+	}
+	return string(runes[:width-1]) + "…"
+}
+
+// Top Teams tab
 func newTeamsTable(teams []teamRow, width, height int) table.Model {
 	columns := teamColumns(width)
 	rows := make([]table.Row, 0, len(teams))
@@ -184,4 +286,4 @@ func splitLongWord(word string, width int) []string {
 	return lines
 }
 
-// Speed Tiers section
+// Speed Tiers tab

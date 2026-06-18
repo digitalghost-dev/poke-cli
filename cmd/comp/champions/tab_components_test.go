@@ -43,6 +43,105 @@ func TestTeamCore(t *testing.T) {
 	}
 }
 
+func TestNewOverviewTable(t *testing.T) {
+	rows := testCompInfo()
+	tbl := newOverviewTable(rows, 40)
+	if len(tbl.Rows()) != len(rows) {
+		t.Fatalf("expected %d rows, got %d", len(rows), len(tbl.Rows()))
+	}
+	if tbl.Rows()[0][0] != "Miraidon" {
+		t.Errorf("expected first row Miraidon, got %q", tbl.Rows()[0][0])
+	}
+}
+
+func TestSelectedCompInfo(t *testing.T) {
+	rows := testCompInfo()
+
+	if got := selectedCompInfo(newOverviewTable(nil, 40), nil); got.Pokemon != "" {
+		t.Errorf("expected zero compInfoRow for empty rows, got %+v", got)
+	}
+
+	tbl := newOverviewTable(rows, 40)
+	if got := selectedCompInfo(tbl, rows); got.Pokemon != "Miraidon" {
+		t.Errorf("expected first Pokémon selected, got %q", got.Pokemon)
+	}
+}
+
+func TestRenderOverview(t *testing.T) {
+	if got := renderOverview(newOverviewTable(nil, 40), nil, 120); got != "No data available" {
+		t.Errorf("expected empty-state message, got %q", got)
+	}
+
+	rows := testCompInfo()
+	out := renderOverview(newOverviewTable(rows, 40), rows, 120)
+	for _, want := range []string{"Miraidon", "Common Moves", "Common Items", "Common Abilities", "Common Teammates", "Protect", "Flutter Mane"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("expected overview to contain %q", want)
+		}
+	}
+}
+
+func TestRenderPokemonDetail(t *testing.T) {
+	withLink := testCompInfo()[0]
+	out := renderPokemonDetail(withLink, 90)
+	for _, want := range []string{"Miraidon", "Protect", "Hadron Engine", "Choice Specs", "Flutter Mane", "Link", "https://example.com/pokemon/1", "90.5%", "100.0%"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("expected detail to contain %q, got:\n%s", want, out)
+		}
+	}
+
+	noLink := testCompInfo()[1]
+	out2 := renderPokemonDetail(noLink, 90)
+	if strings.Contains(out2, "Link") {
+		t.Error("expected no Link line when WebURL is empty")
+	}
+	if !strings.Contains(out2, "Common Items") {
+		t.Error("expected Common Items heading even with no items")
+	}
+}
+
+func TestRenderStatColumn(t *testing.T) {
+	empty := renderStatColumn("Common Items", nil, 30)
+	if !strings.Contains(empty, "Common Items") || !strings.Contains(empty, "-") {
+		t.Errorf("expected title and dash placeholder, got %q", empty)
+	}
+
+	stats := []commonStat{{Name: "Protect", UsagePercent: 90.5}, {Name: "Tailwind", UsagePercent: 10.25}}
+	out := renderStatColumn("Common Moves", stats, 30)
+	for _, want := range []string{"Common Moves", "Protect", "90.5%", "Tailwind", "10.2%"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("expected stat column to contain %q, got:\n%s", want, out)
+		}
+	}
+}
+
+func TestStatLine(t *testing.T) {
+	line := statLine(commonStat{Name: "Shadow Sneak", UsagePercent: 89.758}, 24)
+	if !strings.Contains(line, "Shadow Sneak") || !strings.Contains(line, "89.8%") {
+		t.Errorf("unexpected stat line: %q", line)
+	}
+}
+
+func TestTruncateName(t *testing.T) {
+	tests := []struct {
+		name  string
+		width int
+		want  string
+	}{
+		{"Protect", 10, "Protect"},
+		{"King's Shield", 6, "King'…"},
+		{"Charizard-Mega-Y", 1, "C"},
+		{"", 5, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := truncateName(tt.name, tt.width); got != tt.want {
+				t.Errorf("truncateName(%q, %d) = %q, want %q", tt.name, tt.width, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestTeamColumns(t *testing.T) {
 	for _, width := range []int{200, 120, 40, 10} {
 		cols := teamColumns(width)
