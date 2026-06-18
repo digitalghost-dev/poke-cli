@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp/champions"
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/tcg"
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/vgc"
-	"github.com/digitalghost-dev/poke-cli/cmd/comp/champions"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 )
 
@@ -50,13 +50,13 @@ func CompCommand(args []string) (string, error) {
 			return "", fmt.Errorf("unexpected model type from competition selection: got %T, want compModel", finalModel)
 		}
 
-		if result.CompID == "" {
+		if result.compID == "" {
 			break
 		}
 
 		var back bool
 
-		switch result.CompID {
+		switch result.compID {
 		case "tcg":
 			back, err = tcg.Run()
 		case "vgc":

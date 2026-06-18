@@ -21,16 +21,16 @@ func TestSelection(t *testing.T) {
 
 	final := testModel.FinalModel(t).(model)
 
-	if !final.Chosen {
-		t.Errorf("Expected model to be in Chosen state after pressing enter")
+	if !final.chosen {
+		t.Errorf("Expected model to be in chosen state after pressing enter")
 	}
-	if final.Choice != 0 {
-		t.Errorf("Expected Choice to be 0, got %d", final.Choice)
+	if final.choice != 0 {
+		t.Errorf("Expected choice to be 0, got %d", final.choice)
 	}
-	if !final.TextInput.Focused() {
-		t.Errorf("Expected TextInput to be focused after selection")
+	if !final.textInput.Focused() {
+		t.Errorf("Expected textInput to be focused after selection")
 	}
-	if !final.Quitting {
+	if !final.quitting {
 		t.Errorf("Expected model to be quitting after ctrl+c")
 	}
 }
@@ -39,7 +39,7 @@ func TestChoiceClamping(t *testing.T) {
 	m := initialModel()
 	testModel := teatest.NewTestModel(t, m)
 
-	// Move down twice, this should attempt to exceed max Choice
+	// Move down twice, this should attempt to exceed max choice
 	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown}) // 0 → 1
 	testModel.Send(tea.KeyPressMsg{Code: tea.KeyDown}) // 1 → 2, but should clamp to 1
 
@@ -55,7 +55,7 @@ func TestChoiceClamping(t *testing.T) {
 
 	final := testModel.FinalModel(t).(model)
 
-	if final.Choice != 0 && final.Choice != 1 {
-		t.Errorf("Choice should be clamped between 0 and 1, got %d", final.Choice)
+	if final.choice != 0 && final.choice != 1 {
+		t.Errorf("choice should be clamped between 0 and 1, got %d", final.choice)
 	}
 }

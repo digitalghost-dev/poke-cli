@@ -12,8 +12,8 @@ func TestUpdateInput(t *testing.T) {
 	ti.SetValue("mewtwo")
 
 	m := model{
-		ShowResults: true,
-		TextInput:   ti,
+		showResults: true,
+		textInput:   ti,
 	}
 
 	msg := tea.KeyPressMsg{Code: 'b', Text: "b"}
@@ -21,11 +21,11 @@ func TestUpdateInput(t *testing.T) {
 
 	updated := mUpdated.(model)
 
-	if updated.ShowResults {
-		t.Errorf("expected ShowResults to be false after pressing 'b'")
+	if updated.showResults {
+		t.Errorf("expected showResults to be false after pressing 'b'")
 	}
 
-	if updated.TextInput.Value() != "" {
-		t.Errorf("expected TextInput to be reset")
+	if updated.textInput.Value() != "" {
+		t.Errorf("expected textInput to be reset")
 	}
 }
