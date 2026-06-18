@@ -7,11 +7,11 @@ import (
 	"io"
 	"strings"
 
-	flag "github.com/spf13/pflag"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	flag "github.com/spf13/pflag"
 )
 
 // PokemonCommand processes the Pokémon command

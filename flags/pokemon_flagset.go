@@ -14,7 +14,6 @@ import (
 	"strings"
 	"sync"
 
-	flag "github.com/spf13/pflag"
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
 	cmdutils "github.com/digitalghost-dev/poke-cli/cmd/utils"
@@ -23,6 +22,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/structs"
 	"github.com/digitalghost-dev/poke-cli/styling"
 	"github.com/disintegration/imaging"
+	flag "github.com/spf13/pflag"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -32,12 +32,12 @@ const maxPokemonSpriteBytes = 5 * 1024 * 1024 // 5 MiB
 var pokemonSpriteHTTPClient = connections.NewDefaultHTTPClient()
 
 type PokemonFlags struct {
-	FlagSet        *flag.FlagSet
-	Abilities      *bool
-	Defenses       *bool
-	Image          *string
-	Moves          *bool
-	Stats          *bool
+	FlagSet   *flag.FlagSet
+	Abilities *bool
+	Defenses  *bool
+	Image     *string
+	Moves     *bool
+	Stats     *bool
 }
 
 func header(header string) string {

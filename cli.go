@@ -10,13 +10,13 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/ability"
 	"github.com/digitalghost-dev/poke-cli/cmd/berry"
 	"github.com/digitalghost-dev/poke-cli/cmd/card"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp"
 	"github.com/digitalghost-dev/poke-cli/cmd/item"
 	"github.com/digitalghost-dev/poke-cli/cmd/mechanics"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/speed"
-	"github.com/digitalghost-dev/poke-cli/cmd/comp"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
@@ -125,7 +125,7 @@ func runCLI(args []string) int {
 		"ability":   ability.AbilityCommand,
 		"berry":     berry.BerryCommand,
 		"card":      card.CardCommand,
-		"comp": comp.CompCommand,
+		"comp":      comp.CompCommand,
 		"item":      item.ItemCommand,
 		"mechanics": mechanics.MechanicsCommand,
 		"move":      move.MoveCommand,

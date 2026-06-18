@@ -5,16 +5,16 @@ import (
 	"io"
 	"strings"
 
-	flag "github.com/spf13/pflag"
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	flag "github.com/spf13/pflag"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
 type AbilityFlags struct {
-	FlagSet      *flag.FlagSet
-	Pokemon      *bool
+	FlagSet *flag.FlagSet
+	Pokemon *bool
 }
 
 func SetupAbilityFlagSet() *AbilityFlags {

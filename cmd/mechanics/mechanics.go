@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
-	flag "github.com/spf13/pflag"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/flags"
+	flag "github.com/spf13/pflag"
 )
 
 func MechanicsCommand(args []string) (string, error) {

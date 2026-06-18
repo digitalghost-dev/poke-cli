@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	flag "github.com/spf13/pflag"
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	flag "github.com/spf13/pflag"
 )
 
 type MechanicsFlags struct {

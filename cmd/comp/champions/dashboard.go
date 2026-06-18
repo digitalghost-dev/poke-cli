@@ -18,7 +18,7 @@ type dashboardModel struct {
 	err       error
 	goBack    bool
 	height    int
-	quit bool
+	quit      bool
 	overview  table.Model
 	styles    *shell.Styles
 	teams     table.Model
