@@ -55,6 +55,13 @@ func testCompInfo() []compInfoRow {
 	}
 }
 
+func testSpeedTiers() []speedTierRow {
+	return []speedTierRow{
+		{Rank: 1, Pokemon: "Mega Aerodactyl", BaseSpe: 150, Neutral0: 170, Neutral252: 202, NegMin: 153, Max: 222, MaxScarf: 333, NeutralScarf: 303},
+		{Rank: 9, Pokemon: "Aerodactyl", BaseSpe: 130, Neutral0: 150, Neutral252: 182, NegMin: 135, Max: 200, MaxScarf: 300, NeutralScarf: 273},
+	}
+}
+
 func newTestDashboard() dashboardModel {
 	return dashboardModel{
 		conn:   noopConn,
@@ -66,7 +73,7 @@ func newTestDashboard() dashboardModel {
 
 func loadedTestDashboard() dashboardModel {
 	m := newTestDashboard()
-	nm, _ := m.Update(dataMsg{data: &dashboardData{CompInfo: testCompInfo(), Teams: testTeams()}})
+	nm, _ := m.Update(dataMsg{data: &dashboardData{CompInfo: testCompInfo(), Teams: testTeams(), SpeedTiers: testSpeedTiers()}})
 	return nm.(dashboardModel)
 }
 
@@ -172,6 +179,9 @@ func TestDashboard_Update_DataMsg_Success(t *testing.T) {
 	if len(m.overview.Rows()) != 2 {
 		t.Errorf("expected 2 overview rows, got %d", len(m.overview.Rows()))
 	}
+	if len(m.speed.Rows()) != 2 {
+		t.Errorf("expected 2 speed rows, got %d", len(m.speed.Rows()))
+	}
 }
 
 func TestDashboard_Update_OverviewTableNavigation(t *testing.T) {
@@ -217,6 +227,15 @@ func TestDashboard_Update_TeamsTableNavigation(t *testing.T) {
 	nm, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
 	if nm.(dashboardModel).teams.Cursor() != 1 {
 		t.Errorf("expected table cursor to advance to 1, got %d", nm.(dashboardModel).teams.Cursor())
+	}
+}
+
+func TestDashboard_Update_SpeedTableNavigation(t *testing.T) {
+	m := loadedTestDashboard()
+	m.activeTab = 3
+	nm, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
+	if nm.(dashboardModel).speed.Cursor() != 1 {
+		t.Errorf("expected speed cursor to advance to 1, got %d", nm.(dashboardModel).speed.Cursor())
 	}
 }
 
@@ -288,7 +307,7 @@ func TestDashboard_RenderTab(t *testing.T) {
 		{"overview", loaded, 0, "Miraidon"},
 		{"usage", loaded, 1, "Usage"},
 		{"top teams", loaded, 2, "Alice"},
-		{"speed tiers", loaded, 3, "Speed Tiers"},
+		{"speed tiers", loaded, 3, "Mega Aerodactyl"},
 	}
 
 	for _, tt := range tests {

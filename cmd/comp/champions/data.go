@@ -8,13 +8,15 @@ import (
 )
 
 const (
-	compInfoURL = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_pokemon_comp_info?select=pokemon,web_url,common_moves,common_abilities,common_items,common_teammates&order=pokemon"
-	topTeamsURL = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_top_teams?select=author,record,tournament,archetypes,pokemon,web_url&order=rank"
+	compInfoURL   = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_pokemon_comp_info?select=pokemon,web_url,common_moves,common_abilities,common_items,common_teammates&order=pokemon"
+	topTeamsURL   = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_top_teams?select=author,record,tournament,archetypes,pokemon,web_url&order=rank"
+	speedTiersURL = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_speed_tiers?select=rank,pokemon,base_spe,neutral_0_sp,neutral_32_sp,neg_spe_0_sp,max_speed,max_scarf,neutral_32_scarf&order=rank"
 )
 
 type dashboardData struct {
-	CompInfo []compInfoRow
-	Teams    []teamRow
+	CompInfo   []compInfoRow
+	Teams      []teamRow
+	SpeedTiers []speedTierRow
 }
 
 type dataMsg struct {
@@ -45,6 +47,18 @@ type commonStat struct {
 	UsagePercent float64 `json:"usage_percent"`
 }
 
+type speedTierRow struct {
+	Rank         int    `json:"rank"`
+	Pokemon      string `json:"pokemon"`
+	BaseSpe      int    `json:"base_spe"`
+	Neutral0     int    `json:"neutral_0_sp"`
+	Neutral252   int    `json:"neutral_32_sp"`
+	NegMin       int    `json:"neg_spe_0_sp"`
+	Max          int    `json:"max_speed"`
+	MaxScarf     int    `json:"max_scarf"`
+	NeutralScarf int    `json:"neutral_32_scarf"`
+}
+
 func fetchDashboardData(conn shell.ConnFunc) tea.Cmd {
 	return func() tea.Msg {
 		compInfo, err := fetchCompInfo(conn)
@@ -57,10 +71,16 @@ func fetchDashboardData(conn shell.ConnFunc) tea.Cmd {
 			return dataMsg{err: err}
 		}
 
+		speedTiers, err := fetchSpeedTiers(conn)
+		if err != nil {
+			return dataMsg{err: err}
+		}
+
 		return dataMsg{
 			data: &dashboardData{
-				CompInfo: compInfo,
-				Teams:    teams,
+				CompInfo:   compInfo,
+				Teams:      teams,
+				SpeedTiers: speedTiers,
 			},
 		}
 	}
@@ -90,4 +110,17 @@ func fetchTopTeams(conn shell.ConnFunc) ([]teamRow, error) {
 		return nil, err
 	}
 	return teams, nil
+}
+
+func fetchSpeedTiers(conn shell.ConnFunc) ([]speedTierRow, error) {
+	body, err := conn(speedTiersURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var rows []speedTierRow
+	if err := json.Unmarshal(body, &rows); err != nil {
+		return nil, err
+	}
+	return rows, nil
 }

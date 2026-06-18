@@ -20,6 +20,7 @@ type dashboardModel struct {
 	height    int
 	quit      bool
 	overview  table.Model
+	speed     table.Model
 	styles    *shell.Styles
 	teams     table.Model
 	width     int
@@ -49,7 +50,7 @@ func (m dashboardModel) renderTab(contentWidth int) string {
 	case 2:
 		return renderTeamsTable(m.teams, m.data.Teams, contentWidth)
 	case 3:
-		return "Speed Tiers"
+		return renderSpeedTiers(m.speed, m.data.SpeedTiers)
 	default:
 		return ""
 	}
@@ -88,6 +89,10 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				var cmd tea.Cmd
 				m.teams, cmd = m.teams.Update(msg)
 				return m, cmd
+			case 3:
+				var cmd tea.Cmd
+				m.speed, cmd = m.speed.Update(msg)
+				return m, cmd
 			}
 		}
 	case tea.WindowSizeMsg:
@@ -96,6 +101,7 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.data != nil {
 			m.overview = newOverviewTable(m.data.CompInfo, m.height)
 			m.teams = newTeamsTable(m.data.Teams, contentWidth(m.width), m.height)
+			m.speed = newSpeedTable(m.data.SpeedTiers, m.height)
 		}
 		return m, nil
 	case dataMsg:
@@ -106,6 +112,7 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.data = msg.data
 		m.overview = newOverviewTable(m.data.CompInfo, m.height)
 		m.teams = newTeamsTable(m.data.Teams, contentWidth(m.width), m.height)
+		m.speed = newSpeedTable(m.data.SpeedTiers, m.height)
 		return m, nil
 	}
 

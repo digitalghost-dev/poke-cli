@@ -5,6 +5,7 @@ package champions
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"charm.land/bubbles/v2/table"
@@ -12,6 +13,8 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/comp/shell"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
+
+var captionStyle = lipgloss.NewStyle().Foreground(styling.Gray).Italic(true)
 
 // Overview tab
 func newOverviewTable(rows []compInfoRow, height int) table.Model {
@@ -34,14 +37,12 @@ func newOverviewTable(rows []compInfoRow, height int) table.Model {
 	return t
 }
 
-var overviewCaption = lipgloss.NewStyle().Foreground(styling.Gray).Italic(true)
-
 func renderOverview(pokemonTable table.Model, rows []compInfoRow, width int) string {
 	if len(rows) == 0 {
 		return "No data available"
 	}
 
-	caption := overviewCaption.Render("Select a Pokémon to see its most common moves, items, abilities, and teammates from recent Champions events.")
+	caption := captionStyle.Render("Select a Pokémon to see its most common moves, items, abilities, and teammates from recent Champions events.")
 
 	detailWidth := max(width-pokemonTable.Width()-4, 40)
 	detail := renderPokemonDetail(selectedCompInfo(pokemonTable, rows), detailWidth)
@@ -287,3 +288,91 @@ func splitLongWord(word string, width int) []string {
 }
 
 // Speed Tiers tab
+func newSpeedTable(rows []speedTierRow, height int) table.Model {
+	columns := []table.Column{
+		{Title: "#", Width: 4},
+		{Title: "Pokémon", Width: 20},
+		{Title: "Base", Width: 5},
+		{Title: "Min", Width: 5},
+		{Title: "Max", Width: 5},
+		{Title: "Scarf", Width: 6},
+	}
+
+	trows := make([]table.Row, 0, len(rows))
+	for _, row := range rows {
+		trows = append(trows, table.Row{
+			strconv.Itoa(row.Rank),
+			row.Pokemon,
+			strconv.Itoa(row.BaseSpe),
+			strconv.Itoa(row.NegMin),
+			strconv.Itoa(row.Max),
+			strconv.Itoa(row.MaxScarf),
+		})
+	}
+
+	t := table.New(
+		table.WithColumns(columns),
+		table.WithRows(trows),
+		table.WithFocused(true),
+		table.WithHeight(max(height-12, 5)),
+		table.WithWidth(tableWidth(columns)),
+	)
+	t.SetStyles(shell.TableStyles())
+	return t
+}
+
+func renderSpeedTiers(speedTable table.Model, rows []speedTierRow) string {
+	if len(rows) == 0 {
+		return "No data available"
+	}
+
+	caption := captionStyle.Render("Speed stats at level 50. Min = 0 EVs, negative nature. Max = 252 EVs, positive nature.")
+	detail := renderSpeedDetail(selectedSpeedTier(speedTable, rows))
+	body := lipgloss.JoinHorizontal(lipgloss.Top, speedTable.View(), "  ", detail)
+	return caption + "\n\n" + body
+}
+
+func selectedSpeedTier(speedTable table.Model, rows []speedTierRow) speedTierRow {
+	if len(rows) == 0 {
+		return speedTierRow{}
+	}
+
+	idx := min(max(speedTable.Cursor(), 0), len(rows)-1)
+	return rows[idx]
+}
+
+func renderSpeedDetail(row speedTierRow) string {
+	var b strings.Builder
+	b.WriteString(styling.Yellow.Render("Selected Pokémon"))
+	b.WriteString("\n")
+
+	b.WriteString(styling.StyleBold.Render(row.Pokemon))
+	b.WriteString("\n\n")
+
+	stats := []struct {
+		label string
+		value int
+	}{
+		{"Base Speed", row.BaseSpe},
+		{"Min (0 EV -Spe)", row.NegMin},
+		{"Neutral (0 EV)", row.Neutral0},
+		{"Neutral (252 EV)", row.Neutral252},
+		{"Max (252 EV +Spe)", row.Max},
+		{"Neutral + Scarf", row.NeutralScarf},
+		{"Max + Scarf", row.MaxScarf},
+	}
+
+	for i, s := range stats {
+		if i > 0 {
+			b.WriteString("\n")
+		}
+		b.WriteString(speedStatLine(s.label, s.value))
+	}
+	return b.String()
+}
+
+func speedStatLine(label string, value int) string {
+	const labelWidth = 19
+	padded := lipgloss.NewStyle().Width(labelWidth).Render(label)
+	return padded + styling.StyleBold.Render(strconv.Itoa(value))
+}

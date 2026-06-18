@@ -287,3 +287,58 @@ func TestSplitLongWord(t *testing.T) {
 		}
 	}
 }
+
+func TestNewSpeedTable(t *testing.T) {
+	rows := testSpeedTiers()
+	tbl := newSpeedTable(rows, 40)
+	if len(tbl.Rows()) != len(rows) {
+		t.Fatalf("expected %d rows, got %d", len(rows), len(tbl.Rows()))
+	}
+	first := tbl.Rows()[0]
+	if first[0] != "1" || first[1] != "Mega Aerodactyl" || first[2] != "150" || first[5] != "333" {
+		t.Errorf("unexpected first row: %v", first)
+	}
+}
+
+func TestSelectedSpeedTier(t *testing.T) {
+	rows := testSpeedTiers()
+
+	if got := selectedSpeedTier(newSpeedTable(nil, 40), nil); got.Pokemon != "" {
+		t.Errorf("expected zero speedTierRow for empty rows, got %+v", got)
+	}
+
+	tbl := newSpeedTable(rows, 40)
+	if got := selectedSpeedTier(tbl, rows); got.Pokemon != "Mega Aerodactyl" {
+		t.Errorf("expected first row selected, got %q", got.Pokemon)
+	}
+}
+
+func TestRenderSpeedTiers(t *testing.T) {
+	if got := renderSpeedTiers(newSpeedTable(nil, 40), nil); got != "No data available" {
+		t.Errorf("expected empty-state message, got %q", got)
+	}
+
+	rows := testSpeedTiers()
+	out := renderSpeedTiers(newSpeedTable(rows, 40), rows)
+	for _, want := range []string{"level 50", "Mega Aerodactyl", "Base Speed", "Max + Scarf", "150", "333"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("expected speed tiers view to contain %q", want)
+		}
+	}
+}
+
+func TestRenderSpeedDetail(t *testing.T) {
+	out := renderSpeedDetail(testSpeedTiers()[0])
+	for _, want := range []string{"Selected Pokémon", "Mega Aerodactyl", "Base Speed", "150", "Min (0 EV -Spe)", "153", "Max (252 EV +Spe)", "222", "Max + Scarf", "333"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("expected detail to contain %q, got:\n%s", want, out)
+		}
+	}
+}
+
+func TestSpeedStatLine(t *testing.T) {
+	line := speedStatLine("Base Speed", 150)
+	if !strings.Contains(line, "Base Speed") || !strings.Contains(line, "150") {
+		t.Errorf("unexpected stat line: %q", line)
+	}
+}
