@@ -3,6 +3,8 @@ package champions
 import (
 	"strings"
 	"testing"
+
+	"charm.land/lipgloss/v2"
 )
 
 func TestJoinOrDash(t *testing.T) {
@@ -340,5 +342,60 @@ func TestSpeedStatLine(t *testing.T) {
 	line := speedStatLine("Base Speed", 150)
 	if !strings.Contains(line, "Base Speed") || !strings.Contains(line, "150") {
 		t.Errorf("unexpected stat line: %q", line)
+	}
+}
+
+func TestNewUsageTable(t *testing.T) {
+	rows := testUsage()
+	tbl := newUsageTable(rows, 40)
+	if len(tbl.Rows()) != len(rows) {
+		t.Fatalf("expected %d rows, got %d", len(rows), len(tbl.Rows()))
+	}
+	first := tbl.Rows()[0]
+	if first[0] != "1" || first[1] != "Basculegion" || first[2] != "51.5%" {
+		t.Errorf("unexpected first row: %v", first)
+	}
+	if !strings.Contains(first[3], "█") {
+		t.Errorf("expected a share bar in the row, got %q", first[3])
+	}
+}
+
+func TestRenderUsage(t *testing.T) {
+	if got := renderUsage(newUsageTable(nil, 40), nil); got != "No data available" {
+		t.Errorf("expected empty-state message, got %q", got)
+	}
+
+	rows := testUsage()
+	out := renderUsage(newUsageTable(rows, 40), rows)
+	for _, want := range []string{"Share of teams", "Basculegion", "51.5%", "Kingambit"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("expected usage view to contain %q", want)
+		}
+	}
+}
+
+func TestUsageBar(t *testing.T) {
+	tests := []struct {
+		name     string
+		pct      float64
+		width    int
+		wantFill int
+	}{
+		{"zero", 0, 20, 0},
+		{"tiny rounds up to 1", 2.0, 20, 1},
+		{"half", 50, 20, 10},
+		{"full at 100", 100, 20, 20},
+		{"clamped above 100", 150, 20, 20},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			bar := usageBar(tt.pct, tt.width)
+			if got := strings.Count(bar, "█"); got != tt.wantFill {
+				t.Errorf("usageBar(%v, %d) filled = %d, want %d", tt.pct, tt.width, got, tt.wantFill)
+			}
+			if lipgloss.Width(bar) != tt.width {
+				t.Errorf("usageBar width = %d, want %d", lipgloss.Width(bar), tt.width)
+			}
+		})
 	}
 }

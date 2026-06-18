@@ -115,6 +115,54 @@ func truncateName(name string, width int) string {
 	return string(runes[:width-1]) + "…"
 }
 
+// Usage tab
+func newUsageTable(rows []usageRow, height int) table.Model {
+	const barWidth = 22
+	columns := []table.Column{
+		{Title: "#", Width: 4},
+		{Title: "Pokémon", Width: 22},
+		{Title: "Usage", Width: 7},
+		{Title: "Share", Width: barWidth},
+	}
+
+	trows := make([]table.Row, 0, len(rows))
+	for _, row := range rows {
+		trows = append(trows, table.Row{
+			strconv.Itoa(row.Rank),
+			row.Pokemon,
+			fmt.Sprintf("%.1f%%", row.UsagePercent),
+			usageBar(row.UsagePercent, barWidth),
+		})
+	}
+
+	t := table.New(
+		table.WithColumns(columns),
+		table.WithRows(trows),
+		table.WithFocused(true),
+		table.WithHeight(max(height-12, 5)),
+		table.WithWidth(tableWidth(columns)),
+	)
+	t.SetStyles(shell.TableStyles())
+	return t
+}
+
+func renderUsage(usageTable table.Model, rows []usageRow) string {
+	if len(rows) == 0 {
+		return "No data available"
+	}
+
+	caption := captionStyle.Render("Share of teams at recent Champions events that used each Pokémon.")
+	return caption + "\n\n" + usageTable.View()
+}
+
+func usageBar(pct float64, width int) string {
+	filled := min(int(pct*float64(width)/100), width)
+	if filled == 0 && pct > 0 {
+		filled = 1
+	}
+	return strings.Repeat("█", filled) + strings.Repeat("░", width-filled)
+}
+
 // Top Teams tab
 func newTeamsTable(teams []teamRow, width, height int) table.Model {
 	columns := teamColumns(width)

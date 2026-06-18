@@ -55,6 +55,13 @@ func testCompInfo() []compInfoRow {
 	}
 }
 
+func testUsage() []usageRow {
+	return []usageRow{
+		{Rank: 1, Pokemon: "Basculegion", UsagePercent: 51.5},
+		{Rank: 2, Pokemon: "Kingambit", UsagePercent: 40.69},
+	}
+}
+
 func testSpeedTiers() []speedTierRow {
 	return []speedTierRow{
 		{Rank: 1, Pokemon: "Mega Aerodactyl", BaseSpe: 150, Neutral0: 170, Neutral252: 202, NegMin: 153, Max: 222, MaxScarf: 333, NeutralScarf: 303},
@@ -73,7 +80,7 @@ func newTestDashboard() dashboardModel {
 
 func loadedTestDashboard() dashboardModel {
 	m := newTestDashboard()
-	nm, _ := m.Update(dataMsg{data: &dashboardData{CompInfo: testCompInfo(), Teams: testTeams(), SpeedTiers: testSpeedTiers()}})
+	nm, _ := m.Update(dataMsg{data: &dashboardData{CompInfo: testCompInfo(), Teams: testTeams(), Usage: testUsage(), SpeedTiers: testSpeedTiers()}})
 	return nm.(dashboardModel)
 }
 
@@ -182,6 +189,9 @@ func TestDashboard_Update_DataMsg_Success(t *testing.T) {
 	if len(m.speed.Rows()) != 2 {
 		t.Errorf("expected 2 speed rows, got %d", len(m.speed.Rows()))
 	}
+	if len(m.usage.Rows()) != 2 {
+		t.Errorf("expected 2 usage rows, got %d", len(m.usage.Rows()))
+	}
 }
 
 func TestDashboard_Update_OverviewTableNavigation(t *testing.T) {
@@ -227,6 +237,15 @@ func TestDashboard_Update_TeamsTableNavigation(t *testing.T) {
 	nm, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
 	if nm.(dashboardModel).teams.Cursor() != 1 {
 		t.Errorf("expected table cursor to advance to 1, got %d", nm.(dashboardModel).teams.Cursor())
+	}
+}
+
+func TestDashboard_Update_UsageTableNavigation(t *testing.T) {
+	m := loadedTestDashboard()
+	m.activeTab = 1
+	nm, _ := m.Update(tea.KeyPressMsg{Code: tea.KeyDown})
+	if nm.(dashboardModel).usage.Cursor() != 1 {
+		t.Errorf("expected usage cursor to advance to 1, got %d", nm.(dashboardModel).usage.Cursor())
 	}
 }
 
@@ -305,7 +324,7 @@ func TestDashboard_RenderTab(t *testing.T) {
 		{"error", func() dashboardModel { m := newTestDashboard(); m.err = errors.New("boom"); return m }(), 0, "fetch error"},
 		{"loading", newTestDashboard(), 0, "Loading"},
 		{"overview", loaded, 0, "Miraidon"},
-		{"usage", loaded, 1, "Usage"},
+		{"usage", loaded, 1, "Basculegion"},
 		{"top teams", loaded, 2, "Alice"},
 		{"speed tiers", loaded, 3, "Mega Aerodactyl"},
 	}

@@ -10,12 +10,14 @@ import (
 const (
 	compInfoURL   = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_pokemon_comp_info?select=pokemon,web_url,common_moves,common_abilities,common_items,common_teammates&order=pokemon"
 	topTeamsURL   = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_top_teams?select=author,record,tournament,archetypes,pokemon,web_url&order=rank"
+	usageURL      = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_usage?select=rank,pokemon,usage_percent&order=rank"
 	speedTiersURL = "https://uoddayfnfkebrijlpfbh.supabase.co/rest/v1/pikalytics_speed_tiers?select=rank,pokemon,base_spe,neutral_0_sp,neutral_32_sp,neg_spe_0_sp,max_speed,max_scarf,neutral_32_scarf&order=rank"
 )
 
 type dashboardData struct {
 	CompInfo   []compInfoRow
 	Teams      []teamRow
+	Usage      []usageRow
 	SpeedTiers []speedTierRow
 }
 
@@ -47,6 +49,12 @@ type commonStat struct {
 	UsagePercent float64 `json:"usage_percent"`
 }
 
+type usageRow struct {
+	Rank         int     `json:"rank"`
+	Pokemon      string  `json:"pokemon"`
+	UsagePercent float64 `json:"usage_percent"`
+}
+
 type speedTierRow struct {
 	Rank         int    `json:"rank"`
 	Pokemon      string `json:"pokemon"`
@@ -71,6 +79,11 @@ func fetchDashboardData(conn shell.ConnFunc) tea.Cmd {
 			return dataMsg{err: err}
 		}
 
+		usage, err := fetchUsage(conn)
+		if err != nil {
+			return dataMsg{err: err}
+		}
+
 		speedTiers, err := fetchSpeedTiers(conn)
 		if err != nil {
 			return dataMsg{err: err}
@@ -80,6 +93,7 @@ func fetchDashboardData(conn shell.ConnFunc) tea.Cmd {
 			data: &dashboardData{
 				CompInfo:   compInfo,
 				Teams:      teams,
+				Usage:      usage,
 				SpeedTiers: speedTiers,
 			},
 		}
@@ -110,6 +124,19 @@ func fetchTopTeams(conn shell.ConnFunc) ([]teamRow, error) {
 		return nil, err
 	}
 	return teams, nil
+}
+
+func fetchUsage(conn shell.ConnFunc) ([]usageRow, error) {
+	body, err := conn(usageURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var rows []usageRow
+	if err := json.Unmarshal(body, &rows); err != nil {
+		return nil, err
+	}
+	return rows, nil
 }
 
 func fetchSpeedTiers(conn shell.ConnFunc) ([]speedTierRow, error) {
