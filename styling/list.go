@@ -22,11 +22,9 @@ var (
 
 func init() {
 	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
-	ld := lipgloss.LightDark(isDark)
 	defaults := list.DefaultStyles(isDark)
 	PaginationStyle = defaults.PaginationStyle.PaddingLeft(4)
 	HelpStyle = defaults.HelpStyle.PaddingLeft(4).PaddingBottom(1)
-	SelectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(ld(lipgloss.Color(DarkYellow), lipgloss.Color(LightYellow)))
 }
 
 type Item string

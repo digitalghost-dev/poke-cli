@@ -7,7 +7,7 @@ import (
 
 func FormTheme() *huh.Theme {
 	var (
-		yellow   = lipgloss.Color(LightYellow)
+		yellow   = lipgloss.Color(accent)
 		blue     = lipgloss.Color("#3B4CCA")
 		red      = lipgloss.Color("#D00000")
 		black    = lipgloss.Color("#000000")

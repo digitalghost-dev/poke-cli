@@ -114,3 +114,18 @@ func TestFormTheme(t *testing.T) {
 	assert.Equal(t, theme.Focused.Title, theme.Group.Title, "Group title should match focused title")
 	assert.Equal(t, theme.Focused.Description, theme.Group.Description, "Group description should match focused description")
 }
+
+func TestApplyThemeSwapsAndFallsBack(t *testing.T) {
+	t.Cleanup(func() { ApplyTheme("yellow") })
+
+	ApplyTheme("red")
+	redColor := YellowColor
+	assert.Equal(t, "#f00000", accent)
+
+	ApplyTheme("blue")
+	assert.Equal(t, "#3B4CCA", accent)
+	assert.NotEqual(t, redColor, YellowColor)
+
+	ApplyTheme("bogus")
+	assert.Equal(t, "#E1AD01", accent)
+}
