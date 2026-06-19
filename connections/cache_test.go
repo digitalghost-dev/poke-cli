@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 
@@ -99,4 +100,60 @@ func TestWarnNoCache_OncePerProcess(t *testing.T) {
 
 	second := captureStderr(t, warnNoCache)
 	assert.Empty(t, second, "expected nothing on the second call (sync.Once)")
+}
+
+func TestConfigureCacheConfigSuppresses(t *testing.T) {
+	t.Setenv("POKE_CLI_NO_CACHE_WARNING", "")
+	t.Cleanup(func() { ConfigureCache(true, "", nil) })
+
+	ConfigureCache(false, "", nil)
+	assert.True(t, suppressCacheWarning(), "show_warning=false should suppress")
+
+	ConfigureCache(true, "", nil)
+	assert.False(t, suppressCacheWarning(), "show_warning=true should not suppress")
+}
+
+func TestConfigureCacheEnvOverridesConfig(t *testing.T) {
+	t.Cleanup(func() { ConfigureCache(true, "", nil) })
+
+	ConfigureCache(true, "", nil)
+	t.Setenv("POKE_CLI_NO_CACHE_WARNING", "1")
+	assert.True(t, suppressCacheWarning(), "env var should override config")
+}
+
+func TestCacheBinaryPrefersConfiguredPath(t *testing.T) {
+	t.Cleanup(func() { ConfigureCache(true, "", nil) })
+
+	bin := filepath.Join(t.TempDir(), "poke-cache")
+	require.NoError(t, os.WriteFile(bin, []byte("#!/bin/sh\n"), 0o755))
+
+	ConfigureCache(true, bin, nil)
+	got, ok := cacheBinary()
+	require.True(t, ok)
+	assert.Equal(t, bin, got)
+}
+
+func TestWarnNoCacheTriggersDismiss(t *testing.T) {
+	t.Setenv("POKE_CLI_NO_CACHE_WARNING", "")
+	cacheWarnOnce = sync.Once{}
+	t.Cleanup(func() { ConfigureCache(true, "", nil) })
+
+	dismissed := false
+	ConfigureCache(true, "", func() { dismissed = true })
+
+	_ = captureStderr(t, warnNoCache)
+	assert.True(t, dismissed, "showing the warning should trigger the dismiss callback")
+}
+
+func TestWarnNoCacheSuppressedSkipsDismiss(t *testing.T) {
+	t.Setenv("POKE_CLI_NO_CACHE_WARNING", "1")
+	cacheWarnOnce = sync.Once{}
+	t.Cleanup(func() { ConfigureCache(true, "", nil) })
+
+	dismissed := false
+	ConfigureCache(true, "", func() { dismissed = true })
+
+	out := captureStderr(t, warnNoCache)
+	assert.Empty(t, out)
+	assert.False(t, dismissed, "suppressed warning should not trigger dismiss")
 }
