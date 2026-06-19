@@ -14,6 +14,7 @@ require (
 	github.com/charmbracelet/x/term v0.2.2
 	github.com/disintegration/imaging v1.6.2
 	github.com/dolmen-go/kittyimg v0.0.0-20250610224728-874967bd8ea4
+	github.com/pelletier/go-toml/v2 v2.4.0
 	github.com/schollz/closestmatch v2.1.0+incompatible
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
