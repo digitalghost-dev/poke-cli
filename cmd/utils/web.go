@@ -1,5 +1,6 @@
-// Package web opens the poke-cli Streamlit dashboard in the user's browser.
-package web
+// Opens the user's default browser.
+
+package utils
 
 import (
 	"os/exec"

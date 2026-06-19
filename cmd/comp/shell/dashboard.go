@@ -5,7 +5,7 @@ import (
 
 	"charm.land/bubbles/v2/table"
 	tea "charm.land/bubbletea/v2"
-	"github.com/digitalghost-dev/poke-cli/cmd/comp/web"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 )
 
 type dashboardModel struct {
@@ -90,7 +90,7 @@ func (m dashboardModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.goBack = true
 			return m, tea.Quit
 		case "w":
-			return m, web.Open("https://web.poke-cli.com/")
+			return m, utils.Open("https://web.poke-cli.com/")
 		case "right", "l", "tab":
 			m.activeTab = min(m.activeTab+1, len(m.spec.Tabs)-1)
 			return m, nil

@@ -7,7 +7,7 @@ import (
 	"charm.land/bubbles/v2/list"
 	"charm.land/bubbles/v2/spinner"
 	tea "charm.land/bubbletea/v2"
-	"github.com/digitalghost-dev/poke-cli/cmd/comp/web"
+	"github.com/digitalghost-dev/poke-cli/cmd/utils"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
@@ -77,7 +77,7 @@ func (m pickerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.quitting = true
 			return m, tea.Quit
 		case "w":
-			return m, web.Open("https://web.poke-cli.com/")
+			return m, utils.Open("https://web.poke-cli.com/")
 		case "enter":
 			idx := m.list.Index()
 			if idx >= 0 && idx < len(m.tournaments) {
