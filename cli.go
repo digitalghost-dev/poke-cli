@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"runtime/debug"
+	"slices"
 	"strings"
 
 	"github.com/digitalghost-dev/poke-cli/cmd/ability"
@@ -19,8 +20,11 @@ import (
 	"github.com/digitalghost-dev/poke-cli/cmd/speed"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
+	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
+	"github.com/digitalghost-dev/poke-cli/setup"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	"golang.org/x/term"
 )
 
 var version = "(devel)"
@@ -71,6 +75,26 @@ func currentVersion() string {
 func runCLI(args []string) int {
 	var output strings.Builder
 
+	cfg, firstRun, err := flags.Load()
+	if err != nil {
+		cfg = flags.Defaults()
+	}
+
+	styling.ApplyTheme(cfg.Display.Theme)
+
+	wantsConfig := slices.Contains(args, "--config") || slices.Contains(args, "-config")
+	if firstRun && !wantsConfig && isInteractive() {
+		if updated, saved, runErr := setup.Run(cfg); runErr == nil && saved {
+			cfg = updated
+			_ = flags.Save(cfg)
+		}
+	}
+
+	connections.ConfigureCache(cfg.Cache.ShowWarning, cfg.Cache.Path, func() {
+		cfg.Cache.ShowWarning = false
+		_ = flags.Save(cfg)
+	})
+
 	mainFlagSet := flag.NewFlagSet("poke-cli", flag.ContinueOnError)
 
 	// -l, --latest flag retrieves the latest Docker image and GitHub release versions available
@@ -80,6 +104,9 @@ func runCLI(args []string) int {
 	// -v, --version flag retrieves the currently installed version
 	currentVersionFlag := mainFlagSet.Bool("version", false, "Prints the current version")
 	shortCurrentVersionFlag := mainFlagSet.Bool("v", false, "Prints the current version")
+
+	// -c,
+	configFlag := mainFlagSet.Bool("config", false, "Edit configuration file")
 
 	mainFlagSet.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
@@ -113,7 +140,7 @@ func runCLI(args []string) int {
 		}
 	}
 
-	err := mainFlagSet.Parse(args)
+	err = mainFlagSet.Parse(args)
 	if err != nil {
 		return 2
 	}
@@ -142,7 +169,7 @@ func runCLI(args []string) int {
 	cmdFunc, exists := commands[cmdArg]
 
 	switch {
-	case len(remainingArgs) == 0 && !*latestFlag && !*shortLatestFlag && !*currentVersionFlag && !*shortCurrentVersionFlag:
+	case len(remainingArgs) == 0 && !*latestFlag && !*shortLatestFlag && !*currentVersionFlag && !*shortCurrentVersionFlag && !*configFlag:
 		mainFlagSet.Usage()
 		return 1
 	case *latestFlag || *shortLatestFlag:
@@ -153,6 +180,17 @@ func runCLI(args []string) int {
 		return 0
 	case *currentVersionFlag || *shortCurrentVersionFlag:
 		fmt.Println(currentVersion())
+		return 0
+	case *configFlag:
+		updated, saved, runErr := setup.Run(cfg)
+		if runErr != nil {
+			return 1
+		}
+		if saved {
+			if err := flags.Save(updated); err != nil {
+				return 1
+			}
+		}
 		return 0
 	case exists:
 		return utils.HandleCommandOutput(cmdFunc, remainingArgs)()
@@ -170,6 +208,10 @@ func runCLI(args []string) int {
 }
 
 var exit = os.Exit
+
+func isInteractive() bool {
+	return term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd()))
+}
 
 func main() {
 	exit(runCLI(os.Args[1:]))
