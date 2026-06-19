@@ -50,13 +50,13 @@ Connect to the virtual machine and run the following commands to get everything 
       ```shell
       git remote add -f origin https://github.com/digitalghost-dev/poke-cli/
       ```
-    * Edit the `git` config file to turn on sparse checkout:
+    * Initialize sparse checkout:
       ```shell
-      git config core.sparseCheckout true
+      git sparse-checkout init --cone
       ```
     * Tell `git` which directory to check out. Then, pull that directory:
       ```shell
-      echo "data_platform/" >> .git/info/sparse-checkout
+      git sparse-checkout set data_platform
       ```
     * Pull the repository into the local directory:
       ```shell

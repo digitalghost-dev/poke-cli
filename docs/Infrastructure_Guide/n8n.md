@@ -12,7 +12,7 @@ weight: 8
 
 n8n is used in this project for a few different reasons such as performing API status checks, sending success/failure notifications, and ingesting data from sources that aren't exposed as a friendly REST API.
 
-The Pikalytics data, for example, only exists as rendered web pages, so n8n scrapes it with [Firecrawl](https://www.firecrawl.dev/)'s LLM-powered extraction and lands the raw rows in Supabase. These scraper workflows are **triggered by Dagster** — they no longer carry their own schedule. See [Pipeline 3](#pipeline-3-pikalytics-scrapers) and the dedicated [Pikalytics Pipeline](pikalytics-pipeline.md) guide.
+The Pikalytics data, for example, has `ai/` available endpoints, so n8n scrapes it with [Firecrawl](https://www.firecrawl.dev/)'s LLM-powered extraction and lands the raw rows in Supabase. These scraper workflows are **triggered by Dagster** — they no longer carry their own schedule. See [Pipeline 3](#pipeline-3-pikalytics-scrapers).
 
 This project uses n8n Cloud.
 
@@ -191,16 +191,26 @@ _Four Dagster-triggered workflows that scrape [Pikalytics](https://www.pikalytic
 
 The four workflows fan into a single Dagster job (`pikalytics_pipeline_job`, weekly Mondays 08:00 LA). Each
 workflow is a webhook that Dagster POSTs to; the webhook is set to **respond only when its last node
-finishes**, so the Dagster trigger asset blocks until staging is fully loaded before dbt runs. This guide
-covers the **n8n side**; for the full end-to-end (job, schedule, asset lineage, dbt models, RLS) see the
-[Pikalytics Pipeline](pikalytics-pipeline.md) guide.
+finishes**, so the Dagster trigger asset blocks until staging is fully loaded before dbt runs.
 
-| Workflow | Webhook path | Scrapes | Lands in |
-|---|---|---|---|
-| `speed-tiers` | `pikalytics-speed-tier` | speed-tiers page | `staging.pikalytics_speed_tiers` |
-| `usage` | `pikalytics-usage` | top-50 usage (pokedex) | `staging.pikalytics_usage` |
-| `top-teams` | `pikalytics-top-teams` | top teams | `staging.pikalytics_top_teams` |
-| `pokemon-comp-info` | `pikalytics-pokemon-comp-info` | each top-50 Pokémon's AI page | `staging.pikalytics_pokemon_comp_info` |
+| Trigger asset | Workflow | Webhook path | Scrapes | Lands in |
+|---|---|---|---|---|
+| `trigger_pikalytics_speed_tiers` | `speed-tiers` | `pikalytics-speed-tier` | speed-tiers page | `staging.pikalytics_speed_tiers` |
+| `trigger_pikalytics_usage` | `usage` | `pikalytics-usage` | top-50 usage (pokedex) | `staging.pikalytics_usage` |
+| `trigger_pikalytics_top_teams` | `top-teams` | `pikalytics-top-teams` | top teams | `staging.pikalytics_top_teams` |
+| `trigger_pikalytics_pokemon_comp_info` | `pokemon-comp-info` | `pikalytics-pokemon-comp-info` | each top-50 Pokémon's AI page | `staging.pikalytics_pokemon_comp_info` |
+
+#### Responsibility split
+
+| Layer | Responsibility |
+|-------|----------------|
+| Dagster | Owns scheduling, dependency order, retries, and dbt asset lineage. |
+| n8n | Extracts raw Pikalytics rows and writes them to staging. |
+| Firecrawl | Converts rendered Pikalytics pages into structured rows. |
+| dbt | Derives slugs, `pokemon_id`, record math, speed tiers, constants, RLS, and public tables. |
+| Supabase | Stores staging and public tables used by the app. |
+
+n8n should not calculate analytics fields such as speed buckets, parsed wins/losses/ties, or Pokémon IDs. Those transformations live in dbt so they are version-controlled and testable.
 
 !!! warning "What changed from the old design"
 
@@ -311,6 +321,19 @@ graph LR
 * The workflow must be **published/active** for its production webhook URL to respond — if it's toggled off,
   the trigger asset fails with a 404.
 
+#### Downstream dbt models
+
+After the n8n workflows finish, dbt builds the public Pikalytics snapshot models:
+
+| Model | Notes |
+|-------|-------|
+| `pikalytics_speed_tiers` | Resolves each Pokémon to the shared `pokemon` hub and derives common speed benchmarks. |
+| `pikalytics_usage` | Stores top usage rows for the current format. |
+| `pikalytics_top_teams` | Parses team records and stores `pokemon_ids` as a JSONB array aligned with the scraped team list. |
+| `pikalytics_pokemon_comp_info` | Stores common moves, abilities, items, and teammates scraped from each Pokémon detail page. |
+
+The public models are current snapshots, not history tables. A successful run replaces staging and rebuilds the public tables for the current format.
+
 #### Verifying
 
 After a run of `pikalytics_pipeline_job`:
@@ -321,4 +344,4 @@ After a run of `pikalytics_pipeline_job`:
 
 ---
 
-Related: [Pikalytics Pipeline](pikalytics-pipeline.md) | [Supabase](supabase.md) | [AWS](aws.md) | [Grafana Cloud](grafana.md)
+Related: [Supabase](supabase.md) | [AWS](aws.md) | [Grafana Cloud](grafana.md)
