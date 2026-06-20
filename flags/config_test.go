@@ -22,7 +22,6 @@ func TestDefaults(t *testing.T) {
 
 	assert.Equal(t, SchemaVersion, cfg.Version)
 	assert.Equal(t, ThemeYellow, cfg.Display.Theme)
-	assert.Equal(t, ImageAuto, cfg.Display.ImageProtocol)
 	assert.True(t, cfg.Cache.ShowWarning)
 }
 
@@ -44,7 +43,6 @@ func TestLoadFromPartialKeepsDefaults(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, firstRun)
 	assert.Equal(t, ThemeRed, cfg.Display.Theme)
-	assert.Equal(t, ImageAuto, cfg.Display.ImageProtocol)
 	assert.True(t, cfg.Cache.ShowWarning)
 }
 
@@ -58,21 +56,20 @@ func TestLoadFromCorruptFallsBack(t *testing.T) {
 	assert.Equal(t, Defaults(), cfg)
 }
 
-func TestLoadFromClampsUnknownValues(t *testing.T) {
-	path := writeTempConfig(t, "[display]\ntheme = \"chartreuse\"\nimage_protocol = \"ascii\"\n")
+func TestLoadFromClampsUnknownTheme(t *testing.T) {
+	path := writeTempConfig(t, "[display]\ntheme = \"chartreuse\"\n")
 
 	cfg, _, err := LoadFrom(path)
 
 	require.NoError(t, err)
 	assert.Equal(t, ThemeYellow, cfg.Display.Theme)
-	assert.Equal(t, ImageAuto, cfg.Display.ImageProtocol)
 }
 
 func TestSaveToLoadFromRoundTrip(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "nested", "config.toml")
 	want := Config{
 		Version: SchemaVersion,
-		Display: Display{Theme: ThemeBlue, ImageProtocol: ImageKitty},
+		Display: Display{Theme: ThemeBlue},
 		Cache:   Cache{ShowWarning: false, Path: "/opt/poke-cache"},
 	}
 

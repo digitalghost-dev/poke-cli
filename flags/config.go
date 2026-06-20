@@ -24,13 +24,6 @@ const (
 	ThemeBlue   = "blue"
 )
 
-const (
-	ImageAuto  = "auto"
-	ImageKitty = "kitty"
-	ImageSixel = "sixel"
-	ImageNone  = "none"
-)
-
 type Config struct {
 	Version int     `toml:"version"`
 	Display Display `toml:"display"`
@@ -38,8 +31,7 @@ type Config struct {
 }
 
 type Display struct {
-	Theme         string `toml:"theme"`
-	ImageProtocol string `toml:"image_protocol"`
+	Theme string `toml:"theme"`
 }
 
 // Cache controls the poke-cache integration: whether to show the "not
@@ -54,8 +46,7 @@ func Defaults() Config {
 	return Config{
 		Version: SchemaVersion,
 		Display: Display{
-			Theme:         ThemeYellow,
-			ImageProtocol: ImageAuto,
+			Theme: ThemeYellow,
 		},
 		Cache: Cache{
 			ShowWarning: true,
@@ -143,11 +134,6 @@ func (c *Config) normalize() {
 	case ThemeYellow, ThemeRed, ThemeBlue:
 	default:
 		c.Display.Theme = ThemeYellow
-	}
-	switch c.Display.ImageProtocol {
-	case ImageAuto, ImageKitty, ImageSixel, ImageNone:
-	default:
-		c.Display.ImageProtocol = ImageAuto
 	}
 	if c.Version == 0 {
 		c.Version = SchemaVersion
