@@ -15,13 +15,11 @@ var (
 	cacheWarnOnce    sync.Once
 	cacheShowWarning = true
 	cacheBinaryPath  string
-	cacheOnWarn      func()
 )
 
-func ConfigureCache(showWarning bool, binaryPath string, onWarn func()) {
+func ConfigureCache(showWarning bool, binaryPath string) {
 	cacheShowWarning = showWarning
 	cacheBinaryPath = binaryPath
-	cacheOnWarn = onWarn
 }
 
 func cacheNotice() (string, error) {
@@ -34,13 +32,8 @@ func cacheNotice() (string, error) {
 
 func warnNoCache() {
 	cacheWarnOnce.Do(func() {
-		msg, _ := cacheNotice()
-		if msg == "" {
-			return
-		}
-		fmt.Fprintln(os.Stderr, msg)
-		if cacheOnWarn != nil {
-			cacheOnWarn()
+		if msg, _ := cacheNotice(); msg != "" {
+			fmt.Fprintln(os.Stderr, msg)
 		}
 	})
 }
