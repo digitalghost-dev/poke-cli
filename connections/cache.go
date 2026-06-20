@@ -26,8 +26,12 @@ func cacheNotice() (string, error) {
 	if suppressCacheWarning() {
 		return "", nil
 	}
-	return styling.WarningColor.Render("poke-cache not installed; running without local caching.\n" +
-		"  Install it for faster repeat lookups: https://docs.poke-cli.com/caching"), nil
+
+	warningMsg := "poke-cache not installed; running without local caching.\n" +
+		"Install it for faster repeat lookups: https://docs.poke-cli.com/Architecture/Services/rust-caching-service/\n" +
+		"Disable this warning with 'poke-cli --config'"
+
+	return styling.WarningColor.Render(warningMsg), nil
 }
 
 func warnNoCache() {

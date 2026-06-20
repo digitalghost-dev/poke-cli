@@ -128,7 +128,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() tea.View {
-	welcomeMessage := "Welcome! Please choose some quick prefrences.\n\n"
+	welcomeMessage := "Welcome! Please choose some quick preferences.\n\n"
 
 	row := func(label, value string, focused int) string {
 		cursor := "  "
@@ -148,7 +148,7 @@ func (m model) View() tea.View {
 		row("Save & quit", "", rowSave),
 	)
 
-	cache := "not found"
+	cache := styling.Red.Render("✗ not installed")
 	if m.cacheOK {
 		cache = styling.Green.Render("✓ installed")
 	}
