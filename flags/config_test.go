@@ -3,6 +3,7 @@ package flags
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -81,4 +82,19 @@ func TestSaveToLoadFromRoundTrip(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, firstRun)
 	assert.Equal(t, want, got)
+}
+
+func TestSaveToCleansUpTempOnFailure(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "config.toml")
+	require.NoError(t, os.Mkdir(target, 0o755))
+
+	err := SaveTo(target, Defaults())
+	require.Error(t, err)
+
+	entries, readErr := os.ReadDir(dir)
+	require.NoError(t, readErr)
+	for _, e := range entries {
+		assert.False(t, strings.HasPrefix(e.Name(), "config-"), "temp file %q should have been cleaned up", e.Name())
+	}
 }
