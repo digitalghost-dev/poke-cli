@@ -8,6 +8,7 @@
 │                                                              │
 │ FLAGS:                                                       │
 │    -h, --help      Shows the help menu                       │
+│    -c, --config    Launch the config settings screen         │
 │    -l, --latest    Prints the latest version available       │
 │    -v, --version   Prints the current version                │
 │                                                              │
