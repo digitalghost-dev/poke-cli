@@ -48,6 +48,9 @@ func TestShareCell(t *testing.T) {
 	if strings.Count(over, "█") != 11 {
 		t.Errorf("expected filled to clamp at barWidth when count>total, got %q", over)
 	}
+	if !strings.Contains(over, "100%") {
+		t.Errorf("expected percentage to clamp at 100%% when count>total, got %q", over)
+	}
 
 	_ = shareCell(5, 0, 11)
 }

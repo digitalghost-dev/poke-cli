@@ -47,7 +47,7 @@ func CompCommand(args []string) (string, error) {
 
 		result, ok := finalModel.(pickerModel)
 		if !ok {
-			return "", fmt.Errorf("unexpected model type from competition selection: got %T, want compModel", finalModel)
+			return "", fmt.Errorf("unexpected model type from competition selection: got %T, want pickerModel", finalModel)
 		}
 
 		if result.compID == "" {

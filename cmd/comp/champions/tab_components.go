@@ -299,19 +299,19 @@ func wrapWords(value string, width int) []string {
 	lines := make([]string, 0, 2)
 	current := words[0]
 	for _, word := range words[1:] {
-		if len(current) > width {
+		if lipgloss.Width(current) > width {
 			lines = append(lines, splitLongWord(current, width)...)
 			current = word
 			continue
 		}
-		if len(current)+1+len(word) > width {
+		if lipgloss.Width(current)+1+lipgloss.Width(word) > width {
 			lines = append(lines, current)
 			current = word
 			continue
 		}
 		current += " " + word
 	}
-	if len(current) > width {
+	if lipgloss.Width(current) > width {
 		lines = append(lines, splitLongWord(current, width)...)
 	} else {
 		lines = append(lines, current)
@@ -324,13 +324,14 @@ func splitLongWord(word string, width int) []string {
 		return []string{word}
 	}
 
+	runes := []rune(word)
 	var lines []string
-	for len(word) > width {
-		lines = append(lines, word[:width])
-		word = word[width:]
+	for len(runes) > width {
+		lines = append(lines, string(runes[:width]))
+		runes = runes[width:]
 	}
-	if word != "" {
-		lines = append(lines, word)
+	if len(runes) > 0 {
+		lines = append(lines, string(runes))
 	}
 	return lines
 }

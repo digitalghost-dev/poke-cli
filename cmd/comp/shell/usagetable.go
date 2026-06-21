@@ -57,7 +57,7 @@ func shareCell(count, total, barWidth int) string {
 		if filled == 0 && count > 0 {
 			filled = 1
 		}
-		pct = count * 100 / total
+		pct = min(count*100/total, 100)
 	}
 	bar := strings.Repeat("█", filled) + strings.Repeat("░", barWidth-filled)
 	return fmt.Sprintf("%s %3d%%", bar, pct)

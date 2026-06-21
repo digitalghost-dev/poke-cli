@@ -79,7 +79,9 @@ func countryItems(rows []standingRow) []shell.Tally {
 func deckItems(rows []standingRow) []shell.Tally {
 	counts := map[string]int{}
 	for _, r := range rows {
-		counts[r.Deck]++
+		if r.Deck != "" {
+			counts[r.Deck]++
+		}
 	}
 	items := make([]shell.Tally, 0, len(counts))
 	for deck, n := range counts {
