@@ -188,13 +188,13 @@ By running `poke-cli [-h | --help]`, it'll display information on how to use the
 │    ability         Get details about an ability               │
 │    berry           Get details about a berry                  │
 │    card            Get details about a TCG card               │
+│    comp            Get details about competitive Pokémon      │
 │    item            Get details about an item                  │
 │    mechanics       Get details about video game mechanics     │
 │    move            Get details about a move                   │
 │    pokemon         Get details about a Pokémon                │
 │    search          Search for a resource                      │
 │    speed           Calculate the speed of a Pokémon in battle │
-│    tcg             Get details about TCG tournaments          │
 │    types           Get details about a typing                 │
 │                                                               │
 │ hint: when calling a resource with a space, use a hyphen      │
@@ -220,6 +220,10 @@ Below is a list of the planned/completed commands and flags:
     - [x] add sword & shield data
     - [x] add sun & moon data
     - [ ] add x & y data
+- [x] `comp`: get details about competitive Pokémon
+    - [x] TCG competitive data
+    - [x] VGC competitive data
+    - [x] Pokémon Champions data
 - [x] `item`: get data about an item.
 - [x] `mechanics`: get data about game mechanics.
     - [x] `-n | --natures`: display a table of all natures.
@@ -239,7 +243,6 @@ Below is a list of the planned/completed commands and flags:
     - [x] `move`
     - [x] `pokemon`
 - [x] `speed`: compare speed stats between two Pokémon.
-- [x] `tcg`: get data about TCG tournaments.
 - [x] `types`: get data about a specific typing.
 
 ### Version 2 Changes
@@ -263,7 +266,6 @@ The following planned changes in `v2`:
 | Kitty              | macOS, Ubuntu, Debian, Fedora |   🟢   | None                                                                              |
 | Rio                | macOS                         |   🟢   | None                                                                              |
 | Tabby              | Ubuntu                        |   🟢   | None                                                                              |
-| Terminal (Alpine)  | Alpine                        |   🟡   | Some colors aren't supported<br>`pokemon <name> --image=xx` flag has pixel issues |
 | Terminal (Linux)   | Ubuntu, Debian, Fedora        |   🟡   | No support for TCG images                                                         |
 | Terminal (macOS)   | macOS                         |   🟠   | No support for TCG images<br>`pokemon <name> --image=xx` flag has pixel issues    |
 | Terminal (Windows) | Windows                       |   🟢   | None                                                                              |
