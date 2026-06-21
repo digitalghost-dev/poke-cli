@@ -183,7 +183,7 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 	}
 
 	// Check for abilities that grant immunities or resistances
-	checkAbilityEffects := func() {
+	checkAbilityEffects := func() error {
 		abilityImmunities := map[string][]string{
 			"flash-fire":    {"fire"},
 			"water-absorb":  {"water"},
@@ -211,7 +211,7 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 				_, err := fmt.Fprintf(w, "%s, with the %s ability, grants it immunity to %s type moves.\n",
 					cases.Title(language.English).String(pokemonName), formattedAbilityName, typeList)
 				if err != nil {
-					return
+					return err
 				}
 			}
 
@@ -220,10 +220,11 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 				_, err := fmt.Fprintf(w, "%s, with the %s ability, grants it resistance to %s type moves.\n",
 					cases.Title(language.English).String(pokemonName), formattedAbilityName, typeList)
 				if err != nil {
-					return
+					return err
 				}
 			}
 		}
+		return nil
 	}
 
 	// Calculate effectiveness for all types
@@ -305,9 +306,7 @@ func DefenseFlag(w io.Writer, endpoint string, pokemonName string) error {
 		}
 	}
 
-	checkAbilityEffects()
-
-	return nil
+	return checkAbilityEffects()
 }
 
 func ImageFlag(w io.Writer, endpoint string, pokemonName string, size string) error {
@@ -582,14 +581,15 @@ func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 	}
 
 	// Helper function to print the bar for a stat
+	var printErr error
 	printBar := func(label string, value, maxWidth, maxValue int, style lipgloss.Style) {
+		if printErr != nil {
+			return
+		}
 		scaledValue := (value * maxWidth) / maxValue
 		bar := strings.Repeat("▇", scaledValue)
 		coloredBar := style.Render(bar)
-		_, err := fmt.Fprintf(w, "%-10s %s %d\n", label, coloredBar, value)
-		if err != nil {
-			return
-		}
+		_, printErr = fmt.Fprintf(w, "%-10s %s %d\n", label, coloredBar, value)
 	}
 
 	// Mapping from API stat names to custom display names
@@ -634,6 +634,9 @@ func StatsFlag(w io.Writer, endpoint string, pokemonName string) error {
 		style := lipgloss.NewStyle().Foreground(lipgloss.Color(color))
 
 		printBar(customName, stat.BaseStat, maxWidth, maxValue, style)
+	}
+	if printErr != nil {
+		return printErr
 	}
 
 	totalBaseStats := 0

@@ -67,8 +67,10 @@ func PokemonAbilitiesFlag(w io.Writer, endpoint string, abilityName string) erro
 			}
 		}
 	}
-	if _, err := fmt.Fprint(w); err != nil {
-		return err
+	if len(pokemonNames)%cols != 0 {
+		if _, err := fmt.Fprintln(w); err != nil {
+			return err
+		}
 	}
 
 	return nil

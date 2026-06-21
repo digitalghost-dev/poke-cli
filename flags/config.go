@@ -1,4 +1,4 @@
-// Package config loads and saves the user's poke-cli preferences as a TOML file.
+// config.go loads and saves the user's poke-cli preferences as a TOML file.
 
 // config storage across operating systems:
 // macOS: ~/Library/Application Support/poke-cli/config.toml
