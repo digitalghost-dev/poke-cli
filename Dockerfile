@@ -23,7 +23,7 @@ COPY services/src ./services/src
 RUN cargo build --release --manifest-path services/Cargo.toml --bin poke-cache
 
 # build 3
-FROM --platform=$BUILDPLATFORM alpine:3.24
+FROM alpine:3.24
 
 # Installing only necessary packages and remove them after use
 RUN apk add --no-cache shadow && \
