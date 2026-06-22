@@ -1,4 +1,4 @@
-name: goreleaser
+name: Release
 
 on:
   push:
@@ -7,9 +7,142 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
+  id-token: write
+  security-events: write
+
+env:
+  VERSION_NUMBER: ${{ github.ref_name }}
+  DOCKERHUB_REGISTRY_NAME: 'digitalghostdev/poke-cli'
+  AWS_REGION: 'us-west-2'
 
 jobs:
+  smoke-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
+
+      - name: Build
+        shell: bash
+        run: go build -o poke-cli${{ matrix.os == 'windows-latest' && '.exe' || '' }} .
+
+      - name: Smoke test
+        shell: bash
+        run: |
+          BIN=./poke-cli${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+          "$BIN" --help
+          "$BIN" pokemon pikachu
+          "$BIN" pokemon charizard -a -d
+          "$BIN" ability overgrow
+          "$BIN" move thunderbolt
+          "$BIN" mechanics --natures
+
+  gosec:
+    runs-on: ubuntu-22.04
+    needs: [smoke-tests]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@v2.25.0
+        with:
+          args: '-no-fail -fmt sarif -out results.sarif ./...'
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: results.sarif
+
+  bandit:
+    runs-on: ubuntu-22.04
+    needs: [smoke-tests]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Run Bandit Security Scanner
+        run: |
+          uv tool run --from 'bandit[sarif,toml]' bandit \
+            -r data_platform/pipelines \
+            -f sarif \
+            -o bandit-results.sarif \
+            || true
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: bandit-results.sarif
+
+  rust-cache:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build poke-cache
+        run: cargo build --release --manifest-path services/Cargo.toml --bin poke-cache
+
+      - name: Test cache module
+        run: cargo test --manifest-path services/Cargo.toml --lib cache
+
+      - name: Smoke test poke-cache
+        run: |
+          BIN=services/target/release/poke-cache
+          "$BIN" get "https://pokeapi.co/api/v2/pokemon/pikachu" > out.json
+          test -s out.json
+          "$BIN" get "https://pokeapi.co/api/v2/pokemon/pikachu" 2> hit.log > /dev/null
+          grep -q "Cache hit" hit.log
+          echo "poke-cache smoke test passed"
+
+  gitleaks:
+    runs-on: ubuntu-22.04
+    needs: [gosec, bandit]
+    if: needs.gosec.result == 'success' && needs.bandit.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run Gitleaks
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/path \
+            ghcr.io/gitleaks/gitleaks:v8.29.0 \
+            dir /path -c /path/gitleaks.toml --redact -v \
+            --report-format sarif --report-path /path/gitleaks-results.sarif
+
+      - name: Upload SARIF Report
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: gitleaks-results.sarif
+
   build-poke-cache:
     strategy:
       fail-fast: false
@@ -78,8 +211,483 @@ jobs:
           path: staging/poke-cache${{ matrix.ext }}
           if-no-files-found: error
 
+  build-linux-packages:
+    runs-on: ubuntu-22.04
+    needs: [gitleaks, rust-cache]
+    if: startsWith(github.ref, 'refs/tags/') && needs.gitleaks.result == 'success' && needs.rust-cache.result == 'success'
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
+
+      - name: Build Go Binary
+        env:
+          GOOS: linux
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: 0
+        run: |
+          go build -ldflags="-s -w -X main.version=${{ env.VERSION_NUMBER }}" -o poke-cli
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.arch == 'arm64' && 'aarch64-unknown-linux-gnu' || 'x86_64-unknown-linux-gnu' }}
+
+      - name: Install aarch64 cross-linker
+        if: matrix.arch == 'arm64'
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build poke-cache Binary
+        env:
+          RUST_TARGET: ${{ matrix.arch == 'arm64' && 'aarch64-unknown-linux-gnu' || 'x86_64-unknown-linux-gnu' }}
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+          CC_aarch64_unknown_linux_gnu: aarch64-linux-gnu-gcc
+        run: |
+          cargo build --release --manifest-path services/Cargo.toml --bin poke-cache --target "$RUST_TARGET"
+          cp "services/target/$RUST_TARGET/release/poke-cache" ./poke-cache
+
+      - name: Install nFPM
+        run: |
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.0
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+
+      - name: Create nFPM Config for Architecture
+        run: |
+          # Create architecture-specific config by modifying the base config
+          sed "s/arch: \"arm64\"/arch: \"${{ matrix.arch }}\"/" nfpm.yaml > nfpm-${{ matrix.arch }}.yaml
+
+      - name: Build packages
+        run: |
+          # Create output directory
+          mkdir -p dist
+
+          # Build DEB package
+          nfpm package \
+            --config nfpm-${{ matrix.arch }}.yaml \
+            --packager deb \
+            --target dist/poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.deb
+
+          # Build RPM package
+          nfpm package \
+            --config nfpm-${{ matrix.arch }}.yaml \
+            --packager rpm \
+            --target dist/poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.rpm
+
+      - name: Upload packages as artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: linux-packages-${{ matrix.arch }}
+          path: dist/*
+
+  upload-deb-packages:
+    runs-on: ubuntu-22.04
+    needs: [build-linux-packages]
+    if: needs.build-linux-packages.result == 'success'
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+      fail-fast: false  # Don't cancel other uploads if one fails
+
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: linux-packages-${{ matrix.arch }}
+          path: packages/
+
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v2
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+
+      - name: Upload DEB to Cloudsmith
+        working-directory: packages
+        run: |
+          cloudsmith push deb \
+            digitalghost-dev/poke-cli/debian/bookworm \
+            poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.deb
+
+  upload-rpm-packages:
+    runs-on: ubuntu-22.04
+    needs: [build-linux-packages]
+    if: needs.build-linux-packages.result == 'success'
+    strategy:
+      matrix:
+        arch: [ amd64, arm64 ]
+      fail-fast: false
+
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: linux-packages-${{ matrix.arch }}
+          path: packages/
+
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v2
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+
+      - name: Upload RPM to Cloudsmith
+        working-directory: packages
+        run: |
+          cloudsmith push rpm \
+            digitalghost-dev/poke-cli/fedora/42 \
+            poke-cli_${{ env.VERSION_NUMBER }}_linux_${{ matrix.arch }}.rpm
+
+  upload-summary:
+    runs-on: ubuntu-22.04
+    needs: [upload-deb-packages, upload-rpm-packages]
+    if: always() && startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Check all Uploads
+        run: |
+          echo "DEB uploads: ${{ needs.upload-deb-packages.result }}"
+          echo "RPM uploads: ${{ needs.upload-rpm-packages.result }}"
+
+          if [ "${{ needs.upload-deb-packages.result }}" != "success" ] || \
+             [ "${{ needs.upload-rpm-packages.result }}" != "success" ]; then
+            echo "⚠️ Some uploads failed"
+            exit 1
+          fi
+          echo "✅ All packages uploaded successfully"
+
+  validate-links:
+    runs-on: ubuntu-22.04
+    needs: [gitleaks]
+    if: needs.gitleaks.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check Links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --verbose --config lychee.toml ./docs/**/*.md
+          fail: false
+          output: ./lychee-report.md
+
+      - name: Upload Report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: lychee-report
+          path: ./lychee-report.md
+
+  build-docs-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [validate-links]
+    if: startsWith(github.ref, 'refs/tags/') && needs.validate-links.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          sparse-checkout: |
+            docs
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v4'
+
+      - name: Prepare Docker Build Context
+        run: |
+          mkdir docker-context
+          rsync -av --exclude=docker-context . docker-context/
+
+      - name: Build and Export
+        uses: 'docker/build-push-action@v7'
+        with:
+          context: ./docker-context
+          file: ./docker-context/docs/Dockerfile
+          tags: docs:latest
+          outputs: type=docker,dest=/tmp/docs.tar
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: docs
+          path: /tmp/docs.tar
+
+  upload-docs-to-ecr:
+    runs-on: ubuntu-22.04
+    needs: [build-docs-docker-image]
+    if: needs.build-docs-docker-image.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: docs
+          path: /tmp
+
+      - name: Load Image
+        run: docker load -i /tmp/docs.tar
+
+      - name: Tag and Push
+        run: |
+          docker tag docs:latest ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
+          docker push ${{ secrets.AWS_DOCS_ECR_NAME }}:latest
+
+  lint-cli-dockerfile:
+    runs-on: ubuntu-22.04
+    needs: [gitleaks]
+    if: needs.gitleaks.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Lint Dockerfile
+        uses: 'hadolint/hadolint-action@v3.1.0'
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: 'error'
+
+  build-cli-docker-image:
+    runs-on: ubuntu-22.04
+    needs: [lint-cli-dockerfile]
+    if: startsWith(github.ref, 'refs/tags/') && needs.lint-cli-dockerfile.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v4'
+
+      - name: Prepare Docker Build Context
+        run: |
+          mkdir docker-context
+          rsync -av --exclude=docker-context . docker-context/
+
+      - name: Build and Export
+        uses: 'docker/build-push-action@v7'
+        with:
+          context: ./docker-context
+          tags: poke-cli:${{ env.VERSION_NUMBER }}
+          outputs: type=docker,dest=/tmp/poke-cli.tar
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: poke-cli
+          path: /tmp/poke-cli.tar
+
+  # Uploading to Elastic Container Registry as a backup method.
+  upload-cli-to-ecr:
+    runs-on: ubuntu-22.04
+    needs: [build-cli-docker-image]
+    if: needs.build-cli-docker-image.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        run : |
+          docker build -t poke-cli:${{ env.VERSION_NUMBER }} .
+          docker tag poke-cli:${{ env.VERSION_NUMBER }} ${{ secrets.AWS_ECR_NAME }}:${{ env.VERSION_NUMBER }}
+          docker push ${{ secrets.AWS_ECR_NAME }}:${{ env.VERSION_NUMBER }}
+
+  syft:
+    runs-on: ubuntu-22.04
+    needs: [build-cli-docker-image]
+    if: needs.build-cli-docker-image.result == 'success'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v4'
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: poke-cli
+          path: /tmp
+
+      - name: Load Image
+        run: |
+          docker load --input /tmp/poke-cli.tar
+          docker image ls -a
+
+      - name: Create and Upload SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: poke-cli:${{ env.VERSION_NUMBER }}
+          format: spdx-json
+          artifact-name: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          output-file: /tmp/poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          upload-artifact: true
+
+  grype:
+    runs-on: ubuntu-22.04
+    needs: [syft]
+    if: needs.syft.result == 'success'
+
+    steps:
+      - name: Download SBOM
+        uses: actions/download-artifact@v7
+        with:
+          name: poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          path: /tmp
+
+      - name: Scan SBOM
+        uses: anchore/scan-action@v7
+        id: scan
+        with:
+          sbom: /tmp/poke-cli-sbom-${{ env.VERSION_NUMBER }}.spdx.json
+          fail-build: false
+          output-format: sarif
+          severity-cutoff: critical
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+
+  architecture-build:
+    runs-on: ubuntu-22.04
+    needs: [gitleaks]
+    if: startsWith(github.ref, 'refs/tags/') && needs.gitleaks.result == 'success'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Docker Meta
+        id: meta
+        uses: 'docker/metadata-action@v6'
+        with:
+          images: ${{ env.DOCKERHUB_REGISTRY_NAME }}
+
+      - name: Set up QEMU
+        uses: 'docker/setup-qemu-action@v4'
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v4'
+
+      - name: Login to Docker Hub
+        uses: 'docker/login-action@v4'
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push by Digest
+        id: build
+        uses: 'docker/build-push-action@v7'
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.DOCKERHUB_REGISTRY_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+      - name: Export Digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload Digest for AMD64
+        if: matrix.platform == 'linux/amd64'
+        uses: actions/upload-artifact@v6
+        with:
+          name: digests-amd64
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload Digest for ARM64
+        if: matrix.platform == 'linux/arm64'
+        uses: actions/upload-artifact@v6
+        with:
+          name: digests-arm64
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  create-manifest-and-push:
+    runs-on: ubuntu-22.04
+    needs: [architecture-build]
+    if: needs.architecture-build.result == 'success'
+
+    steps:
+      - name: Download Digests
+        uses: actions/download-artifact@v7
+        with:
+          pattern: digests-*
+          path: /tmp/digests
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: 'docker/setup-buildx-action@v4'
+
+      - name: Docker meta
+        id: meta
+        uses: 'docker/metadata-action@v6'
+        with:
+          images: ${{ env.DOCKERHUB_REGISTRY_NAME }}
+          tags: ${{ env.VERSION_NUMBER }}
+
+      - name: Login to Docker Hub
+        uses: 'docker/login-action@v4'
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create Manifest List and Push
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.DOCKERHUB_REGISTRY_NAME }}@sha256:%s ' *)
+
+      - name: Inspect image
+        run: |
+          docker buildx imagetools inspect ${{ env.DOCKERHUB_REGISTRY_NAME }}:${{ steps.meta.outputs.version }}
+
   goreleaser:
-    needs: [build-poke-cache]
+    needs: [build-poke-cache, smoke-tests, rust-cache, gitleaks]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
