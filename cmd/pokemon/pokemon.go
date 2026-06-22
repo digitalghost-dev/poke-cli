@@ -3,7 +3,6 @@ package pokemon
 import (
 	"bytes"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	flag "github.com/spf13/pflag"
 )
 
 // PokemonCommand processes the Pokémon command
@@ -28,11 +28,10 @@ func PokemonCommand(args []string) (string, error) {
 					ShowHyphenHint: true,
 					Flags: []utils.FlagHelp{
 						{Short: "-a", Long: "--abilities", Description: "Prints the Pokémon's abilities."},
-						{Short: "-d", Long: "--defense", Description: "Prints the Pokémon's type defenses."},
+						{Short: "-d", Long: "--defenses", Description: "Prints the Pokémon's type defenses."},
 						{Short: "-i=xx", Long: "--image=xx", Description: "Prints out the Pokémon's default sprite.\n\t     " + styling.StyleItalic.Render("options: [sm, md, lg]")},
 						{Short: "-m", Long: "--moves", Description: "Prints the Pokémon's learnable moves."},
 						{Short: "-s", Long: "--stats", Description: "Prints the Pokémon's base stats."},
-						{Short: "-t", Long: "--types", Description: styling.ErrorColor.Render("Deprecated. Typing is included by default.")},
 					},
 				},
 			),
@@ -97,12 +96,9 @@ func PokemonCommand(args []string) (string, error) {
 		capitalizedString, entryOutput.String(), typeOutput.String(), metricsOutput.String(), speciesOutput.String(), eggGroupOutput.String(), effortValuesOutput.String(),
 	)
 
-	if *pf.Image != "" || *pf.ShortImage != "" {
+	if *pf.Image != "" {
 		// Determine the size based on the provided flags
 		size := *pf.Image
-		if *pf.ShortImage != "" {
-			size = *pf.ShortImage
-		}
 
 		// Call the ImageFlag function with the specified size
 		if err := flags.ImageFlag(&output, endpoint, pokemonName, size); err != nil {
@@ -115,11 +111,10 @@ func PokemonCommand(args []string) (string, error) {
 		condition bool
 		flagFunc  func(io.Writer, string, string) error
 	}{
-		{*pf.Abilities || *pf.ShortAbilities, flags.AbilitiesFlag},
-		{*pf.Defenses || *pf.ShortDefenses, flags.DefenseFlag},
-		{*pf.Moves || *pf.ShortMoves, flags.MovesFlag},
-		{*pf.Stats || *pf.ShortStats, flags.StatsFlag},
-		{*pf.Types || *pf.ShortTypes, flags.TypesFlag},
+		{*pf.Abilities, flags.AbilitiesFlag},
+		{*pf.Defenses, flags.DefenseFlag},
+		{*pf.Moves, flags.MovesFlag},
+		{*pf.Stats, flags.StatsFlag},
 	}
 
 	for _, check := range flagChecks {

@@ -44,13 +44,13 @@ func SearchCommand(args []string) (string, error) {
 
 // model structure
 type model struct {
-	Choice         int
-	Chosen         bool
-	Quitting       bool
-	TextInput      textinput.Model
-	ShowResults    bool
-	SearchResults  string
-	WarningMessage string
+	choice         int
+	chosen         bool
+	quitting       bool
+	textInput      textinput.Model
+	showResults    bool
+	searchResults  string
+	warningMessage string
 }
 
 func initialModel() model {
@@ -60,7 +60,7 @@ func initialModel() model {
 	ti.SetWidth(20)
 
 	return model{
-		TextInput: ti,
+		textInput: ti,
 	}
 }
 
@@ -75,12 +75,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "ctrl+c", "esc":
-			m.Quitting = true
+			m.quitting = true
 			return m, tea.Quit
 		}
 	}
 
-	if !m.Chosen {
+	if !m.chosen {
 		return UpdateSelection(msg, m)
 	}
 	return UpdateInput(msg, m)
@@ -88,14 +88,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View renders the correct UI screen.
 func (m model) View() tea.View {
-	if m.Quitting {
+	if m.quitting {
 		return tea.NewView("\n  Quitting search...\n\n")
 	}
-	if m.ShowResults {
+	if m.showResults {
 		resultsView, _ := RenderInput(m) // Fetch results view
 		return tea.NewView(resultsView)
 	}
-	if !m.Chosen {
+	if !m.chosen {
 		return tea.NewView(RenderSelection(m))
 	}
 	inputView, _ := RenderInput(m)

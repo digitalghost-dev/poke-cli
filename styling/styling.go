@@ -3,26 +3,26 @@ package styling
 import (
 	"fmt"
 	"image/color"
-	"os"
 	"regexp"
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"golang.org/x/term"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
-const (
-	HyphenHint = "Use a hyphen when typing a name with a space."
+const HyphenHint = "Use a hyphen when typing a name with a space."
 
-	PrimaryYellow = "#FFCC00"
-	LightYellow   = "#FFDE00"
-	DarkYellow    = "#E1AD01"
-)
+var palettes = map[string]string{
+	"yellow": "#E1AD01",
+	"red":    "#f00000",
+	"blue":   "#3B4CCA",
+}
+
+var accent string
 
 var (
-	YellowColor     = lipgloss.Color(PrimaryYellow)
+	YellowColor     color.Color
 	YellowAdaptive  color.Color
 	YellowAdaptive2 color.Color
 )
@@ -33,7 +33,7 @@ var (
 	Gray          = lipgloss.Color("#777777")
 	Yellow        lipgloss.Style
 	ColoredBullet lipgloss.Style
-	CheckboxStyle = lipgloss.NewStyle().Foreground(lipgloss.Color(PrimaryYellow))
+	CheckboxStyle lipgloss.Style
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
 
 	DocsLink string
@@ -41,11 +41,9 @@ var (
 	StyleBold      = lipgloss.NewStyle().Bold(true)
 	StyleItalic    = lipgloss.NewStyle().Italic(true)
 	StyleUnderline = lipgloss.NewStyle().Underline(true)
-	HelpBorder     = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color(PrimaryYellow))
-	ErrorColor  = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
-	ErrorBorder = lipgloss.NewStyle().
+	HelpBorder     lipgloss.Style
+	ErrorColor     = lipgloss.NewStyle().Foreground(lipgloss.Color("#F2055C"))
+	ErrorBorder    = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#F2055C"))
 	ApiErrorStyle = lipgloss.NewStyle().
@@ -56,10 +54,8 @@ var (
 	WarningBorder = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#FF8C00"))
-	TypesTableBorder = lipgloss.NewStyle().
-				BorderStyle(lipgloss.NormalBorder()).
-				BorderForeground(lipgloss.Color(PrimaryYellow))
-	ColorMap = map[string]string{
+	TypesTableBorder lipgloss.Style
+	ColorMap         = map[string]string{
 		"normal":   "#B7B7A9",
 		"fire":     "#FF4422",
 		"water":    "#3499FF",
@@ -81,21 +77,34 @@ var (
 	}
 )
 
-func init() {
-	isDark := true
-	if term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd())) {
-		isDark = lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+func ApplyTheme(name string) {
+	hex, ok := palettes[name]
+	if !ok {
+		hex = palettes["yellow"]
 	}
-	ld := lipgloss.LightDark(isDark)
-	YellowAdaptive = ld(lipgloss.Color(DarkYellow), lipgloss.Color(LightYellow))
-	YellowAdaptive2 = ld(lipgloss.Color(DarkYellow), lipgloss.Color(PrimaryYellow))
-	Yellow = lipgloss.NewStyle().Foreground(YellowAdaptive)
-	ColoredBullet = lipgloss.NewStyle().
-		SetString("•").
-		Foreground(lipgloss.Color(PrimaryYellow))
+	accent = hex
+	c := lipgloss.Color(hex)
+
+	YellowColor = c
+	YellowAdaptive = c
+	YellowAdaptive2 = c
+	Yellow = lipgloss.NewStyle().Foreground(c)
+	ColoredBullet = lipgloss.NewStyle().SetString("•").Foreground(c)
+	CheckboxStyle = lipgloss.NewStyle().Foreground(c)
+	HelpBorder = lipgloss.NewStyle().
+		BorderStyle(lipgloss.RoundedBorder()).
+		BorderForeground(c)
+	TypesTableBorder = lipgloss.NewStyle().
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(c)
+	SelectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(c)
 	DocsLink = lipgloss.NewStyle().
-		Foreground(YellowAdaptive2).
+		Foreground(c).
 		Render("\x1b]8;;https://docs.poke-cli.com\x1b\\docs.poke-cli.com\x1b]8;;\x1b\\")
+}
+
+func init() {
+	ApplyTheme("yellow")
 }
 
 // GetTypeColor Helper function to get color for a given type name from colorMap

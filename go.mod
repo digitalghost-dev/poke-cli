@@ -1,6 +1,6 @@
 module github.com/digitalghost-dev/poke-cli
 
-go 1.25.10
+go 1.25.11
 
 require (
 	charm.land/bubbles/v2 v2.1.0
@@ -14,11 +14,13 @@ require (
 	github.com/charmbracelet/x/term v0.2.2
 	github.com/disintegration/imaging v1.6.2
 	github.com/dolmen-go/kittyimg v0.0.0-20250610224728-874967bd8ea4
+	github.com/pelletier/go-toml/v2 v2.4.0
 	github.com/schollz/closestmatch v2.1.0+incompatible
+	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/image v0.38.0
+	golang.org/x/image v0.41.0
 	golang.org/x/term v0.42.0
-	golang.org/x/text v0.35.0
+	golang.org/x/text v0.37.0
 	modernc.org/sqlite v1.39.1
 )
 
@@ -58,7 +60,7 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.66.10 // indirect
 	modernc.org/mathutil v1.7.1 // indirect

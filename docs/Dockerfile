@@ -6,7 +6,7 @@ RUN groupadd -r -g 10001 docsuser && \
 
 WORKDIR /build
 
-RUN pip install --no-cache-dir mkdocs mkdocs-material mkdocs-nav-weight
+RUN pip install --no-cache-dir mkdocs mkdocs-material mkdocs-nav-weight mkdocs-glightbox
 
 COPY --chown=docsuser:docsuser mkdocs.yml /build/mkdocs.yml
 COPY --chown=docsuser:docsuser docs/ /build/docs/

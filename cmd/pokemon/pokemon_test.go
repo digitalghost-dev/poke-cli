@@ -46,12 +46,12 @@ func TestPokemonCommand(t *testing.T) {
 		},
 		{
 			name:           "Pokemon defense flag",
-			args:           []string{"pokemon", "dragapult", "--defense"},
+			args:           []string{"pokemon", "dragapult", "--defenses"},
 			expectedOutput: utils.LoadGolden(t, "pokemon_defense.golden"),
 		},
 		{
 			name:           "Pokemon defense flag with ability immunity",
-			args:           []string{"pokemon", "gastrodon", "--defense"},
+			args:           []string{"pokemon", "gastrodon", "--defenses"},
 			expectedOutput: utils.LoadGolden(t, "pokemon_defense_ability_immunities.golden"),
 		},
 		{

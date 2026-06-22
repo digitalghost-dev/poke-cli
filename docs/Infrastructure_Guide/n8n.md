@@ -6,20 +6,42 @@ weight: 8
 
 !!! question "What is n8n?"
 
-    n8n is a workflow automation platform that lets you wire together HTTP calls, databases, AI services, and notifications using a visual node editor. Each node is one step in a pipeline; data flows between them as JSON. n8n Cloud is the managed, hosted version where workflows run on n8n's infrastructure on a scheduled configuration.
+    n8n is a workflow automation platform that lets you wire together HTTP calls, databases, AI services, and notifications using a visual node editor. Each node is one step in a pipeline; data flows between them as JSON. n8n Cloud is the managed, hosted version where workflows run on n8n's infrastructure.
 
 ## Overview
 
-n8n is used in this project for a few different reasons such as performing API status checks, sending success/failure notifications, or ingesting data from sources that are not in a friendly format like a REST API. 
+n8n is used in this project for a few different reasons such as performing API status checks, sending success/failure notifications, and ingesting data from sources that aren't exposed as a friendly REST API.
 
-One of n8n pipelines in this project, for example, scrapes `.md` files from [Pikalytics](https://www.pikalytics.com/ai/speed-tiers) with Firecrawl's LLM-powered extraction service to pull structured speed tier data into Supabase.
+The Pikalytics data, for example, has `ai/` available endpoints, so n8n scrapes it with [Firecrawl](https://www.firecrawl.dev/)'s LLM-powered extraction and lands the raw rows in Supabase. These scraper workflows are **triggered by Dagster** — they no longer carry their own schedule. See [Pipeline 3](#pipeline-3-pikalytics-scrapers).
 
-This project uses n8n cloud.
+This project uses n8n Cloud.
+
+!!! note "Two directions of Dagster ↔ n8n integration"
+
+    * **Dagster → n8n → Discord** (Pipeline 1): Dagster posts run-status webhooks to n8n, which formats and forwards them as Discord alerts.
+    * **Dagster → n8n → Supabase** (Pipeline 3): Dagster *triggers* n8n scraper workflows and blocks until they finish loading staging.
+
+    Both use the same keyed `fetch_n8n_webhook_secret(key)` helper to resolve webhook URLs from the `n8n_webhook` AWS secret.
+
+## Create an Account
+
+### n8n
+
+Visit the n8n [sign-up page](https://n8n.io/) to create an account. The Cloud plan is recommended for this
+project — it removes the operational overhead of self-hosting.
+
+### Firecrawl
+
+The Pikalytics scrapers ([Pipeline 3](#pipeline-3-pikalytics-scrapers)) use Firecrawl for extraction.
+
+1. Create a [Firecrawl](https://www.firecrawl.dev/signin?view=signup) account to get an API key. The free tier is sufficient for this use case.
+2. After account creation, find your API key in the [dashboard](https://www.firecrawl.dev/app/api-keys) and copy it.
+3. Add it in n8n as the `Firecrawl account` credential — the scraper workflows reference it by that name.
 
 ## Current Pipelines
-* Pipeline 1 - Dagster Job Status Check
-* Pipeline 2 - Supabase API Status Check
-* Pipeline 3 - Champions Speed Tiers Scrape
+* Pipeline 1 — Dagster Job Status Check &nbsp;(Dagster → n8n → Discord)
+* Pipeline 2 — Supabase API Status Check &nbsp;(n8n schedule → Discord)
+* Pipeline 3 — Pikalytics Scrapers &nbsp;(Dagster → n8n → Supabase staging)
 
 ### Pipeline 1: Job Status Check
 
@@ -163,243 +185,162 @@ takes over, `$json` reflects the If node's output rather than the original HTTP 
 
 ---
 
-### Pipeline 3: Speed Tiers Scrape
+### Pipeline 3: Pikalytics Scrapers
 
-#### Pipeline Shape
+_Four Dagster-triggered workflows that scrape [Pikalytics](https://www.pikalytics.com/) into Supabase `staging.*`. n8n is a **dumb extractor** — all scheduling lives in Dagster and all derivation lives in dbt._
+
+The four workflows fan into a single Dagster job (`pikalytics_pipeline_job`, weekly Mondays 08:00 LA). Each
+workflow is a webhook that Dagster POSTs to; the webhook is set to **respond only when its last node
+finishes**, so the Dagster trigger asset blocks until staging is fully loaded before dbt runs.
+
+| Trigger asset | Workflow | Webhook path | Scrapes | Lands in |
+|---|---|---|---|---|
+| `trigger_pikalytics_speed_tiers` | `speed-tiers` | `pikalytics-speed-tier` | speed-tiers page | `staging.pikalytics_speed_tiers` |
+| `trigger_pikalytics_usage` | `usage` | `pikalytics-usage` | top-50 usage (pokedex) | `staging.pikalytics_usage` |
+| `trigger_pikalytics_top_teams` | `top-teams` | `pikalytics-top-teams` | top teams | `staging.pikalytics_top_teams` |
+| `trigger_pikalytics_pokemon_comp_info` | `pokemon-comp-info` | `pikalytics-pokemon-comp-info` | each top-50 Pokémon's AI page | `staging.pikalytics_pokemon_comp_info` |
+
+#### Responsibility split
+
+| Layer | Responsibility |
+|-------|----------------|
+| Dagster | Owns scheduling, dependency order, retries, and dbt asset lineage. |
+| n8n | Extracts raw Pikalytics rows and writes them to staging. |
+| Firecrawl | Converts rendered Pikalytics pages into structured rows. |
+| dbt | Derives slugs, `pokemon_id`, record math, speed tiers, constants, RLS, and public tables. |
+| Supabase | Stores staging and public tables used by the app. |
+
+n8n should not calculate analytics fields such as speed buckets, parsed wins/losses/ties, or Pokémon IDs. Those transformations live in dbt so they are version-controlled and testable.
+
+!!! warning "What changed from the old design"
+
+    Each workflow used to own a **Schedule Trigger** and a Code node that did the math/derivations, then
+    upserted into a `public` table with `snapshot_month` / `ingested_at` columns. Now:
+
+    * **Dagster owns scheduling** — one job, one weekly schedule. The workflows lost their schedule triggers
+      and only run when Dagster calls them.
+    * **n8n only extracts raw rows** into `staging` (full truncate + insert; no snapshot column).
+    * **dbt derives everything** when it builds `public`: `pokemon_slug`, `pokemon_id` (via the
+      `resolve_pokemon_id` macro), speed-tier math, `wins`/`losses`/`ties`, etc. — all version-controlled.
+
+#### Pipeline Shape (common)
+
+Used by `speed-tiers`, `usage`, and `top-teams`:
 
 ```mermaid
 sequenceDiagram
     autonumber
+    participant Dagster
     participant n8n
     participant Firecrawl
     participant Supabase
-    participant Dagster
     participant dbt
 
-    Note over n8n: Schedule Trigger fires (monthly)
-    n8n->>Firecrawl: POST /v2/scrape (URL + JSON schema)
-    Firecrawl-->>n8n: 263 rows (rank, pokemon, base_spe)
-    Note over n8n: Code node derives 6 speed columns
-    n8n->>Supabase: UPSERT staging.champions_speed_tiers
-    Supabase-->>n8n: 263 rows affected
-    n8n->>Dagster: POST /graphql launchRun(...)
-    Dagster-->>n8n: { runId }
-    Dagster->>dbt: dbt build --select tag:champions_speed_tiers
-    dbt->>Supabase: CREATE OR REPLACE public.champions_speed_tiers
-    Supabase-->>dbt: ok
-    dbt-->>Dagster: success
+    Note over Dagster: pikalytics_pipeline_job (weekly, Mon 08:00 LA)
+    Dagster->>n8n: POST /webhook/{path}  (trigger_* asset, blocks)
+    n8n->>Supabase: TRUNCATE staging.{table}
+    n8n->>Firecrawl: scrape Pikalytics page
+    Firecrawl-->>n8n: raw rows
+    Note over n8n: Shape Rows (raw cols only + count guard)
+    n8n->>Supabase: INSERT staging.{table}
+    n8n-->>Dagster: 200 (responds when last node finishes)
+    Dagster->>dbt: dbt build (model is downstream of the trigger asset)
+    dbt->>Supabase: build public.{table} (+ pokemon_id via macro, RLS)
 ```
 
-#### Create an Account
+#### Workflow (common shape)
 
-Visit the n8n [sign-up page](https://n8n.io/) to create an account. The Cloud plan is recommended for this project —
-it removes the operational overhead of self-hosting.
+`Webhook → Truncate Staging → Firecrawl Scrape → Shape Rows → Insert Staging`
 
-#### Supabase: Create the Staging Table
+##### 1. Webhook
 
-_Run this SQL in the Supabase SQL Editor once before configuring the n8n workflow._
+_Entry point Dagster posts to._
 
-```sql
--- This should already exist from the initial Supabase setup
-create schema if not exists staging;
+* **HTTP Method:** `POST`
+* **Path:** `pikalytics-<x>` (see table above)
+* **Respond:** **When Last Node Finishes** — this is what makes the Dagster POST block until the load
+  completes, so dbt never runs on stale/empty staging.
 
-create table if not exists staging.champions_speed_tiers (
-    snapshot_month     date          not null,
-    format             text          not null,
-    rank               int           not null,
-    pokemon            text          not null,
-    base_spe           int           not null,
-    neutral_0_sp       int           not null,
-    neutral_32_sp      int           not null,
-    max_speed          int           not null,
-    neg_spe_0_sp       int           not null,
-    max_scarf          int           not null,
-    neutral_32_scarf   int           not null,
-    ingested_at        timestamptz   not null default now(),
-    primary key (snapshot_month, format, pokemon)
-);
+There is **no Schedule Trigger** — Dagster owns the cadence.
 
-create index if not exists idx_speed_tiers_rank
-    on staging.champions_speed_tiers (snapshot_month, format, rank);
+##### 2. Truncate Staging
+
+A **Postgres** node that runs `TRUNCATE` on `staging.pikalytics_<x>` (full-replace each run; the tables have
+no snapshot column). Uses the `Postgres account` credential.
+
+##### 3. Firecrawl Scrape
+
+A **Firecrawl** node (`/scrape`) against the relevant Pikalytics URL. The flat tables use Firecrawl's JSON
+mode with a schema describing just the raw columns; the LLM extraction returns one object per row. Uses the
+`Firecrawl account` credential.
+
+##### 4. Shape Rows
+
+A **Code** node that keeps **only the raw scraped columns** and applies a row-count guard
+(`throw if rows.length < N`) so a layout change on Pikalytics fails loudly instead of writing bad data. No
+derivations happen here — that's dbt's job.
+
+##### 5. Insert Staging
+
+A **Postgres** node that inserts the raw rows into `staging.pikalytics_<x>`. JSONB columns (e.g. `top-teams`'
+`archetypes` / `pokemon`) are `JSON.stringify`-d in the column mapping.
+
+#### Variant: `pokemon-comp-info` (per-Pokémon loop)
+
+This one enriches each of the top-50 usage Pokémon, so it reads the usage list first and loops:
+
+```mermaid
+graph LR
+    A[Webhook] --> B[Truncate<br/>comp_info staging]
+    B --> C[Fetch Usage List<br/>SELECT pokemon, web_url<br/>FROM staging.pikalytics_usage]
+    C --> D[Prepare AI URLs]
+    D --> E{{Loop Pokemon<br/>batch 3}}
+    E -->|each batch| F[Scrape AI page]
+    F --> G[Parse Common Sections<br/>markdown → JSONB]
+    G --> H[Insert comp_info staging]
+    H --> E
+    E -->|done| I[Done]
 ```
 
-The composite primary key on `(snapshot_month, format, pokemon)` makes the upsert idempotent. re-runs within the same
-month overwrite rather than duplicate.
+* It reads **`staging.pikalytics_usage`** (the freshly-loaded list), so its Dagster trigger
+  (`trigger_pikalytics_pokemon_comp_info`) **depends on `trigger_pikalytics_usage`** — usage loads first,
+  then comp-info reads it. This is the only cross-workflow dependency in the pipeline.
+* The **Parse Common Sections** Code node parses the scraped markdown into four JSONB arrays
+  (`common_moves`, `common_abilities`, `common_items`, `common_teammates`) of `{name, usage_percent}`. This
+  is genuine *extraction* (structuring a scraped page), so it stays in n8n; `pokemon_id` is still derived in
+  dbt.
+* It's a long run (~50 page scrapes), so the trigger asset uses a generous timeout and limited retries.
 
-#### Workflow
+#### Dagster + Secrets Wiring
 
-##### 1. Schedule Trigger
+* Each workflow is fired by a `trigger_pikalytics_*` asset in `pipelines/defs/pikalytics/`, which POSTs the
+  webhook URL resolved via `fetch_n8n_webhook_secret("pikalytics-<x>")` (keys in the `n8n_webhook` AWS
+  secret).
+* n8n nodes authenticate with the `Postgres account` (truncate / fetch / insert) and `Firecrawl account`
+  (scrape) credentials.
+* The workflow must be **published/active** for its production webhook URL to respond — if it's toggled off,
+  the trigger asset fails with a 404.
 
-_Fires the workflow on a monthly cadence._
+#### Downstream dbt models
 
-1. Add a **Schedule Trigger** node.
+After the n8n workflows finish, dbt builds the public Pikalytics snapshot models:
 
-2. Set the cron expression to `0 8 5 * *` (8 AM UTC on the 5th of each month).
+| Model | Notes |
+|-------|-------|
+| `pikalytics_speed_tiers` | Resolves each Pokémon to the shared `pokemon` hub and derives common speed benchmarks. |
+| `pikalytics_usage` | Stores top usage rows for the current format. |
+| `pikalytics_top_teams` | Parses team records and stores `pokemon_ids` as a JSONB array aligned with the scraped team list. |
+| `pikalytics_pokemon_comp_info` | Stores common moves, abilities, items, and teammates scraped from each Pokémon detail page. |
 
-3. Pikalytics regenerates its AI endpoints around the 1st of each month — running on the 5th gives a buffer in case
-   regeneration is delayed.
+The public models are current snapshots, not history tables. A successful run replaces staging and rebuilds the public tables for the current format.
 
-##### 2. Firecrawl Scrape
+#### Verifying
 
-_Hits Pikalytics' AI markdown endpoint and extracts structured rows via Firecrawl's JSON mode._
+After a run of `pikalytics_pipeline_job`:
 
-1. Create a [Firecrawl](https://www.firecrawl.dev/signin?view=signup) account to get an API key. The free tier is sufficient for this use case.
-2. After account creation, find your API key in the [dashboard](https://www.firecrawl.dev/app/api-keys) and copy it.
-3. In n8n, add a **Firecrawl** node.
-4. Set up the credential with your Firecrawl API key.
-5. Configure the node:
-    * **Resource:** `Scraping`
-    * **Operation:** `/scrape`
-    * **URL:** `https://www.pikalytics.com/ai/speed-tiers`
-6. Under **Scrape Options**, add **Formats** and configure:
-    * **Type:** JSON
-    * **Prompt:** `Extract every row from the Champions Speed Tiers table. Each row maps to one Pokemon. Do not skip any rows.`
-    * **Schema:**
-        ```json
-        {
-          "type": "object",
-          "properties": {
-            "rows": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "rank":     { "type": "integer" },
-                  "pokemon":  { "type": "string" },
-                  "base_spe": { "type": "integer" }
-                },
-                "required": ["rank", "pokemon", "base_spe"]
-              }
-            }
-          }
-        }
-        ```
-7. Set **Timeout (Ms)** to `120000`. The LLM extraction takes ~55 seconds for 263 rows.
-8. Leave **Only Main Content** enabled.
-
-!!! note "Why only 3 fields?"
-
-    Pikalytics' speed tier table has 9 columns, but the other 6 are deterministic functions of `base_spe`
-    (Champions uses fixed level 50, max 32 Skill Points, 31 IVs). Asking the LLM to emit all 9 fields × 263 rows
-    pushes past Firecrawl's completion limits and times out. Asking for just `rank`, `pokemon`, `base_spe`
-    succeeds reliably and lets us derive the rest in the next node.
-
-##### 3. Code (Math + Metadata)
-
-_Derives the remaining six speed columns from `base_spe` and stamps each row with snapshot metadata._
-
-1. Add a **Code** node, connected to Firecrawl's output.
-2. Set **Mode** to `Run Once for All Items` and **Language** to `JavaScript`.
-3. Paste:
-
-```javascript
-const fc = $input.first().json.data.json.rows;
-
-const today = new Date();
-const snapshotMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
-
-const rows = fc.map(r => {
-  const neutral_0_sp  = r.base_spe + 20;
-  const neutral_32_sp = r.base_spe + 52;
-  const max_speed     = Math.floor(neutral_32_sp * 1.1);
-  return {
-    snapshot_month:    snapshotMonth,
-    format:            "gen9championsvgc2026",
-    rank:              r.rank,
-    pokemon:           r.pokemon,
-    base_spe:          r.base_spe,
-    neutral_0_sp,
-    neutral_32_sp,
-    max_speed,
-    neg_spe_0_sp:      Math.floor(neutral_0_sp * 0.9),
-    max_scarf:         Math.floor(max_speed * 1.5),
-    neutral_32_scarf:  Math.floor(neutral_32_sp * 1.5),
-  };
-});
-
-if (rows.length < 200) {
-  throw new Error(`Speed tiers row count looks wrong: got ${rows.length}, expected ~263`);
-}
-
-return rows.map(json => ({ json }));
-```
-
-The `rows.length < 200` guard turns silent breakage (e.g. Pikalytics changes the table layout) into a workflow
-failure that surfaces immediately rather than letting bad data into Postgres.
-
-The derivation formulas are:
-
-| Column | Formula |
-|--------|---------|
-| `neutral_0_sp`     | `base_spe + 20` |
-| `neutral_32_sp`    | `base_spe + 52` |
-| `max_speed`        | `floor((base_spe + 52) * 1.1)` |
-| `neg_spe_0_sp`     | `floor((base_spe + 20) * 0.9)` |
-| `max_scarf`        | `floor(max_speed * 1.5)` |
-| `neutral_32_scarf` | `floor((base_spe + 52) * 1.5)` |
-
-!!! warning "n8n Cloud's Python sandbox"
-
-    The Code node also supports Python, but n8n Cloud runs Python via Pyodide with no standard library access
-    (`datetime`, `math`, etc. are all blocked). For this reason JavaScript is the more practical choice for
-    transformations inside n8n. Python work for this project lives in the Dagster pipeline instead.
-
-##### 4. Postgres Upsert (Supabase)
-
-_Lands the transformed rows in `staging.champions_speed_tiers` idempotently._
-
-1. Add a **Postgres** node, connected to the Code node's output.
-2. Set up the credential with the Supabase **Session Pooler** connection string (port `6543`). The pooler is
-   recommended for serverless callers like n8n Cloud.
-3. Configure the node:
-    * **Operation:** `Insert or Update` (Upsert)
-    * **Schema:** `staging`
-    * **Table:** `champions_speed_tiers`
-    * **Mapping Column Mode:** `Map Automatically` (the JSON keys from the Code node match column names exactly)
-    * **Columns to Match On:** `snapshot_month`, `format`, `pokemon`
-
-!!! note
-
-    Supabase requires SSL. If the connection fails with a `pg_hba.conf` error, ensure SSL is enabled in the
-    credential settings.
-
-##### 5. Trigger Dagster (Planned)
-
-_Once the staging row lands, n8n hits the Dagster GraphQL endpoint to launch the dbt-materialization job._
-
-This step calls Dagster's `launchRun` mutation against the `dagster-webserver` instance running on EC2.
-Because n8n Cloud has dynamic egress IPs, Dagster is fronted by a Cloudflare Tunnel rather than exposed
-through the EC2 security group directly.
-
-The HTTP Request node will POST to `https://<tunnel-host>/graphql` with the mutation:
-
-```graphql
-mutation LaunchRun($p: ExecutionParams!) {
-  launchRun(executionParams: $p) {
-    __typename
-    ... on LaunchRunSuccess { run { runId } }
-    ... on PythonError { message }
-  }
-}
-```
-
-Selecting the `champions_speed_tiers_dbt_job` job in the `card_data` repository location.
-
-##### 6. Notify (Planned)
-
-_Posts run status to Discord on success or failure._
-
-A final HTTP Request (or Discord) node sends a webhook with run summary — row count, duration, dbt status —
-mirroring the existing Dagster-run notifications described in the [Overview](index.md#data-infrastructure-diagram).
-
-##### 7. Verifying the Pipeline
-
-After the upsert step succeeds:
-
-1. Open Supabase → Table Editor → `staging.champions_speed_tiers`.
-2. Confirm 263 rows exist with `snapshot_month` set to the first of the current month.
-3. Spot-check a handful of rows against [pikalytics.com/speed-tiers](https://www.pikalytics.com/speed-tiers) —
-   for example, Mega Aerodactyl should appear at rank 1 with `base_spe = 150`, `max_speed = 222`.
+1. Confirm `staging.pikalytics_<x>` and `public.pikalytics_<x>` row counts match.
+2. Confirm `pokemon_id` is non-null (it's resolved against the `public.pokemon` hub in dbt).
+3. For `pokemon-comp-info`, confirm the four `common_*` JSONB arrays are populated.
 
 ---
 

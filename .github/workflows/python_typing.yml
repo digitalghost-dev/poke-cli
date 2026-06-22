@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
     paths:
-      - 'card_data/**'
+      - 'data_platform/**'
 
 permissions:
   contents: read
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: card_data
+        working-directory: data_platform
 
     steps:
       - name: Checkout

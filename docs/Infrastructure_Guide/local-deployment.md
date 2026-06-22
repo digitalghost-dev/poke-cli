@@ -12,7 +12,7 @@ The [4. AWS](aws.md) section will show how to deploy this solution on the cloud.
 
 ## Python
 
-First, create a directory for all the Python code. This project's Python directory is called `card_data`.
+First, create a directory for all the Python code. This project's Python directory is called `data_platform`.
 Once the directory is created, `cd` into it from the terminal.
 
 All following commands will take place in this directory.
@@ -38,29 +38,20 @@ _uv is the main package and project manager used in this project. Learn more abo
     uv init
     ```
    
-4. Sync `uv` with the libraries from `card_data/pyproject.toml`. Syncing ensures that all project dependencies are installed and up-to-date with the lockfile.
+4. Sync `uv` with the libraries from `data_platform/pyproject.toml`. Syncing ensures that all project dependencies are installed and up-to-date with the lockfile.
     ```bash
     uv sync
     ```
    
 ### ELT Files
 The files used for extracting, loading, then transforming the data all live in the `pipelines/defs/` directory.
-At the time of writing, the `extract/` and `load/` directories have 2 different files aimed at calling different APIs.
-One for card data from [tcgdex](https://tcgdex.dev/) and the other for pricing data from [tcgcsv](https://tcgcsv.com/).
+The code is grouped by source:
 
-```
-.
-└── pipelines/
-    └── defs/
-        ├── extract/
-        │   ├── extract_data.py
-        │   └── extract_pricing_data.py
-        ├── load/
-        │   ├── load_data.py
-        │   └── load_pricing_data.py
-        └── transform/
-            └── transform_data.py 
-```
+- `extract/` and `load/` hold the original TCGDex, TCGCSV, and Limitless extract/load assets.
+- `competitive.py` loads pokedata.ovh TCG/VGC events, players, rounds, and decklists.
+- `pokeapi/` loads video-game reference data from PokéAPI CSV exports.
+- `pikalytics/` triggers n8n scraper workflows that land raw Pikalytics data in Supabase staging.
+- `transform/` maps dbt models into Dagster's asset graph.
 
 ---
 
@@ -96,21 +87,25 @@ With Dagster running, the pipelines can be triggered to populate data in Supabas
 This step is required before dbt or Soda will work since both tools expect data to already 
 exist in the staging tables.
 
-This project currently has 4 pipelines:
-* Card data
-* Set data
-* Series data
-* Pricing data
+This project currently has these Dagster jobs:
+
+* `pricing_pipeline_job`
+* `series_pipeline_job`
+* `sets_pipeline_job`
+* `standings_pipeline_job`
+* `comp_pipeline_job`
+* `pokeapi_pipeline_job`
+* `pikalytics_pipeline_job`
 
 ![Dagster UI](../assets/dagster_ui.png)
 
 1. Open the Dagster UI at `http://127.0.0.1:3000`.
 2. On the top bar, click on **Assets**.
-3. Select the assets to materialize. For initial setup, select:
+3. Select the assets to materialize. For an initial TCG card-data setup, select:
     - `extract_series_data`
     - `extract_sets_data`
     - `load_series_data`
-    - `load_set_data`
+    - `load_sets_data`
 4. Click **Materialize selected** in the top right.
 5. Monitor the run in the **Runs** tab. Once complete, the data will be available in the Supabase `staging` schema.
 
@@ -141,7 +136,7 @@ uv add dbt
 
 This will add the libraries to `pyproject.toml` file.
 
-Initialize a `dbt` project in the `card_data` directory:
+Initialize a `dbt` project in the `data_platform` directory:
 ```bash
 dbt init
 ```
@@ -206,7 +201,7 @@ Soda and its components needed for the project can be installed with `uv`:
    uv add soda-core-postgres
 ```
 
-2. Create a `configuration.yml` and `checks.yml` files under the `card_data/pipelines/soda/` directory.
+2. Create a `configuration.yml` and `checks.yml` files under the `data_platform/pipelines/soda/` directory.
 
     * The `configuration.yml` holds the information for connecting to the data source. The below is an example from this project that reads the `username` and `password`
       from the local environment so that this file can be safely committed to `git` and pushed to GitHub.

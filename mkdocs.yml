@@ -78,6 +78,7 @@ plugins:
   - search
   - mkdocs-nav-weight:
       section_renamed: false
+  - glightbox
 
 extra_css:
   - stylesheets/extra.css

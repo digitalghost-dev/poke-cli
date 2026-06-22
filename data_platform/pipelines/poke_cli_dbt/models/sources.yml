@@ -1,0 +1,404 @@
+version: 2
+
+sources:
+  - name: staging
+    description: "Staging schema containing raw data loaded from extract pipeline"
+    tables:
+      - name: series
+        description: "Pokemon card series data"
+        columns:
+          - name: id
+            description: "Unique series identifier"
+          - name: name
+            description: "Series name"
+          - name: logo
+            description: "Series logo URL"
+      
+      - name: sets
+        description: "Pokemon card sets data"
+        columns:
+          - name: series_id
+            description: "Foreign key to series"
+          - name: set_id
+            description: "Unique set identifier"
+          - name: set_name
+            description: "Set name"
+          - name: official_card_count
+            description: "Official number of cards in set"
+          - name: total_card_count
+            description: "Total number of cards including variants"
+          - name: logo
+            description: "Set logo URL"
+          - name: symbol
+            description: "Set symbol URL"
+      
+      - name: cards
+        description: "Pokemon cards data"
+        columns:
+          - name: id
+            description: "Unique card identifier"
+          - name: name
+            description: "Card name"
+          - name: category
+            description: "Card category (Pokemon, Trainer, Energy)"
+          - name: hp
+            description: "Card HP value"
+          - name: image
+            description: "Card image URL"
+          - name: rarity
+            description: "Card rarity"
+          - name: types
+            description: "Card types (comma-separated)"
+          - name: localId
+            description: "Card local ID within the set"
+          - name: illustrator
+            description: "Card illustrator"
+          - name: regulationMark
+            description: "Regulation mark"
+          - name: retreat
+            description: "Retreat cost (numeric)"
+          - name: stage
+            description: "Evolution stage"
+          - name: legal_standard
+            description: "Legal status in Standard"
+          - name: legal_expanded
+            description: "Legal status in Expanded"
+          - name: set_cardCount_official
+            description: "Official card count for the set"
+          - name: set_cardCount_total
+            description: "Total card count including variants"
+          - name: set_id
+            description: "Foreign key to set"
+          - name: set_logo
+            description: "Set logo URL"
+          - name: set_name
+            description: "Set name"
+          - name: set_symbol
+            description: "Set symbol URL"
+          - name: attacks_json
+            description: "Raw attacks JSON"
+          - name: attack_1_name
+            description: "First attack name"
+          - name: attack_1_damage
+            description: "First attack damage"
+          - name: attack_1_effect
+            description: "First attack effect"
+          - name: attack_1_cost
+            description: "First attack energy cost"
+          - name: attack_2_name
+            description: "Second attack name"
+          - name: attack_2_damage
+            description: "Second attack damage"
+          - name: attack_2_effect
+            description: "Second attack effect"
+          - name: attack_2_cost
+            description: "Second attack energy cost"
+          - name: attack_3_name
+            description: "Third attack name"
+          - name: attack_3_damage
+            description: "Third attack damage"
+          - name: attack_3_effect
+            description: "Third attack effect"
+          - name: attack_3_cost
+            description: "Third attack energy cost"
+
+      - name: standings
+        description: "Player standings data for tournaments"
+        columns:
+          - name: rank
+            description: "Player rank in the tournament"
+          - name: name
+            description: "Player name"
+          - name: points
+            description: "Player points"
+          - name: record
+            description: "Player win/loss record"
+          - name: opp_win_percent
+            description: "Opponent win percentage"
+          - name: opp_opp_win_percent
+            description: "Opponent's opponent win percentage"
+          - name: deck
+            description: "Deck name used by player"
+          - name: decklist
+            description: "Decklist URL"
+          - name: country
+            description: "Player country code"
+          - name: tournament_id
+            description: "Foreign key to tournaments"
+
+      - name: tournaments
+        description: "Tournament metadata"
+        columns:
+          - name: tournament_id
+            description: "Unique tournament identifier"
+          - name: location
+            description: "Tournament location"
+          - name: start_date
+            description: "Tournament start date"
+          - name: end_date
+            description: "Tournament end date"
+          - name: type
+            description: "Tournament type"
+          - name: player_quantity
+            description: "Number of players in the tournament"
+          - name: text_date
+            description: "Tournament date in text format"
+          - name: country_code
+            description: "Country ISO code"
+          - name: logo
+            description: "Tournament type logo URL"
+          - name: latitude
+            description: "Tournament city latitude"
+          - name: longitude
+            description: "Tournament city longitude"
+
+      - name: country_codes
+        description: "Country code to country name mapping with geographic centroids"
+        columns:
+          - name: code
+            description: "ISO country code"
+          - name: country_name
+            description: "Full country name"
+
+      - name: pricing_data
+        description: "Card pricing data"
+        meta:
+          dagster:
+            asset_key: ["load_pricing_data"]
+        columns:
+          - name: product_id
+            description: "Product ID"
+          - name: name
+            description: "Card name"
+          - name: card_number
+            description: "Card number"
+          - name: market_price
+            description: "Market price"
+
+      - name: comp_events
+        description: "Masters-division TCG and VGC tournament events from pokedata.ovh"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG or VGC)"
+          - name: name
+            description: "Tournament name"
+          - name: start_date
+            description: "Event start date"
+          - name: end_date
+            description: "Event end date"
+          - name: season
+            description: "Competitive season (e.g. 2026)"
+          - name: count
+            description: "Masters division player count"
+          - name: rounds
+            description: "Masters division round count"
+          - name: last_updated
+            description: "Timestamp of last data update from pokedata.ovh"
+
+      - name: comp_players
+        description: "Masters-division players for each tournament event"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG or VGC)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: country
+            description: "Player country code (e.g. US, BR, JP)"
+          - name: placement
+            description: "Final placement in the tournament"
+          - name: wins
+            description: "Match wins"
+          - name: losses
+            description: "Match losses"
+          - name: ties
+            description: "Match ties"
+          - name: resistance_self
+            description: "Win percentage of the player"
+          - name: resistance_opp
+            description: "Average opponent win percentage"
+          - name: resistance_oppopp
+            description: "Average opponent's-opponent win percentage"
+          - name: dropped_round
+            description: "Round the player dropped (-1 if never dropped)"
+          - name: trainer_name
+            description: "In-game trainer name (VG only)"
+
+      - name: comp_rounds
+        description: "Per-round results for each player in each tournament"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG or VGC)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: round_number
+            description: "Round number"
+          - name: opponent_name
+            description: "Opponent display name (may include country, or 'BYE')"
+          - name: result
+            description: "Round result (W/L/T)"
+          - name: table_number
+            description: "Table number (raw text, trimmed and cast to int in dbt model)"
+
+      - name: comp_vg_decklists
+        description: "VG decklists: one row per player, full decklist stored as JSONB array of 6 Pokemon"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (VGC)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: decklist
+            description: "JSONB array of 6 Pokemon: [{id, name, teratype, ability, item, badges[4 moves]}]"
+
+      - name: comp_tcg_decklists
+        description: "TCG decklists: one row per player, full decklist stored as JSONB object with pokemon/trainer/energy arrays"
+        columns:
+          - name: pokedata_id
+            description: "Pokedata event ID"
+          - name: game_type
+            description: "Game type (TCG)"
+          - name: player_name
+            description: "Player name (country suffix stripped)"
+          - name: decklist
+            description: "JSONB object with shape {pokemon: [{count, name, number, set}], trainer: [...], energy: [...]}"
+
+      - name: pokemon
+        description: "Raw PokéAPI pokemon data (shared TCG + VG hub; includes alternate forms with is_default = 0)"
+        columns:
+          - name: id
+            description: "Unique pokemon identifier (alternate forms use 10000+ ids)"
+          - name: identifier
+            description: "Pokemon name slug (e.g. bulbasaur)"
+          - name: species_id
+            description: "Foreign key to pokemon_species (not currently loaded)"
+          - name: height
+            description: "Height in decimetres"
+          - name: weight
+            description: "Weight in hectograms"
+          - name: base_experience
+            description: "Base experience yield"
+          - name: order
+            description: "National Pokédex sort order (reserved word; quote as \"order\" in SQL)"
+          - name: is_default
+            description: "1 for the default form, 0 for alternate forms (megas, regional forms)"
+
+      - name: vg_types
+        description: "Raw PokéAPI types lookup (Fire, Water, etc.)"
+        columns:
+          - name: id
+            description: "Unique type identifier"
+          - name: identifier
+            description: "Type name slug (e.g. fire)"
+          - name: generation_id
+            description: "Generation the type was introduced"
+          - name: damage_class_id
+            description: "Legacy physical/special damage class (pre-Gen IV)"
+
+      - name: vg_stats
+        description: "Raw PokéAPI stats lookup (hp, attack, etc.)"
+        columns:
+          - name: id
+            description: "Unique stat identifier"
+          - name: damage_class_id
+            description: "Damage class the stat relates to (nullable, e.g. hp)"
+          - name: identifier
+            description: "Stat name slug (e.g. attack)"
+          - name: is_battle_only
+            description: "1 if the stat exists only in battle (e.g. accuracy, evasion)"
+          - name: game_index
+            description: "Internal stat ordering used by the games"
+
+      - name: vg_pokemon_types
+        description: "Raw PokéAPI pokemon-to-type bridge (many-to-many)"
+        columns:
+          - name: pokemon_id
+            description: "Foreign key to pokemon"
+          - name: type_id
+            description: "Foreign key to types"
+          - name: slot
+            description: "Type slot (1 = primary, 2 = secondary)"
+
+      - name: vg_pokemon_stats
+        description: "Raw PokéAPI pokemon-to-stat bridge with base stat values"
+        columns:
+          - name: pokemon_id
+            description: "Foreign key to pokemon"
+          - name: stat_id
+            description: "Foreign key to stats"
+          - name: base_stat
+            description: "Base value of the stat for this pokemon"
+          - name: effort
+            description: "Effort value (EV) yield for defeating this pokemon"
+
+      - name: vg_pokemon_sprites
+        description: "Raw PokéAPI sprite URLs (one row per pokemon id, aligned from the GitHub sprite repo)"
+        columns:
+          - name: gif_sprite_url
+            description: "Animated Showdown gif URL (null if no gif exists for the id)"
+          - name: png_sprite_url
+            description: "Static png URL fallback (null if no png exists for the id)"
+
+      - name: pikalytics_speed_tiers
+        description: "Raw Pikalytics speed-tier rows scraped by n8n (pikalytics.com/ai/speed-tiers), full-replaced each run; tier math is derived downstream in the pikalytics_speed_tiers dbt model"
+        columns:
+          - name: format
+            description: "Format code (e.g. gen9championsvgc2026)"
+          - name: rank
+            description: "Speed tier rank within the format"
+          - name: pokemon
+            description: "Pokémon display name (proper case, includes Mega prefix where applicable)"
+          - name: base_spe
+            description: "Base Speed stat (the only scraped numeric; all other tiers derived in dbt)"
+
+      - name: pikalytics_usage
+        description: "Raw Pikalytics usage rows scraped by n8n (pikalytics.com/ai/pokedex/<format>), full-replaced each run; pokemon_slug + pokemon_id derived downstream in the pikalytics_usage dbt model"
+        columns:
+          - name: rank
+            description: "Usage rank within the format"
+          - name: pokemon
+            description: "Pokémon display name (proper case, includes form suffix e.g. Charizard-Mega-Y)"
+          - name: usage_percent
+            description: "Usage percentage"
+          - name: web_url
+            description: "Pikalytics pokedex page URL for the Pokémon"
+
+      - name: pikalytics_top_teams
+        description: "Raw Pikalytics top-teams rows scraped by n8n (pikalytics.com/ai/top-teams/<format>), full-replaced each run; wins/losses/ties, pokemon_ids, and format/source derived downstream in the pikalytics_top_teams dbt model"
+        columns:
+          - name: rank
+            description: "Team rank within the format"
+          - name: author
+            description: "Team author / player name"
+          - name: record
+            description: "Win/loss/tie record as scraped text (e.g. 7-2-1)"
+          - name: tournament
+            description: "Tournament name (may contain punctuation or vertical bars)"
+          - name: archetypes
+            description: "JSONB array of archetype label strings (empty array if none)"
+          - name: pokemon
+            description: "JSONB array of Pokémon display-name strings on the team"
+          - name: web_url
+            description: "Pikalytics top-teams page URL"
+
+      - name: pikalytics_pokemon_comp_info
+        description: "Raw Pikalytics per-Pokémon competitive info scraped by n8n from each top-50 usage Pokémon's AI pokedex page (full-replaced each run); pokemon_slug + pokemon_id and format/source derived downstream in the pikalytics_pokemon_comp_info dbt model"
+        columns:
+          - name: pokemon
+            description: "Pokémon display name (carried from the staging.pikalytics_usage list)"
+          - name: web_url
+            description: "Pikalytics pokedex page URL for the Pokémon"
+          - name: common_moves
+            description: "JSONB array of {name, usage_percent} for the Pokémon's common moves"
+          - name: common_abilities
+            description: "JSONB array of {name, usage_percent} for common abilities"
+          - name: common_items
+            description: "JSONB array of {name, usage_percent} for common held items"
+          - name: common_teammates
+            description: "JSONB array of {name, usage_percent} for common teammates"

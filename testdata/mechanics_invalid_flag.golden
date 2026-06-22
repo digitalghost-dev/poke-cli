@@ -1,0 +1,7 @@
+╭─────────────────────────────────────────╮
+│✖ Error!                                 │
+│Invalid flag for mechanics               │
+│unknown flag: --bogus                    │
+│                                         │
+│Run 'poke-cli mechanics -h' for more info│
+╰─────────────────────────────────────────╯

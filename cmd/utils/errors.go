@@ -9,6 +9,10 @@ func FormatError(message string) string {
 	)
 }
 
+func FormatFlagError(cmdName string, err error) string {
+	return FormatError("Invalid flag for " + cmdName + "\n" + err.Error() + "\n\n" + "Run 'poke-cli " + cmdName + " -h' for more info")
+}
+
 func FormatNotFoundError(resourceType string) string {
 	return FormatError(resourceType + " not found.\n• Perhaps a typo?\n• Missing a hyphen instead of a space?")
 }

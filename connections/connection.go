@@ -85,7 +85,6 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		return fmt.Errorf("invalid URL provided: %w", err)
 	}
 
-	// Check if running in a test environment
 	if flag.Lookup("test.v") != nil {
 		skipHTTPSCheck = true
 	}
@@ -94,30 +93,35 @@ func ApiCallSetup(rawURL string, target interface{}, skipHTTPSCheck bool) error 
 		return errors.New("only HTTPS URLs are allowed for security reasons")
 	}
 
-	resp, err := httpClient.Get(parsedURL.String())
+	body, err := cachedFetch(parsedURL.String())
 	if err != nil {
-		return fmt.Errorf("error making GET request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return HTTPStatusError{StatusCode: resp.StatusCode, URL: rawURL}
+		return err
 	}
 
-	body, err := io.ReadAll(io.LimitReader(resp.Body, maxAPIResponseBytes+1))
-	if err != nil {
-		return fmt.Errorf("error reading response body: %w", err)
-	}
-	if len(body) > maxAPIResponseBytes {
-		return fmt.Errorf("response body exceeds %d bytes", maxAPIResponseBytes)
-	}
-
-	err = json.Unmarshal(body, target)
-	if err != nil {
+	if err := json.Unmarshal(body, target); err != nil {
 		return fmt.Errorf("error unmarshalling JSON: %w", err)
 	}
 
 	return nil
+}
+
+func directFetch(url string) ([]byte, error) {
+	resp, err := httpClient.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("error making GET request: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, HTTPStatusError{StatusCode: resp.StatusCode, URL: url}
+	}
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxAPIResponseBytes+1))
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %w", err)
+	}
+	if len(body) > maxAPIResponseBytes {
+		return nil, fmt.Errorf("response body exceeds %d bytes", maxAPIResponseBytes)
+	}
+	return body, nil
 }
 
 func AbilityApiCall(endpoint, abilityName, baseURL string) (structs.AbilityJSONStruct, string, error) {

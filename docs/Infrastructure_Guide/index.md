@@ -12,8 +12,7 @@ This section serves as a knowledge base for the project’s backend data infrast
 
 This infrastructure guide will be constantly updated as changes or updates to resources occur.
 
-The infrastructure is mainly in support of TCG data since there are multiple data sources that are being used to support the CLI/TUI.
-The VGC data simply calls one API.
+To view information about the CLI architecture and how it works behind the scenes, check out the [CLI Architecture](../Architecture/index.md) documentation.
 
 !!! warning
 
@@ -24,16 +23,18 @@ The VGC data simply calls one API.
 ## Data Infrastructure Diagram
 ![data_infrastructure_diagram](../assets/data_infrastructure_diagram.svg)
 
-1. TCGPlayer pricing data and TCGDex card data are called and processed through a data pipeline orchestrated by Dagster and hosted on AWS.
+1. TCGPlayer pricing data, TCGDex card data, pokedata.ovh competitive data, PokéAPI CSV exports, and Pikalytics pages are processed through pipelines orchestrated by Dagster and hosted on AWS.
     - Dagster runs on an EC2 instance.
     - Dagster metadata is stored separately in RDS.
     - The pricing pipeline is scheduled with cron: `0 14 * * *`.
-    - Tournament standings data is also pulled from Limitless.
+    - PokéAPI reference data refreshes on the 1st and 15th of each month.
+    - Pikalytics scrapers run weekly through Dagster-triggered n8n workflows.
 
-2. When the pipeline starts, Pydantic validates the incoming API data against a pre-defined schema, ensuring the data types match the expected structure.
-    - Invalid or unexpected payloads fail early before data is loaded downstream.
+2. Extract assets call the source APIs or trigger n8n scraper webhooks.
+    - n8n only extracts raw Pikalytics rows into Supabase staging tables.
+    - Dagster blocks on those webhook calls so dbt does not build against stale staging data.
 
-3. Polars is used to create DataFrames.
+3. Polars is used to create DataFrames for the Python-owned API pipelines.
     - DataFrames are used to clean, normalize, and prepare records for database loading.
 
 4. The data is loaded into a Supabase staging schema.
@@ -44,11 +45,11 @@ The VGC data simply calls one API.
 
 6. dbt runs tests and builds the final tables in a Supabase production schema.
     - dbt transforms staged data into the final public-facing models.
-    - The production schema powers TCG/card/tournament queries.
+    - The production schema powers card, tournament, PokéAPI-reference, and Pikalytics queries.
 
 7. Users are then able to query the `pokeapi.co` or `supabase` APIs for either video game or trading card data, respectively.
     - The CLI uses PokéAPI for video game data.
-    - The CLI and Streamlit web app use Supabase for TCG data.
+    - The CLI and Streamlit web app use Supabase for TCG card data, competitive standings, and supporting competitive tables.
     - Dagster run status is sent through an n8n webhook for Discord notifications.
 
 ## Tools & Services
@@ -61,74 +62,18 @@ Below is a list of all the tools and services used in this project's infrastruct
     - VPC
     - EC2
 - Dagster
+- dbt
+- Firecrawl
+- n8n
 - Polars
 - Supabase
 - Terraform
 
-## Project Layout
-
-```text
-.
-├── infrastructure/
-│   ├── aws/
-│   │   ├── .terraform
-│   │   ├── ec2/
-│   │   ├── rds/
-│   │   └── vpc/
-│   ├── dagster.server
-│   ├── start-dagster.sh
-│   └── wait-for-rds.sh
-├── pipelines/
-│   ├── defs/
-│   │   ├── extract/
-│   │   │   ├── tcgcsv/
-│   │   │   │   └── extract_pricing.py
-│   │   │   └── tcgdex/
-│   │   │       ├── extract_cards.py
-│   │   │       ├── extract_series.py
-│   │   │       └── extract_sets.py
-│   │   ├── load/
-│   │   │   ├── tcgcsv/
-│   │   │   │   └── load_pricing.py
-│   │   │   └── tcgdex/
-│   │   │       ├── load_cards.py
-│   │   │       ├── load_series.py
-│   │   │       └── load_sets.py
-│   │   └── transform/
-│   │       └── transform_data.py
-│   ├── poke_cli_dbt/
-│   │   ├── macros/
-│   │   │   ├── create_relationships.sql
-│   │   │   ├── create_rls.sql
-│   │   │   └── create_view.sql
-│   │   ├── models/
-│   │   │   ├── cards.sql
-│   │   │   ├── pricing_data.sql
-│   │   │   ├── series.sql
-│   │   │   ├── sets.sql
-│   │   │   └── sources.yml
-│   │   ├── dbt_project.yml
-│   │   └── profiles.yml
-│   ├── soda/
-│   │   ├── checks_pricing.yml
-│   │   ├── checks_series.yml
-│   │   ├── checks_sets.yml
-│   │   └── configuration.yml
-│   ├── tests/
-│   │   └── extract_series_test.py
-│   └── utils/
-│       ├── json_retriever.py
-│       └── secret_retriever.py
-├── dagster.yaml
-├── pyproject.toml
-└── uv.lock    
-```
-
 !!! note
 
     This project is a learning playground for exploring new tools, services, and programming languages.
-    Some design choices are intentionally experimental or may not follow conventional patterns—
-    that's part of the learning process!
+    Some design choices are intentionally experimental or may not follow conventional patterns.
+    That's part of the learning process!
     
     Feedback and suggestions are always welcome! If you spot an issue or have ideas for improvement,
     please open a [GitHub Issue](https://github.com/digitalghost-dev/poke-cli/issues).

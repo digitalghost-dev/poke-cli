@@ -16,49 +16,53 @@ func UpdateInput(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
-		if m.ShowResults {
+		if m.showResults {
 			// If results are shown, pressing 'b' resets to search view
 			if msg.String() == "b" {
-				m.ShowResults = false
-				m.TextInput.Reset()
-				m.TextInput.Focus()
-				m.WarningMessage = ""
+				m.showResults = false
+				m.textInput.Reset()
+				m.textInput.Focus()
+				m.warningMessage = ""
 				return m, textinput.Blink
 			}
 		} else {
 			switch msg.Code {
 			case tea.KeyEnter:
-				searchTerm := m.TextInput.Value()
+				searchTerm := m.textInput.Value()
 				_, endpoint := RenderInput(m)
 
 				// checking for blank queries
 				if strings.TrimSpace(searchTerm) == "" {
-					m.WarningMessage = utils.FormatError("No blank queries")
+					m.warningMessage = utils.FormatError("No blank queries")
 					return m, nil
 				}
 
 				// Call PokéAPI
 				result, err := query(endpoint, searchTerm)
 				if err != nil {
-					m.WarningMessage = utils.FormatError(fmt.Sprintf("Error fetching search results: %v", err))
+					m.warningMessage = utils.FormatError(fmt.Sprintf("Error fetching search results: %v", err))
 					return m, nil
 				}
 
 				// Format results
 				var sb strings.Builder
 				for _, r := range result.Results {
-					sb.WriteString(styling.ColoredBullet.String() + " " + r.Name + "\n")
+					sb.WriteString(styling.ColoredBullet.String())
+					sb.WriteString(" ")
+					sb.WriteString(r.Name)
+					sb.WriteString("\n")
 				}
+
 				resultsDisplay := sb.String()
 
-				m.SearchResults = resultsDisplay
-				m.ShowResults = true
+				m.searchResults = resultsDisplay
+				m.showResults = true
 				return m, nil
 			}
 		}
 	}
 
-	m.TextInput, cmd = m.TextInput.Update(msg)
+	m.textInput, cmd = m.textInput.Update(msg)
 	return m, cmd
 }
 
@@ -67,7 +71,7 @@ func RenderInput(m model) (string, string) {
 	var msg string
 	var endpoint string
 
-	switch m.Choice {
+	switch m.choice {
 	case 0:
 		msg = "Enter an Ability name:"
 		endpoint = "ability"
@@ -81,9 +85,9 @@ func RenderInput(m model) (string, string) {
 		msg = "Enter your search query:"
 	}
 
-	if m.ShowResults {
+	if m.showResults {
 		// Check if there are any results
-		results := m.SearchResults
+		results := m.searchResults
 		if strings.TrimSpace(results) == "" {
 			results = lipgloss.NewStyle().
 				Foreground(lipgloss.Color("9")).
@@ -98,16 +102,16 @@ func RenderInput(m model) (string, string) {
 	}
 
 	warning := ""
-	if m.WarningMessage != "" {
+	if m.warningMessage != "" {
 		warning = "\n\n" + lipgloss.NewStyle().
 			Foreground(lipgloss.Color("9")).
-			Render(m.WarningMessage)
+			Render(m.warningMessage)
 	}
 
 	return fmt.Sprintf(
 		"%s\n\n%s\n\n%s%s",
 		msg,
-		m.TextInput.View(),
+		m.textInput.View(),
 		styling.KeyMenu.Render("Press Enter to confirm\nctrl+c | esc (quit)"),
 		warning,
 	), endpoint

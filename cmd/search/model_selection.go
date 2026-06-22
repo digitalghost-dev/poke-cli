@@ -14,18 +14,18 @@ func UpdateSelection(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 		case "down":
-			m.Choice++
-			if m.Choice > 2 {
-				m.Choice = 2
+			m.choice++
+			if m.choice > 2 {
+				m.choice = 2
 			}
 		case "up":
-			m.Choice--
-			if m.Choice < 0 {
-				m.Choice = 0
+			m.choice--
+			if m.choice < 0 {
+				m.choice = 0
 			}
 		case "enter":
-			m.Chosen = true
-			m.TextInput.Focus()
+			m.chosen = true
+			m.textInput.Focus()
 			return m, textinput.Blink
 		}
 	}
@@ -34,7 +34,7 @@ func UpdateSelection(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 
 // RenderSelection renders the selection menu.
 func RenderSelection(m model) string {
-	c := m.Choice
+	c := m.choice
 	greeting := styling.StyleItalic.Render("Search for a resource and return a matching selection table")
 	choices := fmt.Sprintf(
 		"%s\n%s\n%s",

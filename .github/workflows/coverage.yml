@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
     paths-ignore:
-      - 'card_data/**'
+      - 'data_platform/**'
 
 jobs:
   tests:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.25
+          go-version: '1.25'
 
       - name: Install dependencies
         run: |

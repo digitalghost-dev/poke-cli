@@ -1,0 +1,44 @@
+checks for comp_events:
+  - row_count > 60:
+      name: Minimum row count check
+
+  - schema:
+      fail:
+        when required column missing: [pokedata_id, game_type, name, start_date, end_date, season, count, rounds, last_updated]
+        when wrong column type:
+          start_date: text
+          end_date: text
+          season: bigint
+          count: bigint
+          rounds: bigint
+
+  - missing_count(pokedata_id) = 0:
+      name: Pokedata ID completeness
+
+  - missing_count(game_type) = 0:
+      name: Game type completeness
+
+  - missing_count(name) = 0:
+      name: Name completeness
+
+  - missing_count(start_date) = 0:
+      name: Start date completeness
+
+  - missing_count(end_date) = 0:
+      name: End date completeness
+
+  - missing_count(season) = 0:
+      name: Season completeness
+
+  - duplicate_count(pokedata_id, game_type) = 0:
+      name: Pokedata ID + game type uniqueness
+
+  - invalid_count(season) = 0:
+      valid min: 2025
+      valid max: 2030
+      name: Season range validation
+
+  - invalid_count(count) = 0:
+      valid min: 1
+      name: Masters count positive
+

@@ -7,17 +7,32 @@ before:
     - go mod tidy
 
 builds:
-  - env:
+  - id: poke-cli
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
       - windows
       - darwin
     ldflags:
-      - -s -w -X main.version=v1.10.3
+      - -s -w -X main.version=v2.0.0
+  - id: poke-cache
+    builder: prebuilt
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: poke-cache
+    prebuilt:
+      path: prebuilt/poke-cache-{{ .Os }}-{{ .Arch }}/poke-cache{{ .Ext }}
 
 archives:
-  - formats: [ 'zip' ]
+  - id: poke-cli
+    ids: [ poke-cli, poke-cache ]
+    formats: [ 'zip' ]
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -25,10 +40,16 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-      - goos: windows
-        formats: [ 'zip' ]
+  - id: poke-cache
+    ids: [ poke-cache ]
+    formats: [ 'zip' ]
+    name_template: >-
+      poke-cache_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
 
 changelog:
   sort: asc
@@ -39,11 +60,10 @@ changelog:
 
 homebrew_casks:
   - name: poke-cli
+    ids: [ poke-cli ]
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     homepage: "https://docs.poke-cli.com/"
     license: MIT
-    conflicts:
-      - formula: poke-cli
     repository:
       owner: digitalghost-dev
       name: homebrew-tap
@@ -52,11 +72,12 @@ homebrew_casks:
       post:
         install: |
           if OS.mac? && system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/poke-cli"]
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}"]
           end
 
 scoops:
   - name: poke-cli
+    ids: [ poke-cli ]
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     homepage: "https://docs.poke-cli.com/"
     license: MIT

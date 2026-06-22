@@ -1,11 +1,31 @@
 # Commands
 
 ## main
+* Print the help menu or view information about the program
 
 **Available Flags**
 
+* `--config | -c`
 * `--latest | -l`
 * `--version | -v`
+
+Exampe:
+
+```bash
+# print help menu
+poke-cli
+# or
+poke-cli --help
+
+# edit program settings
+poke-cli --config
+
+# check latest release vesion
+poke-cli --latest
+
+# check current installed version
+poke-cli --version
+```
 
 ---
 
@@ -18,14 +38,32 @@ the generation in which it first appeared, and a list of Pokémon that possess i
 * `--pokemon | -p`
 
 Example:
-```console
+```bash
 poke-cli ability solar-power
 poke-cli ability solar-power --pokemon    # list Pokémon that posses the ability
 ```
 
 Output:
 
-![ability_command](assets/ability.gif)
+![ability_command](assets/command_gifs/ability.gif)
+
+---
+
+## `berry`
+* Retrieve information about a specific berry.
+
+Example:
+```bash
+# specific berry
+poke-cli berry oran
+
+# TUI screen
+poke-cli berry
+```
+
+Output:
+
+![berry_command](assets/command_gifs/berry.gif)
 
 ---
 
@@ -54,13 +92,35 @@ The following terminals are confirmed to have protocol support and render card i
 Basic terminal emulators may show card details without images or may not render images correctly.
 
 Example:
-```console
+```bash
 poke-cli card
 ```
 
 Output:
 
-![card_command](assets/card.gif)
+![card_command](assets/command_gifs/card.gif)
+
+---
+
+## `comp`
+* Browse current competitive Pokémon standings through an interactive TUI.
+
+The command opens a competition picker:
+
+1. Select `TCG` or `VGC`.
+2. Select a tournament.
+3. Browse the tournament dashboard.
+
+The dashboard supports Overview / Standings / Decks / Countries tabs for TCG and Overview / Standings / Usage / Countries tabs for VGC. Press `w` inside the TUI to open the web dashboard.
+
+Example:
+```bash
+poke-cli comp
+```
+
+Output:
+
+![comp_command](assets/command_gifs/comp.gif)
 
 ---
 
@@ -68,13 +128,31 @@ Output:
 * Retrieve information about a specific item, including its cost, category and description.
 
 Example:
-```console
+```bash
 poke-cli item poke-ball
 ```
 
 Output:
 
-![item_command](assets/item.gif)
+![item_command](assets/command_gifs/item.gif)
+
+---
+
+## `mechanics`
+* Retrieve data about video game mechanics.
+
+**Available Flags**
+
+* `--natures | -n`
+
+Example:
+```bash
+poke-cli mechanics --natures
+```
+
+Output:
+
+![mechanics_natures_gif](assets/command_gifs/natures.gif)
 
 ---
 
@@ -83,27 +161,13 @@ Output:
 and the move's effect.
 
 Example:
-```console
+```bash
 poke-cli move dazzling-gleam
 ```
 
 Output:
 
-![move_command](assets/move.gif)
-
----
-
-## `natures`
-* Retrieve a table of all natures and the stats they affect.
-
-Example:
-```console
-poke-cli natures
-```
-
-Output:
-
-![natures_gif](assets/natures.gif)
+![move_command](assets/command_gifs/move.gif)
 
 ---
 
@@ -113,53 +177,49 @@ Output:
 **Available Flags**
 
 * `-a | --abilities`
-* `-d | --defense`
+* `-d | --defenses`
 * `-i=xx | --image=xx`
 * `-m | --moves`
 * `-s | --stats`
-* `-t | --types`
 
-!!! warning
-
-    The `-t | --types` flag is deprecated will be removed in v2.
-    The Pokémon's typing is now included in the base `pokemon` command.
+The Pokémon's typing is included in the base `pokemon` command output.
 
 Example:
-```console
+```bash
 poke-cli pokemon rockruff --abilities --moves
 ```
 
 Output:
 
-![pokemon_abilities_moves](assets/pokemon_abilities_moves.gif)
+![pokemon_abilities_moves](assets/command_gifs/pokemon-abilities-moves.gif)
 
 Example:
-```console
-poke-cli pokemon gastrodon --defense
+```bash
+poke-cli pokemon gastrodon --defenses
 ```
 
 Output:
 
-![pokemon_defense](assets/pokemon_defense.gif)
+![pokemon_defense](assets/command_gifs/pokemon-defense.gif)
 
 Example:
-```console
+```bash
 # choose between three sizes: 'sm', 'md', 'lg'
 poke-cli pokemon tyranitar --image=sm
 ```
 
 Output:
 
-![pokemon_image](assets/pokemon_image.gif)
+![pokemon_image](assets/command_gifs/pokemon-image.gif)
 
 Example:
-```console
+```bash
 poke-cli pokemon cacturne --stats
 ```
 
 Output:
 
-![pokemon_types](assets/pokemon_stats.gif)
+![pokemon_types](assets/command_gifs/pokemon-stats.gif)
 
 ---
 
@@ -167,13 +227,13 @@ Output:
 * Search for resources from different endpoints. Searchable endpoints include `ability`, `pokemon`, and `move`.
 
 Example:
-```console
+```bash
 poke-cli search
 ```
 
 Output:
 
-![search_command](assets/search.gif)
+![search_command](assets/command_gifs/search.gif)
 
 ---
 
@@ -194,30 +254,12 @@ The command opens an interactive form and asks for the following values:
 The final speed is calculated with the standard stat formula and rounded down.
 
 Example:
-```console
+```bash
 poke-cli speed
 ```
 Output:
 
-![speed_command](assets/speed.gif)
-
----
-
-## `tcg`
-* Retrieve details about all competitive TCG tournaments for the current season.
-
-**Available Flags**
-
-* `--web | -w` - Open the tournament's website in the default browser.
-
-Example:
-```console
-poke-cli tcg
-```
-
-Output:
-
-![tcg_command](assets/tcg.gif)
+![speed_command](assets/command_gifs/speed.gif)
 
 ---
 
@@ -225,9 +267,9 @@ Output:
 * Retrieve details about a specific type and a damage relation table.
 
 Example:
-```console
+```bash
 poke-cli types
 ```
 Output:
 
-![types_command](assets/types.gif)
+![types_command](assets/command_gifs/types.gif)

@@ -1,26 +1,30 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"runtime/debug"
+	"slices"
 	"strings"
 
 	"github.com/digitalghost-dev/poke-cli/cmd/ability"
 	"github.com/digitalghost-dev/poke-cli/cmd/berry"
 	"github.com/digitalghost-dev/poke-cli/cmd/card"
+	"github.com/digitalghost-dev/poke-cli/cmd/comp"
 	"github.com/digitalghost-dev/poke-cli/cmd/item"
+	"github.com/digitalghost-dev/poke-cli/cmd/mechanics"
 	"github.com/digitalghost-dev/poke-cli/cmd/move"
-	"github.com/digitalghost-dev/poke-cli/cmd/natures"
 	"github.com/digitalghost-dev/poke-cli/cmd/pokemon"
 	"github.com/digitalghost-dev/poke-cli/cmd/search"
 	"github.com/digitalghost-dev/poke-cli/cmd/speed"
-	"github.com/digitalghost-dev/poke-cli/cmd/tcg"
 	"github.com/digitalghost-dev/poke-cli/cmd/types"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
+	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
+	"github.com/digitalghost-dev/poke-cli/setup"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	flag "github.com/spf13/pflag"
+	"golang.org/x/term"
 )
 
 var version = "(devel)"
@@ -32,14 +36,21 @@ var commandDescriptions = []struct {
 	{"ability", "Get details about an ability"},
 	{"berry", "Get details about a berry"},
 	{"card", "Get details about a TCG card"},
+	{"comp", "Get details about competitive Pokémon"},
 	{"item", "Get details about an item"},
+	{"mechanics", "Get details about video game mechanics"},
 	{"move", "Get details about a move"},
-	{"natures", "Get details about all natures"},
 	{"pokemon", "Get details about a Pokémon"},
 	{"search", "Search for a resource"},
 	{"speed", "Calculate the speed of a Pokémon in battle"},
-	{"tcg", "Get details about TCG tournaments"},
 	{"types", "Get details about a typing"},
+}
+
+type mainFlags struct {
+	FlagSet *flag.FlagSet
+	config  *bool
+	latest  *bool
+	version *bool
 }
 
 func renderCommandList() string {
@@ -68,20 +79,16 @@ func currentVersion() string {
 	return "Version: (devel)"
 }
 
-func runCLI(args []string) int {
-	var output strings.Builder
+func setupMainFlagSet() *mainFlags {
+	f := &mainFlags{}
+	f.FlagSet = flag.NewFlagSet("mainFlags", flag.ContinueOnError)
+	f.FlagSet.SetInterspersed(false)
 
-	mainFlagSet := flag.NewFlagSet("poke-cli", flag.ContinueOnError)
+	f.config = f.FlagSet.BoolP("config", "c", false, "Launch the config settings screen")
+	f.latest = f.FlagSet.BoolP("latest", "l", false, "Prints the latest version available")
+	f.version = f.FlagSet.BoolP("version", "v", false, "Prints the current version")
 
-	// -l, --latest flag retrieves the latest Docker image and GitHub release versions available
-	latestFlag := mainFlagSet.Bool("latest", false, "Prints the program's latest Docker image and release versions.")
-	shortLatestFlag := mainFlagSet.Bool("l", false, "Prints the program's latest Docker image and release versions.")
-
-	// -v, --version flag retrieves the currently installed version
-	currentVersionFlag := mainFlagSet.Bool("version", false, "Prints the current version")
-	shortCurrentVersionFlag := mainFlagSet.Bool("v", false, "Prints the current version")
-
-	mainFlagSet.Usage = func() {
+	f.FlagSet.Usage = func() {
 		helpMessage := styling.HelpBorder.Render(
 			"Welcome! This tool displays data related to Pokémon!",
 			"\n\n", styling.StyleBold.Render("USAGE:"),
@@ -90,6 +97,7 @@ func runCLI(args []string) int {
 			fmt.Sprintf("\n\t%-15s %s", "poke-cli <command> <subcommand> [flag]", ""),
 			"\n\n", styling.StyleBold.Render("FLAGS:"),
 			fmt.Sprintf("\n\t%-15s %s", "-h, --help", "Shows the help menu"),
+			fmt.Sprintf("\n\t%-15s %s", "-c, --config", "Launch the config settings screen"),
 			fmt.Sprintf("\n\t%-15s %s", "-l, --latest", "Prints the latest version available"),
 			fmt.Sprintf("\n\t%-15s %s", "-v, --version", "Prints the current version"),
 			"\n\n", styling.StyleBold.Render("COMMANDS:"),
@@ -102,37 +110,62 @@ func runCLI(args []string) int {
 		fmt.Println(helpMessage)
 	}
 
+	return f
+}
+
+func runCLI(args []string) int {
+	var output strings.Builder
+
+	cfg, firstRun, err := flags.Load()
+	if err != nil {
+		cfg = flags.Defaults()
+	}
+
+	styling.ApplyTheme(cfg.Display.Theme)
+
+	wantsConfig := slices.Contains(args, "--config") || slices.Contains(args, "-c")
+	if firstRun && !wantsConfig && isInteractive() {
+		if updated, saved, runErr := setup.Run(cfg); runErr == nil && saved {
+			cfg = updated
+			saveConfig(cfg)
+		}
+	}
+
+	connections.ConfigureCache(cfg.Cache.ShowWarning, cfg.Cache.Path)
+
+	f := setupMainFlagSet()
+
 	switch {
 	case len(args) == 0:
-		mainFlagSet.Usage()
+		f.FlagSet.Usage()
 		return 0
 	case len(args) > 0:
 		if args[0] == "-h" || args[0] == "--help" {
-			mainFlagSet.Usage()
+			f.FlagSet.Usage()
 			return 0
 		}
 	}
 
-	err := mainFlagSet.Parse(args)
+	err = f.FlagSet.Parse(args)
 	if err != nil {
 		return 2
 	}
 
-	remainingArgs := mainFlagSet.Args()
+	remainingArgs := f.FlagSet.Args()
 
 	type commandFunc func([]string) (string, error)
 	commands := map[string]commandFunc{
-		"ability": ability.AbilityCommand,
-		"berry":   berry.BerryCommand,
-		"card":    card.CardCommand,
-		"item":    item.ItemCommand,
-		"move":    move.MoveCommand,
-		"natures": natures.NaturesCommand,
-		"pokemon": pokemon.PokemonCommand,
-		"speed":   speed.SpeedCommand,
-		"tcg":     tcg.TcgCommand,
-		"types":   types.TypesCommand,
-		"search":  search.SearchCommand,
+		"ability":   ability.AbilityCommand,
+		"berry":     berry.BerryCommand,
+		"card":      card.CardCommand,
+		"comp":      comp.CompCommand,
+		"item":      item.ItemCommand,
+		"mechanics": mechanics.MechanicsCommand,
+		"move":      move.MoveCommand,
+		"pokemon":   pokemon.PokemonCommand,
+		"search":    search.SearchCommand,
+		"speed":     speed.SpeedCommand,
+		"types":     types.TypesCommand,
 	}
 
 	cmdArg := ""
@@ -142,17 +175,26 @@ func runCLI(args []string) int {
 	cmdFunc, exists := commands[cmdArg]
 
 	switch {
-	case len(remainingArgs) == 0 && !*latestFlag && !*shortLatestFlag && !*currentVersionFlag && !*shortCurrentVersionFlag:
-		mainFlagSet.Usage()
+	case len(remainingArgs) == 0 && !*f.latest && !*f.version && !*f.config:
+		f.FlagSet.Usage()
 		return 1
-	case *latestFlag || *shortLatestFlag:
+	case *f.latest:
 		_, err := flags.LatestFlag()
 		if err != nil {
 			return 1
 		}
 		return 0
-	case *currentVersionFlag || *shortCurrentVersionFlag:
+	case *f.version:
 		fmt.Println(currentVersion())
+		return 0
+	case *f.config:
+		updated, saved, runErr := setup.Run(cfg)
+		if runErr != nil {
+			return 1
+		}
+		if saved {
+			saveConfig(updated)
+		}
 		return 0
 	case exists:
 		return utils.HandleCommandOutput(cmdFunc, remainingArgs)()
@@ -170,6 +212,17 @@ func runCLI(args []string) int {
 }
 
 var exit = os.Exit
+
+func isInteractive() bool {
+	return term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd()))
+}
+
+func saveConfig(cfg flags.Config) {
+	if err := flags.Save(cfg); err != nil {
+		fmt.Fprintln(os.Stderr, styling.WarningColor.Render(
+			"Couldn't save settings to the config file (it may be open elsewhere); changes won't persist."))
+	}
+}
 
 func main() {
 	exit(runCLI(os.Args[1:]))

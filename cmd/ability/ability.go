@@ -2,7 +2,6 @@ package ability
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"strings"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/digitalghost-dev/poke-cli/connections"
 	"github.com/digitalghost-dev/poke-cli/flags"
 	"github.com/digitalghost-dev/poke-cli/styling"
+	flag "github.com/spf13/pflag"
 )
 
 func AbilityCommand(args []string) (string, error) {
@@ -81,7 +81,8 @@ func AbilityCommand(args []string) (string, error) {
 	}
 
 	capitalizedAbility := styling.CapitalizeResourceName(abilityName)
-	output.WriteString(styling.StyleBold.Render(capitalizedAbility) + "\n")
+	output.WriteString(styling.StyleBold.Render(capitalizedAbility))
+	output.WriteByte('\n')
 
 	generationParts := strings.Split(abilitiesStruct.Generation.Name, "-")
 	if len(generationParts) > 1 {
@@ -99,7 +100,7 @@ func AbilityCommand(args []string) (string, error) {
 		fmt.Fprintf(&output, "%s Effect: %s", styling.ColoredBullet, englishShortEffect)
 	}
 
-	if *af.Pokemon || *af.ShortPokemon {
+	if *af.Pokemon {
 		if err := flags.PokemonAbilitiesFlag(&output, endpoint, abilityName); err != nil {
 			return utils.HandleFlagError(&output, err)
 		}
