@@ -15,6 +15,7 @@ FROM rust:1-alpine AS rust-build
 
 WORKDIR /build
 
+# hadolint ignore=DL3018
 RUN apk add --no-cache build-base
 
 COPY services/Cargo.toml services/Cargo.lock ./services/
@@ -26,6 +27,7 @@ RUN cargo build --release --manifest-path services/Cargo.toml --bin poke-cache
 FROM alpine:3.24
 
 # Installing only necessary packages and remove them after use
+# hadolint ignore=DL3018
 RUN apk add --no-cache shadow && \
     addgroup -S poke_group && adduser -S poke_user -G poke_group && \
     sed -i 's/^root:.*/root:!*:0:0:root:\/root:\/sbin\/nologin/' /etc/passwd && \
