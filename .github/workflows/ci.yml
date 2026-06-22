@@ -71,7 +71,7 @@ jobs:
           "$BIN" pokemon charizard -a -d
           "$BIN" ability overgrow
           "$BIN" move thunderbolt
-          "$BIN" natures
+          "$BIN" mechanics --natures
 
   gosec:
     runs-on: ubuntu-22.04
