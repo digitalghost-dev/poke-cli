@@ -3,10 +3,12 @@ package styling
 import (
 	"fmt"
 	"image/color"
+	"os"
 	"regexp"
 	"strings"
 
 	"charm.land/lipgloss/v2"
+	"golang.org/x/term"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -105,6 +107,13 @@ func ApplyTheme(name string) {
 
 func init() {
 	ApplyTheme("yellow")
+}
+
+func HasDarkBackground() bool {
+	if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) {
+		return true
+	}
+	return lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
 }
 
 // GetTypeColor Helper function to get color for a given type name from colorMap

@@ -2,9 +2,9 @@ package shell
 
 import (
 	"image/color"
-	"os"
 
 	"charm.land/lipgloss/v2"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 type Styles struct {
@@ -26,7 +26,7 @@ func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
 func NewStyles() *Styles {
 	inactiveTabBorder := tabBorderWithBottom("┴", "─", "┴")
 	activeTabBorder := tabBorderWithBottom("┘", " ", "└")
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := styling.HasDarkBackground()
 	ld := lipgloss.LightDark(isDark)
 	highlightColor := ld(lipgloss.Color("#874BFD"), lipgloss.Color("#7D56F4"))
 

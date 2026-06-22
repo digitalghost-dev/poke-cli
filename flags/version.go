@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -112,7 +111,7 @@ func latestReleaseFromURL(output *strings.Builder, releaseURL string, client *ht
 	releaseString := "Latest available release on GitHub:"
 	releaseTag := styling.ColoredBullet.Render("") + release.TagName
 
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := styling.HasDarkBackground()
 	ld := lipgloss.LightDark(isDark)
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).

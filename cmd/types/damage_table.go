@@ -22,7 +22,7 @@ func DamageTable(typesName string, endpoint string) (string, error) {
 
 	// Setting up variables to style the list
 	var columnWidth = 11
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := styling.HasDarkBackground()
 	ld := lipgloss.LightDark(isDark)
 	subtle := ld(lipgloss.Color("#383838"), lipgloss.Color("#D9DCCF"))
 	var list = lipgloss.NewStyle().Border(lipgloss.NormalBorder(), false, true, false, false).BorderForeground(subtle).MarginRight(2).Height(8)

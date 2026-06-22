@@ -3,7 +3,6 @@ package styling
 import (
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"charm.land/bubbles/v2/list"
@@ -21,7 +20,7 @@ var (
 )
 
 func init() {
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := HasDarkBackground()
 	defaults := list.DefaultStyles(isDark)
 	PaginationStyle = defaults.PaginationStyle.PaddingLeft(4)
 	HelpStyle = defaults.HelpStyle.PaddingLeft(4).PaddingBottom(1)

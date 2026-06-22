@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -514,7 +513,7 @@ func MovesFlag(w io.Writer, endpoint string, pokemonName string) error {
 	}
 
 	// Build and print table
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := styling.HasDarkBackground()
 	ld := lipgloss.LightDark(isDark)
 	color := ld(lipgloss.Color("#4B4B4B"), lipgloss.Color("#D3D3D3"))
 

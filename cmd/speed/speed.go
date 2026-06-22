@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"os"
 	"strconv"
 	"strings"
 
@@ -315,7 +314,7 @@ func formula() (string, error) {
 		styling.Yellow.Render(speedStr),
 	)
 
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := styling.HasDarkBackground()
 	ld := lipgloss.LightDark(isDark)
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).

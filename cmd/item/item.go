@@ -2,7 +2,6 @@ package item
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"charm.land/lipgloss/v2"
@@ -60,7 +59,7 @@ func itemInfoContainer(output *strings.Builder, itemStruct structs.ItemJSONStruc
 	itemCost := fmt.Sprintf("Cost: %d", itemStruct.Cost)
 	itemCategory := "Category: " + styling.CapitalizeResourceName(itemStruct.Category.Name)
 
-	isDark := lipgloss.HasDarkBackground(os.Stdin, os.Stdout)
+	isDark := styling.HasDarkBackground()
 	ld := lipgloss.LightDark(isDark)
 	docStyle := lipgloss.NewStyle().
 		Padding(1, 2).
