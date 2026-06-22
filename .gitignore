@@ -9,6 +9,7 @@
 *.idea
 .dccache
 dist/
+prebuilt/
 poke-cli
 *.rpm
 *.apk
