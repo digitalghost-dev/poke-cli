@@ -8,9 +8,7 @@ on:
 
 permissions:
   actions: read
-  contents: write
-  id-token: write
-  security-events: write
+  contents: read
 
 env:
   VERSION_NUMBER: ${{ github.ref_name }}
@@ -52,6 +50,9 @@ jobs:
   gosec:
     runs-on: ubuntu-22.04
     needs: [smoke-tests]
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout
@@ -70,6 +71,9 @@ jobs:
   bandit:
     runs-on: ubuntu-22.04
     needs: [smoke-tests]
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout
@@ -125,6 +129,9 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [gosec, bandit]
     if: needs.gosec.result == 'success' && needs.bandit.result == 'success'
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Checkout
@@ -560,6 +567,9 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [syft]
     if: needs.syft.result == 'success'
+    permissions:
+      contents: read
+      security-events: write
 
     steps:
       - name: Download SBOM
@@ -689,6 +699,8 @@ jobs:
   goreleaser:
     needs: [build-poke-cache, smoke-tests, rust-cache, gitleaks]
     runs-on: ubuntu-22.04
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
