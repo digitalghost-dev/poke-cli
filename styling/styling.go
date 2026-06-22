@@ -110,7 +110,7 @@ func init() {
 }
 
 func HasDarkBackground() bool {
-	if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) {
+	if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) { // #nosec G115
 		return true
 	}
 	return lipgloss.HasDarkBackground(os.Stdin, os.Stdout)

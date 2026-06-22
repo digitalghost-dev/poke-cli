@@ -40,7 +40,7 @@ func DamageTable(typesName string, endpoint string) (string, error) {
 	out.WriteString(styling.StyleBold.Render("Damage Chart:"))
 	out.WriteString("\n")
 
-	physicalWidth, _, _ := term.GetSize(uintptr(int(os.Stdout.Fd())))
+	physicalWidth, _, _ := term.GetSize(uintptr(int(os.Stdout.Fd()))) // #nosec G115
 	doc := strings.Builder{}
 
 	// Helper function to build list items

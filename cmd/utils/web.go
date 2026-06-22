@@ -22,13 +22,13 @@ func Open(url string) tea.Cmd {
 		switch runtime.GOOS {
 		case "windows":
 			browserCmd = "cmd"
-			openCmd = exec.Command("cmd", "/c", "start", url) //nolint:gosec
+			openCmd = exec.Command("cmd", "/c", "start", url) // #nosec G204
 		case "darwin":
 			browserCmd = "open"
-			openCmd = exec.Command("open", url)
+			openCmd = exec.Command("open", url) // #nosec G204
 		default:
 			browserCmd = "xdg-open"
-			openCmd = exec.Command("xdg-open", url)
+			openCmd = exec.Command("xdg-open", url) // #nosec G204
 		}
 
 		if _, err := exec.LookPath(browserCmd); err != nil {
