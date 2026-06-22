@@ -4,7 +4,7 @@ Five natures increase and decrease the same stat and therefore have no effect.
 
 Nature Chart:
 ┌──────────┬─────────┬──────────┬──────────┬──────────┬─────────┐
-│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ Speed   │
+│          │ -Attack │ -Defense │ -Sp. Atk │ -Sp. Def │ -Speed  │
 ├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
 │ +Attack  │ Hardy   │ Lonely   │ Adamant  │ Naughty  │ Brave   │
 ├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
@@ -14,5 +14,5 @@ Nature Chart:
 ├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
 │ +Sp. Def │ Calm    │ Gentle   │ Careful  │ Quirky   │ Sassy   │
 ├──────────┼─────────┼──────────┼──────────┼──────────┼─────────┤
-│ Speed    │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │
+│ +Speed   │ Timid   │ Hasty    │ Jolly    │ Naive    │ Serious │
 └──────────┴─────────┴──────────┴──────────┴──────────┴─────────┘
