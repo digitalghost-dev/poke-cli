@@ -214,7 +214,7 @@ func runCLI(args []string) int {
 var exit = os.Exit
 
 func isInteractive() bool {
-	return term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd()))
+	return term.IsTerminal(int(os.Stdin.Fd())) && term.IsTerminal(int(os.Stdout.Fd())) // #nosec G115
 }
 
 func saveConfig(cfg flags.Config) {

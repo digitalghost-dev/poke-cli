@@ -60,6 +60,9 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+      - "^ci:"
+      - "^chore:"
+      - "^build:"
 
 homebrew_casks:
   - name: poke-cli

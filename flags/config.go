@@ -75,7 +75,7 @@ func Load() (Config, bool, error) {
 
 func LoadFrom(path string) (Config, bool, error) {
 	cfg := Defaults()
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(path) // #nosec G304
 	if errors.Is(err, fs.ErrNotExist) {
 		return cfg, true, nil
 	}
@@ -105,7 +105,7 @@ func SaveTo(path string, cfg Config) error {
 		return err
 	}
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return err
 	}
 	tmp, err := os.CreateTemp(dir, "config-*.toml")

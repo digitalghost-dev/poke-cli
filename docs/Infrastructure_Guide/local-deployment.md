@@ -196,7 +196,7 @@ The above `yml` defines the structure for the raw `series` table from the `stagi
 Soda and its components needed for the project can be installed with `uv`:
 
 1. Install Soda Core with PostgreSQL connector since Supabase uses PostgreSQL.
-   Other [connectors](https://github.com/sodadata/soda-core/blob/main/docs/installation.md#compatibility) can be used.
+   Other [connectors](https://github.com/sodadata/soda-core/blob/v3/docs/installation.md#compatibility) can be used.
 ```shell
    uv add soda-core-postgres
 ```

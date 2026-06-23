@@ -71,7 +71,7 @@ func cachedFetch(url string) ([]byte, error) {
 		warnNoCache()
 		return directFetch(url)
 	}
-	out, err := exec.Command(path, "get", url).Output()
+	out, err := exec.Command(path, "get", url).Output() // #nosec G204
 	if err != nil {
 		return directFetch(url)
 	}

@@ -1,0 +1,43 @@
+name: Security
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  gosec:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@v2.25.0
+        with:
+          args: '-severity medium -confidence medium ./...'
+
+  bandit:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Run Bandit Security Scanner
+        run: |
+          uv tool run --from 'bandit[toml]' bandit \
+            -r data_platform/pipelines \
+            --severity-level medium \
+            --confidence-level medium
