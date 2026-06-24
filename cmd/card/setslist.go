@@ -174,7 +174,7 @@ type setData struct {
 func SetsList(seriesID string) (setsModel, error) {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
-	s.Style = styling.Yellow
+	s.Style = styling.Theme
 
 	return setsModel{
 		SeriesName: seriesID,

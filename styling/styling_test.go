@@ -2,9 +2,11 @@ package styling
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"image/color"
 	"testing"
+
+	"charm.land/lipgloss/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetTypeColor(t *testing.T) {
@@ -119,13 +121,34 @@ func TestApplyThemeSwapsAndFallsBack(t *testing.T) {
 	t.Cleanup(func() { ApplyTheme("yellow") })
 
 	ApplyTheme("red")
-	redColor := YellowColor
+	redColor := ThemeColor
 	assert.Equal(t, "#f00000", accent)
 
 	ApplyTheme("blue")
 	assert.Equal(t, "#3B4CCA", accent)
-	assert.NotEqual(t, redColor, YellowColor)
+	assert.NotEqual(t, redColor, ThemeColor)
 
 	ApplyTheme("bogus")
 	assert.Equal(t, "#E1AD01", accent)
+}
+
+func TestContrastText(t *testing.T) {
+	black := lipgloss.Color("#000")
+	white := lipgloss.Color("#FFF")
+	tests := []struct {
+		name string
+		bg   string
+		want color.Color
+	}{
+		{"yellow theme", palettes["yellow"], black},
+		{"red theme", palettes["red"], white},
+		{"blue theme", palettes["blue"], white},
+		{"pure white", "#FFFFFF", black},
+		{"pure black", "#000000", white},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, ContrastText(lipgloss.Color(tt.bg)))
+		})
+	}
 }

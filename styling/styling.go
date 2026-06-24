@@ -23,17 +23,13 @@ var palettes = map[string]string{
 
 var accent string
 
-var (
-	YellowColor     color.Color
-	YellowAdaptive  color.Color
-	YellowAdaptive2 color.Color
-)
+var ThemeColor color.Color
 
 var (
 	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
 	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
 	Gray          = lipgloss.Color("#777777")
-	Yellow        lipgloss.Style
+	Theme         lipgloss.Style
 	ColoredBullet lipgloss.Style
 	CheckboxStyle lipgloss.Style
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
@@ -87,10 +83,8 @@ func ApplyTheme(name string) {
 	accent = hex
 	c := lipgloss.Color(hex)
 
-	YellowColor = c
-	YellowAdaptive = c
-	YellowAdaptive2 = c
-	Yellow = lipgloss.NewStyle().Foreground(c)
+	ThemeColor = c
+	Theme = lipgloss.NewStyle().Foreground(c)
 	ColoredBullet = lipgloss.NewStyle().SetString("•").Foreground(c)
 	CheckboxStyle = lipgloss.NewStyle().Foreground(c)
 	HelpBorder = lipgloss.NewStyle().
@@ -188,4 +182,16 @@ func MakeColor(c color.Color) (Color, bool) {
 func (col Color) Hex() string {
 	return fmt.Sprintf("#%02x%02x%02x",
 		uint8(col.R*255.0+0.5), uint8(col.G*255.0+0.5), uint8(col.B*255.0+0.5))
+}
+
+func ContrastText(bg color.Color) color.Color {
+	c, ok := MakeColor(bg)
+	if !ok {
+		return lipgloss.Color("#000")
+	}
+	luma := 0.299*c.R + 0.587*c.G + 0.114*c.B
+	if luma > 0.5 {
+		return lipgloss.Color("#000")
+	}
+	return lipgloss.Color("#FFF")
 }

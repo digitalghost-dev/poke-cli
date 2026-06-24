@@ -59,10 +59,7 @@ func Run(spec Spec, conn ConnFunc) (back bool, err error) {
 		return result, nil
 	}
 
-	if err := loop(spec, conn, runPicker, runDashboard); err != nil {
-		return false, err
-	}
-	return true, nil
+	return loop(spec, conn, runPicker, runDashboard)
 }
 
 func loop(
@@ -70,25 +67,24 @@ func loop(
 	conn ConnFunc,
 	runPicker func(pickerModel) (pickerModel, error),
 	runDashboard func(dashboardModel) (dashboardModel, error),
-) error {
+) (back bool, err error) {
 	for {
 		result, err := runPicker(newPicker(spec, conn))
 		if err != nil {
-			return fmt.Errorf("error running tournament selection program: %w", err)
+			return false, fmt.Errorf("error running tournament selection program: %w", err)
 		}
 		if result.selected == nil {
-			break
+			return result.goBack, nil
 		}
 
 		dash, err := runDashboard(newDashboard(spec, conn, result.selected.Location))
 		if err != nil {
-			return fmt.Errorf("error running dashboard program: %w", err)
+			return false, fmt.Errorf("error running dashboard program: %w", err)
 		}
 		if !dash.goBack {
-			break
+			return false, nil
 		}
 	}
-	return nil
 }
 
 func FormatInt(n int) string {

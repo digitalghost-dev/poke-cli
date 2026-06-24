@@ -66,9 +66,17 @@ func TestLoop_NoTournamentSelected(t *testing.T) {
 		dashCalled = true
 		return dashboardModel{}, nil
 	}
-	err := loop(testSpec(), noopConn, runPicker, runDashboard)
+	back, err := loop(testSpec(), noopConn, runPicker, runDashboard)
 	require.NoError(t, err)
+	require.False(t, back, "esc/quit from the picker should not return to the selection menu")
 	require.False(t, dashCalled, "dashboard should not launch when no tournament is selected")
+}
+
+func TestLoop_PickerGoBack_ReturnsBack(t *testing.T) {
+	runPicker := func(_ pickerModel) (pickerModel, error) { return pickerModel{selected: nil, goBack: true}, nil }
+	back, err := loop(testSpec(), noopConn, runPicker, nil)
+	require.NoError(t, err)
+	require.True(t, back, "pressing b in the picker should return to the selection menu")
 }
 
 func TestLoop_TournamentSelected_DashboardExits(t *testing.T) {
@@ -78,7 +86,9 @@ func TestLoop_TournamentSelected_DashboardExits(t *testing.T) {
 		assert.Equal(t, "London", m.tournament)
 		return dashboardModel{goBack: false}, nil
 	}
-	assert.NoError(t, loop(testSpec(), noopConn, runPicker, runDashboard))
+	back, err := loop(testSpec(), noopConn, runPicker, runDashboard)
+	require.NoError(t, err)
+	assert.False(t, back, "quitting the dashboard should not return to the selection menu")
 }
 
 func TestLoop_GoBack_LoopsToPicker(t *testing.T) {
@@ -92,13 +102,15 @@ func TestLoop_GoBack_LoopsToPicker(t *testing.T) {
 		return pickerModel{selected: nil}, nil
 	}
 	runDashboard := func(_ dashboardModel) (dashboardModel, error) { return dashboardModel{goBack: true}, nil }
-	require.NoError(t, loop(testSpec(), noopConn, runPicker, runDashboard))
+	back, err := loop(testSpec(), noopConn, runPicker, runDashboard)
+	require.NoError(t, err)
+	require.False(t, back)
 	require.Equal(t, 2, calls, "expected the picker to run twice")
 }
 
 func TestLoop_PickerError(t *testing.T) {
 	runPicker := func(_ pickerModel) (pickerModel, error) { return pickerModel{}, errors.New("boom") }
-	err := loop(testSpec(), noopConn, runPicker, nil)
+	_, err := loop(testSpec(), noopConn, runPicker, nil)
 	assert.ErrorContains(t, err, "tournament selection")
 }
 
@@ -108,5 +120,6 @@ func TestLoop_DashboardError(t *testing.T) {
 	runDashboard := func(_ dashboardModel) (dashboardModel, error) {
 		return dashboardModel{}, errors.New("boom")
 	}
-	assert.ErrorContains(t, loop(testSpec(), noopConn, runPicker, runDashboard), "dashboard")
+	_, err := loop(testSpec(), noopConn, runPicker, runDashboard)
+	assert.ErrorContains(t, err, "dashboard")
 }

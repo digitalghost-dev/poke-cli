@@ -68,7 +68,7 @@ func renderPokemonDetail(row compInfoRow, width int) string {
 	teammates := renderStatColumn("Common Teammates", row.CommonTeammates, colWidth)
 
 	var b strings.Builder
-	b.WriteString(styling.Yellow.Render(row.Pokemon))
+	b.WriteString(styling.Theme.Render(row.Pokemon))
 	b.WriteString("\n\n")
 	b.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, moves, "   ", items))
 	b.WriteString("\n\n")
@@ -231,7 +231,7 @@ func renderTeamDetail(team teamRow, width int) string {
 	var b strings.Builder
 
 	title := fmt.Sprintf("%s (%s)", team.Player, team.Record)
-	b.WriteString(styling.Yellow.Render("Selected Team"))
+	b.WriteString(styling.Theme.Render("Selected Team"))
 	b.WriteString("\n")
 	b.WriteString(styling.StyleBold.Render(title))
 	b.WriteString("\n")
@@ -392,7 +392,7 @@ func selectedSpeedTier(speedTable table.Model, rows []speedTierRow) speedTierRow
 
 func renderSpeedDetail(row speedTierRow) string {
 	var b strings.Builder
-	b.WriteString(styling.Yellow.Render("Selected Pokémon"))
+	b.WriteString(styling.Theme.Render("Selected Pokémon"))
 	b.WriteString("\n")
 
 	b.WriteString(styling.StyleBold.Render(row.Pokemon))

@@ -48,7 +48,7 @@ type cardDataMsg struct {
 }
 
 var (
-	activeTableSelectedBg   color.Color = styling.YellowColor
+	activeTableSelectedBg   color.Color = styling.ThemeColor
 	inactiveTableSelectedBg color.Color = lipgloss.Color("#808080")
 )
 
@@ -56,10 +56,10 @@ func cardTableStyles(selectedBg color.Color) table.Styles {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(styling.YellowColor).
+		BorderForeground(styling.ThemeColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
+		Foreground(styling.ContrastText(selectedBg)).
 		Background(selectedBg)
 	return s
 }
@@ -297,7 +297,7 @@ func (m cardsModel) View() tea.View {
 			Width(42).
 			Height(29).
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(styling.YellowColor).
+			BorderForeground(styling.ThemeColor).
 			Padding(1).
 			Render(selectedCard)
 
@@ -327,7 +327,7 @@ type cardData struct {
 func CardsList(setID string) (cardsModel, error) {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
-	s.Style = styling.Yellow
+	s.Style = styling.Theme
 
 	return cardsModel{
 		SetID:   setID,

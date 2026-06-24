@@ -10,9 +10,6 @@ func TestNewStyles(t *testing.T) {
 	if s == nil {
 		t.Fatal("expected non-nil styles")
 	}
-	if s.HighlightColor == nil {
-		t.Error("expected highlight color to be set")
-	}
 }
 
 func TestRender_ContainsTabsContentAndMenu(t *testing.T) {

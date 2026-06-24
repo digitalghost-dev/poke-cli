@@ -83,7 +83,7 @@ func (m imageModel) View() tea.View {
 		content = lipgloss.NewStyle().
 			Padding(2).
 			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(styling.YellowColor).
+			BorderForeground(styling.ThemeColor).
 			Render(styling.Red.Render(m.Error.Error()))
 	} else {
 		content = m.ImageData
@@ -97,7 +97,7 @@ func (m imageModel) View() tea.View {
 func ImageRenderer(cardName string, imageURL string) imageModel {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
-	s.Style = styling.Yellow
+	s.Style = styling.Theme
 
 	return imageModel{
 		CardName: cardName,

@@ -120,11 +120,11 @@ func createTypeSelectionTable() model {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(styling.YellowColor).
+		BorderForeground(styling.ThemeColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
-		Background(styling.YellowColor)
+		Foreground(styling.ContrastText(styling.ThemeColor)).
+		Background(styling.ThemeColor)
 	tbl.SetStyles(s)
 
 	return model{table: tbl}

@@ -45,7 +45,7 @@ func (s *Styles) Render(tabs []string, activeTab, width int, renderContent func(
 
 	fillWidth := windowWidth - lipgloss.Width(row)
 	if fillWidth > 0 {
-		fill := lipgloss.NewStyle().Foreground(s.HighlightColor).
+		fill := lipgloss.NewStyle().Foreground(styling.ThemeColor).
 			Render(strings.Repeat("─", fillWidth-1) + "┐")
 		row = row + fill
 	}
@@ -65,11 +65,11 @@ func TableStyles() table.Styles {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(styling.YellowColor).
+		BorderForeground(styling.ThemeColor).
 		BorderBottom(true).
 		Bold(true)
 	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
-		Background(styling.YellowColor)
+		Foreground(styling.ContrastText(styling.ThemeColor)).
+		Background(styling.ThemeColor)
 	return s
 }
