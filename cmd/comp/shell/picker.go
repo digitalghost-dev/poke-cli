@@ -22,6 +22,7 @@ type pickerModel struct {
 	tournaments []TournamentRef
 	selected    *TournamentRef
 	error       error
+	goBack      bool
 	list        list.Model
 	loading     bool
 	spinner     spinner.Model
@@ -76,6 +77,9 @@ func (m pickerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "esc":
 			m.quitting = true
 			return m, tea.Quit
+		case "b":
+			m.goBack = true
+			return m, tea.Quit
 		case "w":
 			return m, utils.Open("https://web.poke-cli.com/")
 		case "enter":
@@ -112,12 +116,16 @@ func (m pickerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		l.Styles.PaginationStyle = styling.PaginationStyle
 		l.Styles.HelpStyle = styling.HelpStyle
 
+		backBinding := key.NewBinding(
+			key.WithKeys("b"),
+			key.WithHelp("b", "back"),
+		)
 		webBinding := key.NewBinding(
 			key.WithKeys("w"),
 			key.WithHelp("w", "web"),
 		)
-		l.AdditionalShortHelpKeys = func() []key.Binding { return []key.Binding{webBinding} }
-		l.AdditionalFullHelpKeys = func() []key.Binding { return []key.Binding{webBinding} }
+		l.AdditionalShortHelpKeys = func() []key.Binding { return []key.Binding{backBinding, webBinding} }
+		l.AdditionalFullHelpKeys = func() []key.Binding { return []key.Binding{backBinding, webBinding} }
 
 		m.list = l
 		m.loading = false
