@@ -135,7 +135,7 @@ func (m model) View() tea.View {
 		line := lipgloss.NewStyle().Render(label + "  " + value)
 		if m.cursor == focused {
 			cursor = "> "
-			line = styling.Yellow.Render(label + "  " + value)
+			line = styling.Theme.Render(label + "  " + value)
 		}
 		return cursor + line
 	}
@@ -155,7 +155,7 @@ func (m model) View() tea.View {
 	status := "poke-cache: " + cache
 
 	panel := lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).
-		BorderForeground(styling.YellowColor).Padding(1, 2)
+		BorderForeground(styling.ThemeColor).Padding(1, 2)
 
 	body := lipgloss.JoinVertical(lipgloss.Left, panel.Render(settings), panel.Render(status))
 

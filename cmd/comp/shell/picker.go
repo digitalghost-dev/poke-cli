@@ -52,7 +52,7 @@ func fetchTournaments(listURL string, conn ConnFunc) tea.Cmd {
 func newPicker(spec Spec, conn ConnFunc) pickerModel {
 	s := spinner.New()
 	s.Spinner = spinner.Dot
-	s.Style = styling.Yellow
+	s.Style = styling.Theme
 
 	return pickerModel{
 		conn:    conn,

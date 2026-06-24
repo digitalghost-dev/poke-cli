@@ -1,18 +1,15 @@
 package shell
 
 import (
-	"image/color"
-
 	"charm.land/lipgloss/v2"
 	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 type Styles struct {
-	Doc            lipgloss.Style
-	InactiveTab    lipgloss.Style
-	ActiveTab      lipgloss.Style
-	Window         lipgloss.Style
-	HighlightColor color.Color
+	Doc         lipgloss.Style
+	InactiveTab lipgloss.Style
+	ActiveTab   lipgloss.Style
+	Window      lipgloss.Style
 }
 
 func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
@@ -26,24 +23,20 @@ func tabBorderWithBottom(left, middle, right string) lipgloss.Border {
 func NewStyles() *Styles {
 	inactiveTabBorder := tabBorderWithBottom("┴", "─", "┴")
 	activeTabBorder := tabBorderWithBottom("┘", " ", "└")
-	isDark := styling.HasDarkBackground()
-	ld := lipgloss.LightDark(isDark)
-	highlightColor := ld(lipgloss.Color("#874BFD"), lipgloss.Color("#7D56F4"))
 
 	s := new(Styles)
 	s.Doc = lipgloss.NewStyle().
 		Padding(1, 2, 1, 2)
 	s.InactiveTab = lipgloss.NewStyle().
 		Border(inactiveTabBorder, true).
-		BorderForeground(highlightColor).
+		BorderForeground(styling.ThemeColor).
 		Padding(0, 1)
 	s.ActiveTab = s.InactiveTab.
 		Border(activeTabBorder, true)
 	s.Window = lipgloss.NewStyle().
-		BorderForeground(highlightColor).
+		BorderForeground(styling.ThemeColor).
 		Padding(2, 0).
 		Border(lipgloss.NormalBorder()).
 		UnsetBorderTop()
-	s.HighlightColor = highlightColor
 	return s
 }

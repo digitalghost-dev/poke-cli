@@ -119,12 +119,12 @@ func TestApplyThemeSwapsAndFallsBack(t *testing.T) {
 	t.Cleanup(func() { ApplyTheme("yellow") })
 
 	ApplyTheme("red")
-	redColor := YellowColor
+	redColor := ThemeColor
 	assert.Equal(t, "#f00000", accent)
 
 	ApplyTheme("blue")
 	assert.Equal(t, "#3B4CCA", accent)
-	assert.NotEqual(t, redColor, YellowColor)
+	assert.NotEqual(t, redColor, ThemeColor)
 
 	ApplyTheme("bogus")
 	assert.Equal(t, "#E1AD01", accent)

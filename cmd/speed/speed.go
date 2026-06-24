@@ -300,18 +300,18 @@ func formula() (string, error) {
 	finalSpeedStr := fmt.Sprintf("%.0f", finalSpeedFloor)
 
 	header := fmt.Sprintf("%s at level %s with selected options has a current speed of %s.",
-		styling.Yellow.Render(chosenPokemon),
-		styling.Yellow.Render(pokemon.Level),
-		styling.Yellow.Render(finalSpeedStr),
+		styling.Theme.Render(chosenPokemon),
+		styling.Theme.Render(pokemon.Level),
+		styling.Theme.Render(finalSpeedStr),
 	)
 	body := fmt.Sprintf("EVs: %s\nIVs: %s\nModifiers: %s\nNature: %s\nAbility: %s\nSpeed Stage: %s\nBase Speed: %s",
-		styling.Yellow.Render(pokemon.SpeedEV),
-		styling.Yellow.Render(pokemon.SpeedIV),
-		styling.Yellow.Render(xstrings.EnglishJoin(pokemon.Modifier, true)),
-		styling.Yellow.Render(pokemon.Nature),
-		styling.Yellow.Render(pokemon.Ability),
-		styling.Yellow.Render(pokemon.SpeedStage),
-		styling.Yellow.Render(speedStr),
+		styling.Theme.Render(pokemon.SpeedEV),
+		styling.Theme.Render(pokemon.SpeedIV),
+		styling.Theme.Render(xstrings.EnglishJoin(pokemon.Modifier, true)),
+		styling.Theme.Render(pokemon.Nature),
+		styling.Theme.Render(pokemon.Ability),
+		styling.Theme.Render(pokemon.SpeedStage),
+		styling.Theme.Render(speedStr),
 	)
 
 	isDark := styling.HasDarkBackground()

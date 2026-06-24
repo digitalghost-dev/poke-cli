@@ -23,17 +23,13 @@ var palettes = map[string]string{
 
 var accent string
 
-var (
-	YellowColor     color.Color
-	YellowAdaptive  color.Color
-	YellowAdaptive2 color.Color
-)
+var ThemeColor color.Color
 
 var (
 	Green         = lipgloss.NewStyle().Foreground(lipgloss.Color("#38B000"))
 	Red           = lipgloss.NewStyle().Foreground(lipgloss.Color("#D00000"))
 	Gray          = lipgloss.Color("#777777")
-	Yellow        lipgloss.Style
+	Theme         lipgloss.Style
 	ColoredBullet lipgloss.Style
 	CheckboxStyle lipgloss.Style
 	KeyMenu       = lipgloss.NewStyle().Foreground(lipgloss.Color("#777777"))
@@ -87,10 +83,8 @@ func ApplyTheme(name string) {
 	accent = hex
 	c := lipgloss.Color(hex)
 
-	YellowColor = c
-	YellowAdaptive = c
-	YellowAdaptive2 = c
-	Yellow = lipgloss.NewStyle().Foreground(c)
+	ThemeColor = c
+	Theme = lipgloss.NewStyle().Foreground(c)
 	ColoredBullet = lipgloss.NewStyle().SetString("•").Foreground(c)
 	CheckboxStyle = lipgloss.NewStyle().Foreground(c)
 	HelpBorder = lipgloss.NewStyle().

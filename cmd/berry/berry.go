@@ -119,7 +119,7 @@ func (m model) View() tea.View {
 		Width(52).
 		Height(29).
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(styling.YellowColor).
+		BorderForeground(styling.ThemeColor).
 		Padding(1).
 		Render(selectedBerry)
 
@@ -158,11 +158,11 @@ func tableGeneration() error {
 	s := table.DefaultStyles()
 	s.Header = s.Header.
 		BorderStyle(lipgloss.NormalBorder()).
-		BorderForeground(styling.YellowColor).
+		BorderForeground(styling.ThemeColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("#000")).
-		Background(styling.YellowColor)
+		Background(styling.ThemeColor)
 	t.SetStyles(s)
 
 	m := model{table: t}
@@ -185,7 +185,7 @@ func berryContainers(name string) string {
 	boxStyle := lipgloss.NewStyle().
 		Padding(1, 2).
 		BorderStyle(lipgloss.ThickBorder()).
-		BorderForeground(styling.YellowColor).
+		BorderForeground(styling.ThemeColor).
 		Width(34)
 
 	// Render both without height constraints to measure natural heights.

@@ -6,6 +6,7 @@ import (
 	"charm.land/bubbles/v2/table"
 	tea "charm.land/bubbletea/v2"
 	"github.com/digitalghost-dev/poke-cli/cmd/utils"
+	"github.com/digitalghost-dev/poke-cli/styling"
 )
 
 type dashboardModel struct {
@@ -139,7 +140,7 @@ func (m dashboardModel) renderTab(contentWidth int) string {
 	}
 	switch m.activeTab {
 	case 0:
-		return m.decoded.Overview(contentWidth, m.styles.HighlightColor)
+		return m.decoded.Overview(contentWidth, styling.ThemeColor)
 	case 1:
 		return m.table.View()
 	case 2:
