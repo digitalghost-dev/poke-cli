@@ -87,7 +87,7 @@ func TestLoop_TournamentSelected_DashboardExits(t *testing.T) {
 		return dashboardModel{goBack: false}, nil
 	}
 	back, err := loop(testSpec(), noopConn, runPicker, runDashboard)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.False(t, back, "quitting the dashboard should not return to the selection menu")
 }
 
