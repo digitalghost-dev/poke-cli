@@ -67,6 +67,9 @@ changelog:
 homebrew_casks:
   - name: poke-cli
     ids: [ poke-cli ]
+    binaries:
+      - poke-cli
+      - poke-cache
     description: "A hybrid CLI/TUI tool written in Go for viewing Pokémon data from the terminal!"
     homepage: "https://docs.poke-cli.com/"
     license: MIT
