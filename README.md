@@ -2,16 +2,27 @@
     <img width="425" src="poke-cli.png" alt="pokemon-logo"/>
     <h4></h4>
     <img src="https://img.shields.io/github/v/release/digitalghost-dev/poke-cli?style=flat-square&logo=git&logoColor=FFCC00&label=Release%20Version&labelColor=EEE&color=FFCC00" alt="version-label">
+    <img src="https://img.shields.io/github/downloads/digitalghost-dev/poke-cli/total?style=flat-square&logo=github&logoColor=FFCC00&label=Downloads&labelColor=EEE&color=FFCC00" alt="downloads">
     <img src="https://img.shields.io/docker/image-size/digitalghostdev/poke-cli/v2.0.0?arch=arm64&style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-image-size">
-    <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/ci.yml?branch=main&style=flat-square&logo=github&logoColor=FFCC00&label=CI&labelColor=EEE&color=FFCC00" alt="ci-status-badge">
+    <img src="https://img.shields.io/docker/pulls/digitalghostdev/poke-cli?style=flat-square&logo=docker&logoColor=FFCC00&labelColor=EEE&color=FFCC00" alt="docker-pulls">
+    <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/release.yml?style=flat-square&logo=github&logoColor=FFCC00&label=Release&labelColor=EEE&color=FFCC00" alt="release-status-badge">
 </div>
-<div align="center">
+
+## Pokemon CLI
+<div>
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/go_test.yml?style=flat-square&logo=go&logoColor=00ADD8&label=Tests&labelColor=EEE&color=00ADD8" alt="tests-label">
     <img src="https://img.shields.io/github/go-mod/go-version/digitalghost-dev/poke-cli?style=flat-square&logo=Go&labelColor=EEE&color=00ADD8" alt="go-version"/>
     <img src="https://img.shields.io/codecov/c/github/digitalghost-dev/poke-cli?token=05GBSAOQIT&style=flat-square&logo=codecov&logoColor=00ADD8&labelColor=EEE&color=00ADD8" alt="codecov"/>
 </div>
 
-## Pokemon CLI
+<div>
+    <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/python_test.yml?style=flat-square&logo=python&logoColor=3776AB&label=Tests&labelColor=EEE&color=3776AB" alt="python-tests-label">
+    <img src="https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/digitalghost-dev/poke-cli/main/data_platform/pyproject.toml&query=%24.project%5B%27requires-python%27%5D&style=flat-square&logo=python&logoColor=3776AB&label=Python&labelColor=EEE&color=3776AB" alt="python-version"/>
+</div>
+<div>
+    <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/rust_test.yml?style=flat-square&logo=rust&logoColor=D34516&label=Tests&labelColor=EEE&color=D34516" alt="rust-tests-label">
+    <img src="https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/digitalghost-dev/poke-cli/main/services/Cargo.toml&query=%24.package%5B%27rust-version%27%5D&style=flat-square&logo=rust&logoColor=D34516&label=Rust&labelColor=EEE&color=D34516" alt="rust-version"/>
+</div>
 `poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing VG and TCG data about Pokémon!
 
 View the [documentation](https://docs.poke-cli.com) on the data infrastructure in [data_platform/](https://github.com/digitalghost-dev/poke-cli/tree/main/data_platform) if you're interested.
@@ -49,16 +60,20 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 
 
 ### Homebrew
+Homebrew will install the CLI _and_ the Rust caching binary
+
 1. Install the Cask:
     ```bash
     brew install --cask digitalghost-dev/tap/poke-cli
-    ````
+    ```
 2. Verify installation:
     ```bash
-    poke-cli -v
+    poke-cli
     ```
 
 ### Scoop
+Scoop will install the CLI _and_ the Rust caching binary
+
 1. Add the bucket:
     ```bash
     scoop bucket add digitalghost https://github.com/digitalghost-dev/scoop-bucket.git
@@ -71,7 +86,7 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
    
 3. Verify installation:
     ```bash
-    poke-cli -v
+    poke-cli
     ```
 
 ### Linux Packages
@@ -85,7 +100,6 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 
 | Package Type | Distributions                     | Repository Setup                                                                                                                        | Installation Command                   |
 |:------------:|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
-|    `apk`     | Alpine                            | `sudo apk add --no-cache bash && curl -1sLf 'https://dl.cloudsmith.io/basic/digitalghost-dev/poke-cli/setup.alpine.sh' \| sudo -E bash` | `sudo apk add poke-cli --update-cache` |
 |    `deb`     | Ubuntu, Debian                    | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.deb.sh' \| sudo -E bash`                                   | `sudo apt-get install poke-cli`        |
 |    `rpm`     | Fedora, CentOS, Red Hat, openSUSE | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.rpm.sh' \| sudo -E bash`                                   | `sudo yum install poke-cli`            |
 
