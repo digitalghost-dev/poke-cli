@@ -59,7 +59,7 @@ func cardTableStyles(selectedBg color.Color) table.Styles {
 		BorderForeground(styling.ThemeColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
+		Foreground(styling.ContrastText(selectedBg)).
 		Background(selectedBg)
 	return s
 }

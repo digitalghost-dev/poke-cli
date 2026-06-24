@@ -183,3 +183,15 @@ func (col Color) Hex() string {
 	return fmt.Sprintf("#%02x%02x%02x",
 		uint8(col.R*255.0+0.5), uint8(col.G*255.0+0.5), uint8(col.B*255.0+0.5))
 }
+
+func ContrastText(bg color.Color) color.Color {
+	c, ok := MakeColor(bg)
+	if !ok {
+		return lipgloss.Color("#000")
+	}
+	luma := 0.299*c.R + 0.587*c.G + 0.114*c.B
+	if luma > 0.5 {
+		return lipgloss.Color("#000")
+	}
+	return lipgloss.Color("#FFF")
+}

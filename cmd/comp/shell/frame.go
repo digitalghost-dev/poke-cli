@@ -69,7 +69,7 @@ func TableStyles() table.Styles {
 		BorderBottom(true).
 		Bold(true)
 	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
+		Foreground(styling.ContrastText(styling.ThemeColor)).
 		Background(styling.ThemeColor)
 	return s
 }

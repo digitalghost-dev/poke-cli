@@ -123,7 +123,7 @@ func createTypeSelectionTable() model {
 		BorderForeground(styling.ThemeColor).
 		BorderBottom(true)
 	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("#000")).
+		Foreground(styling.ContrastText(styling.ThemeColor)).
 		Background(styling.ThemeColor)
 	tbl.SetStyles(s)
 
