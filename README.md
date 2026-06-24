@@ -23,6 +23,7 @@
     <img src="https://img.shields.io/github/actions/workflow/status/digitalghost-dev/poke-cli/rust_test.yml?style=flat-square&logo=rust&logoColor=D34516&label=Tests&labelColor=EEE&color=D34516" alt="rust-tests-label">
     <img src="https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/digitalghost-dev/poke-cli/main/services/Cargo.toml&query=%24.package%5B%27rust-version%27%5D&style=flat-square&logo=rust&logoColor=D34516&label=Rust&labelColor=EEE&color=D34516" alt="rust-version"/>
 </div>
+
 `poke-cli` is a hybrid of a classic CLI and a modern TUI tool for viewing VG and TCG data about Pokémon!
 
 View the [documentation](https://docs.poke-cli.com) on the data infrastructure in [data_platform/](https://github.com/digitalghost-dev/poke-cli/tree/main/data_platform) if you're interested.
