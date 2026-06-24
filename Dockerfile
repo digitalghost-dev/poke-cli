@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -ldflags "-X main.version=v2.0.0" -o poke-cli .
+RUN go build -ldflags "-X main.version=v2.0.1" -o poke-cli .
 
 # build 2
 FROM rust:1-alpine AS rust-build

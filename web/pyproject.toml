@@ -1,6 +1,6 @@
 [project]
 name = "web"
-version = "v2.0.0"
+version = "v2.0.1"
 description = "Streamlit dashboard for browsing and visualizing Pokémon TCG tournament standings and results."
 readme = "README.md"
 requires-python = ">=3.12"

@@ -1,7 +1,7 @@
 name: "poke-cli"
 arch: "arm64"
 platform: "linux"
-version: "v2.0.0"
+version: "v2.0.1"
 section: "default"
 version_schema: semver
 maintainer: "Christian S"
