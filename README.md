@@ -41,8 +41,7 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 
 ## Demo
 
-![poke-cli-demo](https://dc8hq8aq7pr04.cloudfront.net/poke-cli-main-demo.gif)
-
+![poke-cli-demo-gif](https://github.com/user-attachments/assets/02ce3bd6-55e9-4902-959b-d7a823035193)
 
 ---
 
