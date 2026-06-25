@@ -54,5 +54,9 @@ export DAGSTER_HOME
 # Activate the virtual environment
 source /home/ubuntu/poke-cli/data_platform/.venv/bin/activate
 
+dbt parse \
+    --project-dir /home/ubuntu/poke-cli/data_platform/pipelines/poke_cli_dbt \
+    --profiles-dir /home/ubuntu/poke-cli/data_platform/pipelines/poke_cli_dbt
+
 # Start Dagster
 exec dg dev --host 0.0.0.0 --port 3000
