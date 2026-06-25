@@ -29,7 +29,7 @@
 View the [documentation](https://docs.poke-cli.com) on the data infrastructure in [data_platform/](https://github.com/digitalghost-dev/poke-cli/tree/main/data_platform) if you're interested.
 
 * [Demo](#demo)
-* [Installation](#installation)
+* [Installation & Updating](#installation--updating)
 * [Usage](#usage)
 * [Roadmap](#roadmap)
 * [Tested Terminals](#tested-terminals)
@@ -40,17 +40,13 @@ View the [documentation](https://docs.poke-cli.com) on the data infrastructure i
 ---
 
 ## Demo
-### Video Game Data
 
-![demo-vg](https://dc8hq8aq7pr04.cloudfront.net/demo-v1.6.0.gif)
+![poke-cli-demo](https://dc8hq8aq7pr04.cloudfront.net/poke-cli-demo.gif)
 
-### Trading Card Game Data
-
-![demo-tcg](https://dc8hq8aq7pr04.cloudfront.net/poke-cli-card-v1.8.8.gif)
 
 ---
 
-## Installation
+## Installation & Updating
 
 * [Homebrew](#homebrew)
 * [Scoop](#scoop)
@@ -72,6 +68,11 @@ Homebrew will install the CLI _and_ the Rust caching binary
     poke-cli
     ```
 
+To update:
+```bash
+brew upgrade --cask poke-cli
+```
+
 ### Scoop
 Scoop will install the CLI _and_ the Rust caching binary
 
@@ -90,6 +91,11 @@ Scoop will install the CLI _and_ the Rust caching binary
     poke-cli
     ```
 
+To update:
+```bash
+scoop update poke-cli
+```
+
 ### Linux Packages
 [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
@@ -102,7 +108,16 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 | Package Type | Distributions                     | Repository Setup                                                                                                                        | Installation Command                   |
 |:------------:|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
 |    `deb`     | Ubuntu, Debian                    | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.deb.sh' \| sudo -E bash`                                   | `sudo apt-get install poke-cli`        |
-|    `rpm`     | Fedora, CentOS, Red Hat, openSUSE | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.rpm.sh' \| sudo -E bash`                                   | `sudo yum install poke-cli`            |
+|    `rpm`     | Fedora                            | `curl -1sLf 'https://dl.cloudsmith.io/public/digitalghost-dev/poke-cli/setup.rpm.sh' \| sudo -E bash`                                   | `sudo yum install poke-cli`            |
+
+To update:
+```bash
+# deb
+sudo apt-get update && sudo apt-get install --only-upgrade poke-cli
+
+# rpm
+sudo yum update poke-cli
+```
 
 ### Docker Image
 
@@ -140,6 +155,11 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
 > ```
 > If your terminal is not listed above, image rendering is not supported inside Docker.
 
+To update, pull the new image tag:
+```bash
+docker pull digitalghostdev/poke-cli:<version>
+```
+
 ### Binary
 
 1. Head to the [releases](https://github.com/digitalghost-dev/poke-cli/releases) page of the project.
@@ -170,6 +190,8 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
   .\poke-cli ability airlock --pokemon
   ```
 
+To update, repeat the steps above with the newest release.
+
 ### Source
 
 1. Run the following command:
@@ -177,6 +199,8 @@ Cloudsmith is a fully cloud-based service that lets you easily create, store, an
    go install github.com/digitalghost-dev/poke-cli@latest
    ```
 2. The tool should be ready to use if `$PATH` is set up.
+
+To update, re-run the install command above.
 
 > [!TIP]
 > `go install` builds only the `poke-cli` binary, **not** the `poke-cache` caching helper (a separate binary that every packaged install bundles). `poke-cli` works the same without it; it just calls PokéAPI directly instead of caching responses on disk. To enable caching, download the `poke-cache` archive for your platform from the [releases](https://github.com/digitalghost-dev/poke-cli/releases/latest) page, extract it, and move the `poke-cache` binary onto your `$PATH`.
