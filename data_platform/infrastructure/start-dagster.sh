@@ -56,7 +56,10 @@ source /home/ubuntu/poke-cli/data_platform/.venv/bin/activate
 
 dbt parse \
     --project-dir /home/ubuntu/poke-cli/data_platform/pipelines/poke_cli_dbt \
-    --profiles-dir /home/ubuntu/poke-cli/data_platform/pipelines/poke_cli_dbt
+    --profiles-dir /home/ubuntu/poke-cli/data_platform/pipelines/poke_cli_dbt || {
+        echo "ERROR: dbt parse failed" >&2
+        exit 1
+    }
 
 # Start Dagster
 exec dg dev --host 0.0.0.0 --port 3000
